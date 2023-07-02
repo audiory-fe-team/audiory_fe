@@ -1,3 +1,4 @@
+import 'package:audiory_v0/screens/home/home_screent.dart';
 import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:audiory_v0/utils/theme_constants.dart';
 import 'package:audiory_v0/utils/theme_manager.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: _themeManager.themeMode,
-      home: const SplashScreen(),
+      home: HomeScreeen(),
     );
   }
 }
