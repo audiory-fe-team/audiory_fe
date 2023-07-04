@@ -1,6 +1,7 @@
 import 'package:audiory_v0/models/Story.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'stories_mock.dart';
 
 class HomeScreeen extends StatelessWidget {
   @override
@@ -8,7 +9,7 @@ class HomeScreeen extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(65),
+          preferredSize: const Size.fromHeight(65),
           child: SafeArea(
               child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -84,14 +85,20 @@ class HomeScreeen extends StatelessWidget {
           )),
         ),
         body: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
             child: ListView(
               children: [
                 Banners(),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 HomeRecommendations(),
-                SizedBox(height: 32),
+                const SizedBox(height: 32),
                 HomeRankingList(),
+                const SizedBox(height: 32),
+                HotStories(),
+                const SizedBox(height: 32),
+                PaidStories(),
+                const SizedBox(height: 32),
+                ContinueReading(),
               ],
             )),
       ),
@@ -116,7 +123,7 @@ class Banners extends StatelessWidget {
           itemCount: BANNERS_LIST.length,
           itemBuilder: (BuildContext context, int index) {
             return Padding(
-                padding: EdgeInsets.only(right: 16),
+                padding: const EdgeInsets.only(right: 16),
                 child: Container(
                   width: 240,
                   child: ClipRRect(
@@ -156,16 +163,16 @@ class HomeHeaders extends StatelessWidget {
           Row(
             children: [
               icon ?? Container(),
-              SizedBox(width: 6),
+              const SizedBox(width: 6),
               Text(title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.black,
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
                   ))
             ],
           ),
-          Text('Thêm',
+          const Text('Thêm',
               style: TextStyle(
                 color: Color(0xFF439A97),
                 fontSize: 12,
@@ -179,10 +186,10 @@ class HomeHeaders extends StatelessWidget {
 }
 
 class HomeStoryCard extends StatelessWidget {
-  final String imageUrl;
+  final String? coverUrl;
   final String title;
 
-  const HomeStoryCard({this.title = '', this.imageUrl = ''});
+  const HomeStoryCard({this.title = '', this.coverUrl = ''});
 
   @override
   Widget build(BuildContext context) {
@@ -198,12 +205,12 @@ class HomeStoryCard extends StatelessWidget {
             height: 135,
             decoration: ShapeDecoration(
               image: DecorationImage(
-                image: NetworkImage(this.imageUrl),
+                image: NetworkImage(this.coverUrl ?? ''),
                 fit: BoxFit.fill,
               ),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8)),
-              shadows: [
+              shadows: const [
                 BoxShadow(
                   color: Color(0x0C06070D),
                   blurRadius: 14,
@@ -213,7 +220,7 @@ class HomeStoryCard extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Container(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -227,7 +234,7 @@ class HomeStoryCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     this.title,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Color(0xFF404446),
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -244,32 +251,23 @@ class HomeStoryCard extends StatelessWidget {
 }
 
 class HomeRecommendations extends StatelessWidget {
-  final List<Story> STORY_LIST = [
-    Story('https://via.placeholder.com/95x135', 'Vs'),
-    Story('https://via.placeholder.com/95x135',
-        'VErrry long asdasdasdasdlqwelqweasdlasldlqwleqlwelqweqw'),
-    Story('https://via.placeholder.com/95x135', 'Mùa hè cuối cùng ta và em'),
-    Story('https://via.placeholder.com/95x135', 'Ngôi sao biến mất'),
-    Story('https://via.placeholder.com/95x135', 'Con ngựa đỏ'),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
-      HomeHeaders(title: 'Có thể bạn sẽ thích', link: ''),
-      SizedBox(height: 12),
+      const HomeHeaders(title: 'Có thể bạn sẽ thích', link: ''),
+      const SizedBox(height: 12),
       Container(
           width: double.infinity,
           height: 180,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: STORY_LIST.length,
+              itemCount: STORIES.length,
               itemBuilder: (BuildContext context, int index) {
-                Story story = STORY_LIST[index];
+                Story story = STORIES[index];
                 return Padding(
-                  padding: EdgeInsets.only(right: 12),
+                  padding: const EdgeInsets.only(right: 12),
                   child: HomeStoryCard(
-                      title: story.title, imageUrl: story.imageUrl),
+                      title: story.title, coverUrl: story.coverUrl),
                 );
               })),
     ]);
@@ -288,7 +286,7 @@ class RankingListBadge extends StatelessWidget {
       height: 25,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: ShapeDecoration(
-        color: selected ? Color(0xFF439A97) : Colors.white,
+        color: selected ? const Color(0xFF439A97) : Colors.white,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -302,7 +300,8 @@ class RankingListBadge extends StatelessWidget {
             label,
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: selected ? Color(0xFFFFFDFD) : Color(0xFF404446),
+              color:
+                  selected ? const Color(0xFFFFFDFD) : const Color(0xFF404446),
               fontSize: 12,
               fontWeight: FontWeight.w400,
             ),
@@ -315,28 +314,20 @@ class RankingListBadge extends StatelessWidget {
 
 class HomeRankingList extends StatelessWidget {
   static const OPTIONS = ['Truyện hot tháng', 'Truyện bình luận nhiều'];
-  final List<Story> LISTS = [
-    Story('https://via.placeholder.com/95x135', 'Vs'),
-    Story('https://via.placeholder.com/95x135',
-        'VErrry long asdasdasdasdlqwelqweasdlasldlqwleqlwelqweqw'),
-    Story('https://via.placeholder.com/95x135', 'Mùa hè cuối cùng ta và em'),
-    Story('https://via.placeholder.com/95x135', 'Ngôi sao biến mất'),
-    Story('https://via.placeholder.com/95x135', 'Con ngựa đỏ'),
-  ];
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        HomeHeaders(title: 'BXH Tháng này', link: ''),
-        SizedBox(height: 12),
+        const HomeHeaders(title: 'BXH Tháng này', link: ''),
+        const SizedBox(height: 12),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
             children: OPTIONS
                 .map((option) => Padding(
-                    padding: EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.only(right: 8),
                     child: RankingListBadge(
                       label: option,
                       selected: true,
@@ -344,20 +335,19 @@ class HomeRankingList extends StatelessWidget {
                 .toList(),
           ),
         ),
-        SizedBox(height: 12),
+        const SizedBox(height: 12),
         Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: LISTS.asMap().entries.map((entry) {
+          children: STORIES.asMap().entries.map((entry) {
             Story story = entry.value;
             int index = entry.key;
             return Padding(
-                padding: EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.only(bottom: 12),
                 child: HomeRankingCard(
                   order: index,
-                  title: story.title,
-                  imageUrl: story.imageUrl,
+                  story: story,
                   icon: InkWell(
                     child: SvgPicture.asset(
                       'assets/icons/heart.svg',
@@ -374,16 +364,14 @@ class HomeRankingList extends StatelessWidget {
 }
 
 class HomeRankingCard extends StatelessWidget {
+  final Story story;
   final int order;
-  final String imageUrl;
-  final String title;
-  final Widget icon;
+  final Widget? icon;
 
   const HomeRankingCard(
-      {required this.order,
-      required this.imageUrl,
-      required this.title,
-      required this.icon});
+      {required this.story,
+      required this.order,
+      this.icon = const SizedBox(width: 12, height: 12)});
 
   @override
   Widget build(BuildContext context) {
@@ -394,25 +382,25 @@ class HomeRankingCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
+          SizedBox(
             width: 40,
             height: 40,
             child: Image.asset(
               'assets/images/silver_badge.png',
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Container(
             width: 50,
             height: 70,
             decoration: ShapeDecoration(
-              image: DecorationImage(
+              image: const DecorationImage(
                 image: NetworkImage("https://via.placeholder.com/50x70"),
                 fit: BoxFit.fill,
               ),
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(4)),
-              shadows: [
+              shadows: const [
                 BoxShadow(
                   color: Color(0x0C06070D),
                   blurRadius: 14,
@@ -422,7 +410,7 @@ class HomeRankingCard extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(width: 12),
+          const SizedBox(width: 12),
           Expanded(
               child: Container(
             child: Column(
@@ -433,8 +421,8 @@ class HomeRankingCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    this.title,
-                    style: TextStyle(
+                    story.title,
+                    style: const TextStyle(
                       overflow: TextOverflow.ellipsis,
                       color: Colors.black,
                       fontSize: 14,
@@ -453,12 +441,12 @@ class HomeRankingCard extends StatelessWidget {
                         'assets/icons/heart.svg',
                         width: 8,
                         height: 8,
-                        color: Color(0xFF979C9E),
+                        color: const Color(0xFF979C9E),
                       ),
                       const SizedBox(width: 2),
                       Text(
-                        '12,000',
-                        style: TextStyle(
+                        story.voteCount.toString() ?? 'error',
+                        style: const TextStyle(
                           color: Color(0xFF979C9E),
                           fontSize: 10,
                           fontStyle: FontStyle.italic,
@@ -477,4 +465,426 @@ class HomeRankingCard extends StatelessWidget {
   }
 }
 
-// class PaidStories extends StatelessWidget
+class PaidStories extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const HomeHeaders(title: 'Truyện trả phí', link: ''),
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: STORIES
+                  .map((story) => Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: HomeStoryCard(
+                            title: story.title, coverUrl: story.coverUrl),
+                      ))
+                  .toList(),
+            ))
+      ],
+    );
+  }
+}
+
+class HotStories extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const HomeHeaders(title: 'Thịnh hành', link: ''),
+        const SizedBox(height: 12),
+        Container(
+          width: double.infinity,
+          height: 176,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
+          child: Image.network(
+            'https://via.placeholder.com/347x176',
+            fit: BoxFit.fill,
+            loadingBuilder: (BuildContext ctx, Widget child,
+                ImageChunkEvent? loadingProgress) {
+              if (loadingProgress == null) {
+                return child;
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                  ),
+                );
+              }
+              ;
+            },
+          ),
+        ),
+        const SizedBox(height: 12),
+        SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: STORIES
+                  .map((story) => Padding(
+                        padding: const EdgeInsets.only(right: 12),
+                        child: HomeStoryCard(
+                            title: story.title, coverUrl: story.coverUrl),
+                      ))
+                  .toList(),
+            ))
+      ],
+    );
+  }
+}
+
+class ContinueReadingCard extends StatelessWidget {
+  final Story story;
+
+  const ContinueReadingCard({required this.story});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      height: 135,
+      decoration: ShapeDecoration(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            clipBehavior: Clip.antiAlias,
+            decoration: ShapeDecoration(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  width: 95,
+                  height: 135,
+                  decoration: const BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage("https://via.placeholder.com/95x135"),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            story.title,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            story.description ?? '',
+                            maxLines: 2,
+                            style: const TextStyle(
+                              color: Color(0xFF6C7072),
+                              fontSize: 10,
+                              fontStyle: FontStyle.italic,
+                              fontWeight: FontWeight.w400,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Container(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset('assets/icons/write.svg',
+                                        width: 14, height: 14),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      story.authorName ?? '',
+                                      style: const TextStyle(
+                                        color: Color(0xFF25282B),
+                                        fontSize: 12,
+                                        fontStyle: FontStyle.italic,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          SvgPicture.asset(
+                                              'assets/icons/heart.svg',
+                                              width: 14,
+                                              height: 14),
+                                          const SizedBox(width: 3),
+                                          Text(
+                                            story.voteCount.toString() ??
+                                                'error',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w400,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset('assets/icons/chapter.svg',
+                                        width: 14, height: 14),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      (story.numChapter.toString() ?? 'error') +
+                                          ' chương',
+                                      style: TextStyle(
+                                        color: Color(0xFF25282B),
+                                        fontSize: 12,
+                                        fontStyle: FontStyle.italic,
+                                        fontWeight: FontWeight.w400,
+                                        letterSpacing: 0.02,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SvgPicture.asset('assets/icons/write.svg',
+                                        width: 14, height: 14),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      story.readCount.toString() ?? 'error',
+                                      style: TextStyle(
+                                        color: Color(0xFF25282B),
+                                        fontSize: 12,
+                                        fontStyle: FontStyle.italic,
+                                        fontFamily: 'Source Sans Pro',
+                                        fontWeight: FontWeight.w400,
+                                        letterSpacing: 0.02,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          decoration: const BoxDecoration(),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: ShapeDecoration(
+                                  color: const Color(0xFFF6F8F9),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Hoàn thành',
+                                      style: TextStyle(
+                                        color: Color(0xFF979C9E),
+                                        fontSize: 8,
+                                        fontFamily: 'Source Sans Pro',
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.01,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: ShapeDecoration(
+                                  color: const Color(0xFFF6F8F9),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Lãng mạn',
+                                      style: TextStyle(
+                                        color: Color(0xFF979C9E),
+                                        fontSize: 8,
+                                        fontFamily: 'Source Sans Pro',
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.01,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 3),
+                                decoration: ShapeDecoration(
+                                  color: const Color(0xFFF6F8F9),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                ),
+                                child: const Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Nhẹ nhàng',
+                                      style: TextStyle(
+                                        color: Color(0xFF979C9E),
+                                        fontSize: 8,
+                                        fontFamily: 'Source Sans Pro',
+                                        fontWeight: FontWeight.w600,
+                                        letterSpacing: 0.01,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class ContinueReading extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const HomeHeaders(title: 'Tiếp tục đọc', link: ''),
+        const SizedBox(height: 12),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: STORIES.sublist(0, 3).asMap().entries.map((entry) {
+            Story story = entry.value;
+            int index = entry.key;
+            return Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: ContinueReadingCard(
+                  story: story,
+                ));
+          }).toList(),
+        ),
+      ],
+    );
+  }
+}
