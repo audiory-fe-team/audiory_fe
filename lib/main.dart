@@ -1,3 +1,4 @@
+import 'package:audiory_v0/screens/home/home_screent.dart';
 import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
@@ -45,7 +46,7 @@ class _MyAppState extends State<MyApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: _themeManager.themeMode,
-      home: const SplashScreen(),
+      home: HomeScreeen(),
     );
   }
 }
