@@ -1,7 +1,7 @@
 import 'package:audiory_v0/screens/home/home_screent.dart';
-import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
-import 'package:audiory_v0/utils/theme_constants.dart';
-import 'package:audiory_v0/utils/theme_manager.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/theme/theme_manager.dart';
+
 import 'package:flutter/material.dart';
 
 void main() {
@@ -10,19 +10,38 @@ void main() {
 
 ThemeManager _themeManager = ThemeManager();
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void dispose() {
+    _themeManager.removeListener(themeListener);
+    super.dispose();
+  }
+
+  @override
+  void initState() {
+    _themeManager.addListener(themeListener);
+    super.initState();
+  }
+
+  themeListener() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      // theme: ThemeData(
-      //     colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      //     useMaterial3: true,
-      //     textTheme: TypographyTheme.lightTheme.textTheme),
+      title: 'Audiory app',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: _themeManager.themeMode,

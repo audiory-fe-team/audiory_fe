@@ -1,4 +1,5 @@
 import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'stories_mock.dart';
@@ -6,102 +7,100 @@ import 'stories_mock.dart';
 class HomeScreeen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(65),
-          child: SafeArea(
-              child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                bottom: BorderSide(
-                  color: Colors.amber,
-                  width: 1.0,
-                  style: BorderStyle.solid,
-                ),
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(65),
+        child: SafeArea(
+            child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            border: Border(
+              bottom: BorderSide(
+                color: Colors.amber,
+                width: 1.0,
+                style: BorderStyle.solid,
               ),
             ),
-            child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        child: const CircleAvatar(
-                          backgroundImage:
-                              const AssetImage('assets/images/user-avatar.jpg'),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                        height: 10,
-                      ),
-                      const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            'Xin chào',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            'John Doe',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: [
-                      InkWell(
-                        onTap: () {
-                          print('haha');
-                        },
-                        child: SvgPicture.asset(
-                          'assets/icons/search.svg',
-                          width: 24,
-                          height: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      InkWell(
-                        child: SvgPicture.asset(
-                          'assets/icons/notification on.svg',
-                          width: 24,
-                          height: 24,
-                        ),
-                      ),
-                    ],
-                  ),
-                ]),
-          )),
-        ),
-        body: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-            child: ListView(
+          ),
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Banners(),
-                const SizedBox(height: 32),
-                HomeRecommendations(),
-                const SizedBox(height: 32),
-                HomeRankingList(),
-                const SizedBox(height: 32),
-                HotStories(),
-                const SizedBox(height: 32),
-                PaidStories(),
-                const SizedBox(height: 32),
-                ContinueReading(),
-              ],
-            )),
+                Row(
+                  children: [
+                    Container(
+                      width: 40,
+                      height: 40,
+                      child: const CircleAvatar(
+                        backgroundImage:
+                            const AssetImage('assets/images/user-avatar.jpg'),
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 8,
+                      height: 10,
+                    ),
+                    const Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Xin chào',
+                          style: TextStyle(fontSize: 14),
+                        ),
+                        Text(
+                          'John Doe',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        print('haha');
+                      },
+                      child: SvgPicture.asset(
+                        'assets/icons/search.svg',
+                        width: 24,
+                        height: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    InkWell(
+                      child: SvgPicture.asset(
+                        'assets/icons/notification on.svg',
+                        width: 24,
+                        height: 24,
+                      ),
+                    ),
+                  ],
+                ),
+              ]),
+        )),
       ),
+      body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+          child: ListView(
+            children: [
+              Banners(),
+              const SizedBox(height: 32),
+              HomeRecommendations(),
+              const SizedBox(height: 32),
+              HomeRankingList(),
+              const SizedBox(height: 32),
+              HotStories(),
+              const SizedBox(height: 32),
+              PaidStories(),
+              const SizedBox(height: 32),
+              ContinueReading(),
+            ],
+          )),
     );
   }
 }
@@ -153,6 +152,8 @@ class HomeHeaders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
     return Container(
       width: double.infinity,
       child: Row(
@@ -164,17 +165,12 @@ class HomeHeaders extends StatelessWidget {
             children: [
               icon ?? Container(),
               const SizedBox(width: 6),
-              Text(title,
-                  style: const TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                  ))
+              Text(title, style: Theme.of(context).textTheme.headlineMedium),
             ],
           ),
-          const Text('Thêm',
+          Text('Thêm',
               style: TextStyle(
-                color: Color(0xFF439A97),
+                color: appColors.primaryBase,
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 decoration: TextDecoration.underline,
@@ -340,13 +336,13 @@ class HomeRankingList extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: STORIES.asMap().entries.map((entry) {
+          children: STORIES.sublist(0, 5).asMap().entries.map((entry) {
             Story story = entry.value;
             int index = entry.key;
             return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: HomeRankingCard(
-                  order: index,
+                  order: index + 1,
                   story: story,
                   icon: InkWell(
                     child: SvgPicture.asset(
@@ -375,6 +371,38 @@ class HomeRankingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget getBadgeWidget(int order) {
+      if (order > 3)
+        return SizedBox(
+            width: 24,
+            height: 24,
+            child: Center(
+                child: Text(order.toString(),
+                    style: Theme.of(context).textTheme.headlineMedium)));
+      String badgePath = '';
+      switch (order) {
+        case 1:
+          badgePath = 'assets/images/gold_badge.png';
+          break;
+        case 2:
+          badgePath = 'assets/images/silver_badge.png';
+          break;
+        case 3:
+          badgePath = 'assets/images/bronze_badge.png';
+          break;
+      }
+      return SizedBox(
+        width: 24,
+        height: 24,
+        child: Center(
+            child: Image.asset(
+          badgePath,
+          fit: BoxFit.fitWidth,
+        )),
+      );
+    }
+
+    ;
     return Container(
       width: double.infinity,
       child: Row(
@@ -382,13 +410,7 @@ class HomeRankingCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SizedBox(
-            width: 40,
-            height: 40,
-            child: Image.asset(
-              'assets/images/silver_badge.png',
-            ),
-          ),
+          getBadgeWidget(order),
           const SizedBox(width: 12),
           Container(
             width: 50,
@@ -738,7 +760,7 @@ class ContinueReadingCard extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    SvgPicture.asset('assets/icons/write.svg',
+                                    SvgPicture.asset('assets/icons/eye.svg',
                                         width: 14, height: 14),
                                     const SizedBox(width: 8),
                                     Text(

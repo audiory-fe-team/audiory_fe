@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/filled_button.dart';
 import 'package:audiory_v0/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //NOTE:Testing, need refine
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
     return Scaffold(
         // appBar: AppBar(
         //   title: Text(),
@@ -54,11 +58,11 @@ class _SplashScreenState extends State<SplashScreen> {
                           child: Column(
                         children: <Widget>[
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 8.0),
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
                               controller: emailController,
-                              decoration: const InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
+                              decoration: InputDecoration(
+                                  enabledBorder: const OutlineInputBorder(
                                     borderSide: BorderSide(
                                       style: BorderStyle.solid,
                                       color: Color(0xFF439A97),
@@ -69,12 +73,12 @@ class _SplashScreenState extends State<SplashScreen> {
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
+                                      color: appColors.primaryBase!,
                                     ),
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(80)),
                                   ),
-                                  focusedBorder: OutlineInputBorder(
+                                  focusedBorder: const OutlineInputBorder(
                                     borderSide: BorderSide(
                                       style: BorderStyle.solid,
                                       color: Color(0xFF439A97),
