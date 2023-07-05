@@ -1,6 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+class ColorPalette {
+  static const Color primaryBase = Color(0xFF439A97);
+  static const Color primaryLight = Color(0xFF69AEAC);
+  static const Color primaryLighter = Color(0xFF8EC2C1);
+  static const Color primaryLightest = Color(0xFFD9EBEA);
+  static const Color primaryDark = Color(0xFF367B79);
+  static const Color skyBase = Color(0xFFCDCFD0);
+  static const Color skyLight = Color(0xFFE3E5E5);
+  static const Color skyLighter = Color(0xFFE3E5E5);
+  static const Color skyLightest = Color(0xFFF5F5F5);
+  static const Color skyDark = Color(0xFF979C9E);
+  static const Color secondaryBase = Color(0xFFDB6244);
+  static const Color secondaryLight = Color(0xFFE26D69);
+  static const Color secondaryLighter = Color(0xFFE9918F);
+  static const Color secondaryLightest = Color(0xFFF4C8C7);
+  static const Color secondaryDark = Color(0xFFAF3A36);
+  static const Color inkBase = Color(0xFF404446);
+  static const Color inkLight = Color(0xFF6C7072);
+  static const Color inkLighter = Color(0xFF72777A);
+  static const Color inkDark = Color(0xFF303437);
+  static const Color inkDarker = Color(0xFF202325);
+  static const Color inkDarkest = Color(0xFF090A0A);
+}
+
 @immutable
 class AppColors extends ThemeExtension<AppColors> {
   const AppColors({
@@ -17,7 +41,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.inkBase,
     required this.inkLight,
     required this.inkLighter,
-    required this.inkLightest,
+    required this.inkDark,
     required this.inkDarker,
     required this.inkDarkest,
     required this.secondaryBase,
@@ -42,7 +66,7 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color inkBase;
   final Color inkLight;
   final Color inkLighter;
-  final Color inkLightest;
+  final Color inkDark;
   final Color inkDarker;
   final Color inkDarkest;
 
@@ -62,7 +86,7 @@ class AppColors extends ThemeExtension<AppColors> {
       Color? inkBase,
       Color? inkLight,
       Color? inkLighter,
-      Color? inkLightest,
+      Color? inkDark,
       Color? inkDarker,
       Color? inkDarkest,
       Color? skyBase,
@@ -94,7 +118,7 @@ class AppColors extends ThemeExtension<AppColors> {
       inkBase: inkBase ?? this.inkBase,
       inkLight: inkLight ?? this.inkLight,
       inkLighter: inkLighter ?? this.inkLighter,
-      inkLightest: inkLightest ?? this.inkLightest,
+      inkDark: inkDark ?? this.inkDark,
       inkDarker: inkDarker ?? this.inkDarker,
       inkDarkest: inkDarkest ?? this.inkDarkest,
     );
@@ -105,28 +129,28 @@ class AppColors extends ThemeExtension<AppColors> {
     if (other is! AppColors) {
       return this;
     }
-    return AppColors(
-      primaryBase: Color(0xFF439A97),
-      primaryLight: Color(0xFF69AEAC),
-      primaryLighter: Color(0xFF8EC2C1),
-      primaryLightest: Color(0xFFD9EBEA),
-      primaryDark: Color(0xFF367B79),
-      skyBase: Color(0xFF439A97),
-      skyLight: Color(0xFF69AEAC),
-      skyLighter: Color(0xFF8EC2C1),
-      skyLightest: Color(0xFFD9EBEA),
-      skyDark: Color(0xFF367B79),
-      secondaryBase: Color(0xFF439A97),
-      secondaryLight: Color(0xFF69AEAC),
-      secondaryLighter: Color(0xFF8EC2C1),
-      secondaryLightest: Color(0xFFD9EBEA),
-      secondaryDark: Color(0xFF367B79),
-      inkBase: Color(0xFF439A97),
-      inkLight: Color(0xFF69AEAC),
-      inkLighter: Color(0xFF8EC2C1),
-      inkLightest: Color(0xFFD9EBEA),
-      inkDarker: Color(0xFF367B79),
-      inkDarkest: Color(0xFF367B79),
+    return const AppColors(
+      primaryBase: ColorPalette.primaryBase,
+      primaryLight: ColorPalette.primaryLight,
+      primaryLighter: ColorPalette.primaryLighter,
+      primaryLightest: ColorPalette.primaryLightest,
+      primaryDark: ColorPalette.primaryDark,
+      skyBase: ColorPalette.skyBase,
+      skyLight: ColorPalette.skyLight,
+      skyLighter: ColorPalette.skyLighter,
+      skyLightest: ColorPalette.skyLightest,
+      skyDark: ColorPalette.skyDark,
+      secondaryBase: ColorPalette.secondaryBase,
+      secondaryLight: ColorPalette.secondaryLight,
+      secondaryLighter: ColorPalette.secondaryLighter,
+      secondaryLightest: ColorPalette.secondaryLightest,
+      secondaryDark: ColorPalette.secondaryDark,
+      inkBase: ColorPalette.inkBase,
+      inkLight: ColorPalette.inkLight,
+      inkLighter: ColorPalette.inkLighter,
+      inkDark: ColorPalette.inkDark,
+      inkDarker: ColorPalette.inkDarker,
+      inkDarkest: ColorPalette.inkDarkest,
     );
   }
 }
@@ -139,94 +163,94 @@ ThemeData lightTheme = ThemeData(
   textTheme: TextTheme(
     //Heading
     headlineLarge: GoogleFonts.sourceSansPro(
-      color: Color.fromARGB(80, 2, 2, 2),
+      color: ColorPalette.inkBase,
       fontSize: 26.0,
       fontWeight: FontWeight.w600,
     ),
     headlineMedium: GoogleFonts.sourceSansPro(
-      color: Color.fromARGB(80, 2, 2, 2),
+      color: ColorPalette.inkBase,
       fontSize: 20.0,
       fontWeight: FontWeight.w600,
     ),
     headlineSmall: GoogleFonts.sourceSansPro(
-      color: Color.fromARGB(252, 2, 2, 2),
+      color: ColorPalette.inkBase,
       fontSize: 18.0,
       fontWeight: FontWeight.w600,
     ),
     titleLarge: GoogleFonts.sourceSansPro(
-        color: Color.fromARGB(252, 2, 2, 2),
+        color: ColorPalette.inkBase,
         fontSize: 18.0,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15),
     titleMedium: GoogleFonts.sourceSansPro(
-      color: Color.fromARGB(252, 2, 2, 2),
+      color: ColorPalette.inkBase,
       fontSize: 14.0,
       fontWeight: FontWeight.w600,
     ),
     titleSmall: GoogleFonts.sourceSansPro(
-      color: Color.fromARGB(252, 2, 2, 2),
+      color: ColorPalette.inkBase,
       fontSize: 12.0,
       fontWeight: FontWeight.w400,
     ),
     labelLarge: GoogleFonts.sourceSansPro(
-      color: Color.fromARGB(252, 2, 2, 2),
+      color: ColorPalette.inkBase,
       fontSize: 10.0,
       fontWeight: FontWeight.w400,
     ),
     labelMedium: GoogleFonts.sourceSansPro(
-      color: Color.fromARGB(252, 2, 2, 2),
+      color: ColorPalette.inkBase,
       fontSize: 8.0,
       fontWeight: FontWeight.w400,
     ),
     //BODY
     bodyLarge: GoogleFonts.gelasio(
-      color: Color.fromARGB(252, 2, 2, 2),
+      color: ColorPalette.inkBase,
       fontSize: 16.0,
     ),
   ),
-  inputDecorationTheme: InputDecorationTheme(
+  inputDecorationTheme: const InputDecorationTheme(
     labelStyle: TextStyle(
-      color: Color(0xFF439A97),
+      color: ColorPalette.primaryBase,
     ),
     border: UnderlineInputBorder(
       borderSide: BorderSide(
         style: BorderStyle.solid,
-        color: Color(0xFF439A97),
+        color: ColorPalette.primaryBase,
       ),
     ),
   ),
   colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
       .copyWith(background: const Color.fromARGB(255, 82, 184, 216)),
-  extensions: <ThemeExtension<dynamic>>[
-    const AppColors(
-      primaryBase: Color(0xFF439A97),
-      primaryLight: Color(0xFF69AEAC),
-      primaryLighter: Color(0xFF8EC2C1),
-      primaryLightest: Color(0xFFD9EBEA),
-      primaryDark: Color(0xFF367B79),
-      skyBase: Color(0xFF439A97),
-      skyLight: Color(0xFF69AEAC),
-      skyLighter: Color(0xFF8EC2C1),
-      skyLightest: Color(0xFFD9EBEA),
-      skyDark: Color(0xFF367B79),
-      secondaryBase: Color(0xFF439A97),
-      secondaryLight: Color(0xFF69AEAC),
-      secondaryLighter: Color(0xFF8EC2C1),
-      secondaryLightest: Color(0xFFD9EBEA),
-      secondaryDark: Color(0xFF367B79),
-      inkBase: Color(0xFF439A97),
-      inkLight: Color(0xFF69AEAC),
-      inkLighter: Color(0xFF8EC2C1),
-      inkLightest: Color(0xFFD9EBEA),
-      inkDarker: Color(0xFF367B79),
-      inkDarkest: Color(0xFF367B79),
+  extensions: const <ThemeExtension<dynamic>>[
+    AppColors(
+      primaryBase: ColorPalette.primaryBase,
+      primaryLight: ColorPalette.primaryLight,
+      primaryLighter: ColorPalette.primaryLighter,
+      primaryLightest: ColorPalette.primaryLightest,
+      primaryDark: ColorPalette.primaryDark,
+      skyBase: ColorPalette.skyBase,
+      skyLight: ColorPalette.skyLight,
+      skyLighter: ColorPalette.skyLighter,
+      skyLightest: ColorPalette.skyLightest,
+      skyDark: ColorPalette.skyDark,
+      secondaryBase: ColorPalette.secondaryBase,
+      secondaryLight: ColorPalette.secondaryLight,
+      secondaryLighter: ColorPalette.secondaryLighter,
+      secondaryLightest: ColorPalette.secondaryLightest,
+      secondaryDark: ColorPalette.secondaryDark,
+      inkBase: ColorPalette.inkBase,
+      inkLight: ColorPalette.inkLight,
+      inkLighter: ColorPalette.inkLighter,
+      inkDark: ColorPalette.inkDark,
+      inkDarker: ColorPalette.inkDarker,
+      inkDarkest: ColorPalette.inkDarkest,
     )
   ],
 );
 
 ThemeData darkTheme = ThemeData(
-  extensions: <ThemeExtension<dynamic>>[
-    const AppColors(
+  extensions: const <ThemeExtension<dynamic>>[
+    AppColors(
       primaryBase: Color(0xFF439A97),
       primaryLight: Color(0xFF69AEAC),
       primaryLighter: Color(0xFF8EC2C1),
@@ -245,7 +269,7 @@ ThemeData darkTheme = ThemeData(
       inkBase: Color(0xFF439A97),
       inkLight: Color(0xFF69AEAC),
       inkLighter: Color(0xFF8EC2C1),
-      inkLightest: Color(0xFFD9EBEA),
+      inkDark: Color(0xFFD9EBEA),
       inkDarker: Color(0xFF367B79),
       inkDarkest: Color(0xFF367B79),
     )

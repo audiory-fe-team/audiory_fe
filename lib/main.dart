@@ -1,5 +1,4 @@
 import 'package:audiory_v0/screens/home/home_screent.dart';
-import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
 
