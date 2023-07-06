@@ -1,31 +1,35 @@
-import "package:audiory_v0/theme/theme_constants.dart";
-import "package:flutter/material.dart";
+import 'package:flutter/material.dart';
 
-class ActionButton extends StatelessWidget {
-  final String title;
+class OutlineBtn extends StatelessWidget {
+  final String text;
   final Color color;
   final Color bgColor;
-  final VoidCallback onPressed;
-  const ActionButton(
+  final double size;
+  final VoidCallback onPress;
+
+  // final Function onPressed;
+  const OutlineBtn(
       {super.key,
-      required this.title,
+      required this.text,
+      required this.size,
       required this.color,
       required this.bgColor,
-      required this.onPressed});
-
+      required this.onPress
+      // required this.onPressed
+      });
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: onPress,
       style: ElevatedButton.styleFrom(
         backgroundColor: bgColor,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
-        minimumSize: Size(343, 48),
-        elevation: 2.0,
+        minimumSize: Size(size, 48),
+        elevation: 4.0,
       ),
-      child: Text(title,
+      child: Text(text,
           style: TextStyle(
               color: color,
               fontFamily: 'Source San Pro',

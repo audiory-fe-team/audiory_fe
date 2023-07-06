@@ -1,4 +1,5 @@
 import 'package:audiory_v0/screens/home/home_screent.dart';
+import 'package:audiory_v0/screens/login/login_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
 
@@ -45,7 +46,7 @@ class _MyAppState extends State<MyApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: _themeManager.themeMode,
-      home: HomeScreeen(),
+      home: LoginScreen(),
     );
   }
 }
