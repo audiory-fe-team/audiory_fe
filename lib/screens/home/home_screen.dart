@@ -372,13 +372,14 @@ class HomeRankingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget getBadgeWidget(int order) {
-      if (order > 3)
+      if (order > 3) {
         return SizedBox(
             width: 24,
             height: 24,
             child: Center(
                 child: Text(order.toString(),
                     style: Theme.of(context).textTheme.headlineMedium)));
+      }
       String badgePath = '';
       switch (order) {
         case 1:

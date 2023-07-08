@@ -1,4 +1,4 @@
-import 'package:audiory_v0/screens/home/home_screent.dart';
+import 'package:audiory_v0/screens/home/home_screen.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
