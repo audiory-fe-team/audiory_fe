@@ -1,4 +1,5 @@
 import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/screens/search/search_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -63,7 +64,10 @@ class HomeScreeen extends StatelessWidget {
                   children: [
                     InkWell(
                       onTap: () {
-                        print('haha');
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SearchScreen()));
                       },
                       child: SvgPicture.asset(
                         'assets/icons/search.svg',
@@ -372,13 +376,14 @@ class HomeRankingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget getBadgeWidget(int order) {
-      if (order > 3)
+      if (order > 3) {
         return SizedBox(
             width: 24,
             height: 24,
             child: Center(
                 child: Text(order.toString(),
                     style: Theme.of(context).textTheme.headlineMedium)));
+      }
       String badgePath = '';
       switch (order) {
         case 1:
@@ -593,9 +598,9 @@ class ContinueReadingCard extends StatelessWidget {
                 Container(
                   width: 95,
                   height: 135,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage("https://via.placeholder.com/95x135"),
+                      image: NetworkImage(story.coverUrl ?? ''),
                       fit: BoxFit.fill,
                     ),
                   ),
