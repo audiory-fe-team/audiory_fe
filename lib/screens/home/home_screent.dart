@@ -1,10 +1,48 @@
 import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/screens/home/stories_mock.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'stories_mock.dart';
+import '../../services/auth_services.dart';
+import 'package:go_router/go_router.dart';
 
-class HomeScreeen extends StatelessWidget {
+class HomeScreeen extends StatefulWidget {
+  @override
+  State<HomeScreeen> createState() => _HomeScreeenState();
+}
+
+class _HomeScreeenState extends State<HomeScreeen> {
+  final User? user = Auth().currentUser;
+
+  Widget _userEmail() {
+    return Text(
+      user?.email ?? 'Default email',
+      style: TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+      ),
+    );
+  }
+
+  Widget _profileAvatar() {
+    return Material(
+      child: InkWell(
+        onTap: () async {
+          context.go('/profile');
+        },
+        customBorder: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(90),
+        ),
+        child: ClipRRect(
+          // borderRadius: BorderRadius.circular(50.0),
+          child: Image.asset('assets/images/user-avatar.jpg',
+              width: 40.0, height: 40.0),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,32 +67,27 @@ class HomeScreeen extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      child: const CircleAvatar(
-                        backgroundImage:
-                            const AssetImage('assets/images/user-avatar.jpg'),
-                      ),
-                    ),
+                    // Container(
+                    //   width: 40,
+                    //   height: 40,
+                    //   child: const CircleAvatar(
+                    //     backgroundImage:
+                    //         const AssetImage('assets/images/user-avatar.jpg'),
+                    //   ),
+                    // ),
+                    _profileAvatar(),
                     const SizedBox(
                       width: 8,
                       height: 10,
                     ),
-                    const Column(
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
                           'Xin chào',
                           style: TextStyle(fontSize: 14),
                         ),
-                        Text(
-                          'John Doe',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        _userEmail(),
                       ],
                     ),
                   ],

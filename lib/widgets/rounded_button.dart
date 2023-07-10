@@ -6,6 +6,7 @@ class CircularButton extends StatelessWidget {
   final Color color;
   final Color bgColor;
   final double size;
+  final VoidCallback onPressed;
 
   // final Function onPressed;
   const CircularButton({
@@ -14,12 +15,13 @@ class CircularButton extends StatelessWidget {
     required this.size,
     required this.color,
     required this.bgColor,
+    required this.onPressed,
     // required this.onPressed
   });
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {},
+      onPressed: onPressed,
       style: ButtonStyle(
         shape: MaterialStateProperty.all(CircleBorder()),
         padding: MaterialStateProperty.all(EdgeInsets.all(16)),
