@@ -76,8 +76,8 @@ class AuthorCard extends StatelessWidget {
                     height: 70,
                     decoration: ShapeDecoration(
                       image: DecorationImage(
-                        image:
-                            NetworkImage("https://via.placeholder.com/70x70"),
+                        image: NetworkImage(
+                            "https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg"),
                         fit: BoxFit.fill,
                       ),
                       shape: RoundedRectangleBorder(

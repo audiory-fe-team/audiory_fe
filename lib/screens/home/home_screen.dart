@@ -1,3 +1,4 @@
+import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/search/search_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -105,6 +106,7 @@ class HomeScreeen extends StatelessWidget {
               ContinueReading(),
             ],
           )),
+      bottomNavigationBar: BottomNavigationBarApp(),
     );
   }
 }
