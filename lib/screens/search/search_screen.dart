@@ -1,10 +1,10 @@
 import 'package:audiory_v0/models/Author.dart';
 import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/screens/home/header_with_link.dart';
 import 'package:audiory_v0/screens/home/home_screen.dart';
-import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/app_outlined_button.dart';
+import 'package:audiory_v0/screens/search/suggested_author.dart';
+import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import '../home/stories_mock.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -28,7 +28,7 @@ class AuthorRecommendation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
-      const HomeHeaders(title: 'Có thể bạn sẽ thích', link: ''),
+      const HeaderWithLink(title: 'Có thể bạn sẽ thích', link: ''),
       const SizedBox(height: 12),
       Container(
           width: double.infinity,
@@ -40,120 +40,14 @@ class AuthorRecommendation extends StatelessWidget {
                 Author author = AUTHOR[index];
                 return Padding(
                   padding: const EdgeInsets.only(right: 12),
-                  child:
-                      AuthorCard(name: author.name, follower: author.follower),
+                  child: SuggestedAuthor(
+                    name: author.name,
+                    follower: author.follower,
+                    coverUrl: author.coverUrl,
+                  ),
                 );
               })),
     ]);
-  }
-}
-
-class AuthorCard extends StatelessWidget {
-  final String name;
-  final int follower;
-
-  const AuthorCard({required this.name, required this.follower});
-
-  @override
-  Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
-    return Container(
-        width: 70,
-        height: 124,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                    width: 70,
-                    height: 70,
-                    decoration: ShapeDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                            "https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg"),
-                        fit: BoxFit.fill,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(50),
-                      ),
-                    )),
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: Theme.of(context).textTheme.labelLarge),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/user.svg',
-                          width: 12,
-                          height: 12,
-                        ),
-                        Row(
-                          children: [
-                            Text(
-                              "230,5 k",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelMedium!
-                                  .copyWith(fontWeight: FontWeight.w400),
-                            )
-                          ],
-                        )
-                      ],
-                    )
-                  ],
-                )
-              ],
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              width: double.infinity,
-              height: 21,
-              child: AppOutlinedButton(
-                onPressed: () {},
-                padding: EdgeInsets.zero,
-                style: ButtonStyle(
-                    side: MaterialStatePropertyAll(
-                        BorderSide(color: appColors.secondaryBase)),
-                    alignment: Alignment.center),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/icons/heart.svg',
-                      width: 10,
-                      height: 10,
-                      color: appColors.secondaryBase,
-                    ),
-                    const SizedBox(
-                      width: 2,
-                    ),
-                    Text(
-                      'Theo dõi',
-                      style: Theme.of(context)
-                          .textTheme
-                          .labelLarge!
-                          .copyWith(color: appColors.secondaryBase),
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
-        ));
   }
 }
 
@@ -164,7 +58,7 @@ class CategoryStories extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const HomeHeaders(title: 'Bí ẩn', link: ''),
+        const HeaderWithLink(title: 'Bí ẩn', link: ''),
         const SizedBox(height: 12),
         Column(
           mainAxisSize: MainAxisSize.min,
@@ -175,7 +69,7 @@ class CategoryStories extends StatelessWidget {
             int index = entry.key;
             return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: ContinueReadingCard(
+                child: StoryCardDetail(
                   story: story,
                 ));
           }).toList(),
@@ -188,7 +82,7 @@ class CategoryStories extends StatelessWidget {
               children: STORIES
                   .map((story) => Padding(
                         padding: const EdgeInsets.only(right: 12),
-                        child: HomeStoryCard(
+                        child: StoryCardOverView(
                             title: story.title, coverUrl: story.coverUrl),
                       ))
                   .toList(),

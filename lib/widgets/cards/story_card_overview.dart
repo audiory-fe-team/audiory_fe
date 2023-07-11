@@ -1,10 +1,13 @@
+import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
-class StoryCard extends StatelessWidget {
+class StoryCardOverView extends StatelessWidget {
   final String? coverUrl;
   final String title;
 
-  const StoryCard({this.title = '', this.coverUrl = ''});
+  const StoryCardOverView({this.title = '', this.coverUrl = ''});
 
   @override
   Widget build(BuildContext context) {

@@ -1,10 +1,8 @@
 import 'package:audiory_v0/screens/login/login_screen.dart';
 import 'package:audiory_v0/screens/register/widgets/flow_one.dart';
+import 'package:audiory_v0/widgets/buttons/filled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../../../widgets/filled_button.dart';
-import '../../../widgets/rounded_button.dart';
 
 class RegisterBodyScreen extends StatefulWidget {
   const RegisterBodyScreen({super.key});
@@ -21,6 +19,30 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
   bool? isChecked = false;
 
   void press() {}
+  Widget _linkToLoginScreen() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Đã có tài khoản?',
+          textAlign: TextAlign.right,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
+        GestureDetector(
+          onTap: () => {
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()))
+          },
+          child: Text(
+            'Đăng nhập',
+            textAlign: TextAlign.right,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold, color: Color(0xFF439A97)),
+          ),
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -342,39 +364,9 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                             ),
                           ),
                           Container(
-                            width: double.infinity,
-                            margin: EdgeInsets.symmetric(vertical: 8.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Đã có tài khoản?',
-                                  textAlign: TextAlign.right,
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium,
-                                ),
-                                GestureDetector(
-                                  onTap: () => {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const LoginScreen()))
-                                  },
-                                  child: Text(
-                                    'Đăng nhập',
-                                    textAlign: TextAlign.right,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: Color(0xFF439A97)),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                              width: double.infinity,
+                              margin: EdgeInsets.symmetric(vertical: 8.0),
+                              child: _linkToLoginScreen()),
                         ],
                       )),
                     ],

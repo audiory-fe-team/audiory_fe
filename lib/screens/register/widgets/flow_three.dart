@@ -1,7 +1,6 @@
 import 'package:audiory_v0/screens/register/widgets/flow_four.dart';
+import 'package:audiory_v0/widgets/buttons/outlined_button.dart';
 import 'package:flutter/material.dart';
-import 'package:audiory_v0/widgets/filled_button.dart';
-import 'package:audiory_v0/widgets/outlined_button.dart';
 
 class FlowThreeScreen extends StatefulWidget {
   const FlowThreeScreen({super.key});

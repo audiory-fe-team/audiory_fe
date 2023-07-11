@@ -116,9 +116,34 @@ const List<Story> STORIES = [
   ),
 ];
 const List<Author> AUTHOR = [
-  Author(id: 1, name: 'Pug ki lan', follower: 500),
-  Author(id: 4, name: 'Pug ki lan', follower: 500),
-  Author(id: 5, name: 'Pug ki lan', follower: 500),
-  Author(id: 2, name: 'Long nameeeeee', follower: 500),
-  Author(id: 3, name: 'i', follower: 500)
+  Author(
+      id: 1,
+      name: 'Pug ki lan',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+  Author(
+      id: 4,
+      name: 'Pug ki lan',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+  Author(
+      id: 5,
+      name: 'Pug ki lan',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+  Author(
+      id: 2,
+      name: 'Long nameeeeee',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+  Author(
+      id: 3,
+      name: 'i',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
 ];

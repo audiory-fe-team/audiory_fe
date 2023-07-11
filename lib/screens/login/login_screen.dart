@@ -3,13 +3,18 @@ import 'package:audiory_v0/screens/home/home_screen.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 import 'package:audiory_v0/screens/search/search_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/buttons/filled_button.dart';
+import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-import 'package:audiory_v0/widgets/filled_button.dart';
-import 'package:audiory_v0/widgets/rounded_button.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+//auth
+import "package:firebase_auth/firebase_auth.dart";
+import 'package:audiory_v0/services/auth_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -22,6 +27,108 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  String? errorMessage = '';
+  bool isLogin = true;
+
+  void signInWithEmailAndPassword() async {
+    //show dialog
+    // showDialog(
+    //     context: context,
+    //     builder: (context) {
+    //       return const Center(
+    //         child: CircularProgressIndicator(),
+    //       );
+    //     });
+    try {
+      await Auth().signInWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
+      // Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
+
+  Future<void> createUserWithEmailAndPassword() async {
+    try {
+      await Auth().createUserWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
+
+  Future<void> signInGoogle() async {
+    try {
+      await Auth().signInWithGoogle();
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorMessage = e.message;
+      });
+    }
+  }
+
+  Widget _errorMessage() {
+    return Text(errorMessage == '' ? '' : 'Humm ? $errorMessage');
+  }
+
+  Widget _submitButton() {
+    return ActionButton(
+        title: isLogin ? 'Login' : 'Register',
+        color: Colors.white,
+        bgColor: Color(0xFF439A97),
+        // onPressed: () async {
+        //   // Navigator.of(context).pushNamed('/profile');
+        //   context.go('/');
+        // });
+        // onPressed: () {
+        //   isLogin
+        //       ? signInWithEmailAndPassword()
+        //       : createUserWithEmailAndPassword();
+        // });
+        onPressed: () {
+          signInWithEmailAndPassword();
+          // signInGoogle();
+          // context.go('/');
+        });
+  }
+
+  Widget _loginOrRegisterButton() {
+    return TextButton(
+      onPressed: () {
+        setState(() {
+          isLogin = !isLogin;
+        });
+      },
+      child: Text(isLogin ? 'Register instead' : 'Login instead'),
+    );
+  }
+
+  Widget _linkToRegisterScreen() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          'Chưa có tài khoản?',
+          textAlign: TextAlign.right,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(),
+        ),
+        GestureDetector(
+          onTap: () => {Navigator.of(context).pushNamed('/register')},
+          child: Text(
+            'Đăng ký',
+            textAlign: TextAlign.right,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold, color: Color(0xFF439A97)),
+          ),
+        ),
+      ],
+    );
+  }
 
   _press(BuildContext context) {
     Navigator.push(
@@ -43,13 +150,13 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
-              Container(
-                  margin: EdgeInsets.symmetric(vertical: 2.0),
-                  height: size * 0.35,
-                  child: Image(
-                      height: double.maxFinite,
-                      image:
-                          AssetImage('assets/images/man_holding_pencil.png'))),
+              // Container(
+              //     margin: EdgeInsets.symmetric(vertical: 2.0),
+              //     height: size * 0.35,
+              //     child: Image(
+              //         height: double.maxFinite,
+              //         image:
+              //             AssetImage('assets/images/man_holding_pencil.png'))),
               Container(
                   margin: EdgeInsets.symmetric(horizontal: 16.0),
                   height: size * 0.6,
@@ -177,55 +284,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                           fontWeight: FontWeight.bold)),
                             ),
                           ),
-                          ActionButton(
-                              title: 'Đăng nhập',
-                              color: Colors.white,
-                              bgColor: Color(0xFF439A97),
-                              onPressed: () => {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                HomeScreeen()))
-                                  }),
+                          _errorMessage(),
+                          _submitButton(),
+                          _loginOrRegisterButton()
                         ],
                       ),
                       Container(
-                        width: double.infinity,
-                        margin: EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Chưa có tài khoản?',
-                              textAlign: TextAlign.right,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(),
-                            ),
-                            GestureDetector(
-                              onTap: () => {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const RegisterScreen()))
-                              },
-                              child: Text(
-                                'Đăng ký',
-                                textAlign: TextAlign.right,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleMedium
-                                    ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(0xFF439A97)),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                          width: double.infinity,
+                          margin: EdgeInsets.symmetric(vertical: 8.0),
+                          child: _linkToRegisterScreen()),
                       Container(
                         width: double.infinity,
                         child: Column(
@@ -248,7 +315,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                         color: Color(0xFF71727A),
                                       ),
                                 )),
-                            const Row(
+                            Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
@@ -256,17 +323,22 @@ class _LoginScreenState extends State<LoginScreen> {
                                     icon: FontAwesomeIcons.google,
                                     size: 12.0,
                                     color: Colors.white,
-                                    bgColor: Colors.black),
+                                    bgColor: Colors.black,
+                                    onPressed: () {
+                                      signInGoogle();
+                                    }),
                                 CircularButton(
                                     icon: FontAwesomeIcons.apple,
                                     size: 12.0,
                                     color: Colors.white,
-                                    bgColor: Colors.red),
+                                    bgColor: Colors.red,
+                                    onPressed: () {}),
                                 CircularButton(
                                     icon: FontAwesomeIcons.facebookF,
                                     size: 12.0,
                                     color: Colors.white,
-                                    bgColor: Color(0xFF006FFD)),
+                                    bgColor: Color(0xFF006FFD),
+                                    onPressed: () {}),
                               ],
                             )
                           ],
