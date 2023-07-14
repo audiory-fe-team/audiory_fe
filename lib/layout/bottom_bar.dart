@@ -2,6 +2,7 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class BottomNavigationBarApp extends StatelessWidget {
   const BottomNavigationBarApp({super.key});
@@ -23,6 +24,33 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
+    switch (index) {
+      case 0:
+        {
+          GoRouter.of(context).go("/");
+          break;
+        }
+      case 1:
+        {
+          GoRouter.of(context).go("/search");
+          break;
+        }
+      case 2:
+        {
+          GoRouter.of(context).go("/library");
+          break;
+        }
+      case 3:
+        {
+          GoRouter.of(context).go("/writer");
+          break;
+        }
+      case 4:
+        {
+          GoRouter.of(context).go("/profile");
+          break;
+        }
+    }
     setState(() {
       _selectedIndex = index;
     });
@@ -43,7 +71,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
           label: 'Tìm kiếm',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.school),
+          icon: Icon(Icons.library_add),
           label: 'Thư viện',
         ),
         BottomNavigationBarItem(

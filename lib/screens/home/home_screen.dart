@@ -9,107 +9,27 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'stories_mock.dart';
 
 class HomeScreeen extends StatelessWidget {
+  const HomeScreeen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(65),
-        child: SafeArea(
-            child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            border: Border(
-              bottom: BorderSide(
-                color: Colors.amber,
-                width: 1.0,
-                style: BorderStyle.solid,
-              ),
-            ),
-          ),
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      child: const CircleAvatar(
-                        backgroundImage:
-                            const AssetImage('assets/images/user-avatar.jpg'),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                      height: 10,
-                    ),
-                    const Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          'Xin chào',
-                          style: TextStyle(fontSize: 14),
-                        ),
-                        Text(
-                          'John Doe',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Row(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SearchScreen()));
-                      },
-                      child: SvgPicture.asset(
-                        'assets/icons/search.svg',
-                        width: 24,
-                        height: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    InkWell(
-                      child: SvgPicture.asset(
-                        'assets/icons/notification on.svg',
-                        width: 24,
-                        height: 24,
-                      ),
-                    ),
-                  ],
-                ),
-              ]),
-        )),
-      ),
-      body: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
-          child: ListView(
-            children: [
-              Banners(),
-              const SizedBox(height: 32),
-              HomeRecommendations(),
-              const SizedBox(height: 32),
-              HomeRankingList(),
-              const SizedBox(height: 32),
-              HotStories(),
-              const SizedBox(height: 32),
-              PaidStories(),
-              const SizedBox(height: 32),
-              ContinueReading(),
-            ],
-          )),
-      bottomNavigationBar: BottomNavigationBarApp(),
-    );
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+        child: ListView(
+          children: [
+            Banners(),
+            const SizedBox(height: 32),
+            HomeRecommendations(),
+            const SizedBox(height: 32),
+            HomeRankingList(),
+            const SizedBox(height: 32),
+            HotStories(),
+            const SizedBox(height: 32),
+            PaidStories(),
+            const SizedBox(height: 32),
+            ContinueReading(),
+          ],
+        ));
   }
 }
 

@@ -13,11 +13,11 @@ import "package:firebase_core/firebase_core.dart";
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-    options: FirebaseOptions(
-      apiKey: "XXX",
-      appId: "XXX",
-      messagingSenderId: "XXX",
-      projectId: "XXX",
+    options: const FirebaseOptions(
+      apiKey: "AIzaSyBEdfyQ4SuEt3OBGTqoa5Xgv6QzPm4K960",
+      appId: "1:1067039909340:android:18b29a66bcd8dbb6961b19",
+      projectId: "audioryauth",
+      messagingSenderId: "",
     ),
   );
   runApp(const MyApp());
@@ -62,10 +62,6 @@ class _MyAppState extends State<MyApp> {
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: _themeManager.themeMode,
-      // initialRoute: '/',
-      // onGenerateRoute: RouteGenerator.generateRoute,
-
-      // home: const WidgetTree(),
       routerConfig: AppRoutes.routes,
     );
   }
