@@ -17,7 +17,6 @@ class SuggestedAuthor extends StatelessWidget {
 
     return Container(
         width: 70,
-        height: 124,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -25,8 +24,6 @@ class SuggestedAuthor extends StatelessWidget {
           children: [
             Column(
               mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Container(
                     width: 70,
@@ -34,12 +31,13 @@ class SuggestedAuthor extends StatelessWidget {
                     decoration: ShapeDecoration(
                       image: DecorationImage(
                         image: NetworkImage(this.coverUrl),
-                        fit: BoxFit.fill,
+                        fit: BoxFit.cover,
                       ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(50),
                       ),
                     )),
+                const SizedBox(height: 4),
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -54,8 +52,8 @@ class SuggestedAuthor extends StatelessWidget {
                       children: [
                         SvgPicture.asset(
                           'assets/icons/user.svg',
-                          width: 12,
-                          height: 12,
+                          width: 8,
+                          height: 8,
                         ),
                         Row(
                           children: [
@@ -74,17 +72,19 @@ class SuggestedAuthor extends StatelessWidget {
                 )
               ],
             ),
-            const SizedBox(height: 8),
-            SizedBox(
+            const SizedBox(height: 6),
+            Container(
               width: double.infinity,
               height: 21,
               child: AppOutlinedButton(
                 onPressed: () {},
                 padding: EdgeInsets.zero,
-                style: ButtonStyle(
-                    side: MaterialStatePropertyAll(
-                        BorderSide(color: appColors.secondaryBase)),
-                    alignment: Alignment.center),
+                style: OutlinedButton.styleFrom(
+                    minimumSize: Size.zero, // Set this
+                    padding: EdgeInsets.zero,
+                    side: BorderSide(color: appColors.secondaryBase),
+                    alignment: Alignment.center // and this
+                    ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

@@ -26,11 +26,12 @@ class AppRoutes {
     routes: [
       ShellRoute(
           builder: (context, state, child) {
-            return Scaffold(
+            return SafeArea(
+                child: Scaffold(
               appBar: AppTopBar(path: state.fullPath ?? '/'),
               body: child,
               bottomNavigationBar: AppBottomNavigationBar(),
-            );
+            ));
           },
           routes: [
             GoRoute(

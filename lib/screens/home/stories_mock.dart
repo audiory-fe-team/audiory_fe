@@ -1,4 +1,5 @@
 import 'package:audiory_v0/models/Author.dart';
+import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
 
 const List<Story> STORIES = [
@@ -146,4 +147,46 @@ const List<Author> AUTHOR = [
       follower: 500,
       coverUrl:
           'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+];
+const List<Category> CATEGORIES = [
+  Category(
+      id: 1,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 2,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 3,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 4,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 1,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 2,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 3,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 4,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
 ];

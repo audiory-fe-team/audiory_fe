@@ -13,10 +13,11 @@ class HomeScreeen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+    return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ListView(
           children: [
+            const SizedBox(height: 32),
             Banners(),
             const SizedBox(height: 32),
             HomeRecommendations(),
@@ -413,24 +414,12 @@ class HotStories extends StatelessWidget {
         Container(
           width: double.infinity,
           height: 176,
-          decoration: BoxDecoration(borderRadius: BorderRadius.circular(8)),
-          child: Image.network(
-            'https://via.placeholder.com/347x176',
-            fit: BoxFit.fill,
-            loadingBuilder: (BuildContext ctx, Widget child,
-                ImageChunkEvent? loadingProgress) {
-              if (loadingProgress == null) {
-                return child;
-              } else {
-                return const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
-                  ),
-                );
-              }
-              ;
-            },
-          ),
+          child: ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Image.network(
+                'https://via.placeholder.com/347x176',
+                fit: BoxFit.cover,
+              )),
         ),
         const SizedBox(height: 12),
         SingleChildScrollView(

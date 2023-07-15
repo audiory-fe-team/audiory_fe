@@ -1,10 +1,18 @@
+import 'dart:math';
+
 import 'package:audiory_v0/models/Author.dart';
+import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/home/header_with_link.dart';
 import 'package:audiory_v0/screens/home/home_screen.dart';
 import 'package:audiory_v0/screens/search/suggested_author.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
+
 import '../home/stories_mock.dart';
 
 class SearchScreen extends StatelessWidget {
@@ -12,13 +20,18 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 375,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ListView(children: [
+        const SizedBox(height: 24),
+        CategoryCarousel(),
+        const SizedBox(height: 24),
         HomeRecommendations(),
         const SizedBox(height: 24),
         AuthorRecommendation(),
         const SizedBox(height: 24),
-        CategoryStories(),
+        CategoryStories(categoryId: 1),
+        const SizedBox(height: 24),
+        CategoryStories(categoryId: 2),
       ]),
     );
   }
@@ -32,7 +45,7 @@ class AuthorRecommendation extends StatelessWidget {
       const SizedBox(height: 12),
       Container(
           width: double.infinity,
-          height: 180,
+          height: 124,
           child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: AUTHOR.length,
@@ -52,6 +65,10 @@ class AuthorRecommendation extends StatelessWidget {
 }
 
 class CategoryStories extends StatelessWidget {
+  final int categoryId;
+
+  const CategoryStories({super.key, required this.categoryId});
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -92,24 +109,88 @@ class CategoryStories extends StatelessWidget {
   }
 }
 
-class CategoryList extends StatelessWidget {
+class CategoryCarousel extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return _CategoryCarouselState();
+  }
+}
+
+class _CategoryCarouselState extends State<CategoryCarousel> {
+  int _current = 0;
+  final CarouselController _controller = CarouselController();
   @override
   Widget build(BuildContext context) {
-    return GridView.count(
-      // Create a grid with 2 columns. If you change the scrollDirection to
-      // horizontal, this produces 2 rows.
-      crossAxisCount: 2,
-      scrollDirection: Axis.horizontal,
-      // Generate 100 widgets that display their index in the List.
-      children: List.generate(100, (index) {
-        return Center(
-          child: Text(
-            'Item $index',
-            style: Theme.of(context).textTheme.headlineSmall,
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final int pageNum = (CATEGORIES.length / 6).ceil();
+    return Container(
+        height: 132,
+        child: Column(children: [
+          CarouselSlider(
+            carouselController: _controller,
+            options: CarouselOptions(
+                height: 132 - 16 - 6,
+                viewportFraction: 1.0,
+                enlargeCenterPage: false,
+                onPageChanged: (index, reason) {
+                  setState(() {
+                    _current = index;
+                  });
+                }),
+            items: List.generate(pageNum, (index) {
+              return Builder(
+                builder: (BuildContext context) {
+                  return Container(
+                      width: double.infinity,
+                      child: LayoutGrid(
+                          rowGap: 16,
+                          columnGap: 16,
+                          columnSizes: [
+                            1.fr,
+                            1.fr,
+                            1.fr,
+                          ],
+                          rowSizes: [
+                            1.fr,
+                            1.fr,
+                          ],
+                          children: CATEGORIES
+                              .sublist(index * 6,
+                                  min(index * 6 + 6, CATEGORIES.length))
+                              .asMap()
+                              .entries
+                              .map((entry) {
+                            Category category = entry.value;
+                            int index = entry.key;
+                            return CategoryBadge(
+                              imgUrl: category.coverUrl ?? '',
+                              title: category.title ?? '',
+                            );
+                          }).toList()));
+                },
+              );
+            }).toList(),
           ),
-        );
-      }),
-    );
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(pageNum, (index) {
+              return GestureDetector(
+                onTap: () => _controller.animateToPage(index),
+                child: Container(
+                    width: _current == index ? 6 : 4,
+                    height: _current == index ? 6 : 4,
+                    margin: EdgeInsets.symmetric(vertical: 0, horizontal: 3.0),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _current == index
+                          ? appColors.primaryBase
+                          : appColors.skyLight,
+                    )),
+              );
+            }).toList(),
+          ),
+        ]));
   }
 }
 
@@ -121,50 +202,31 @@ class CategoryBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 100,
-      height: 47,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 100,
-            height: 46.88,
-            decoration: ShapeDecoration(
-              gradient: LinearGradient(
-                begin: Alignment(0.00, -1.00),
-                end: Alignment(0, 1),
-                colors: [Color(0x1125282B), Colors.black],
-              ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              shadows: [
-                BoxShadow(
-                  color: Color(0x0C06070D),
-                  blurRadius: 14,
-                  offset: Offset(0, 7),
-                  spreadRadius: 0,
-                )
-              ],
-            ),
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    return Stack(children: [
+      Container(
+          width: double.infinity,
+          // height: 47,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Image.network(imgUrl, fit: BoxFit.cover),
+          )),
+      Positioned(
+        bottom: 1,
+        left: 6,
+        child: Container(
+          width: 86,
+          child: Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(color: Colors.white),
           ),
-          SizedBox(
-            width: 86,
-            child: Text(
-              'Romantic',
-              style: TextStyle(
-                color: Color(0xFFFFFDFD),
-                fontSize: 16,
-                fontFamily: 'Source Sans Pro',
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.02,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+        ),
+      )
+    ]);
   }
 }
