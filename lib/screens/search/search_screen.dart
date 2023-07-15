@@ -5,6 +5,7 @@ import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/home/header_with_link.dart';
 import 'package:audiory_v0/screens/home/home_screen.dart';
+import 'package:audiory_v0/screens/search/category_badge.dart';
 import 'package:audiory_v0/screens/search/suggested_author.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -191,42 +192,5 @@ class _CategoryCarouselState extends State<CategoryCarousel> {
             }).toList(),
           ),
         ]));
-  }
-}
-
-class CategoryBadge extends StatelessWidget {
-  final String imgUrl;
-  final String title;
-
-  const CategoryBadge({required this.imgUrl, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
-    return Stack(children: [
-      Container(
-          width: double.infinity,
-          // height: 47,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
-            child: Image.network(imgUrl, fit: BoxFit.cover),
-          )),
-      Positioned(
-        bottom: 1,
-        left: 6,
-        child: Container(
-          width: 86,
-          child: Text(
-            title,
-            overflow: TextOverflow.ellipsis,
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge!
-                .copyWith(color: Colors.white),
-          ),
-        ),
-      )
-    ]);
   }
 }

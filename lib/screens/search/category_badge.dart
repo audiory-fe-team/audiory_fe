@@ -1,3 +1,4 @@
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 
 class CategoryBadge extends StatelessWidget {
@@ -8,50 +9,31 @@ class CategoryBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 100,
-      height: 47,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: 100,
-            height: 46.88,
-            decoration: ShapeDecoration(
-              gradient: LinearGradient(
-                begin: Alignment(0.00, -1.00),
-                end: Alignment(0, 1),
-                colors: [Color(0x1125282B), Colors.black],
-              ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-              shadows: [
-                BoxShadow(
-                  color: Color(0x0C06070D),
-                  blurRadius: 14,
-                  offset: Offset(0, 7),
-                  spreadRadius: 0,
-                )
-              ],
-            ),
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    return Stack(children: [
+      Container(
+          width: double.infinity,
+          // height: 47,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(8.0),
+            child: Image.network(imgUrl, fit: BoxFit.cover),
+          )),
+      Positioned(
+        bottom: 1,
+        left: 6,
+        child: Container(
+          width: 86,
+          child: Text(
+            title,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context)
+                .textTheme
+                .titleLarge!
+                .copyWith(color: Colors.white),
           ),
-          SizedBox(
-            width: 86,
-            child: Text(
-              'Romantic',
-              style: TextStyle(
-                color: Color(0xFFFFFDFD),
-                fontSize: 16,
-                fontFamily: 'Source Sans Pro',
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.02,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+        ),
+      )
+    ]);
   }
 }
