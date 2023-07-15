@@ -1,6 +1,8 @@
+import 'package:audiory_v0/layout/bottom_bar.dart';
+import 'package:audiory_v0/layout/top_bar.dart';
+import 'package:audiory_v0/screens/home/home_screen.dart';
+import 'package:audiory_v0/screens/search/search_screen.dart';
 import 'package:audiory_v0/services/auth_services.dart';
-import 'package:audiory_v0/screens/home/home_screent.dart';
-import 'package:audiory_v0/screens/home_test/home_screen_test.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +10,6 @@ import 'package:go_router/go_router.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
-import 'package:audiory_v0/services/auth_services.dart';
 
 class AppRoutes {
   static final GoRouter routes = GoRouter(
@@ -22,13 +23,30 @@ class AppRoutes {
       //you must return a widget anyway
       return const SizedBox.shrink();
     },
-    routes: <GoRoute>[
-      GoRoute(
-        path: '/',
-        builder: (BuildContext context, GoRouterState state) {
-          return HomeScreeen();
-        },
-      ),
+    routes: [
+      ShellRoute(
+          builder: (context, state, child) {
+            return SafeArea(
+                child: Scaffold(
+              appBar: AppTopBar(path: state.fullPath ?? '/'),
+              body: child,
+              bottomNavigationBar: AppBottomNavigationBar(),
+            ));
+          },
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (BuildContext context, GoRouterState state) {
+                return HomeScreeen();
+              },
+            ),
+            GoRoute(
+              path: '/search',
+              builder: (BuildContext context, GoRouterState state) {
+                return SearchScreen();
+              },
+            )
+          ]),
       GoRoute(
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {

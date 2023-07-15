@@ -1,3 +1,5 @@
+import 'package:audiory_v0/models/Author.dart';
+import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
 
 const List<Story> STORIES = [
@@ -9,7 +11,8 @@ const List<Story> STORIES = [
     title: 'The Quest for the Magical Amulet',
     description:
         'Join our heroes on an epic quest to find the magical amulet and save the world.',
-    coverUrl: 'https://via.placeholder.com/95x135',
+    coverUrl:
+        'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
     isDraft: false,
     isMature: false,
     numChapter: 10,
@@ -23,8 +26,9 @@ const List<Story> STORIES = [
     categoryId: 2,
     title: 'Love in Paris',
     description:
-        'Experience a whirlwind romance set in the romantic city of Paris.',
-    coverUrl: 'https://via.placeholder.com/95x135',
+        'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+    coverUrl:
+        'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
     isDraft: false,
     isMature: false,
     numChapter: 20,
@@ -38,8 +42,9 @@ const List<Story> STORIES = [
     categoryId: 1,
     title: 'The Quantum Nexus',
     description:
-        'Discover a world of interdimensional travel and mind-bending concepts.',
-    coverUrl: 'https://via.placeholder.com/95x135',
+        'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+    coverUrl:
+        'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
     isDraft: false,
     isMature: false,
     numChapter: 15,
@@ -54,7 +59,8 @@ const List<Story> STORIES = [
     title: 'The Secrets of Ravenbrook Manor',
     description:
         'Unravel the dark secrets that lie within the walls of Ravenbrook Manor.',
-    coverUrl: 'https://via.placeholder.com/95x135',
+    coverUrl:
+        'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
     isDraft: false,
     isMature: false,
     numChapter: 25,
@@ -69,7 +75,8 @@ const List<Story> STORIES = [
     title: 'The Enchanted Forest',
     description:
         'Embark on a magical journey through an enchanted forest filled with mystical creatures.',
-    coverUrl: 'https://via.placeholder.com/95x135',
+    coverUrl:
+        'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
     isDraft: false,
     isMature: false,
     numChapter: 12,
@@ -84,7 +91,8 @@ const List<Story> STORIES = [
     title: 'Galactic Warriors',
     description:
         'Join a team of elite warriors as they defend the galaxy against alien invaders.',
-    coverUrl: 'https://via.placeholder.com/95x135',
+    coverUrl:
+        'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
     isDraft: false,
     isMature: false,
     numChapter: 18,
@@ -99,11 +107,86 @@ const List<Story> STORIES = [
     title: 'Love at First Laugh',
     description:
         'Laugh and fall in love with a delightful romantic comedy that will warm your heart.',
-    coverUrl: 'https://via.placeholder.com/95x135',
+    coverUrl:
+        'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
     isDraft: false,
     isMature: false,
     numChapter: 15,
     readCount: 600,
     voteCount: 130,
   ),
+];
+const List<Author> AUTHOR = [
+  Author(
+      id: 1,
+      name: 'Pug ki lan',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+  Author(
+      id: 4,
+      name: 'Pug ki lan',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+  Author(
+      id: 5,
+      name: 'Pug ki lan',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+  Author(
+      id: 2,
+      name: 'Long nameeeeee',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+  Author(
+      id: 3,
+      name: 'i',
+      follower: 500,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+];
+const List<Category> CATEGORIES = [
+  Category(
+      id: 1,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 2,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 3,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 4,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 1,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 2,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 3,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
+  Category(
+      id: 4,
+      coverUrl:
+          'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg',
+      title: 'Romantic'),
 ];

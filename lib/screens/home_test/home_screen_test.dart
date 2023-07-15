@@ -1,4 +1,4 @@
-import "package:audiory_v0/widgets/filled_button.dart";
+import 'package:audiory_v0/widgets/buttons/filled_button.dart';
 import 'package:flutter/material.dart';
 
 //auth

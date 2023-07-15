@@ -1,6 +1,6 @@
 import 'package:audiory_v0/screens/register/widgets/flow_two.dart';
 import 'package:audiory_v0/screens/register/widgets/register_body.dart';
-import 'package:audiory_v0/widgets/outlined_button.dart';
+import 'package:audiory_v0/widgets/buttons/outlined_button.dart';
 import 'package:flutter/material.dart';
 
 class FlowOneScreen extends StatefulWidget {
