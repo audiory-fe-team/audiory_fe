@@ -1,6 +1,7 @@
 import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/layout/top_bar.dart';
 import 'package:audiory_v0/screens/home/home_screen.dart';
+import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/screens/search/search_screen.dart';
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
@@ -24,26 +25,28 @@ class AppRoutes {
       return const SizedBox.shrink();
     },
     routes: [
-      ShellRoute(
-          builder: (context, state, child) {
-            return SafeArea(
-                child: Scaffold(
-              appBar: AppTopBar(path: state.fullPath ?? '/'),
-              body: child,
-              bottomNavigationBar: AppBottomNavigationBar(),
-            ));
+      GoRoute(
+        path: '/',
+        builder: (BuildContext context, GoRouterState state) {
+          return HomeScreeen();
+        },
+      ),
+      GoRoute(
+        path: '/search',
+        builder: (BuildContext context, GoRouterState state) {
+          return SearchScreen();
+        },
+      ),
+      GoRoute(
+          path: '/story/:storyId',
+          builder: (BuildContext context, GoRouterState state) {
+            return SearchScreen();
           },
           routes: [
             GoRoute(
-              path: '/',
+              path: 'chapter/:chapterId',
               builder: (BuildContext context, GoRouterState state) {
-                return HomeScreeen();
-              },
-            ),
-            GoRoute(
-              path: '/search',
-              builder: (BuildContext context, GoRouterState state) {
-                return SearchScreen();
+                return ReadingScreen();
               },
             )
           ]),
