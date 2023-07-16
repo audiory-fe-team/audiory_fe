@@ -1,14 +1,17 @@
 import 'dart:math';
 
+import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/models/Author.dart';
 import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/home/header_with_link.dart';
 import 'package:audiory_v0/screens/home/home_screen.dart';
 import 'package:audiory_v0/screens/search/category_badge.dart';
+import 'package:audiory_v0/screens/search/search_top_bar.dart';
 import 'package:audiory_v0/screens/search/suggested_author.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
+import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
@@ -19,21 +22,24 @@ import '../home/stories_mock.dart';
 class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 375,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: ListView(children: [
-        const SizedBox(height: 24),
-        CategoryCarousel(),
-        const SizedBox(height: 24),
-        HomeRecommendations(),
-        const SizedBox(height: 24),
-        AuthorRecommendation(),
-        const SizedBox(height: 24),
-        CategoryStories(categoryId: 1),
-        const SizedBox(height: 24),
-        CategoryStories(categoryId: 2),
-      ]),
+    return Scaffold(
+      appBar: SearchTopBar(),
+      body: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ListView(children: [
+            const SizedBox(height: 24),
+            CategoryCarousel(),
+            const SizedBox(height: 24),
+            HomeRecommendations(),
+            const SizedBox(height: 24),
+            AuthorRecommendation(),
+            const SizedBox(height: 24),
+            CategoryStories(categoryId: 1),
+            const SizedBox(height: 24),
+            CategoryStories(categoryId: 2),
+          ])),
+      bottomNavigationBar: AppBottomNavigationBar(),
     );
   }
 }
