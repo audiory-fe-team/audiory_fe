@@ -16,6 +16,8 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
   final User? user = Auth().currentUser;
 
   Widget _userEmail() {
+    print('user:');
+    print(user?.photoURL);
     return Text(user?.email ?? 'User email');
   }
 

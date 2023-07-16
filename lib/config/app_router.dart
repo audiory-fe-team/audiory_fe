@@ -1,3 +1,4 @@
+import 'package:audiory_v0/screens/detail_story/detail_story_screen.dart';
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/screens/home/home_screent.dart';
 import 'package:audiory_v0/screens/home_test/home_screen_test.dart';
@@ -24,24 +25,38 @@ class AppRoutes {
     },
     routes: <GoRoute>[
       GoRoute(
+        name: 'home',
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
           return HomeScreeen();
         },
       ),
       GoRoute(
+        name: 'login',
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return const LoginScreen();
         },
       ),
       GoRoute(
+        name: 'detailStory',
+        path: '/detailStory',
+        builder: (BuildContext context, GoRouterState state) {
+          final id = state.queryParameters['id']!;
+          // print('id' + id);
+          return DetailStoryScreen(
+            id: id,
+          );
+        },
+      ),
+      GoRoute(
+        name: 'profile',
         path: '/profile',
         builder: (_, GoRouterState state) {
           return const ProfileScreenTest();
         },
         redirect: _redirect,
-      )
+      ),
     ],
   );
 
