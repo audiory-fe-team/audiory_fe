@@ -1,10 +1,8 @@
 import 'package:audiory_v0/screens/login/login_screen.dart';
-import 'package:audiory_v0/screens/register/widgets/flow_one.dart';
+import 'package:audiory_v0/screens/register/screens/flow_one.dart';
+import 'package:audiory_v0/widgets/buttons/filled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-import '../../../widgets/filled_button.dart';
-import '../../../widgets/rounded_button.dart';
 
 class RegisterBodyScreen extends StatefulWidget {
   const RegisterBodyScreen({super.key});
@@ -351,7 +349,7 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                           Container(
                             width: double.infinity,
                             height: 48,
-                            child: ActionButton(
+                            child: AppFilledButton(
                               title: 'Đăng ký',
                               color: Colors.white,
                               bgColor: Color(0xFF439A97),

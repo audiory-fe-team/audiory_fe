@@ -1,6 +1,5 @@
 import 'package:audiory_v0/screens/detail_story/detail_story_mock.dart';
 import 'package:audiory_v0/screens/detail_story/widgets/chapter.dart';
-import 'package:audiory_v0/widgets/filled_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 

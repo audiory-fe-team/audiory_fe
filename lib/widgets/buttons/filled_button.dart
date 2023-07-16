@@ -1,12 +1,12 @@
 import "package:audiory_v0/theme/theme_constants.dart";
 import "package:flutter/material.dart";
 
-class ActionButton extends StatelessWidget {
+class AppFilledButton extends StatelessWidget {
   final String title;
   final Color color;
   final Color bgColor;
   final VoidCallback onPressed;
-  const ActionButton(
+  const AppFilledButton(
       {super.key,
       required this.title,
       required this.color,

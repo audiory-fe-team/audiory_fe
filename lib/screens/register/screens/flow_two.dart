@@ -1,8 +1,8 @@
-import 'package:audiory_v0/screens/register/widgets/flow_three.dart';
-import 'package:audiory_v0/widgets/filled_button.dart';
+import 'package:audiory_v0/screens/reading/reading_screen.dart';
+import 'package:audiory_v0/screens/register/screens/flow_three.dart';
+import 'package:audiory_v0/widgets/buttons/filled_button.dart';
 import 'package:flutter/material.dart';
-import 'package:audiory_v0/screens/register/widgets/register_body.dart';
-import 'package:audiory_v0/widgets/outlined_button.dart';
+import 'package:audiory_v0/screens/register/screens/register_body.dart';
 
 class FlowTwoScreen extends StatefulWidget {
   const FlowTwoScreen({super.key});
@@ -65,21 +65,21 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            ActionButton(
+                            AppFilledButton(
                               title: 'Đọc',
                               color: Colors.black,
                               bgColor: Colors.white,
                               onPressed: () => {},
                             ),
                             Padding(padding: EdgeInsets.symmetric(vertical: 3)),
-                            ActionButton(
+                            AppFilledButton(
                               title: 'Sáng tác',
                               color: Colors.black,
                               bgColor: Colors.white,
                               onPressed: () => {},
                             ),
                             Padding(padding: EdgeInsets.symmetric(vertical: 3)),
-                            ActionButton(
+                            AppFilledButton(
                               title: 'Đọc và sáng tác',
                               color: Colors.black,
                               bgColor: Colors.white,
@@ -95,7 +95,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ActionButton(
+                        AppFilledButton(
                           title: "Tiếp tục",
                           color: Colors.white,
                           bgColor: Color(0xFF439A97),

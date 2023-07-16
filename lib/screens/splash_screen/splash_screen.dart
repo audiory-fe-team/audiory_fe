@@ -1,7 +1,4 @@
 import 'dart:math';
-
-import 'package:audiory_v0/widgets/filled_button.dart';
-import 'package:audiory_v0/widgets/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';

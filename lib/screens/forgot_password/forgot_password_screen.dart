@@ -1,5 +1,4 @@
-import 'package:audiory_v0/widgets/filled_button.dart';
-import 'package:audiory_v0/widgets/outlined_button.dart';
+import 'package:audiory_v0/widgets/buttons/filled_button.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -76,7 +75,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         //         ?.copyWith(
                         //             color: Color(0xff000000),
                         //             fontWeight: FontWeight.bold)),
-                        ActionButton(
+                        AppFilledButton(
                             title: 'Tiếp tục',
                             color: Colors.white,
                             bgColor: Color(0xFF439A97),
