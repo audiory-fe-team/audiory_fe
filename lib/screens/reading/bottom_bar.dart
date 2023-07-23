@@ -1,10 +1,12 @@
+import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/theme/theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ReadingBottomBar extends StatefulWidget {
-  const ReadingBottomBar({super.key});
+  final Function([Color? bgColor, int? fontSize, bool? showCommentByParagraph])
+      changeStyle;
+  const ReadingBottomBar({super.key, required this.changeStyle});
 
   @override
   State<ReadingBottomBar> createState() => _ReadingBottomBarState();
@@ -32,11 +34,17 @@ class _ReadingBottomBarState extends State<ReadingBottomBar> {
       //     GoRouter.of(context).go("/library");
       //     break;
       //   }
-      // case 3:
-      //   {
-      //     GoRouter.of(context).go("/writer");
-      //     break;
-      //   }
+      case 3:
+        {
+          showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return SettingModelUseHooks(
+                  changeStyle: widget.changeStyle,
+                );
+              });
+          break;
+        }
       // case 4:
       //   {
       //     GoRouter.of(context).go("/profile");

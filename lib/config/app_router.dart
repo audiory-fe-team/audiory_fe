@@ -1,5 +1,4 @@
 import 'package:audiory_v0/layout/bottom_bar.dart';
-import 'package:audiory_v0/layout/top_bar.dart';
 import 'package:audiory_v0/screens/home/home_screen.dart';
 import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/screens/search/search_screen.dart';
