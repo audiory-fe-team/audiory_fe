@@ -1,39 +1,45 @@
 import 'package:audiory_v0/layout/bottom_bar.dart';
+import 'package:audiory_v0/models/Chapter.dart';
+import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/screens/reading/bottom_bar.dart';
-import 'package:audiory_v0/screens/reading/mock_data.dart';
 import 'package:audiory_v0/screens/reading/reading_top_bar.dart';
+import 'package:audiory_v0/services/chapter.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ReadingScreen extends StatefulWidget {
-  const ReadingScreen({super.key});
-
-  @override
-  State<ReadingScreen> createState() => _ReadingScreenState();
-}
-
-class _ReadingScreenState extends State<ReadingScreen> {
-  Color _bgColor = Colors.white;
-  int _fontSize = 16;
-  bool _showCommentByParagraph = false;
-
-  void _changeStyle(
-      [Color? bgColor, int? fontSize, bool? showCommentByParagraph]) {
-    setState(() {
-      _bgColor = bgColor ?? _bgColor;
-      _fontSize = fontSize ?? _fontSize;
-      _showCommentByParagraph =
-          showCommentByParagraph ?? _showCommentByParagraph;
-    });
-  }
-
+class ReadingScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final chapter = useState<Chapter?>(null);
+    final chapterService = ChapterServices();
+
+    final _bgColor = useState(Colors.white);
+    final _fontSize = useState(16);
+    final _showCommentByParagraph = useState(true);
+
+    void _changeStyle(
+        [Color? bgColor, int? fontSize, bool? showCommentByParagraph]) {
+      _bgColor.value = bgColor ?? _bgColor.value;
+      _fontSize.value = fontSize ?? _fontSize.value;
+      _showCommentByParagraph.value =
+          showCommentByParagraph ?? _showCommentByParagraph.value;
+    }
+
+    useEffect(() {
+      chapterService
+          .fetchChapterDetail("45395bae-1dac-11ee-abe7-e0d4e8a18075")
+          .then((value) {
+        chapter.value = value;
+      }).catchError(() {});
+    }, []);
+
+    if (chapter.value == null) return CircularProgressIndicator();
+
     return Scaffold(
-      backgroundColor: _bgColor,
+      backgroundColor: _bgColor.value,
       appBar: const ReadingTopBar(),
       body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -41,17 +47,17 @@ class _ReadingScreenState extends State<ReadingScreen> {
               child: ListView(
             children: [
               const SizedBox(height: 24),
-              const ReadingScreenHeader(
+              ReadingScreenHeader(
                 num: 1,
                 name: 'Câu chuyện về cánh cửa',
-                view: 41834,
-                vote: 648,
-                comment: 19,
+                view: chapter.value?.read_count ?? 0,
+                vote: chapter.value?.vote_count ?? 0,
+                comment: chapter.value?.comment_count ?? 0,
               ),
               const SizedBox(height: 24),
               ChapterContent(
-                content: CHAPTER_DETAIL.content,
-                fontSize: _fontSize,
+                content: chapter.value?.paragraphs ?? [],
+                fontSize: _fontSize.value,
               ),
               SizedBox(
                 height: 32,
@@ -89,6 +95,7 @@ class _ReadingScreenState extends State<ReadingScreen> {
                   ],
                 ),
               ),
+              const SizedBox(height: 24),
             ],
           ))),
       bottomNavigationBar: ReadingBottomBar(
@@ -119,7 +126,7 @@ class SettingModelUseHooks extends HookWidget {
 
     final sizeController = useTextEditingController(text: "16");
 
-    // useEffect(() {}, [_selectedOption, _fontSize]);
+    useEffect(() {}, [_selectedOption, _fontSize]);
 
     return Expanded(
       child: Padding(
@@ -461,19 +468,18 @@ class ActionButton extends StatelessWidget {
 }
 
 class ChapterContent extends StatelessWidget {
-  final List<String> content;
+  final List<Paragraph> content;
   final int fontSize;
   const ChapterContent(
       {super.key, required this.content, required this.fontSize});
 
   @override
   Widget build(BuildContext context) {
-    print(fontSize);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: content
           .map((para) => Column(children: [
-                Text(para,
+                Text(para.content,
                     style: Theme.of(context)
                         .textTheme
                         .bodyLarge!
