@@ -44,6 +44,7 @@ dependencies:
   go_router: ^9.0.2
   carousel_slider: ^4.2.1
   flutter_layout_grid: ^2.0.0
+  number_paginator: ^0.2.3
 
 dev_dependencies:
   flutter_test:
@@ -55,6 +56,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+  intl: any
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -65,8 +67,6 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
-
-  # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/
     - assets/icons/

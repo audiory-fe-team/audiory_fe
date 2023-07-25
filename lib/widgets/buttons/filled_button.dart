@@ -22,7 +22,7 @@ class AppFilledButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
-        minimumSize: Size(343, 48),
+        minimumSize: Size(double.maxFinite, 48),
         elevation: 2.0,
       ),
       child: Text(title,

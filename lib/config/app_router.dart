@@ -59,12 +59,13 @@ class AppRoutes {
       ),
       GoRoute(
         name: 'detailStory',
-        path: '/detailStory',
+        path: '/detailStory/:storyId',
         builder: (BuildContext context, GoRouterState state) {
-          final id = state.queryParameters['id']!;
+          final storyId = state.pathParameters['storyId']!;
+          print(storyId);
           // print('id' + id);
           return DetailStoryScreen(
-            id: id,
+            id: storyId,
           );
         },
       ),
