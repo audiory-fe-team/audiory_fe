@@ -160,6 +160,7 @@ ThemeData lightTheme = ThemeData(
     backgroundColor: Color.fromARGB(255, 251, 248, 248),
     iconTheme: IconThemeData(color: Colors.black),
   ),
+  // useMaterial3: true,
   textTheme: TextTheme(
     //Heading
     headlineLarge: GoogleFonts.sourceSansPro(
@@ -206,6 +207,11 @@ ThemeData lightTheme = ThemeData(
     bodyLarge: GoogleFonts.gelasio(
       color: ColorPalette.inkBase,
       fontSize: 16.0,
+    ),
+    bodyMedium: GoogleFonts.sourceSansPro(
+      color: ColorPalette.inkBase,
+      fontSize: 14.0,
+      fontWeight: FontWeight.w400,
     ),
   ),
   inputDecorationTheme: const InputDecorationTheme(

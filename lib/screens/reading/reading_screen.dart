@@ -1,89 +1,363 @@
 import 'package:audiory_v0/layout/bottom_bar.dart';
+import 'package:audiory_v0/models/Chapter.dart';
+import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/screens/reading/bottom_bar.dart';
-import 'package:audiory_v0/screens/reading/mock_data.dart';
 import 'package:audiory_v0/screens/reading/reading_top_bar.dart';
+import 'package:audiory_v0/services/chapter.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ReadingScreen extends StatelessWidget {
-  const ReadingScreen({super.key});
-
+class ReadingScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final chapter = useState<Chapter?>(null);
+    final chapterService = ChapterServices();
+
+    final _bgColor = useState(Colors.white);
+    final _fontSize = useState(16);
+    final _showCommentByParagraph = useState(true);
+
+    void _changeStyle(
+        [Color? bgColor, int? fontSize, bool? showCommentByParagraph]) {
+      _bgColor.value = bgColor ?? _bgColor.value;
+      _fontSize.value = fontSize ?? _fontSize.value;
+      _showCommentByParagraph.value =
+          showCommentByParagraph ?? _showCommentByParagraph.value;
+    }
+
+    useEffect(() {
+      chapterService
+          .fetchChapterDetail("45395bae-1dac-11ee-abe7-e0d4e8a18075")
+          .then((value) {
+        chapter.value = value;
+      }).catchError(() {});
+    }, []);
+
+    if (chapter.value == null)
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+
     return Scaffold(
+      backgroundColor: _bgColor.value,
       appBar: const ReadingTopBar(),
       body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
-              color: Colors.white,
               child: ListView(
-                children: [
-                  const SizedBox(height: 24),
-                  const ReadingScreenHeader(
-                    num: 1,
-                    name: 'Câu chuyện về cánh cửa',
-                    view: 41834,
-                    vote: 648,
-                    comment: 19,
-                  ),
-                  const SizedBox(height: 24),
-                  ChapterContent(content: CHAPTER_DETAIL.content),
-                  SizedBox(
-                    height: 32,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ActionButton(
-                            title: 'Bình chọn',
-                            iconName: 'heart',
-                            onPressed: () {}),
-                        const SizedBox(width: 12),
-                        ActionButton(
-                            title: 'Tặng quà',
-                            iconName: 'gift',
-                            onPressed: () {}),
-                        const SizedBox(width: 12),
-                        ActionButton(
-                            title: 'Chia sẻ',
-                            iconName: 'share',
-                            onPressed: () {}),
-                      ],
+            children: [
+              const SizedBox(height: 24),
+              ReadingScreenHeader(
+                num: 1,
+                name: 'Câu chuyện về cánh cửa',
+                view: chapter.value?.read_count ?? 0,
+                vote: chapter.value?.vote_count ?? 0,
+                comment: chapter.value?.comment_count ?? 0,
+              ),
+              const SizedBox(height: 24),
+              ChapterContent(
+                content: chapter.value?.paragraphs ?? [],
+                fontSize: _fontSize.value,
+              ),
+              SizedBox(
+                height: 32,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ActionButton(
+                        title: 'Bình chọn',
+                        iconName: 'heart',
+                        onPressed: () {}),
+                    const SizedBox(width: 12),
+                    ActionButton(
+                        title: 'Tặng quà', iconName: 'gift', onPressed: () {}),
+                    const SizedBox(width: 12),
+                    ActionButton(
+                        title: 'Chia sẻ', iconName: 'share', onPressed: () {}),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                height: 38,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ChapterNavigateButton(
+                      onPressed: () => {},
+                      disabled: true,
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    height: 38,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ChapterNavigateButton(
-                          onPressed: () => {},
-                          disabled: true,
-                        ),
-                        const SizedBox(width: 12),
-                        ChapterNavigateButton(
-                          next: true,
-                          onPressed: () => {},
-                        ),
-                      ],
+                    const SizedBox(width: 12),
+                    ChapterNavigateButton(
+                      next: true,
+                      onPressed: () => {},
                     ),
-                  ),
-                ],
-              ))),
-      bottomNavigationBar: const ReadingBottomBar(),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ))),
+      bottomNavigationBar: ReadingBottomBar(
+        changeStyle: _changeStyle,
+      ),
     );
   }
 }
 
-// class SettingModal extends StatelessWidget {
-//   const SettingModal({super.key});
-//   @override
-//   Widget build(BuildContext context) {
-//     return
-//   }
-// }
+class SettingModelUseHooks extends HookWidget {
+  final Function([Color? bgColor, int? fontSize, bool? showCommentByParagraph])
+      changeStyle;
+
+  const SettingModelUseHooks({super.key, required this.changeStyle});
+
+  @override
+  Widget build(BuildContext context) {
+    final _selectedOption = useState(0);
+    final _fontSize = useState(16);
+    final _showCommentByParagraph = useState(false);
+
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final List<Color> DEFAULT_OPTION = [
+      appColors.skyLightest,
+      appColors.inkBase,
+      appColors.primaryLightest,
+    ];
+
+    final sizeController = useTextEditingController(text: "16");
+
+    useEffect(() {}, [_selectedOption, _fontSize]);
+
+    return Expanded(
+      child: Padding(
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              'Cài đặt',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 16),
+            //Note: Backgronud color
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                    width: double.infinity,
+                    child: Text(
+                      'Màu trang',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    )),
+                const SizedBox(height: 12),
+                //Note:Background colors option
+                Row(
+                  children: [
+                    ...DEFAULT_OPTION.asMap().entries.map((entry) {
+                      int idx = entry.key;
+                      Color val = entry.value;
+                      return GestureDetector(
+                          onTap: () {
+                            _selectedOption.value = idx;
+                          },
+                          child: Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Container(
+                                  height: 30,
+                                  width: 30,
+                                  decoration: BoxDecoration(
+                                    color: val,
+                                    shape: BoxShape.circle,
+                                    border: _selectedOption.value == idx
+                                        ? Border.all(
+                                            color: appColors.primaryBase,
+                                            width: 2,
+                                            strokeAlign:
+                                                BorderSide.strokeAlignOutside)
+                                        : null,
+                                  ))));
+                    }).toList(),
+                    GestureDetector(
+                        onTap: () {},
+                        child: Stack(
+                          children: [
+                            Container(
+                                height: 30,
+                                width: 30,
+                                decoration: BoxDecoration(
+                                  color: appColors.primaryBase,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Center(
+                                    child: SvgPicture.asset(
+                                  'assets/icons/plus.svg',
+                                  color: Colors.white,
+                                  width: 16,
+                                  height: 16,
+                                ))),
+                          ],
+                        )),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            //NOTE: Font size
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                    width: double.infinity,
+                    child: Text(
+                      'Cỡ chữ',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    )),
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                      border: Border.all(color: appColors.skyLighter),
+                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                  child: Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Expanded(
+                          child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          InkWell(
+                              onTap: () {
+                                int curVal = int.parse(sizeController.text);
+                                if (curVal <= 10) return;
+                                sizeController.text = (curVal - 1).toString();
+                              },
+                              child: SvgPicture.asset(
+                                'assets/icons/remove.svg',
+                                width: 16,
+                                height: 16,
+                                color: appColors.skyBase,
+                              )),
+                          const SizedBox(width: 4),
+                          Container(
+                            width: 30,
+                            child: TextField(
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              controller: sizeController,
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                contentPadding: EdgeInsets.all(0),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          InkWell(
+                              onTap: () {
+                                int curVal = int.parse(sizeController.text);
+                                if (curVal >= 32) return;
+                                sizeController.text = (curVal + 1).toString();
+                              },
+                              child: SvgPicture.asset(
+                                'assets/icons/plus.svg',
+                                width: 16,
+                                height: 16,
+                                color: appColors.primaryBase,
+                              )),
+                        ],
+                      ))),
+                )
+              ],
+            ),
+            const SizedBox(height: 16),
+            //NOTE: Other settings
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Container(
+                    width: double.infinity,
+                    child: Text(
+                      'Cài đặt khác',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    )),
+                Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('Hiện bình luận theo đoạn',
+                            style: Theme.of(context).textTheme.bodyMedium),
+                        Checkbox(
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          value: _showCommentByParagraph.value,
+                          onChanged: (value) {
+                            _showCommentByParagraph.value = value ?? false;
+                          },
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                          fillColor: MaterialStatePropertyAll(
+                            appColors.primaryBase,
+                          ),
+                        ),
+                      ],
+                    ))
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(mainAxisSize: MainAxisSize.max, children: [
+              Expanded(
+                  child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      style: OutlinedButton.styleFrom(
+                          padding: EdgeInsets.all(12),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(30)),
+                          side: BorderSide(
+                            color: appColors.primaryBase,
+                            width: 1,
+                          )),
+                      child: Text(
+                        'Đặt lại',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: appColors.primaryBase),
+                      ))),
+              const SizedBox(width: 20),
+              Expanded(
+                  child: FilledButton(
+                      onPressed: () {
+                        changeStyle(DEFAULT_OPTION[_selectedOption.value],
+                            _fontSize.value, _showCommentByParagraph.value);
+                        Navigator.pop(context);
+                      },
+                      style: FilledButton.styleFrom(
+                        backgroundColor: appColors.primaryBase,
+                        padding: EdgeInsets.all(12),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30)),
+                      ),
+                      child: Text(
+                        'Áp dụng',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge!
+                            .copyWith(color: Colors.white),
+                      ))),
+            ])
+          ],
+        ),
+      ),
+    );
+  }
+}
 
 class ChapterNavigateButton extends StatelessWidget {
   final bool next;
@@ -197,8 +471,10 @@ class ActionButton extends StatelessWidget {
 }
 
 class ChapterContent extends StatelessWidget {
-  final List<String> content;
-  const ChapterContent({super.key, required this.content});
+  final List<Paragraph> content;
+  final int fontSize;
+  const ChapterContent(
+      {super.key, required this.content, required this.fontSize});
 
   @override
   Widget build(BuildContext context) {
@@ -206,7 +482,11 @@ class ChapterContent extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: content
           .map((para) => Column(children: [
-                Text(para, style: Theme.of(context).textTheme.bodyLarge),
+                Text(para.content,
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge!
+                        .copyWith(fontSize: fontSize.toDouble())),
                 const SizedBox(height: 24)
               ]))
           .toList(),

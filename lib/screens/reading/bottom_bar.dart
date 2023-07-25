@@ -1,56 +1,59 @@
+import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/theme/theme_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 
-class ReadingBottomBar extends StatefulWidget {
-  const ReadingBottomBar({super.key});
+// class ReadingBottomBar extends StatefulWidget {
 
-  @override
-  State<ReadingBottomBar> createState() => _ReadingBottomBarState();
-}
+//   @override
+//   State<ReadingBottomBar> createState() => _ReadingBottomBarState();
+// }
 
-class _ReadingBottomBarState extends State<ReadingBottomBar> {
-  bool _liked = false;
-
-  void _onItemTapped(int index) {
-    switch (index) {
-      // case 0:
-      //   {
-      //     GoRouter.of(context).go("/");
-      //     break;
-      //   }
-      case 1:
-        {
-          setState(() {
-            _liked = !_liked;
-          });
-          break;
-        }
-      // case 2:
-      //   {
-      //     GoRouter.of(context).go("/library");
-      //     break;
-      //   }
-      // case 3:
-      //   {
-      //     GoRouter.of(context).go("/writer");
-      //     break;
-      //   }
-      // case 4:
-      //   {
-      //     GoRouter.of(context).go("/profile");
-      //     break;
-      //   }
-    }
-    // setState(() {
-    //   _selectedIndex = index;
-    // });
-  }
+class ReadingBottomBar extends HookWidget {
+  final Function([Color? bgColor, int? fontSize, bool? showCommentByParagraph])
+      changeStyle;
+  const ReadingBottomBar({super.key, required this.changeStyle});
 
   @override
   Widget build(BuildContext context) {
+    final _liked = useState(false);
+
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    void _onItemTapped(int index) {
+      switch (index) {
+        case 0:
+          {
+            break;
+          }
+        case 1:
+          {
+            //NOTE: Call api like the chapter
+            _liked.value = !_liked.value;
+            break;
+          }
+        case 2:
+          {
+            break;
+          }
+        case 3:
+          {
+            showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return SettingModelUseHooks(
+                    changeStyle: changeStyle,
+                  );
+                });
+            break;
+          }
+        case 4:
+          {
+            break;
+          }
+      }
+    }
 
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
@@ -76,12 +79,13 @@ class _ReadingBottomBarState extends State<ReadingBottomBar> {
           label: 'Chia sẻ',
         ),
       ],
-      currentIndex: _liked ? 1 : 0,
+      currentIndex: 1,
       onTap: _onItemTapped,
       selectedLabelStyle: Theme.of(context).textTheme.labelLarge,
       unselectedLabelStyle: Theme.of(context).textTheme.labelLarge,
       unselectedItemColor: appColors.skyBase,
-      selectedItemColor: appColors.primaryBase,
+      selectedItemColor:
+          _liked.value ? appColors.primaryBase : appColors.skyBase,
       showUnselectedLabels: true,
     );
   }

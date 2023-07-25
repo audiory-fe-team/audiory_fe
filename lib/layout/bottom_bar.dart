@@ -1,5 +1,4 @@
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/theme/theme_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -61,17 +60,18 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return BottomNavigationBar(
-      items: <BottomNavigationBarItem>[
+      type: BottomNavigationBarType.fixed,
+      items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: 'Trang chủ',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.compass_calibration),
+          icon: Icon(Icons.explore),
           label: 'Tìm kiếm',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.library_add),
+          icon: Icon(Icons.bookmark),
           label: 'Thư viện',
         ),
         BottomNavigationBarItem(
@@ -86,8 +86,8 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
       currentIndex: _selectedIndex,
       selectedItemColor: appColors.primaryBase,
       onTap: _onItemTapped,
-      selectedLabelStyle: Theme.of(context).textTheme.caption2,
-      unselectedLabelStyle: TextStyle(),
+      // selectedLabelStyle: Theme.of(context).textTheme.labelLarge,
+      unselectedLabelStyle: const TextStyle(),
       unselectedItemColor: appColors.skyBase,
     );
   }
