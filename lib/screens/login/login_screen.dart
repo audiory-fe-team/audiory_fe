@@ -43,6 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await Auth().signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
+      context.go('/');
       // Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -65,6 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> signInGoogle() async {
     try {
       await Auth().signInWithGoogle();
+      context.go('/');
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -77,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _submitButton() {
-    return ActionButton(
+    return AppFilledButton(
         title: isLogin ? 'Login' : 'Register',
         color: Colors.white,
         bgColor: Color(0xFF439A97),
@@ -93,7 +95,6 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {
           signInWithEmailAndPassword();
           // signInGoogle();
-          // context.go('/');
         });
   }
 

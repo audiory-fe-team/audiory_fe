@@ -16,11 +16,13 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
   final User? user = Auth().currentUser;
 
   Widget _userEmail() {
+    print('user:');
+    print(user?.photoURL);
     return Text(user?.email ?? 'User email');
   }
 
   Widget _navigateToHomeScreen() {
-    return ActionButton(
+    return AppFilledButton(
         title: 'To home',
         color: Colors.black87,
         bgColor: Colors.white70,
@@ -35,7 +37,7 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
   }
 
   Widget _signOutButton() {
-    return ActionButton(
+    return AppFilledButton(
         title: 'Sign out',
         color: Colors.black87,
         bgColor: Colors.white70,

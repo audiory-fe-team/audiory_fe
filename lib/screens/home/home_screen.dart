@@ -8,6 +8,7 @@ import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'stories_mock.dart';
 
 class HomeScreeen extends StatelessWidget {
@@ -171,14 +172,17 @@ class HomeRankingList extends StatelessWidget {
             int index = entry.key;
             return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: HomeRankingCard(
-                  order: index + 1,
-                  story: story,
-                  icon: InkWell(
-                    child: SvgPicture.asset(
-                      'assets/icons/heart.svg',
-                      width: 24,
-                      height: 24,
+                child: GestureDetector(
+                  onTap: () => context.go('/detailStory/${story.title}'),
+                  child: HomeRankingCard(
+                    order: index + 1,
+                    story: story,
+                    icon: InkWell(
+                      child: SvgPicture.asset(
+                        'assets/icons/heart.svg',
+                        width: 24,
+                        height: 24,
+                      ),
                     ),
                   ),
                 ));

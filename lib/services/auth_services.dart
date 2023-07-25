@@ -31,7 +31,8 @@ class Auth extends ChangeNotifier {
 
   //Google Sign In
   signInWithGoogle() async {
-    //begin interactive sign in process
+    //begin interactive sign in process;
+
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
     //obtain auth detail from request
     final GoogleSignInAuthentication gAuth = await gUser!.authentication;

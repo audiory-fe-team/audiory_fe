@@ -36,7 +36,10 @@ class ReadingScreen extends HookWidget {
       }).catchError(() {});
     }, []);
 
-    if (chapter.value == null) return CircularProgressIndicator();
+    if (chapter.value == null)
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
 
     return Scaffold(
       backgroundColor: _bgColor.value,
