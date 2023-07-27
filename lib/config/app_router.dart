@@ -45,7 +45,10 @@ class AppRoutes {
             GoRoute(
               path: 'chapter/:chapterId',
               builder: (BuildContext context, GoRouterState state) {
-                return ReadingScreen();
+                String? chapterId = state.pathParameters["chapterId"];
+                return ReadingScreen(
+                  chapterId: chapterId,
+                );
               },
             )
           ]),

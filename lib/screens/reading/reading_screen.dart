@@ -1,24 +1,28 @@
-import 'package:audiory_v0/layout/bottom_bar.dart';
-import 'package:audiory_v0/models/Chapter.dart';
+// import 'package:audioplayers/audioplayers.dart';
+import 'package:audiory_v0/api/chapter_provider.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/screens/reading/bottom_bar.dart';
 import 'package:audiory_v0/screens/reading/reading_top_bar.dart';
-import 'package:audiory_v0/services/chapter.dart';
+import 'package:audiory_v0/screens/reading/steam_widget.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-class ReadingScreen extends HookWidget {
+class ReadingScreen extends HookConsumerWidget {
+  final String? chapterId;
+
+  const ReadingScreen({super.key, this.chapterId});
+
   @override
-  Widget build(BuildContext context) {
-    final chapter = useState<Chapter?>(null);
-    final chapterService = ChapterServices();
-
+  Widget build(BuildContext context, WidgetRef ref) {
     final _bgColor = useState(Colors.white);
     final _fontSize = useState(16);
     final _showCommentByParagraph = useState(true);
+
+    final chapter = ref.watch(chapterProvider(chapterId));
 
     void _changeStyle(
         [Color? bgColor, int? fontSize, bool? showCommentByParagraph]) {
@@ -28,82 +32,96 @@ class ReadingScreen extends HookWidget {
           showCommentByParagraph ?? _showCommentByParagraph.value;
     }
 
-    useEffect(() {
-      chapterService
-          .fetchChapterDetail("45395bae-1dac-11ee-abe7-e0d4e8a18075")
-          .then((value) {
-        chapter.value = value;
-      }).catchError(() {});
-    }, []);
-
-    if (chapter.value == null) return CircularProgressIndicator();
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return Scaffold(
       backgroundColor: _bgColor.value,
       appBar: const ReadingTopBar(),
-      body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-              child: ListView(
-            children: [
-              const SizedBox(height: 24),
-              ReadingScreenHeader(
-                num: 1,
-                name: 'Câu chuyện về cánh cửa',
-                view: chapter.value?.read_count ?? 0,
-                vote: chapter.value?.vote_count ?? 0,
-                comment: chapter.value?.comment_count ?? 0,
-              ),
-              const SizedBox(height: 24),
-              ChapterContent(
-                content: chapter.value?.paragraphs ?? [],
-                fontSize: _fontSize.value,
-              ),
-              SizedBox(
-                height: 32,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ActionButton(
-                        title: 'Bình chọn',
-                        iconName: 'heart',
-                        onPressed: () {}),
-                    const SizedBox(width: 12),
-                    ActionButton(
-                        title: 'Tặng quà', iconName: 'gift', onPressed: () {}),
-                    const SizedBox(width: 12),
-                    ActionButton(
-                        title: 'Chia sẻ', iconName: 'share', onPressed: () {}),
-                  ],
+      body: chapter.when(
+        loading: () => Center(
+            child: CircularProgressIndicator(
+          color: appColors.primaryBase,
+        )),
+        error: (error, stack) =>
+            Center(child: Text('Oops, something unexpected happened')),
+        data: (chapter) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+                child: ListView(
+              children: [
+                const SizedBox(height: 24),
+                ReadingScreenHeader(
+                  num: 1,
+                  name: 'Câu chuyện về cánh cửa',
+                  view: chapter.read_count ?? 0,
+                  vote: chapter.vote_count ?? 0,
+                  comment: chapter.comment_count ?? 0,
                 ),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                height: 38,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ChapterNavigateButton(
-                      onPressed: () => {},
-                      disabled: true,
-                    ),
-                    const SizedBox(width: 12),
-                    ChapterNavigateButton(
-                      next: true,
-                      onPressed: () => {},
-                    ),
-                  ],
+                const SizedBox(height: 24),
+                // ChapterAudioPlayer(),
+                const SizedBox(height: 24),
+                ChapterContent(
+                  content: chapter.paragraphs ?? [],
+                  fontSize: _fontSize.value,
                 ),
-              ),
-              const SizedBox(height: 24),
-            ],
-          ))),
+                SizedBox(
+                  height: 32,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ActionButton(
+                          title: 'Bình chọn',
+                          iconName: 'heart',
+                          onPressed: () {}),
+                      const SizedBox(width: 12),
+                      ActionButton(
+                          title: 'Tặng quà',
+                          iconName: 'gift',
+                          onPressed: () {}),
+                      const SizedBox(width: 12),
+                      ActionButton(
+                          title: 'Chia sẻ',
+                          iconName: 'share',
+                          onPressed: () {}),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  height: 38,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ChapterNavigateButton(
+                        onPressed: () => {},
+                        disabled: true,
+                      ),
+                      const SizedBox(width: 12),
+                      ChapterNavigateButton(
+                        next: true,
+                        onPressed: () => {},
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ))),
+      ),
       bottomNavigationBar: ReadingBottomBar(
         changeStyle: _changeStyle,
       ),
     );
   }
 }
+
+// class ChapterAudioPlayer extends HookWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     // final player = AudioPlayer();
+//     // return StreamWidget(player: player);
+//   }
+// }
 
 class SettingModelUseHooks extends HookWidget {
   final Function([Color? bgColor, int? fontSize, bool? showCommentByParagraph])
