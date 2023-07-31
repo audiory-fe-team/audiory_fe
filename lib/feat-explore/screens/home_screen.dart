@@ -1,15 +1,14 @@
-import 'package:audiory_v0/feat-search/widgets/home_rank_card.dart';
-import 'package:audiory_v0/feat-search/widgets/story_scroll_list.dart';
+import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
+import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/feat-search/widgets/header_with_link.dart';
-import 'package:audiory_v0/screens/home/home_top_bar.dart';
+import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
+import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
-import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../../screens/home/stories_mock.dart';
+import '../constants/mock_data.dart';
 
 class HomeScreeen extends StatelessWidget {
   const HomeScreeen({super.key});
@@ -17,13 +16,13 @@ class HomeScreeen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: HomeTopBar(),
+        appBar: const HomeTopBar(),
         body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: ListView(
               children: [
                 const SizedBox(height: 32),
-                HomeBanners(),
+                const HomeBanners(),
                 const SizedBox(height: 32),
 
                 //NOTE: Recommendations section
@@ -32,13 +31,13 @@ class HomeScreeen extends StatelessWidget {
                 const StoryScrollList(storyList: STORIES),
                 const SizedBox(height: 32),
                 //NOTE: Ranking section
-                HomeRankingList(),
+                const HomeRankingList(),
                 const SizedBox(height: 32),
 
                 //NOTE: Hot section
                 const HeaderWithLink(title: 'Thịnh hành', link: ''),
                 const SizedBox(height: 12),
-                Container(
+                SizedBox(
                   width: double.infinity,
                   height: 176,
                   child: ClipRRect(
@@ -75,12 +74,12 @@ class HomeScreeen extends StatelessWidget {
                 const SizedBox(height: 32),
               ],
             )),
-        bottomNavigationBar: AppBottomNavigationBar());
+        bottomNavigationBar: const AppBottomNavigationBar());
   }
 }
 
 class HomeBanners extends StatelessWidget {
-  static List<String> BANNERS_LIST = [
+  static const List<String> bannerList = [
     'https://t3.ftcdn.net/jpg/03/21/97/42/360_F_321974259_BnmlxfkknMol8HiQ0dg1bwQizor48uB9.jpg',
     'https://t3.ftcdn.net/jpg/03/21/97/42/360_F_321974259_BnmlxfkknMol8HiQ0dg1bwQizor48uB9.jpg',
     'https://t3.ftcdn.net/jpg/03/21/97/42/360_F_321974259_BnmlxfkknMol8HiQ0dg1bwQizor48uB9.jpg'
@@ -95,7 +94,7 @@ class HomeBanners extends StatelessWidget {
       height: 122,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: BANNERS_LIST.length,
+          itemCount: bannerList.length,
           itemBuilder: (BuildContext context, int index) {
             return Padding(
                 padding: const EdgeInsets.only(right: 16),
@@ -108,7 +107,7 @@ class HomeBanners extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      BANNERS_LIST[index],
+                      bannerList[index],
                       fit: BoxFit.fill,
                     ),
                   ),
@@ -122,7 +121,8 @@ class RankingListBadge extends StatelessWidget {
   final String label;
   final bool selected;
 
-  const RankingListBadge({required this.label, this.selected = false});
+  const RankingListBadge(
+      {super.key, required this.label, this.selected = false});
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +160,7 @@ class HomeRankingList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         const HeaderWithLink(title: 'BXH Tháng này', link: ''),

@@ -3,7 +3,6 @@ import 'package:audiory_v0/api/chapter_provider.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/screens/reading/bottom_bar.dart';
 import 'package:audiory_v0/screens/reading/reading_top_bar.dart';
-import 'package:audiory_v0/screens/reading/steam_widget.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
@@ -46,8 +45,7 @@ class ReadingScreen extends HookConsumerWidget {
             Center(child: Text('Oops, something unexpected happened')),
         data: (chapter) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-                child: ListView(
+            child: ListView(
               children: [
                 const SizedBox(height: 24),
                 ReadingScreenHeader(
@@ -106,7 +104,7 @@ class ReadingScreen extends HookConsumerWidget {
                 ),
                 const SizedBox(height: 24),
               ],
-            ))),
+            )),
       ),
       bottomNavigationBar: ReadingBottomBar(
         changeStyle: _changeStyle,

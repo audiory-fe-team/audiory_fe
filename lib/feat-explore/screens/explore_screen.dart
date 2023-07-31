@@ -1,13 +1,13 @@
 import 'dart:math';
 
-import 'package:audiory_v0/feat-search/widgets/story_scroll_list.dart';
+import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/models/Author.dart';
 import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/feat-search/widgets/header_with_link.dart';
-import 'package:audiory_v0/feat-search/constants/mock_data.dart';
-import 'package:audiory_v0/feat-search/screens/layout/explore_top_bar.dart';
+import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
+import 'package:audiory_v0/feat-explore/constants/mock_data.dart';
+import 'package:audiory_v0/feat-explore/screens/layout/explore_top_bar.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_outlined_button.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -19,39 +19,43 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class ExploreScreen extends StatelessWidget {
+  const ExploreScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: ExploreTopBar(),
+      appBar: const ExploreTopBar(),
       body: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ListView(children: [
-            const SizedBox(height: 24),
+          child: ListView(children: const [
+            SizedBox(height: 24),
             CategoryCarousel(),
-            const SizedBox(height: 24),
-            const HeaderWithLink(title: 'Thịnh hành', link: ''),
-            const SizedBox(height: 12),
-            const StoryScrollList(storyList: STORIES),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
+            HeaderWithLink(title: 'Thịnh hành', link: ''),
+            SizedBox(height: 12),
+            StoryScrollList(storyList: STORIES),
+            SizedBox(height: 24),
             AuthorRecommendation(),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             CategoryStories(categoryId: 1),
-            const SizedBox(height: 24),
+            SizedBox(height: 24),
             CategoryStories(categoryId: 2),
           ])),
-      bottomNavigationBar: AppBottomNavigationBar(),
+      bottomNavigationBar: const AppBottomNavigationBar(),
     );
   }
 }
 
 class AuthorRecommendation extends StatelessWidget {
+  const AuthorRecommendation({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(mainAxisSize: MainAxisSize.min, children: [
       const HeaderWithLink(title: 'Có thể bạn sẽ thích', link: ''),
       const SizedBox(height: 12),
-      Container(
+      SizedBox(
           width: double.infinity,
           height: 124,
           child: ListView.builder(
@@ -91,7 +95,6 @@ class CategoryStories extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: STORIES.sublist(0, 1).asMap().entries.map((entry) {
             Story story = entry.value;
-            int index = entry.key;
             return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: StoryCardDetail(
@@ -118,6 +121,8 @@ class CategoryStories extends StatelessWidget {
 }
 
 class CategoryCarousel extends StatefulWidget {
+  const CategoryCarousel({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return _CategoryCarouselState();
@@ -131,7 +136,7 @@ class _CategoryCarouselState extends State<CategoryCarousel> {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final int pageNum = (CATEGORIES.length / 6).ceil();
-    return Container(
+    return SizedBox(
         height: 132,
         child: Column(children: [
           CarouselSlider(
@@ -148,7 +153,7 @@ class _CategoryCarouselState extends State<CategoryCarousel> {
             items: List.generate(pageNum, (index) {
               return Builder(
                 builder: (BuildContext context) {
-                  return Container(
+                  return SizedBox(
                       width: double.infinity,
                       child: LayoutGrid(
                           rowGap: 16,
@@ -169,7 +174,6 @@ class _CategoryCarouselState extends State<CategoryCarousel> {
                               .entries
                               .map((entry) {
                             Category category = entry.value;
-                            int index = entry.key;
                             return CategoryBadge(
                               imgUrl: category.coverUrl ?? '',
                               title: category.title ?? '',
@@ -188,7 +192,8 @@ class _CategoryCarouselState extends State<CategoryCarousel> {
                 child: Container(
                     width: _current == index ? 6 : 4,
                     height: _current == index ? 6 : 4,
-                    margin: EdgeInsets.symmetric(vertical: 0, horizontal: 3.0),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 0, horizontal: 3.0),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _current == index
@@ -206,14 +211,12 @@ class CategoryBadge extends StatelessWidget {
   final String imgUrl;
   final String title;
 
-  const CategoryBadge({required this.imgUrl, required this.title});
+  const CategoryBadge({super.key, required this.imgUrl, required this.title});
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
     return Stack(children: [
-      Container(
+      SizedBox(
           width: double.infinity,
           // height: 47,
           child: ClipRRect(
@@ -223,7 +226,7 @@ class CategoryBadge extends StatelessWidget {
       Positioned(
         bottom: 1,
         left: 6,
-        child: Container(
+        child: SizedBox(
           width: 86,
           child: Text(
             title,
@@ -245,13 +248,16 @@ class SuggestedAuthor extends StatelessWidget {
   final int follower;
 
   const SuggestedAuthor(
-      {required this.name, required this.follower, required this.coverUrl});
+      {super.key,
+      required this.name,
+      required this.follower,
+      required this.coverUrl});
 
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    return Container(
+    return SizedBox(
         width: 70,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -266,7 +272,7 @@ class SuggestedAuthor extends StatelessWidget {
                     height: 70,
                     decoration: ShapeDecoration(
                       image: DecorationImage(
-                        image: NetworkImage(this.coverUrl),
+                        image: NetworkImage(coverUrl),
                         fit: BoxFit.cover,
                       ),
                       shape: RoundedRectangleBorder(
@@ -309,7 +315,7 @@ class SuggestedAuthor extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            Container(
+            SizedBox(
               width: double.infinity,
               height: 21,
               child: AppOutlinedButton(
