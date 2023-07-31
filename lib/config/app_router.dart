@@ -1,7 +1,7 @@
+import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
-import 'package:audiory_v0/screens/home/home_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/screens/reading/reading_screen.dart';
-import 'package:audiory_v0/screens/search/search_screen.dart';
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
@@ -31,15 +31,15 @@ class AppRoutes {
         },
       ),
       GoRoute(
-        path: '/search',
+        path: '/explore',
         builder: (BuildContext context, GoRouterState state) {
-          return SearchScreen();
+          return ExploreScreen();
         },
       ),
       GoRoute(
           path: '/story/:storyId',
           builder: (BuildContext context, GoRouterState state) {
-            return SearchScreen();
+            return ExploreScreen();
           },
           routes: [
             GoRoute(

@@ -1,7 +1,6 @@
 import 'package:audiory_v0/screens/forgot_password/forgot_password_screen.dart';
-import 'package:audiory_v0/screens/home/home_screen.dart';
+import 'package:audiory_v0/feat-search/screens/home_screen.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
-import 'package:audiory_v0/screens/search/search_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/filled_button.dart';
 import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
