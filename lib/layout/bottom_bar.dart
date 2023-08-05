@@ -30,7 +30,7 @@ class _AppBottomNavigationBarState extends State<AppBottomNavigationBar> {
         }
       case 1:
         {
-          GoRouter.of(context).go("/search");
+          GoRouter.of(context).go("/explore");
           break;
         }
       case 2:

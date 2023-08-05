@@ -63,7 +63,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       InkWell(
                         onTap: () {
-                          GoRouter.of(context).go('/search');
+                          GoRouter.of(context).go('/explore/search');
                         },
                         child: SvgPicture.asset(
                           'assets/icons/search.svg',
