@@ -1,6 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import '/services/auth_services.dart';
 
 class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeTopBar({super.key});
@@ -10,6 +12,8 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final User? user = Auth().currentUser;
+
     return SafeArea(
         child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -27,33 +31,51 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Row(
+                  Row(
                     children: [
-                      SizedBox(
-                        width: 40,
-                        height: 40,
-                        child: CircleAvatar(
-                          backgroundImage:
-                              AssetImage('assets/images/user-avatar.jpg'),
+                      Material(
+                        child: InkWell(
+                          onTap: () async {
+                            context.go('/profile');
+                          },
+                          customBorder: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(90),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(50.0),
+                            child: user?.photoURL == null
+                                ? Image.asset(
+                                    'assets/images/user-avatar.jpg',
+                                    width: 40,
+                                    height: 40,
+                                  )
+                                : Image.network(
+                                    user?.photoURL as String,
+                                    width: 40,
+                                    height: 40,
+                                  ),
+                          ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 8,
                         height: 10,
                       ),
                       Column(
                         mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(
+                          const Text(
                             'Xin chào',
                             style: TextStyle(fontSize: 14),
                           ),
                           Text(
-                            'John Doe',
+                            user?.email ?? 'Default email',
                             style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
                             ),
+                            textAlign: TextAlign.left,
                           ),
                         ],
                       ),

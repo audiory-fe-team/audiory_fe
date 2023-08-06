@@ -1,9 +1,10 @@
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
-import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/screens/detail_story/detail_story_screen.dart';
 import 'package:audiory_v0/screens/reading/reading_screen.dart';
+import 'package:audiory_v0/screens/writer_screens/writing/writing_screen.dart';
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
@@ -28,6 +29,7 @@ class AppRoutes {
     },
     routes: [
       GoRoute(
+        name: 'home',
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
           return const HomeScreeen();
@@ -70,8 +72,14 @@ class AppRoutes {
           ]),
       GoRoute(
           path: '/story/:storyId',
+          name: 'story_detail',
           builder: (BuildContext context, GoRouterState state) {
-            return const ExploreScreen();
+            final storyId = state.pathParameters['storyId']!;
+            print(storyId);
+            // print('id' + id);
+            return DetailStoryScreen(
+              id: storyId,
+            );
           },
           routes: [
             GoRoute(
@@ -91,12 +99,25 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        name: 'detailStory',
+        path: '/detailStory/:storyId',
+        builder: (BuildContext context, GoRouterState state) {
+          final storyId = state.pathParameters['storyId']!;
+          print(storyId);
+          // print('id' + id);
+          return DetailStoryScreen(
+            id: storyId,
+          );
+        },
+      ),
+      GoRoute(
+        name: 'profile',
         path: '/profile',
         builder: (_, GoRouterState state) {
           return const ProfileScreenTest();
         },
         redirect: _redirect,
-      )
+      ),
     ],
   );
 

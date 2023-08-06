@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 //auth
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:audiory_v0/services/auth_services.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,6 +37,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await Auth().signInWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
+      context.go('/');
       // Navigator.pop(context);
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -58,6 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> signInGoogle() async {
     try {
       await Auth().signInWithGoogle();
+      GoRouter.of(context).go('/');
     } on FirebaseAuthException catch (e) {
       setState(() {
         errorMessage = e.message;
@@ -70,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Widget _submitButton() {
-    return ActionButton(
+    return AppFilledButton(
         title: isLogin ? 'Login' : 'Register',
         color: Colors.white,
         bgColor: Color(0xFF439A97),
@@ -86,7 +89,6 @@ class _LoginScreenState extends State<LoginScreen> {
         onPressed: () {
           signInWithEmailAndPassword();
           // signInGoogle();
-          // context.go('/');
         });
   }
 

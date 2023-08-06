@@ -1,12 +1,12 @@
 import "package:audiory_v0/theme/theme_constants.dart";
 import "package:flutter/material.dart";
 
-class ActionButton extends StatelessWidget {
+class AppFilledButton extends StatelessWidget {
   final String title;
   final Color color;
   final Color bgColor;
   final VoidCallback onPressed;
-  const ActionButton(
+  const AppFilledButton(
       {super.key,
       required this.title,
       required this.color,
@@ -22,7 +22,7 @@ class ActionButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
-        minimumSize: Size(343, 48),
+        minimumSize: Size(double.maxFinite, 48),
         elevation: 2.0,
       ),
       child: Text(title,

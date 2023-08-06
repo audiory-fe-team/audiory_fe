@@ -26,7 +26,7 @@ class _HomeScreenTestState extends State<HomeScreenTest> {
   }
 
   Widget _signOutButton() {
-    return ActionButton(
+    return AppFilledButton(
         title: 'Sign out',
         color: Colors.black87,
         bgColor: Colors.white70,
@@ -36,7 +36,7 @@ class _HomeScreenTestState extends State<HomeScreenTest> {
   }
 
   Widget _navigateToLoginScreen() {
-    return ActionButton(
+    return AppFilledButton(
         title: 'To login',
         color: Colors.black87,
         bgColor: Colors.white70,
@@ -46,7 +46,7 @@ class _HomeScreenTestState extends State<HomeScreenTest> {
   }
 
   Widget _navigateToProfileScreen() {
-    return ActionButton(
+    return AppFilledButton(
         title: 'To profile',
         color: Colors.black87,
         bgColor: Colors.white70,

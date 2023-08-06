@@ -75,7 +75,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         //         ?.copyWith(
                         //             color: Color(0xff000000),
                         //             fontWeight: FontWeight.bold)),
-                        ActionButton(
+                        AppFilledButton(
                             title: 'Tiếp tục',
                             color: Colors.white,
                             bgColor: Color(0xFF439A97),

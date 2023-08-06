@@ -19,8 +19,14 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
     return Text(user?.email ?? 'User email');
   }
 
+  Widget _userToken() {
+    print('toekn:');
+    print(user?.providerData);
+    return Text('User token');
+  }
+
   Widget _navigateToHomeScreen() {
-    return ActionButton(
+    return AppFilledButton(
         title: 'To home',
         color: Colors.black87,
         bgColor: Colors.white70,
@@ -35,7 +41,7 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
   }
 
   Widget _signOutButton() {
-    return ActionButton(
+    return AppFilledButton(
         title: 'Sign out',
         color: Colors.black87,
         bgColor: Colors.white70,
@@ -52,6 +58,7 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
       ),
       body: Column(children: <Widget>[
         _userEmail(),
+        _userToken(),
         _navigateToHomeScreen(),
         _signOutButton()
       ]),
