@@ -5,10 +5,7 @@ import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 //auth
 import "package:firebase_core/firebase_core.dart";
-
-// void main() {
-//   runApp(const MyApp());
-// }
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +17,7 @@ Future<void> main() async {
       messagingSenderId: "",
     ),
   );
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 ThemeManager _themeManager = ThemeManager();

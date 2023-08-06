@@ -7,7 +7,11 @@ class ChapterServices {
   static const baseURL = "http://34.101.77.146:3500/api";
   static final chapterUrl = baseURL + "/chapters";
 
-  Future<Chapter> fetchChapterDetail(String chapterId) async {
+  Future<Chapter> fetchChapterDetail(String? chapterId) async {
+    if (chapterId == null) {
+      throw Exception('Failed to fetch chapter');
+    }
+
     final url = Uri.parse(chapterUrl + "/$chapterId");
     Map<String, String> header = {
       "Content-type": "application/json",

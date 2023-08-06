@@ -1,20 +1,18 @@
-import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class StoryCardOverView extends StatelessWidget {
   final String? coverUrl;
   final String title;
 
-  const StoryCardOverView({this.title = '', this.coverUrl = ''});
+  const StoryCardOverView({super.key, this.title = '', this.coverUrl = ''});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         onTap: () {
-          GoRouter.of(context).go("/story/1/chapter/1");
+          GoRouter.of(context)
+              .go("/story/1/chapter/45395bae-1dac-11ee-abe7-e0d4e8a18075");
         },
         child: Container(
           width: 95,

@@ -49,6 +49,8 @@ dependencies:
   number_paginator: ^0.2.3
   provider: ^6.0.5
   flutter_quill: ^7.3.0
+  hooks_riverpod: ^2.3.7
+  page_transition: ^2.0.9
 
 dev_dependencies:
   flutter_test:

@@ -1,10 +1,9 @@
-import 'package:audiory_v0/screens/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {
-  const SearchTopBar({super.key});
+class ExploreTopBar extends StatelessWidget implements PreferredSizeWidget {
+  const ExploreTopBar({super.key});
 
   @override
   Size get preferredSize => Size.fromHeight(65);
@@ -26,7 +25,7 @@ class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {
                 top: 20,
                 child: InkWell(
                   onTap: () {
-                    GoRouter.of(context).go('/search');
+                    GoRouter.of(context).go('/explore/search');
                   },
                   child: SvgPicture.asset(
                     'assets/icons/search.svg',
