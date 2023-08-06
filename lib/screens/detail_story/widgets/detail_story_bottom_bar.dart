@@ -69,8 +69,9 @@ class DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
         ),
         BottomNavigationBarItem(
             icon: Container(
-              decoration: const BoxDecoration(
-                color: Colors.black,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50.0),
+                color: appColors.primaryBase,
                 shape: BoxShape.rectangle,
               ),
               height: 56,

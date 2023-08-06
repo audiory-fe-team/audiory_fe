@@ -3,6 +3,7 @@ import 'package:audiory_v0/screens/detail_story/detail_story_screen.dart';
 import 'package:audiory_v0/screens/home/home_screen.dart';
 import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/screens/search/search_screen.dart';
+import 'package:audiory_v0/screens/writer_screens/writing/writing_screen.dart';
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
@@ -36,6 +37,12 @@ class AppRoutes {
         path: '/search',
         builder: (BuildContext context, GoRouterState state) {
           return SearchScreen();
+        },
+      ),
+      GoRoute(
+        path: '/writer',
+        builder: (BuildContext context, GoRouterState state) {
+          return const WritingScreen();
         },
       ),
       GoRoute(
