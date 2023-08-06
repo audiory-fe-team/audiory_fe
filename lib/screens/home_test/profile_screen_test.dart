@@ -16,9 +16,13 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
   final User? user = Auth().currentUser;
 
   Widget _userEmail() {
-    print('user:');
-    print(user?.photoURL);
     return Text(user?.email ?? 'User email');
+  }
+
+  Widget _userToken() {
+    print('toekn:');
+    print(user?.providerData);
+    return Text('User token');
   }
 
   Widget _navigateToHomeScreen() {
@@ -54,6 +58,7 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
       ),
       body: Column(children: <Widget>[
         _userEmail(),
+        _userToken(),
         _navigateToHomeScreen(),
         _signOutButton()
       ]),

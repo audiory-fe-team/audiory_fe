@@ -4,6 +4,8 @@ import 'package:audiory_v0/screens/detail_story/widgets/chapter.dart';
 import 'package:audiory_v0/screens/detail_story/widgets/commentCard.dart';
 import 'package:audiory_v0/screens/detail_story/widgets/detail_story_bottom_bar.dart';
 import 'package:audiory_v0/screens/detail_story/widgets/supporterCard.dart';
+import 'package:audiory_v0/widgets/buttons/icon_button.dart';
+import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
 import 'package:audiory_v0/widgets/paginators/number_paginator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -204,9 +206,40 @@ class _DetailStoryScreenState extends State<DetailStoryScreen>
         SizedBox(
           height: 24,
         ),
-        Text(
-          'Người ủng hộ',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        Expanded(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Người ủng hộ',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              Container(
+                height: 34,
+                child: AppIconButton(
+                    title: 'Tặng quà',
+                    textStyle: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: appColors.primaryBase),
+                    icon: Icon(
+                      Icons.card_giftcard,
+                      color: appColors.primaryBase,
+                      size: 14,
+                    ),
+                    iconPosition: 'start',
+                    color: appColors.primaryBase,
+                    bgColor: appColors.primaryLightest,
+                    onPressed: () => {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return _donateGiftModal();
+                              })
+                        }),
+              ),
+            ],
+          ),
         ),
         _supporterList(),
         SizedBox(
@@ -291,6 +324,49 @@ class _DetailStoryScreenState extends State<DetailStoryScreen>
     );
   }
 
+  //donate modal
+  Widget _donateGiftModal() {
+    const GIFTS = [
+      'rose',
+      'teddy',
+      'golden',
+      'knife',
+      'ring',
+      'flower',
+      'diamond',
+      'golden',
+    ];
+    return Expanded(
+        child: Padding(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              'Vật phẩm',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                direction: Axis.horizontal,
+                alignment: WrapAlignment.spaceEvenly,
+                spacing: 4,
+                runSpacing: 12,
+                children: GIFTS
+                    .map((option) => Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: DonateItemCard(
+                          name: option,
+                        )))
+                    .toList(),
+              ),
+            )
+          ]),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     TabController _tabController = new TabController(length: 2, vsync: this);
@@ -303,83 +379,81 @@ class _DetailStoryScreenState extends State<DetailStoryScreen>
       'Kịch tính',
       'Cổ điển'
     ];
-    return SafeArea(
-      child: Scaffold(
-        appBar: AppBar(
-          leading: GestureDetector(
-            onTap: () => context.go('/'),
-            child: Icon(Icons.arrow_back),
-          ),
-          title: Text(
-            '${widget.id}',
-            style: TextStyle(color: Colors.black),
-          ),
-          actions: [
-            GestureDetector(
-              child: Icon(Icons.more_vert_sharp),
+    return Scaffold(
+      appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () => context.go('/'),
+          child: Icon(Icons.arrow_back),
+        ),
+        title: Text(
+          '${widget.id}',
+          style: TextStyle(color: Colors.black),
+        ),
+        actions: [
+          GestureDetector(
+            child: Icon(Icons.more_vert_sharp),
+          )
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Text('detail ${widget.id}'),
+            _storyInfo(),
+            Padding(padding: EdgeInsets.symmetric(vertical: 24)),
+
+            _interactionInfo(),
+            Padding(padding: EdgeInsets.symmetric(vertical: 24)),
+
+            SizedBox(
+                width: double.infinity,
+                child: Wrap(
+                  alignment: WrapAlignment.spaceAround,
+                  spacing: 4,
+                  runSpacing: 12,
+                  children: OPTIONS
+                      .map((option) => Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: RankingListBadge(
+                            label: option,
+                            selected: false,
+                          )))
+                      .toList(),
+                )),
+
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 12),
+              child: TabBar(
+                controller: _tabController,
+                labelColor: const Color(0xFF439A97),
+                unselectedLabelColor: Colors.blueGrey,
+                labelPadding: EdgeInsets.symmetric(horizontal: 16),
+                indicatorColor: const Color(0xFF439A97),
+                labelStyle:
+                    TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                tabs: [
+                  Tab(
+                    text: 'Chi tiết',
+                  ),
+                  Tab(
+                    text: 'Chương',
+                  )
+                ],
+              ),
+            ),
+
+            Container(
+              height: 1000,
+              child: TabBarView(
+                  controller: _tabController,
+                  children: [_detailLeftTabView(), _chapterRightTabView()]),
             )
           ],
         ),
-        body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // Text('detail ${widget.id}'),
-              _storyInfo(),
-              Padding(padding: EdgeInsets.symmetric(vertical: 24)),
-
-              _interactionInfo(),
-              Padding(padding: EdgeInsets.symmetric(vertical: 24)),
-
-              SizedBox(
-                  width: double.infinity,
-                  child: Wrap(
-                    alignment: WrapAlignment.spaceAround,
-                    spacing: 4,
-                    runSpacing: 12,
-                    children: OPTIONS
-                        .map((option) => Padding(
-                            padding: const EdgeInsets.only(right: 8),
-                            child: RankingListBadge(
-                              label: option,
-                              selected: false,
-                            )))
-                        .toList(),
-                  )),
-
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 12),
-                child: TabBar(
-                  controller: _tabController,
-                  labelColor: const Color(0xFF439A97),
-                  unselectedLabelColor: Colors.blueGrey,
-                  labelPadding: EdgeInsets.symmetric(horizontal: 16),
-                  indicatorColor: const Color(0xFF439A97),
-                  labelStyle:
-                      TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  tabs: [
-                    Tab(
-                      text: 'Chi tiết',
-                    ),
-                    Tab(
-                      text: 'Chương',
-                    )
-                  ],
-                ),
-              ),
-
-              Container(
-                height: 1000,
-                child: TabBarView(
-                    controller: _tabController,
-                    children: [_detailLeftTabView(), _chapterRightTabView()]),
-              )
-            ],
-          ),
-        ),
-        bottomNavigationBar: const DetailStoryBottomBar(),
       ),
+      bottomNavigationBar: const DetailStoryBottomBar(),
     );
   }
 }
