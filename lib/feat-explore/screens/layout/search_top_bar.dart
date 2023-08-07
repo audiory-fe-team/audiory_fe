@@ -24,6 +24,10 @@ class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 Expanded(
                     child: TextField(
+                  onSubmitted: (value) {
+                    GoRouter.of(context).goNamed("explore_result",
+                        queryParameters: {'keyword': value});
+                  },
                   style: Theme.of(context).textTheme.bodyMedium,
                   decoration: InputDecoration(
                     hintText: 'Tìm kiếm truyện/tác giả',
