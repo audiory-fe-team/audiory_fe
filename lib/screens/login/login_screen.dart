@@ -1,21 +1,18 @@
 import 'package:audiory_v0/screens/forgot_password/forgot_password_screen.dart';
-import 'package:audiory_v0/screens/home/home_screen.dart';
+
 import 'package:audiory_v0/screens/loading_page/loading_screen.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
-import 'package:audiory_v0/screens/search/search_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/filled_button.dart';
 import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:audiory_v0/services/auth_services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {

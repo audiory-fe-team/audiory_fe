@@ -15,7 +15,6 @@ class StoryService {
     print('res');
     print(response);
     if (response.statusCode == 200) {
-      print(response.body);
       final List result = jsonDecode(response.body).data;
       return result.map((i) => StoryServer.fromJson(jsonDecode(i))).toList();
     } else {

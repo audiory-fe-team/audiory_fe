@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import '../../services/auth_services.dart';
+import '/services/auth_services.dart';
 
 class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeTopBar({super.key});
@@ -85,7 +85,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       InkWell(
                         onTap: () {
-                          GoRouter.of(context).go('/search');
+                          GoRouter.of(context).go('/explore/search');
                         },
                         child: SvgPicture.asset(
                           'assets/icons/search.svg',

@@ -7,10 +7,7 @@ import 'package:flutter/material.dart';
 //auth
 import "package:firebase_core/firebase_core.dart";
 import 'package:provider/provider.dart';
-
-// void main() {
-//   runApp(const MyApp());
-// }
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,11 +20,7 @@ Future<void> main() async {
       messagingSenderId: "",
     ),
   );
-  // runApp(const MyApp());
-  runApp(MultiProvider(
-    providers: [ChangeNotifierProvider(create: (_) => Auth())],
-    child: const MyApp(),
-  ));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 ThemeManager _themeManager = ThemeManager();
