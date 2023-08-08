@@ -27,7 +27,7 @@ class ResultScreen extends HookConsumerWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final tabController = useTabController(initialLength: 2, initialIndex: 0);
     final stories = ref.watch(storiesProvider(keyword));
-    final tabState = useState(1);
+    final tabState = useState(0);
 
     return Scaffold(
       appBar: ResultTopBar(keyword: keyword),
