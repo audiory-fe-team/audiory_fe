@@ -1,10 +1,12 @@
 import 'package:audiory_v0/config/app_router.dart';
+import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
 
 import 'package:flutter/material.dart';
 //auth
 import "package:firebase_core/firebase_core.dart";
+import 'package:provider/provider.dart';
 
 // void main() {
 //   runApp(const MyApp());
@@ -12,6 +14,7 @@ import "package:firebase_core/firebase_core.dart";
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: "AIzaSyBEdfyQ4SuEt3OBGTqoa5Xgv6QzPm4K960",
@@ -20,7 +23,11 @@ Future<void> main() async {
       messagingSenderId: "",
     ),
   );
-  runApp(const MyApp());
+  // runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [ChangeNotifierProvider(create: (_) => Auth())],
+    child: const MyApp(),
+  ));
 }
 
 ThemeManager _themeManager = ThemeManager();

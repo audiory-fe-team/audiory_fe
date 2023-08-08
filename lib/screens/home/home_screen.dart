@@ -3,16 +3,42 @@ import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/home/header_with_link.dart';
 import 'package:audiory_v0/screens/home/home_top_bar.dart';
 import 'package:audiory_v0/screens/search/search_screen.dart';
+import 'package:audiory_v0/services/story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import '../../models/StoryServer.dart';
 import 'stories_mock.dart';
 
-class HomeScreeen extends StatelessWidget {
+class HomeScreeen extends StatefulWidget {
   const HomeScreeen({super.key});
+
+  @override
+  State<HomeScreeen> createState() => _HomeScreeenState();
+}
+
+class _HomeScreeenState extends State<HomeScreeen> {
+  late List<StoryServer>? stories = [];
+  bool isLoaded = false;
+  @override
+  void initState() {
+    super.initState();
+
+    //fetch data
+    getStories();
+  }
+
+  getStories() async {
+    stories = await StoryService().fetchStories();
+    if (stories != null) {
+      setState(() {
+        isLoaded = true;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +55,7 @@ class HomeScreeen extends StatelessWidget {
                 const SizedBox(height: 32),
                 HomeRankingList(),
                 const SizedBox(height: 32),
-                HotStories(),
+                HotStories(stories: stories),
                 const SizedBox(height: 32),
                 PaidStories(),
                 const SizedBox(height: 32),
@@ -347,6 +373,9 @@ class PaidStories extends StatelessWidget {
 }
 
 class HotStories extends StatelessWidget {
+  List<StoryServer>? stories;
+
+  HotStories({this.stories});
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -371,13 +400,28 @@ class HotStories extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: STORIES
-                  .map((story) => Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: StoryCardOverView(
-                            title: story.title, coverUrl: story.coverUrl),
-                      ))
-                  .toList(),
+              children: stories!.isEmpty
+                  ? [Text('No')]
+                  : stories!
+                      .map((story) => Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: StoryCardOverView(
+                                title: story.title, coverUrl: story.cover_url),
+                          ))
+                      .toList(),
+              // children: [
+              //   stories!.isNotEmpty
+              //       ? ListView.builder(
+              //           itemCount: stories?.length,
+              //           itemBuilder: (BuildContext context, index) {
+              //             return Padding(
+              //               padding: const EdgeInsets.only(right: 12),
+              //               child:
+              //                   StoryCardOverView(title: stories![index].title),
+              //             );
+              //           })
+              //       : Text('no')
+              // ],
             ))
       ],
     );

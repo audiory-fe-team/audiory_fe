@@ -2,7 +2,9 @@ import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/screens/detail_story/detail_story_screen.dart';
 import 'package:audiory_v0/screens/home/home_screen.dart';
 import 'package:audiory_v0/screens/reading/reading_screen.dart';
+import 'package:audiory_v0/screens/register/register_screen.dart';
 import 'package:audiory_v0/screens/search/search_screen.dart';
+import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:audiory_v0/screens/writer_screens/writing/writing_screen.dart';
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
@@ -59,9 +61,17 @@ class AppRoutes {
             )
           ]),
       GoRoute(
+        name: 'login',
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
           return const LoginScreen();
+        },
+      ),
+      GoRoute(
+        name: 'register',
+        path: '/register',
+        builder: (BuildContext context, GoRouterState state) {
+          return const RegisterScreen();
         },
       ),
       GoRoute(
