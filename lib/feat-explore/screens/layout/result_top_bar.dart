@@ -2,6 +2,7 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class ResultTopBar extends HookWidget implements PreferredSizeWidget {
   final String keyword;
@@ -26,6 +27,10 @@ class ResultTopBar extends HookWidget implements PreferredSizeWidget {
               children: [
                 Expanded(
                     child: TextField(
+                  onSubmitted: (value) {
+                    GoRouter.of(context).goNamed("explore_result",
+                        queryParameters: {'keyword': value});
+                  },
                   controller: textController,
                   style: Theme.of(context).textTheme.bodyMedium,
                   decoration: InputDecoration(

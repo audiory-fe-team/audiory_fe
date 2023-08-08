@@ -67,9 +67,10 @@ class HomeScreeen extends StatelessWidget {
                       Story story = entry.value;
                       return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
-                          child: StoryCardDetail(
-                            story: story,
-                          ));
+                          child: Container(color: Colors.amber));
+                      // child: StoryCardDetail(
+                      //   story: story,
+                      // ));
                     }).toList()),
                 const SizedBox(height: 32),
               ],
