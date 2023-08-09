@@ -1,28 +1,28 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
+import 'package:audiory_v0/feat-explore/models/filter.dart';
+import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/StoryServer.dart';
 import 'package:http/http.dart' as http;
 
-class Story extends ChangeNotifier {
-  String baseURL = "http://34.101.77.146:3500/api";
+class StoryService {
+  static const baseURL = "http://34.101.77.146:3500/api";
+  static final storiesEndpoint = baseURL + "/stories";
 
-  Future<void> signUp({
-    required String email,
-    required String username,
-    required String password,
-    required String fullname,
-  }) async {
-    var url = Uri.parse(baseURL + '/users');
-
+  Future<List<StoryServer>> fetchStories(String? keyword) async {
+    final url = Uri.parse(storiesEndpoint)
+        .replace(queryParameters: {'keyword': keyword ?? ''});
     Map<String, String> header = {
       "Content-type": "application/json",
-      "Accept": "application/json",
+      "Accept": "application/json"
     };
-    try {
-      final response = await http.get(url, headers: header);
-      print('res');
-      print(response.body);
-      // if (response.statusCode == 200) {
-      //   isBack = true;
-      // }
-    } on Exception catch (err) {}
+    final response = await http.get(url, headers: header);
+    if (response.statusCode == 200) {
+      final List result = json.decode(response.body)['data'];
+      return result.map((i) => StoryServer.fromJson(i)).toList();
+    } else {
+      print("========error=====");
+      throw Exception('Failed to load stories');
+    }
   }
 }

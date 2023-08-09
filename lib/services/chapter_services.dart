@@ -5,14 +5,14 @@ import 'package:http/http.dart' as http;
 
 class ChapterServices {
   static const baseURL = "http://34.101.77.146:3500/api";
-  static final chapterUrl = baseURL + "/chapters";
+  static final chapterEndpoint = baseURL + "/chapters";
 
   Future<Chapter> fetchChapterDetail(String? chapterId) async {
     if (chapterId == null) {
       throw Exception('Failed to fetch chapter');
     }
 
-    final url = Uri.parse(chapterUrl + "/$chapterId");
+    final url = Uri.parse(chapterEndpoint + "/$chapterId");
     Map<String, String> header = {
       "Content-type": "application/json",
       "Accept": "application/json"
