@@ -25,16 +25,6 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
     return Text('User token');
   }
 
-  Widget _navigateToHomeScreen() {
-    return AppFilledButton(
-        title: 'To home',
-        color: Colors.black87,
-        bgColor: Colors.white70,
-        onPressed: () async {
-          context.go('/');
-        });
-  }
-
   Future<void> signOut() async {
     await Auth().singOut();
     context.go('/');
@@ -52,16 +42,10 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
+    return SafeArea(
+      child: Column(
+        children: <Widget>[_userEmail(), _userToken(), _signOutButton()],
       ),
-      body: Column(children: <Widget>[
-        _userEmail(),
-        _userToken(),
-        _navigateToHomeScreen(),
-        _signOutButton()
-      ]),
     );
   }
 }

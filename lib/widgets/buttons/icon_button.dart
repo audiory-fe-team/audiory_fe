@@ -44,10 +44,8 @@ class AppIconButton extends StatelessWidget {
             ),
             label: Text(title == null ? 'Default' : title as String,
                 style: textStyle == null
-                    ? Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: appColors.skyLightest)
+                    ? Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: color != null ? color : appColors.skyLightest)
                     : textStyle),
           );
         } else {
@@ -58,17 +56,17 @@ class AppIconButton extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
               ),
-              minimumSize: Size(double.minPositive, 48),
+              minimumSize: const Size.fromHeight(48),
             ),
             child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(title == null ? 'Default' : title as String,
                     style: textStyle == null
-                        ? Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: appColors.skyLightest)
+                        ? Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color:
+                                color != null ? color : appColors.skyLightest)
                         : textStyle),
                 const SizedBox(
                   width: 5,
@@ -90,10 +88,8 @@ class AppIconButton extends StatelessWidget {
           ),
           child: Text(title == null ? 'Default' : title as String,
               style: textStyle == null
-                  ? Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: appColors.skyLightest)
+                  ? Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: color != null ? color : appColors.skyLightest)
                   : textStyle),
         );
       }

@@ -21,8 +21,8 @@ class Auth extends ChangeNotifier {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  String baseURL = "http://34.101.77.146:3500/api";
-  String authrUrl = "http://34.101.77.146:3500/api/auth";
+  String baseURL = "http://34.121.234.163:3500/api";
+  String authrUrl = "http://34.121.234.163:3500/api/auth";
 
   Timer? _timer;
   Future<void> signInWithEmailAndPassword({
