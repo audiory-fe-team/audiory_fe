@@ -6,7 +6,7 @@ import 'package:audiory_v0/models/StoryServer.dart';
 import 'package:http/http.dart' as http;
 
 class StoryService {
-  static const baseURL = "http://34.101.77.146:3500/api";
+  static const baseURL = "http://34.121.234.163:3500/api";
   static final storiesEndpoint = baseURL + "/stories";
 
   Future<List<StoryServer>> fetchStories(String? keyword) async {

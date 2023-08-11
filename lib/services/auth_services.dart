@@ -1,9 +1,18 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:audiory_v0/models/body/signin_body.dart';
+import 'package:audiory_v0/models/body/signup_body.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
+import 'dart:developer' as logDev;
 
 class Auth extends ChangeNotifier {
+  bool isLoading = false;
+  bool isBack = false;
+  String message = '';
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   User? get currentUser => _firebaseAuth.currentUser;
@@ -12,12 +21,83 @@ class Auth extends ChangeNotifier {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
+  String baseURL = "http://34.121.234.163:3500/api";
+  String authrUrl = "http://34.121.234.163:3500/api/auth";
+
+  Timer? _timer;
   Future<void> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
-    await _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
+    isLoading = true;
+    notifyListeners();
+
+    SignInBody body =
+        new SignInBody(username_or_email: email, password: password);
+    var url = Uri.parse(authrUrl + '/login');
+    print(body);
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    try {
+      final response = await http.post(url,
+          headers: header, body: jsonEncode(body.toJson()));
+      print('res');
+      print(response.body);
+      if (response.statusCode == 200) {
+        isBack = true;
+      }
+      if (response.statusCode == 401) {
+        message = jsonDecode(response.body)['message'];
+      }
+      isLoading = false;
+    } on Exception catch (err) {
+      print(err);
+      message = err.toString();
+    }
+    isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> signUp({
+    required String email,
+    required String username,
+    required String password,
+    required String fullname,
+  }) async {
+    isLoading = true;
+    notifyListeners();
+
+    SignUpBody body = new SignUpBody(
+        email: email,
+        username: username,
+        full_name: fullname,
+        password: password);
+    var url = Uri.parse(baseURL + '/users');
+    print(body);
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    try {
+      final response = await http.post(url,
+          headers: header, body: jsonEncode(body.toJson()));
+      print('res');
+      print(response.body);
+      if (response.statusCode == 200) {
+        isBack = true;
+      }
+      if (response.statusCode == 401) {
+        message = jsonDecode(response.body)['message'];
+      }
+      isLoading = false;
+    } on Exception catch (err) {
+      print(err);
+      message = err.toString();
+    }
+    isLoading = false;
+    notifyListeners();
   }
 
   Future<void> createUserWithEmailAndPassword({
@@ -34,8 +114,9 @@ class Auth extends ChangeNotifier {
 
   //Google Sign In
   Future<void> signInWithGoogle() async {
-    const baseURL = "http://34.101.77.146:3500/api";
-    final authrUrl = baseURL + "/auth";
+    isLoading = true;
+    notifyListeners();
+
     final GoogleSignIn? _googleSignIn = GoogleSignIn();
     try {
       GoogleSignInAccount? gUser = await _googleSignIn!.signIn();
@@ -56,8 +137,9 @@ class Auth extends ChangeNotifier {
         IdTokenResult tokenResult =
             await FirebaseAuth.instance.currentUser!.getIdTokenResult();
         String idToken = tokenResult.token!;
-        print('token');
-        print(idToken);
+        // print('token');
+        // print(idToken);
+        // debugPrint(idToken);
 
         User? user = userCredential.user;
         if (user != null) {
@@ -65,16 +147,25 @@ class Auth extends ChangeNotifier {
           Map<String, String> header = {
             "Content-type": "application/json",
             "Accept": "application/json",
-            "Authorization": 'Bearer ${idToken}'
+            "Authorization": idToken
           };
 
           final response = await http.post(url, headers: header);
+
           print('res');
           print(response.body);
+
+          if (response.statusCode == 200) {
+            isBack = true;
+            isLoading = false;
+            notifyListeners();
+          }
         }
       }
     } on Exception catch (err) {
       print(err);
     }
+    isLoading = false;
+    notifyListeners();
   }
 }
