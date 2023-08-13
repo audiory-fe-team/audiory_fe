@@ -1,9 +1,11 @@
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
+import 'package:audiory_v0/feat-write/screens/layout/writer_app_bar.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../theme/theme_constants.dart';
+import '../../widgets/custom_app_bar.dart';
 
 class WriterScreen extends StatefulWidget {
   const WriterScreen({super.key});
@@ -18,6 +20,24 @@ class _WriterScreenState extends State<WriterScreen> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return Scaffold(
+      appBar: CustomAppBar(
+        height: 60,
+        title: Text(
+          'Tác phẩm',
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(color: appColors.inkBase),
+        ),
+        actions: [
+          IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.dashboard_outlined,
+                size: 30,
+              ))
+        ],
+      ),
       floatingActionButton: AppIconButton(
         title: 'Viết truyện',
         textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(

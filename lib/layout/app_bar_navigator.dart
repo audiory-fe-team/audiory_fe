@@ -1,5 +1,6 @@
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
 import 'package:audiory_v0/feat-write/screens/layout/writer_app_bar.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
@@ -32,15 +33,7 @@ class AppBarNavigator extends StatelessWidget implements PreferredSizeWidget {
     );
 
     if (tabItem == 'Home') {
-      child = CustomAppBar(
-        title: Text(
-          'Trang chủ',
-          style: Theme.of(context)
-              .textTheme
-              .bodyLarge
-              ?.copyWith(color: appColors.primaryBase),
-        ),
-      );
+      child = HomeTopBar();
     } else if (tabItem == 'Explore') {
       child = CustomAppBar(
         title: Text(
