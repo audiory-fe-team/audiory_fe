@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class StoryService {
-  static final baseURL = "http://34.121.234.163:3500/api";
+  static final baseURL = "http://34.29.203.235:3500/api";
   static final storiesEndpoint = baseURL + "/stories";
 
   Future<List<StoryServer>> fetchStories() async {

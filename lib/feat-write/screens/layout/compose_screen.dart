@@ -68,7 +68,12 @@ class _ComposeScreenState extends State<ComposeScreen> {
             Container(
               width: 100,
               child: AppIconButton(
-                onPressed: () {},
+                onPressed: () {
+                  _formKey.currentState!.save();
+                  context.go(
+                      '/composeChapter/${_formKey.currentState!.value['title']}',
+                      extra: {_formKey.currentState!.value['title']});
+                },
                 title: 'Tạo mới',
               ),
             )

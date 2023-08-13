@@ -52,6 +52,8 @@ dependencies:
   hooks_riverpod: ^2.3.7
   page_transition: ^2.0.9
   flutter_form_builder: ^9.1.0
+  jwt_decoder: ^2.0.1
+  flutter_secure_storage: ^8.0.0
 
 dev_dependencies:
   flutter_test:

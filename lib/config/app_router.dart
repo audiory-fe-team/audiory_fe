@@ -2,6 +2,7 @@ import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/main_layout.dart';
@@ -118,11 +119,20 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        name: 'composeChapter',
+        path: '/composeChapter/:storyTitle',
+        builder: (BuildContext context, GoRouterState state) {
+          final storyTitle = state.pathParameters['storyTitle']!;
+          return ComposeChapterScreen(
+            storyTitle: storyTitle,
+          );
+        },
+      ),
+      GoRoute(
         name: 'detailStory',
         path: '/detailStory/:storyId',
         builder: (BuildContext context, GoRouterState state) {
           final storyId = state.pathParameters['storyId']!;
-          print(storyId);
           // print('id' + id);
           return DetailStoryScreen(
             id: storyId,

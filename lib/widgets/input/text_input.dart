@@ -25,6 +25,7 @@ class AppTextInputField extends StatefulWidget {
   final String name; //form field name, must have
   final String? initialValue;
   final String? hintText;
+  final TextStyle? hintTextStyle;
 
   const AppTextInputField(
       {super.key,
@@ -40,7 +41,8 @@ class AppTextInputField extends StatefulWidget {
       this.sizeBoxHeight = 5,
       this.hintText = '',
       this.isTextArea = false,
-      this.minLines = 1});
+      this.minLines = 1,
+      this.hintTextStyle});
 
   @override
   State<AppTextInputField> createState() => _AppTextInputFieldState();
@@ -92,9 +94,12 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
         ),
         filled: true,
         hintText: widget.hintText!,
-        hintStyle: TextStyle(
-          color: appColors.skyDark,
-        ),
+
+        hintStyle: widget.hintTextStyle != null
+            ? widget.hintTextStyle
+            : TextStyle(
+                color: appColors.skyDark,
+              ),
         counterText: widget.isTextArea != null && widget.isTextArea == true
             ? '${_enteredText.length.toString()} từ'
             : null,

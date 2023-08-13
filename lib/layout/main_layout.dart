@@ -61,8 +61,8 @@ class _AppMainLayoutState extends State<AppMainLayout> {
           return isFirstRouteInCurrentTab;
         },
         child: Scaffold(
-          appBar: _buildOffstageNavigatorAppBar(_currentPage)
-              as PreferredSizeWidget,
+          // appBar: _buildOffstageNavigatorAppBar(_currentPage)
+          //     as PreferredSizeWidget,
           body: Stack(children: <Widget>[
             _buildOffstageNavigator("Home"),
             _buildOffstageNavigator("Explore"),

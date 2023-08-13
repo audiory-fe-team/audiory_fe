@@ -5,9 +5,14 @@ import 'package:audiory_v0/models/body/signin_body.dart';
 import 'package:audiory_v0/models/body/signup_body.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as logDev;
+
+import 'package:jwt_decoder/jwt_decoder.dart';
+
+import '../models/User.dart';
 
 class Auth extends ChangeNotifier {
   bool isLoading = false;
@@ -17,12 +22,14 @@ class Auth extends ChangeNotifier {
 
   User? get currentUser => _firebaseAuth.currentUser;
 
+  AuthUser? authUser;
+
   String token = '';
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  String baseURL = "http://34.121.234.163:3500/api";
-  String authrUrl = "http://34.121.234.163:3500/api/auth";
+  String baseURL = "http://34.29.203.235:3500/api";
+  String authrUrl = "http://34.29.203.235:3500/api/auth";
 
   Timer? _timer;
   Future<void> signInWithEmailAndPassword({
@@ -114,9 +121,6 @@ class Auth extends ChangeNotifier {
 
   //Google Sign In
   Future<void> signInWithGoogle() async {
-    isLoading = true;
-    notifyListeners();
-
     final GoogleSignIn? _googleSignIn = GoogleSignIn();
     try {
       GoogleSignInAccount? gUser = await _googleSignIn!.signIn();
@@ -137,11 +141,9 @@ class Auth extends ChangeNotifier {
         IdTokenResult tokenResult =
             await FirebaseAuth.instance.currentUser!.getIdTokenResult();
         String idToken = tokenResult.token!;
-        // print('token');
-        // print(idToken);
-        // debugPrint(idToken);
 
         User? user = userCredential.user;
+
         if (user != null) {
           final url = Uri.parse(authrUrl + "/login-with-google");
           Map<String, String> header = {
@@ -156,16 +158,40 @@ class Auth extends ChangeNotifier {
           print(response.body);
 
           if (response.statusCode == 200) {
-            isBack = true;
-            isLoading = false;
+            final token = jsonDecode(response.body)['data'];
+
+            print('su');
+            print(token);
+
+            Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+            print(decodedToken);
+            print(decodedToken['id']);
+            print(decodedToken['username']);
+            print(user.email);
+            print(user.photoURL);
+
+            authUser = AuthUser(
+                id: decodedToken['id']! ?? 'id',
+                username: decodedToken['username']! ?? 'username',
+                email: user.email as String,
+                profilePhoto: user.photoURL as String,
+                role: 'user');
+
+            authUser!.id = decodedToken['id'];
+            authUser!.username = decodedToken['username'];
+            authUser!.email = user.email as String;
+            authUser!.profilePhoto = user.photoURL as String;
+            authUser!.role = 'user';
             notifyListeners();
+            print('authuser');
+            print(authUser);
+
+            final storage = new FlutterSecureStorage();
+            await storage.write(key: 'authUser', value: authUser.toString());
           }
         }
       }
-    } on Exception catch (err) {
-      print(err);
-    }
-    isLoading = false;
-    notifyListeners();
+    } on Exception catch (err) {}
   }
 }
