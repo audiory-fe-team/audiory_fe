@@ -29,6 +29,7 @@ RankingMetric mapStringToRankingMetric(String? metricString) {
 }
 
 RankingTimeRange mapStringToRankingTimeRange(String? timeRangeString) {
+  print(timeRangeString);
   switch (timeRangeString) {
     case "today":
       return RankingTimeRange.today;
@@ -43,4 +44,8 @@ RankingTimeRange mapStringToRankingTimeRange(String? timeRangeString) {
     default:
       return RankingTimeRange.this_month;
   }
+}
+
+String getValueString(String rankingEnum) {
+  return rankingEnum.split(".").last;
 }

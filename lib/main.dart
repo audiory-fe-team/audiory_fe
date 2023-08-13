@@ -6,6 +6,7 @@ import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 //auth
 import "package:firebase_core/firebase_core.dart";
+import 'package:flutter_query/flutter_query.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 Future<void> main() async {
@@ -19,7 +20,10 @@ Future<void> main() async {
       messagingSenderId: "",
     ),
   );
-  runApp(const ProviderScope(child: MyApp()));
+
+  runApp(QueryScope(
+    child: const ProviderScope(child: MyApp()),
+  ));
 }
 
 ThemeManager _themeManager = ThemeManager();

@@ -1,4 +1,4 @@
-import 'package:audiory_v0/feat-explore/constants/ranking_mapper.dart';
+import 'package:audiory_v0/feat-explore/constants/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
@@ -48,10 +48,11 @@ class AppRoutes {
           RankingType type = mapStringToRankingType(typeString);
           final metricString = state.queryParameters["metric"];
           RankingMetric metric = mapStringToRankingMetric(metricString);
-          final timeString = state.queryParameters["metric"];
+          final timeString = state.queryParameters["time"];
           RankingTimeRange time = mapStringToRankingTimeRange(timeString);
 
           return RankingScreen(
+            key: state.pageKey,
             type: type,
             metric: metric,
             time: time,
@@ -141,7 +142,6 @@ class AppRoutes {
         path: '/detailStory/:storyId',
         builder: (BuildContext context, GoRouterState state) {
           final storyId = state.pathParameters['storyId']!;
-          print(storyId);
           // print('id' + id);
           return DetailStoryScreen(
             id: storyId,

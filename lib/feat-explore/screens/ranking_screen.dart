@@ -1,9 +1,14 @@
+import 'package:audiory_v0/feat-explore/constants/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/ranking_top_bar.dart';
+import 'package:audiory_v0/feat-explore/widgets/ranking_dropdown.dart';
+import 'package:audiory_v0/feat-explore/widgets/story_rank_card.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
+import 'package:audiory_v0/models/StoryServer.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -42,7 +47,7 @@ class RankingScreen extends HookConsumerWidget {
             Row(children: [
               InkWell(
                   onTap: () {
-                    GoRouter.of(context).pushNamed("ranking", queryParameters: {
+                    GoRouter.of(context).goNamed("ranking", queryParameters: {
                       "type": RankingType.story.toString().split(".").last,
                       "time": time.toString().split(".").last,
                     });
@@ -55,7 +60,7 @@ class RankingScreen extends HookConsumerWidget {
               const SizedBox(width: 12),
               InkWell(
                   onTap: () {
-                    GoRouter.of(context).pushNamed("ranking", queryParameters: {
+                    GoRouter.of(context).goNamed("ranking", queryParameters: {
                       "type": RankingType.author.toString().split(".").last,
                       "time": time.toString().split(".").last,
                     });
@@ -68,7 +73,7 @@ class RankingScreen extends HookConsumerWidget {
               const SizedBox(width: 12),
               InkWell(
                   onTap: () {
-                    GoRouter.of(context).pushNamed("ranking", queryParameters: {
+                    GoRouter.of(context).goNamed("ranking", queryParameters: {
                       "type": RankingType.reader.toString().split(".").last,
                       "time": time.toString().split(".").last,
                     });
@@ -78,12 +83,156 @@ class RankingScreen extends HookConsumerWidget {
                     title: 'Độc giả',
                     selected: type == RankingType.reader,
                   )),
-            ])
+            ]),
+            const SizedBox(
+              height: 24,
+            ),
+            Builder(builder: (_) {
+              // if(type == RankingType.author) return AuthorRanking();
+              // if(type == RankingType.reader) return ReaderRanking();
+              return StoryRanking(
+                metric: metric,
+                time: time,
+              );
+            })
           ],
         ),
       )),
       bottomNavigationBar: const AppBottomNavigationBar(),
     );
+  }
+}
+
+class StoryRanking extends HookWidget {
+  final RankingMetric metric;
+  final RankingTimeRange time;
+
+  const StoryRanking(
+      {this.metric = RankingMetric.view,
+      this.time = RankingTimeRange.this_month,
+      super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Expanded(
+        child: Column(
+      children: [
+        SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(children: [
+              RankingDropdownWrapper(
+                  title: 'Xếp theo: ',
+                  child: DropdownButton<RankingMetric>(
+                      isDense: true,
+                      value: metric,
+                      iconSize: 16,
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(8),
+                      style: textTheme.titleSmall!
+                          .copyWith(fontWeight: FontWeight.w600),
+                      items: const [
+                        DropdownMenuItem(
+                          child: Text('Lượt đọc'),
+                          value: RankingMetric.view,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Bình chọn'),
+                          value: RankingMetric.vote,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Tặng quà'),
+                          value: RankingMetric.gift,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Bình luận'),
+                          value: RankingMetric.comment,
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != metric) {
+                          GoRouter.of(context)
+                              .goNamed('ranking', queryParameters: {
+                            "type":
+                                getValueString(RankingType.story.toString()),
+                            "metric": getValueString(value.toString()),
+                            "time": getValueString(time.toString()),
+                          });
+                        }
+                      })),
+              const SizedBox(width: 12),
+              RankingDropdownWrapper(
+                  title: 'Thời gian: ',
+                  child: DropdownButton<RankingTimeRange>(
+                      isDense: true,
+                      value: time,
+                      iconSize: 16,
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(8),
+                      style: textTheme.titleSmall!.copyWith(
+                          fontWeight: FontWeight.w600,
+                          overflow: TextOverflow.ellipsis),
+                      items: const [
+                        DropdownMenuItem(
+                          child: Text('Hôm nay'),
+                          value: RankingTimeRange.today,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Tuần này'),
+                          value: RankingTimeRange.this_week,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Tháng này'),
+                          value: RankingTimeRange.this_month,
+                        ),
+                        DropdownMenuItem(
+                          child: Text('Năm nay'),
+                          value: RankingTimeRange.this_year,
+                        ),
+                        DropdownMenuItem(
+                          child: Text(
+                            'Từ trước đến nay',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          value: RankingTimeRange.all_time,
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != time) {
+                          GoRouter.of(context)
+                              .goNamed('ranking', queryParameters: {
+                            "type":
+                                getValueString(RankingType.story.toString()),
+                            "metric": getValueString(metric.toString()),
+                            "time": getValueString(value.toString()),
+                          });
+                        }
+                      }))
+            ])),
+        const SizedBox(
+          height: 24,
+        ),
+        Expanded(
+            child: SingleChildScrollView(
+                child: Column(
+          // scrollDirection: Axis.vertical,
+          children: [
+            StoryRankCard(
+                story: StoryServer(id: '123', title: 'haha'), order: 1),
+            StoryRankCard(
+                story: StoryServer(id: '12', title: 'haha'), order: 2),
+            StoryRankCard(
+                story: StoryServer(id: '23', title: 'haha'), order: 3),
+            StoryRankCard(
+                story: StoryServer(id: '13', title: 'haha'), order: 4),
+            StoryRankCard(
+                story: StoryServer(id: '13', title: 'haha'), order: 4),
+          ],
+        ))),
+      ],
+    ));
   }
 }
 
