@@ -1,4 +1,5 @@
 import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -8,7 +9,8 @@ class HomeRankingCard extends StatelessWidget {
   final Widget? icon;
 
   const HomeRankingCard(
-      {required this.story,
+      {super.key,
+      required this.story,
       required this.order,
       this.icon = const SizedBox(width: 12, height: 12)});
 
@@ -46,8 +48,10 @@ class HomeRankingCard extends StatelessWidget {
       );
     }
 
-    ;
-    return Container(
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final textTheme = Theme.of(context).textTheme;
+
+    return SizedBox(
       width: double.infinity,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -78,7 +82,6 @@ class HomeRankingCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-              child: Container(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -88,43 +91,33 @@ class HomeRankingCard extends StatelessWidget {
                   width: double.infinity,
                   child: Text(
                     story.title,
-                    style: const TextStyle(
-                      overflow: TextOverflow.ellipsis,
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: textTheme.titleMedium,
                   ),
                 ),
                 const SizedBox(height: 2),
-                Container(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/heart.svg',
-                        width: 8,
-                        height: 8,
-                        color: const Color(0xFF979C9E),
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        story.voteCount.toString() ?? 'error',
-                        style: const TextStyle(
-                          color: Color(0xFF979C9E),
-                          fontSize: 10,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/heart.svg',
+                      width: 8,
+                      height: 8,
+                      color: appColors.skyDark,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      story.voteCount.toString(),
+                      style: textTheme.labelLarge!.copyWith(
+                          color: appColors.skyDark,
+                          fontStyle: FontStyle.italic),
+                    ),
+                  ],
                 ),
               ],
             ),
-          )),
+          ),
         ],
       ),
     );

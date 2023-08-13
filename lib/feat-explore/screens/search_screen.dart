@@ -21,7 +21,7 @@ class SearchScreen extends HookWidget {
     ]);
 
     return Scaffold(
-      appBar: SearchTopBar(),
+      appBar: const SearchTopBar(),
       body: SafeArea(
           child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -29,16 +29,16 @@ class SearchScreen extends HookWidget {
                 children: [
                   const SizedBox(height: 12),
                   Text('Tìm kiếm nổi bật',
-                      style: Theme.of(context).textTheme!.titleLarge),
+                      style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 12),
                   Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: hotSearch.value
                               .map((item) => Padding(
-                                  padding: EdgeInsets.only(bottom: 8),
+                                  padding: const EdgeInsets.only(bottom: 8),
                                   child: GestureDetector(
                                     onTap: () {
                                       GoRouter.of(context).goNamed(

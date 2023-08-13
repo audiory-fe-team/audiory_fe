@@ -5,13 +5,12 @@ import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../constants/mock_data.dart';
 
-class HomeScreeen extends StatelessWidget {
-  const HomeScreeen({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +63,7 @@ class HomeScreeen extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children:
                         STORIES.sublist(0, 3).asMap().entries.map((entry) {
-                      Story story = entry.value;
+                      // Story story = entry.value;
                       return Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Container(color: Colors.amber));
@@ -164,7 +163,7 @@ class HomeRankingList extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const HeaderWithLink(title: 'BXH Tháng này', link: ''),
+        const HeaderWithLink(title: 'BXH Tháng này', link: '/ranking'),
         const SizedBox(height: 12),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,

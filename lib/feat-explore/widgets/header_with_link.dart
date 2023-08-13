@@ -1,5 +1,6 @@
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class HeaderWithLink extends StatelessWidget {
   final Widget? icon;
@@ -27,13 +28,17 @@ class HeaderWithLink extends StatelessWidget {
               Text(title, style: Theme.of(context).textTheme.headlineMedium),
             ],
           ),
-          Text('Thêm',
-              style: TextStyle(
-                color: appColors.primaryBase,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                decoration: TextDecoration.underline,
-              ))
+          InkWell(
+              onTap: () {
+                GoRouter.of(context).push(link);
+              },
+              child: Text('Thêm',
+                  style: TextStyle(
+                    color: appColors.primaryBase,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                  )))
         ],
       ),
     );

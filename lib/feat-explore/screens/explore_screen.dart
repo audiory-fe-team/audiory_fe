@@ -10,7 +10,6 @@ import 'package:audiory_v0/feat-explore/constants/mock_data.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/explore_top_bar.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_outlined_button.dart';
-import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
@@ -94,7 +93,7 @@ class CategoryStories extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: STORIES.sublist(0, 1).asMap().entries.map((entry) {
-            Story story = entry.value;
+            // Story story = entry.value;
             return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: Container(color: Colors.amber));
