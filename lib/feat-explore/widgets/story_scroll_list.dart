@@ -28,7 +28,10 @@ class StoryScrollList extends StatelessWidget {
               .map((story) => Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: StoryCardOverView(
-                        title: story.title, coverUrl: story.cover_url),
+                        storyId: story.id,
+                        storyTitle: story.title,
+                        title: story.title,
+                        coverUrl: story.cover_url),
                   ))
               .toList(),
         ));

@@ -19,7 +19,7 @@ class ProfileScreenTest extends StatefulWidget {
 }
 
 class ProfileScreenTestState extends State<ProfileScreenTest> {
-  final AuthUser? authUser = Auth().authUser;
+  final User? authUser = Auth().currentUser;
   final FlutterSecureStorage storage = FlutterSecureStorage();
   // AuthUser? authUser;
   // Future<void> getAuthUser() async {
@@ -30,12 +30,12 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
   // }
 
   Widget _userEmail() {
-    return Text(authUser?.email == null ? 'Null' : 'User email');
+    return Text(authUser?.email == null ? 'Null' : authUser!.email as String);
   }
 
-  Widget _userId() {
-    return Text(authUser?.id ?? 'User id');
-  }
+  // Widget _userId() {
+  //   return Text(authUser?.id ?? 'User id');
+  // }
 
   Future<void> signOut() async {
     await Auth().singOut();
@@ -93,7 +93,7 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
           child: Column(
             children: <Widget>[
               _userEmail(),
-              _userId(),
+              // _userId(),
               authUser == null ? _signInButton() : _signOutButton()
             ],
           ),
