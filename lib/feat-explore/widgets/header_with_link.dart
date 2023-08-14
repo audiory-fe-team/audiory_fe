@@ -30,15 +30,19 @@ class HeaderWithLink extends StatelessWidget {
           ),
           InkWell(
               onTap: () {
-                GoRouter.of(context).go(link);
+                GoRouter.of(context).push(link);
               },
-              child: Text('Thêm',
-                  style: TextStyle(
-                    color: appColors.primaryBase,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline,
-                  )))
+              child: Container(
+                  width: 50,
+                  height: 20,
+                  child: Center(
+                      child: Text('Thêm',
+                          style: TextStyle(
+                            color: appColors.primaryBase,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            decoration: TextDecoration.underline,
+                          )))))
         ],
       ),
     );

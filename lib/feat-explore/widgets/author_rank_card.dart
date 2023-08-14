@@ -3,12 +3,12 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class StoryRankCard extends StatelessWidget {
+class AuthorRankCard extends StatelessWidget {
   final StoryServer story;
   final int order;
   final Widget? icon;
 
-  const StoryRankCard(
+  const AuthorRankCard(
       {super.key,
       required this.story,
       required this.order,
@@ -53,17 +53,17 @@ class StoryRankCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 16),
       width: double.infinity,
-      height: 107,
+      height: 60,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Container(
-            width: 75,
-            height: 107,
+            width: 60,
+            height: 60,
             decoration: ShapeDecoration(
               image: DecorationImage(
                 image: NetworkImage(
@@ -71,8 +71,7 @@ class StoryRankCard extends StatelessWidget {
                         ''),
                 fit: BoxFit.fill,
               ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4)),
+              shape: CircleBorder(),
             ),
           ),
           const SizedBox(width: 12),
@@ -82,48 +81,37 @@ class StoryRankCard extends StatelessWidget {
               children: [
                 Expanded(
                     child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Trường hợp kỳ lạ của Tiến sĩ Jekyll và Mr Hyde',
+                      'Tác giả X',
                       style: textTheme.titleMedium,
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/write.svg',
-                          width: 14,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Lê Phát Sáng',
-                          style: textTheme.titleSmall!
-                              .copyWith(fontStyle: FontStyle.italic),
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          'assets/icons/eye.svg',
-                          width: 14,
-                          color: appColors.primaryBase,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '1,805, 834 lượt xem',
-                          style: textTheme.titleSmall!.copyWith(
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w600,
-                              color: appColors.primaryBase),
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      ],
-                    )
+                    SizedBox(
+                        height: 20,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SvgPicture.asset(
+                              'assets/icons/eye.svg',
+                              width: 14,
+                              color: appColors.primaryBase,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '1,805, 834 lượt xem',
+                              style: textTheme.titleSmall!.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.w600,
+                                  color: appColors.primaryBase),
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          ],
+                        ))
                   ],
                 )),
                 const SizedBox(width: 12),

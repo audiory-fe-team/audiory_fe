@@ -63,7 +63,6 @@ class SearchScreen extends HookWidget {
                               .toList())),
                 ],
               ))),
-      bottomNavigationBar: const AppBottomNavigationBar(),
     );
   }
 }

@@ -15,66 +15,65 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const HomeTopBar(),
-        body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ListView(
-              children: [
-                const SizedBox(height: 32),
-                const HomeBanners(),
-                const SizedBox(height: 32),
+      appBar: const HomeTopBar(),
+      body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ListView(
+            children: [
+              const SizedBox(height: 32),
+              const HomeBanners(),
+              const SizedBox(height: 32),
 
-                //NOTE: Recommendations section
-                const HeaderWithLink(title: 'Có thể bạn sẽ thích', link: ''),
-                const SizedBox(height: 12),
-                const StoryScrollList(storyList: STORIES),
-                const SizedBox(height: 32),
-                //NOTE: Ranking section
-                const HomeRankingList(),
-                const SizedBox(height: 32),
+              //NOTE: Recommendations section
+              const HeaderWithLink(title: 'Có thể bạn sẽ thích', link: ''),
+              const SizedBox(height: 12),
+              const StoryScrollList(storyList: STORIES),
+              const SizedBox(height: 32),
+              //NOTE: Ranking section
+              const HomeRankingList(),
+              const SizedBox(height: 32),
 
-                //NOTE: Hot section
-                const HeaderWithLink(title: 'Thịnh hành', link: ''),
-                const SizedBox(height: 12),
-                SizedBox(
-                  width: double.infinity,
-                  height: 176,
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Image.network(
-                        'https://via.placeholder.com/347x176',
-                        fit: BoxFit.cover,
-                      )),
-                ),
-                const SizedBox(height: 12),
-                const StoryScrollList(storyList: STORIES),
-                const SizedBox(height: 32),
+              //NOTE: Hot section
+              const HeaderWithLink(title: 'Thịnh hành', link: ''),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                height: 176,
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      'https://via.placeholder.com/347x176',
+                      fit: BoxFit.cover,
+                    )),
+              ),
+              const SizedBox(height: 12),
+              const StoryScrollList(storyList: STORIES),
+              const SizedBox(height: 32),
 
-                //NOTE: Paid section
-                const HeaderWithLink(title: 'Truyện trả phí', link: ''),
-                const SizedBox(height: 12),
-                const StoryScrollList(storyList: STORIES),
-                const SizedBox(height: 32),
+              //NOTE: Paid section
+              const HeaderWithLink(title: 'Truyện trả phí', link: ''),
+              const SizedBox(height: 12),
+              const StoryScrollList(storyList: STORIES),
+              const SizedBox(height: 32),
 
-                //NOTE: Continue reading section
-                const HeaderWithLink(title: 'Tiếp tục đọc', link: ''),
-                const SizedBox(height: 12),
-                Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children:
-                        STORIES.sublist(0, 3).asMap().entries.map((entry) {
-                      // Story story = entry.value;
-                      return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: Container(color: Colors.amber));
-                      // child: StoryCardDetail(
-                      //   story: story,
-                      // ));
-                    }).toList()),
-                const SizedBox(height: 32),
-              ],
-            )),
-        bottomNavigationBar: const AppBottomNavigationBar());
+              //NOTE: Continue reading section
+              const HeaderWithLink(title: 'Tiếp tục đọc', link: ''),
+              const SizedBox(height: 12),
+              Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: STORIES.sublist(0, 3).asMap().entries.map((entry) {
+                    // Story story = entry.value;
+                    return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Container(color: Colors.amber));
+                    // child: StoryCardDetail(
+                    //   story: story,
+                    // ));
+                  }).toList()),
+              const SizedBox(height: 32),
+            ],
+          )),
+    );
   }
 }
 
@@ -145,8 +144,8 @@ class RankingListBadge extends StatelessWidget {
           Text(label,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: selected ? appColors.inkBase : appColors.primaryBase,
-                  )),
+                  color: selected ? appColors.inkBase : Colors.white,
+                  fontWeight: FontWeight.w400)),
         ],
       ),
     );

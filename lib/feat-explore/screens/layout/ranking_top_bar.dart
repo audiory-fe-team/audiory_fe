@@ -32,7 +32,7 @@ class RankingTopBar extends StatelessWidget implements PreferredSizeWidget {
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium!
-                              .copyWith(fontSize: 24),
+                              .copyWith(fontSize: 20),
                           gradient: LinearGradient(colors: [
                             Colors.yellow.shade400,
                             Color.fromARGB(255, 219, 168, 40),

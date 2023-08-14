@@ -4,6 +4,8 @@ import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/main_layout.dart';
@@ -71,8 +73,8 @@ class AppRoutes {
               name: 'explore_search',
               pageBuilder: (context, state) => CustomTransitionPage<void>(
                   key: state.pageKey,
-                  child: SearchScreen(),
-                  transitionDuration: Duration(milliseconds: 400),
+                  child: const SearchScreen(),
+                  transitionDuration: const Duration(milliseconds: 400),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     const begin =
@@ -135,6 +137,16 @@ class AppRoutes {
         path: '/composeStory',
         builder: (BuildContext context, GoRouterState state) {
           return const ComposeScreen();
+        },
+      ),
+      GoRoute(
+        name: 'composeChapter',
+        path: '/composeChapter/:storyTitle',
+        builder: (BuildContext context, GoRouterState state) {
+          final storyTitle = state.pathParameters['storyTitle']!;
+          return ComposeChapterScreen(
+            storyTitle: storyTitle,
+          );
         },
       ),
       GoRoute(
