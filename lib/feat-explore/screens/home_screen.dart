@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
@@ -220,7 +222,13 @@ class HomeRankingList extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: storyList!.sublist(0, 5).asMap().entries.map((entry) {
+          children: storyList!
+              .where((element) => element.read_count! > 1000)
+              .toList()
+              .sublist(0, min(storyList!.length, 5))
+              .asMap()
+              .entries
+              .map((entry) {
             StoryServer story = entry.value;
             int index = entry.key;
             return Padding(
