@@ -2,15 +2,19 @@ import 'package:audiory_v0/models/Story.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../models/StoryServer.dart';
+
 class HomeRankingCard extends StatelessWidget {
-  final Story story;
+  final Story? story;
+  final StoryServer? storyServer;
   final int order;
   final Widget? icon;
 
   const HomeRankingCard(
-      {required this.story,
+      {this.story,
       required this.order,
-      this.icon = const SizedBox(width: 12, height: 12)});
+      this.icon = const SizedBox(width: 12, height: 12),
+      this.storyServer});
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +65,7 @@ class HomeRankingCard extends StatelessWidget {
             height: 70,
             decoration: ShapeDecoration(
               image: DecorationImage(
-                image: NetworkImage(story.coverUrl ?? ''),
+                image: NetworkImage(storyServer!.cover_url ?? ''),
                 fit: BoxFit.fill,
               ),
               shape: RoundedRectangleBorder(
@@ -87,7 +91,7 @@ class HomeRankingCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    story.title,
+                    storyServer!.title,
                     style: const TextStyle(
                       overflow: TextOverflow.ellipsis,
                       color: Colors.black,
@@ -111,7 +115,7 @@ class HomeRankingCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 2),
                       Text(
-                        story.voteCount.toString() ?? 'error',
+                        storyServer!.vote_count.toString() ?? 'error',
                         style: const TextStyle(
                           color: Color(0xFF979C9E),
                           fontSize: 10,

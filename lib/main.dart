@@ -26,14 +26,14 @@ Future<void> main() async {
 
 ThemeManager _themeManager = ThemeManager();
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   @override
   void dispose() {
     _themeManager.removeListener(themeListener);
