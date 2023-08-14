@@ -18,7 +18,10 @@ class StoryService {
     };
     final response = await http.get(url, headers: header);
     if (response.statusCode == 200) {
+      print('body');
+      print(response.body);
       final List result = json.decode(response.body)['data'];
+
       return result.map((i) => StoryServer.fromJson(i)).toList();
     } else {
       print("========error=====");
