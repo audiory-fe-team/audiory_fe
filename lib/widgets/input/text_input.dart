@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-
+import 'package:form_builder_validators/form_builder_validators.dart';
 import '../../theme/theme_constants.dart';
 
 class AppTextInputField extends StatefulWidget {
@@ -54,12 +54,14 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
   Widget _inputTextFormField(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
+    var required = FormBuilderValidators.required(errorText: 'Nội dung trống');
     return FormBuilderTextField(
       onChanged: (value) => {
         setState(() {
           _enteredText = value as String;
         })
       },
+
       name: widget.name,
       initialValue: widget.initialValue!,
       minLines: widget.minLines!,
@@ -74,6 +76,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
               ? BorderRadius.all(Radius.circular(10))
               : BorderRadius.all(Radius.circular(80)),
         ),
+
         border: OutlineInputBorder(
           borderSide: BorderSide(
             style: BorderStyle.solid,
@@ -104,13 +107,14 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
             ? '${_enteredText.length.toString()} từ'
             : null,
 
-        counterStyle: Theme.of(context).textTheme.bodyLarge,
+        counterStyle: Theme.of(context).textTheme.bodyMedium,
         fillColor: appColors.skyLightest,
         contentPadding:
             const EdgeInsets.symmetric(vertical: 2.0, horizontal: 12),
         // labelText: "Email",
         focusColor: Colors.black12,
       ),
+      validator: required,
     );
   }
 

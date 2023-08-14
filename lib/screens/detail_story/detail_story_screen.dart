@@ -1,4 +1,5 @@
 import 'package:audiory_v0/models/Chapter.dart';
+import 'package:audiory_v0/models/StoryServer.dart';
 import 'package:audiory_v0/screens/detail_story/detail_story_mock.dart';
 import 'package:audiory_v0/screens/detail_story/widgets/chapter.dart';
 import 'package:audiory_v0/screens/detail_story/widgets/commentCard.dart';

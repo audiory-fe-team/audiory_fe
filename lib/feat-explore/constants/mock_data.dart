@@ -148,7 +148,7 @@ const List<Author> AUTHOR = [
       coverUrl:
           'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
 ];
-const List<Category> CATEGORIES = [
+List<Category> CATEGORIES = [
   Category(
       id: 1,
       coverUrl:
