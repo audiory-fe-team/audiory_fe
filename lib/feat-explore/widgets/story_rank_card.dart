@@ -1,10 +1,10 @@
-import 'package:audiory_v0/models/StoryServer.dart';
+import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class StoryRankCard extends StatelessWidget {
-  final StoryServer story;
+  final Story story;
   final int order;
   final Widget? icon;
 

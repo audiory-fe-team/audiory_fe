@@ -1,4 +1,4 @@
-import 'package:audiory_v0/feat-explore/constants/ranking.dart';
+import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
@@ -9,7 +9,7 @@ import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/main_layout.dart';
-import 'package:audiory_v0/screens/detail_story/detail_story_screen.dart';
+import 'package:audiory_v0/feat-read/detail_story_screen.dart';
 import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 

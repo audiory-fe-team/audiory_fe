@@ -1,19 +1,24 @@
+import 'dart:math';
+
 import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
-import 'package:audiory_v0/layout/bottom_bar.dart';
-import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
+import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../constants/mock_data.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final AsyncValue<List<Story>> storyList = ref.watch(storyFutureProvider);
+
     return Scaffold(
       appBar: const HomeTopBar(),
       body: Padding(
@@ -27,10 +32,26 @@ class HomeScreen extends StatelessWidget {
               //NOTE: Recommendations section
               const HeaderWithLink(title: 'Có thể bạn sẽ thích', link: ''),
               const SizedBox(height: 12),
-              const StoryScrollList(storyList: STORIES),
+              storyList.when(
+                  data: (storyList) => StoryScrollList(
+                        storyList: storyList,
+                      ),
+                  error: (err, stack) => Text(err.toString()),
+                  loading: () => Center(
+                        child: CircularProgressIndicator(),
+                      )),
+
               const SizedBox(height: 32),
               //NOTE: Ranking section
-              const HomeRankingList(),
+              storyList.when(
+                  data: (storyList) => HomeRankingList(
+                        storyList: storyList,
+                      ),
+                  error: (err, stack) => Text(err.toString()),
+                  loading: () => Center(
+                        child: CircularProgressIndicator(),
+                      )),
+
               const SizedBox(height: 32),
 
               //NOTE: Hot section
@@ -42,34 +63,62 @@ class HomeScreen extends StatelessWidget {
                 child: ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      'https://via.placeholder.com/347x176',
+                      'https://i0.wp.com/bookcoversbymelody.com/wp-content/uploads/2017/07/A-Brush-With-Vampires-FB-Banner.jpg?ssl=1',
                       fit: BoxFit.cover,
                     )),
               ),
               const SizedBox(height: 12),
-              const StoryScrollList(storyList: STORIES),
+              storyList.when(
+                  data: (storyList) => StoryScrollList(
+                        storyList: storyList,
+                      ),
+                  error: (err, stack) => Text(err.toString()),
+                  loading: () => Center(
+                        child: CircularProgressIndicator(),
+                      )),
               const SizedBox(height: 32),
 
               //NOTE: Paid section
               const HeaderWithLink(title: 'Truyện trả phí', link: ''),
               const SizedBox(height: 12),
-              const StoryScrollList(storyList: STORIES),
+              storyList.when(
+                  data: (storyList) => StoryScrollList(
+                        storyList: storyList,
+                      ),
+                  error: (err, stack) => Text(err.toString()),
+                  loading: () => Center(
+                        child: CircularProgressIndicator(),
+                      )),
               const SizedBox(height: 32),
 
               //NOTE: Continue reading section
               const HeaderWithLink(title: 'Tiếp tục đọc', link: ''),
               const SizedBox(height: 12),
-              Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: STORIES.sublist(0, 3).asMap().entries.map((entry) {
-                    // Story story = entry.value;
-                    return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Container(color: Colors.amber));
-                    // child: StoryCardDetail(
-                    //   story: story,
-                    // ));
-                  }).toList()),
+              storyList.when(
+                  data: (storyList) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: storyList
+                          .map((story) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: StoryCardDetail(
+                                story: story,
+                              )))
+                          .toList()),
+                  error: (err, stack) => Text(err.toString()),
+                  loading: () => const Center(
+                        child: CircularProgressIndicator(),
+                      )),
+              // Column(
+              //     mainAxisSize: MainAxisSize.min,
+              //     children: STORIES.sublist(0, 3).asMap().entries.map((entry) {
+              //       // Story story = entry.value;
+              //       return Padding(
+              //           padding: const EdgeInsets.only(bottom: 12),
+              //           child: Container(color: Colors.amber)
+              //       child: StoryCardDetail(
+              //         story: story,
+              //       ));
+              //     }).toList()),
               const SizedBox(height: 32),
             ],
           )),
@@ -79,9 +128,9 @@ class HomeScreen extends StatelessWidget {
 
 class HomeBanners extends StatelessWidget {
   static const List<String> bannerList = [
-    'https://t3.ftcdn.net/jpg/03/21/97/42/360_F_321974259_BnmlxfkknMol8HiQ0dg1bwQizor48uB9.jpg',
-    'https://t3.ftcdn.net/jpg/03/21/97/42/360_F_321974259_BnmlxfkknMol8HiQ0dg1bwQizor48uB9.jpg',
-    'https://t3.ftcdn.net/jpg/03/21/97/42/360_F_321974259_BnmlxfkknMol8HiQ0dg1bwQizor48uB9.jpg'
+    'https://i0.wp.com/bookcoversbymelody.com/wp-content/uploads/2012/09/scifi-romance-facebook-banner.jpg?ssl=1',
+    'https://www.thecreativepenn.com/wp-content/uploads/2019/02/The-Creative-Penn-website-banner.png',
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXP1KgLqDTJIAXBcSufJQzT-_M5pHwS0CQfhuIWpwBGGqD6ni8OT_aTwbL8YHo6AMEMyk&usqp=CAU'
   ];
 
   const HomeBanners({super.key});
@@ -153,9 +202,10 @@ class RankingListBadge extends StatelessWidget {
 }
 
 class HomeRankingList extends StatelessWidget {
+  final List<Story>? storyList;
   static const options = ['Truyện hot tháng', 'Truyện bình luận nhiều'];
 
-  const HomeRankingList({super.key});
+  const HomeRankingList({super.key, this.storyList = const []});
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +232,13 @@ class HomeRankingList extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: STORIES.sublist(0, 5).asMap().entries.map((entry) {
+          children: storyList!
+              .where((element) => element.read_count! > 1000)
+              .toList()
+              .sublist(0, min(storyList!.length, 5))
+              .asMap()
+              .entries
+              .map((entry) {
             Story story = entry.value;
             int index = entry.key;
             return Padding(

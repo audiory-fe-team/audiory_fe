@@ -3,16 +3,19 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../models/Story.dart';
+
 class HomeRankingCard extends StatelessWidget {
   final Story story;
   final int order;
   final Widget? icon;
 
-  const HomeRankingCard(
-      {super.key,
-      required this.story,
-      required this.order,
-      this.icon = const SizedBox(width: 12, height: 12)});
+  const HomeRankingCard({
+    super.key,
+    required this.story,
+    required this.order,
+    this.icon = const SizedBox(width: 12, height: 12),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,7 +68,7 @@ class HomeRankingCard extends StatelessWidget {
             height: 70,
             decoration: ShapeDecoration(
               image: DecorationImage(
-                image: NetworkImage(story.coverUrl ?? ''),
+                image: NetworkImage(story!.cover_url ?? ''),
                 fit: BoxFit.fill,
               ),
               shape: RoundedRectangleBorder(
@@ -90,8 +93,13 @@ class HomeRankingCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    story.title,
-                    style: textTheme.titleMedium,
+                    story!.title,
+                    style: const TextStyle(
+                      overflow: TextOverflow.ellipsis,
+                      color: Colors.black,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -108,7 +116,7 @@ class HomeRankingCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 2),
                     Text(
-                      story.voteCount.toString(),
+                      (story.vote_count ?? 0).toString(),
                       style: textTheme.labelLarge!.copyWith(
                           color: appColors.skyDark,
                           fontStyle: FontStyle.italic),

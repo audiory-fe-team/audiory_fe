@@ -6,9 +6,12 @@ import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 //auth
 import "package:firebase_core/firebase_core.dart";
-import 'package:flutter_query/flutter_query.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:fquery/fquery.dart';
 
+final queryClient = QueryClient(
+  defaultQueryOptions: DefaultQueryOptions(),
+);
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -21,21 +24,22 @@ Future<void> main() async {
     ),
   );
 
-  runApp(QueryScope(
+  runApp(QueryClientProvider(
+    queryClient: queryClient,
     child: const ProviderScope(child: MyApp()),
   ));
 }
 
 ThemeManager _themeManager = ThemeManager();
 
-class MyApp extends StatefulWidget {
+class MyApp extends ConsumerStatefulWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  ConsumerState<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp> {
+class _MyAppState extends ConsumerState<MyApp> {
   @override
   void dispose() {
     _themeManager.removeListener(themeListener);

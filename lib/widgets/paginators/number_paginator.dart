@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:number_paginator/number_paginator.dart';
 
-import '../../screens/detail_story/widgets/chapter.dart';
+import '../../feat-read/widgets/chapter.dart';
 
 class ListWithPaginator extends StatefulWidget {
   const ListWithPaginator();
@@ -75,7 +75,6 @@ class _ListWithPaginatorState extends State<ListWithPaginator> {
                 buttonUnselectedForegroundColor: Colors.black),
             numberPages: numOfPages,
             onPageChange: (index) {
-              print(index);
               setState(() {
                 currentPage = index;
               });

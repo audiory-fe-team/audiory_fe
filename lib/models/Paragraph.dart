@@ -29,4 +29,14 @@ class Paragraph {
       audio_url: json["audio_url"],
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "chapter_id": chapter_id,
+        "order": order,
+        "content": content,
+        "comment_count": comment_count,
+        "comments": comments,
+        "audio_url": audio_url,
+      };
 }

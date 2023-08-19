@@ -1,11 +1,11 @@
-import 'package:audiory_v0/feat-explore/constants/ranking.dart';
+import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/ranking_top_bar.dart';
 import 'package:audiory_v0/feat-explore/widgets/author_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/ranking_dropdown.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_rank_card.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
-import 'package:audiory_v0/models/StoryServer.dart';
+import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
@@ -219,26 +219,16 @@ class StoryRanking extends HookWidget {
                 child: Column(
           // scrollDirection: Axis.vertical,
           children: [
-            StoryRankCard(
-                story: StoryServer(id: '123', title: 'haha'), order: 1),
-            StoryRankCard(
-                story: StoryServer(id: '12', title: 'haha'), order: 2),
-            StoryRankCard(
-                story: StoryServer(id: '23', title: 'haha'), order: 3),
-            StoryRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 4),
-            StoryRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 5),
-            StoryRankCard(
-                story: StoryServer(id: '123', title: 'haha'), order: 6),
-            StoryRankCard(
-                story: StoryServer(id: '12', title: 'haha'), order: 7),
-            StoryRankCard(
-                story: StoryServer(id: '23', title: 'haha'), order: 8),
-            StoryRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 9),
-            StoryRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 10),
+            StoryRankCard(story: Story(id: '123', title: 'haha'), order: 1),
+            StoryRankCard(story: Story(id: '12', title: 'haha'), order: 2),
+            StoryRankCard(story: Story(id: '23', title: 'haha'), order: 3),
+            StoryRankCard(story: Story(id: '13', title: 'haha'), order: 4),
+            StoryRankCard(story: Story(id: '13', title: 'haha'), order: 5),
+            StoryRankCard(story: Story(id: '123', title: 'haha'), order: 6),
+            StoryRankCard(story: Story(id: '12', title: 'haha'), order: 7),
+            StoryRankCard(story: Story(id: '23', title: 'haha'), order: 8),
+            StoryRankCard(story: Story(id: '13', title: 'haha'), order: 9),
+            StoryRankCard(story: Story(id: '13', title: 'haha'), order: 10),
           ],
         ))),
       ],
@@ -362,26 +352,16 @@ class AuthorRanking extends HookWidget {
                 child: Column(
           // scrollDirection: Axis.vertical,
           children: [
-            AuthorRankCard(
-                story: StoryServer(id: '123', title: 'haha'), order: 1),
-            AuthorRankCard(
-                story: StoryServer(id: '12', title: 'haha'), order: 2),
-            AuthorRankCard(
-                story: StoryServer(id: '23', title: 'haha'), order: 3),
-            AuthorRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 4),
-            AuthorRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 5),
-            AuthorRankCard(
-                story: StoryServer(id: '123', title: 'haha'), order: 6),
-            AuthorRankCard(
-                story: StoryServer(id: '12', title: 'haha'), order: 7),
-            AuthorRankCard(
-                story: StoryServer(id: '23', title: 'haha'), order: 8),
-            AuthorRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 9),
-            AuthorRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 10),
+            AuthorRankCard(story: Story(id: '123', title: 'haha'), order: 1),
+            AuthorRankCard(story: Story(id: '12', title: 'haha'), order: 2),
+            AuthorRankCard(story: Story(id: '23', title: 'haha'), order: 3),
+            AuthorRankCard(story: Story(id: '13', title: 'haha'), order: 4),
+            AuthorRankCard(story: Story(id: '13', title: 'haha'), order: 5),
+            AuthorRankCard(story: Story(id: '123', title: 'haha'), order: 6),
+            AuthorRankCard(story: Story(id: '12', title: 'haha'), order: 7),
+            AuthorRankCard(story: Story(id: '23', title: 'haha'), order: 8),
+            AuthorRankCard(story: Story(id: '13', title: 'haha'), order: 9),
+            AuthorRankCard(story: Story(id: '13', title: 'haha'), order: 10),
           ],
         ))),
       ],
@@ -505,26 +485,16 @@ class ReaderRanking extends HookWidget {
                 child: Column(
           // scrollDirection: Axis.vertical,
           children: [
-            AuthorRankCard(
-                story: StoryServer(id: '123', title: 'haha'), order: 1),
-            AuthorRankCard(
-                story: StoryServer(id: '12', title: 'haha'), order: 2),
-            AuthorRankCard(
-                story: StoryServer(id: '23', title: 'haha'), order: 3),
-            AuthorRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 4),
-            AuthorRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 5),
-            AuthorRankCard(
-                story: StoryServer(id: '123', title: 'haha'), order: 6),
-            AuthorRankCard(
-                story: StoryServer(id: '12', title: 'haha'), order: 7),
-            AuthorRankCard(
-                story: StoryServer(id: '23', title: 'haha'), order: 8),
-            AuthorRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 9),
-            AuthorRankCard(
-                story: StoryServer(id: '13', title: 'haha'), order: 10),
+            AuthorRankCard(story: Story(id: '123', title: 'haha'), order: 1),
+            AuthorRankCard(story: Story(id: '12', title: 'haha'), order: 2),
+            AuthorRankCard(story: Story(id: '23', title: 'haha'), order: 3),
+            AuthorRankCard(story: Story(id: '13', title: 'haha'), order: 4),
+            AuthorRankCard(story: Story(id: '13', title: 'haha'), order: 5),
+            AuthorRankCard(story: Story(id: '123', title: 'haha'), order: 6),
+            AuthorRankCard(story: Story(id: '12', title: 'haha'), order: 7),
+            AuthorRankCard(story: Story(id: '23', title: 'haha'), order: 8),
+            AuthorRankCard(story: Story(id: '13', title: 'haha'), order: 9),
+            AuthorRankCard(story: Story(id: '13', title: 'haha'), order: 10),
           ],
         ))),
       ],
