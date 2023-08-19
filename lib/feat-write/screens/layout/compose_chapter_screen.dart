@@ -1,3 +1,4 @@
+import 'package:audiory_v0/widgets/buttons/dropdown_button.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -67,7 +68,8 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
+    final popupMenuItem = ['saveDraft', 'preview'];
+    final String selectedValue = popupMenuItem[0];
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
@@ -78,26 +80,57 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
           },
         ),
         title: Center(
-          child: text.Text(
-            // '${widget.storyTitle}',
-            'Chương 1',
-            style: Theme.of(context)
-                .textTheme
-                .titleLarge
-                ?.copyWith(color: appColors.inkBase),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              text.Text(
+                // '${widget.storyTitle}',SSss
+                'Chương 1',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleLarge
+                    ?.copyWith(color: appColors.inkBase),
+              ),
+              PopupMenuButton(
+                  onSelected: (value) {},
+                  icon: Icon(Icons.arrow_drop_down),
+                  itemBuilder: (context) => [
+                        PopupMenuItem(
+                            value: popupMenuItem[0],
+                            child: text.Text('Lưu bản thảo')),
+                        PopupMenuItem(
+                            value: popupMenuItem[1],
+                            child: text.Text('Xem trước')),
+                      ])
+            ],
           ),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
+          GestureDetector(
+            onTap: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Container(
+                      child: text.Text('model'),
+                    );
+                  });
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                  child: GestureDetector(
+                onTap: null,
                 child: text.Text(
-              'Đăng tải',
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.copyWith(color: appColors.inkBase),
-            )),
+                  'Đăng tải',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: appColors.primaryBase),
+                ),
+              )),
+            ),
           )
         ],
       ),

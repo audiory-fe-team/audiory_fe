@@ -1,5 +1,6 @@
 import 'package:audiory_v0/config/app_router.dart';
 import 'package:audiory_v0/layout/main_layout.dart';
+import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
@@ -7,7 +8,6 @@ import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 //auth
 import "package:firebase_core/firebase_core.dart";
-import 'package:provider/provider.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 Future<void> main() async {

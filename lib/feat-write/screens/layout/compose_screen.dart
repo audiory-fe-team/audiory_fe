@@ -131,7 +131,8 @@ class ComposeScreen extends ConsumerWidget {
 
                   if (validationSuccess) {
                     _formKey.currentState!.save();
-                    Map<String, dynamic> body = <String, dynamic>{};
+                    //create form data
+                    Map<String, String> body = <String, String>{};
 
                     body['author_id'] = '00529b27-d1e6-698b-beed-ee10b9ed94b4';
                     body['category_id'] =
@@ -150,7 +151,7 @@ class ComposeScreen extends ConsumerWidget {
                         .currentState!.fields['isMature']!.value
                         .toString();
                     body['is_paywalled'] = 'false';
-                    body['paywall_effective_date'] = '';
+                    // body['paywall_effective_date'] = null;
                     body['title'] =
                         _formKey.currentState!.fields['title']!.value;
                     body['form_file'] = _formKey
@@ -158,14 +159,16 @@ class ComposeScreen extends ConsumerWidget {
                         .toString();
 
                     print(_formKey.currentState!.value);
+                    print(body);
 
                     await StoryRepostitory().createStory(body);
-
-                    // context.go(
-                    //     '/composeChapter/${_formKey.currentState!.value['title']}',
-                    //     extra: {_formKey.currentState!.value['title']});
                   } else
                     print('isnot');
+
+                  // context.go(
+                  //     '/composeChapter/${_formKey.currentState!.value['title']}',
+                  //     extra: {_formKey.currentState!.value['title']});
+                  context.go('/composeChapter');
                 },
                 title: 'Tạo mới',
               ),

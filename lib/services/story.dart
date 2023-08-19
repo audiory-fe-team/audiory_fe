@@ -48,10 +48,25 @@ class StoryRepostitory {
       "Content-type": "multipart/form-data",
       "Accept": "application/json",
     };
-    final response = await http.post(headers: header, url, body: body);
+    // final response = await http.post(headers: header, url, body: body);
+    final request = await http.MultipartRequest('POST', url)
+      ..fields.addAll(body);
+    request.headers.addAll(header);
+    var response = await request.send();
+
+    final respStr = await response.stream.bytesToString();
     print('res');
-    print(response.statusCode);
-    print(response.body);
+    print(
+      jsonDecode(respStr),
+    );
+    print("This is the Status Code$respStr");
+    var encoded = json.decode(respStr);
+
+    print(encoded['status']);
+
+    // print('res');
+    // print(response.statusCode);
+    // print(response.body);
     if (response.statusCode == 200) {
       // final List<dynamic> result = jsonDecode(response.body)['data'];
       // return result.map((i) => StoryServer.fromJson(i)).toList();

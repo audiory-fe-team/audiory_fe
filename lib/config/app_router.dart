@@ -1,3 +1,4 @@
+import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
@@ -10,6 +11,7 @@ import 'package:audiory_v0/models/StoryServer.dart';
 import 'package:audiory_v0/screens/detail_story/detail_story_screen.dart';
 import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
+import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
@@ -38,6 +40,13 @@ class AppRoutes {
         name: 'home',
         path: '/',
         builder: (BuildContext context, GoRouterState state) {
+          // return AnimatedSplashScreen(
+          //     duration: 3000,
+          //     splash: SplashScreen(),
+          //     nextScreen: AppMainLayout(),
+          //     splashTransition: SplashTransition.fadeTransition,
+          //     pageTransitionType: PageTransitionType.scale,
+          //     backgroundColor: Colors.white);
           return const AppMainLayout();
         },
       ),
