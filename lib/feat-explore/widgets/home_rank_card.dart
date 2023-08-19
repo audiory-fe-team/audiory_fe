@@ -1,20 +1,21 @@
 import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../../models/StoryServer.dart';
+import '../../models/Story.dart';
 
 class HomeRankingCard extends StatelessWidget {
-  final Story? story;
-  final StoryServer? storyServer;
+  final Story story;
   final int order;
   final Widget? icon;
 
-  const HomeRankingCard(
-      {this.story,
-      required this.order,
-      this.icon = const SizedBox(width: 12, height: 12),
-      this.storyServer});
+  const HomeRankingCard({
+    super.key,
+    required this.story,
+    required this.order,
+    this.icon = const SizedBox(width: 12, height: 12),
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +51,10 @@ class HomeRankingCard extends StatelessWidget {
       );
     }
 
-    ;
-    return Container(
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final textTheme = Theme.of(context).textTheme;
+
+    return SizedBox(
       width: double.infinity,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -65,7 +68,7 @@ class HomeRankingCard extends StatelessWidget {
             height: 70,
             decoration: ShapeDecoration(
               image: DecorationImage(
-                image: NetworkImage(storyServer!.cover_url ?? ''),
+                image: NetworkImage(story!.cover_url ?? ''),
                 fit: BoxFit.fill,
               ),
               shape: RoundedRectangleBorder(
@@ -82,7 +85,6 @@ class HomeRankingCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-              child: Container(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -91,7 +93,7 @@ class HomeRankingCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    storyServer!.title,
+                    story!.title,
                     style: const TextStyle(
                       overflow: TextOverflow.ellipsis,
                       color: Colors.black,
@@ -101,34 +103,29 @@ class HomeRankingCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 2),
-                Container(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        'assets/icons/heart.svg',
-                        width: 8,
-                        height: 8,
-                        color: const Color(0xFF979C9E),
-                      ),
-                      const SizedBox(width: 2),
-                      Text(
-                        storyServer!.vote_count.toString() ?? 'error',
-                        style: const TextStyle(
-                          color: Color(0xFF979C9E),
-                          fontSize: 10,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SvgPicture.asset(
+                      'assets/icons/heart.svg',
+                      width: 8,
+                      height: 8,
+                      color: appColors.skyDark,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      (story.vote_count ?? 0).toString(),
+                      style: textTheme.labelLarge!.copyWith(
+                          color: appColors.skyDark,
+                          fontStyle: FontStyle.italic),
+                    ),
+                  ],
                 ),
               ],
             ),
-          )),
+          ),
         ],
       ),
     );

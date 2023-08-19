@@ -137,6 +137,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  fast_immutable_collections:
+    dependency: transitive
+    description:
+      name: fast_immutable_collections
+      sha256: ca13a95fe0c8aad207b70c52442f1de93e0f6e9277af6c8d7730b352d7c4e8d0
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.4.3"
   ffi:
     dependency: transitive
     description:
@@ -258,10 +266,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_hooks
-      sha256: b10cab7e0e4dbb60ff5360a740def3919aecbc672240f742a7130a2874204229
+      sha256: "6a126f703b89499818d73305e4ce1e3de33b4ae1c5512e3b8eab4b986f46774c"
       url: "https://pub.dev"
     source: hosted
-    version: "0.19.0"
+    version: "0.18.6"
   flutter_keyboard_visibility:
     dependency: transitive
     description:
@@ -453,6 +461,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.0.0"
+  fquery:
+    dependency: "direct main"
+    description:
+      name: fquery
+      sha256: dc4478b6d010c77ab09fadd981a5cf00aed4875398c2ce2d6b0a0fb2a3fdb238
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0-beta.3+1"
   go_router:
     dependency: "direct main"
     description:
@@ -845,6 +861,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.2.1"
+  readmore:
+    dependency: "direct main"
+    description:
+      name: readmore
+      sha256: "99c2483202f7c7e98c50834d72be2b119aefecf4497ca1960ae9d5f418eb1481"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.0"
   riverpod:
     dependency: transitive
     description:

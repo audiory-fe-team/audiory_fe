@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/models/StoryServer.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -13,29 +12,29 @@ class StoryRepostitory {
   static final baseURL = "http://34.29.203.235:3500/api";
   static final storiesEndpoint = baseURL + "/stories";
 
-  Future<List<StoryServer>> fetchStories() async {
+  Future<List<Story>> fetchStories() async {
     final url = Uri.parse(storiesEndpoint);
     final response = await http.get(url);
-    print('res');
-    // print(response.body);
+    final responseBody = utf8.decode(response.bodyBytes);
+
     print(response.statusCode == 200);
     if (response.statusCode == 200) {
-      final List<dynamic> result = jsonDecode(response.body)['data'];
-      return result.map((i) => StoryServer.fromJson(i)).toList();
+      final List<dynamic> result = jsonDecode(responseBody)['data'];
+      return result.map((i) => Story.fromJson(i)).toList();
     } else {
       throw Exception('Failed to load stories');
     }
   }
 
-  Future<StoryServer> fetchStoriesById(String storyId) async {
+  Future<Story> fetchStoriesById(String storyId) async {
     final url = Uri.parse(storiesEndpoint + '/${storyId}');
     final response = await http.get(url);
     print('res');
     print(response.body);
     print(response.statusCode == 200);
     if (response.statusCode == 200) {
-      final StoryServer result = jsonDecode(response.body)['data'];
-      return StoryServer.fromJson(result as Map<String, dynamic>);
+      final Story result = jsonDecode(response.body)['data'];
+      return Story.fromJson(result as Map<String, dynamic>);
     } else {
       throw Exception('Failed to load stories');
     }
@@ -54,7 +53,7 @@ class StoryRepostitory {
     print(response.body);
     if (response.statusCode == 200) {
       // final List<dynamic> result = jsonDecode(response.body)['data'];
-      // return result.map((i) => StoryServer.fromJson(i)).toList();
+      // return result.map((i) => Story.fromJson(i)).toList();
     } else {
       throw Exception('Failed to load stories');
     }
