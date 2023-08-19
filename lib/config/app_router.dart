@@ -136,7 +136,7 @@ class AppRoutes {
         name: 'composeStory',
         path: '/composeStory',
         builder: (BuildContext context, GoRouterState state) {
-          return const ComposeScreen();
+          return ComposeScreen();
         },
       ),
       GoRoute(
@@ -153,6 +153,8 @@ class AppRoutes {
         name: 'detailStory',
         path: '/detailStory/:storyId',
         builder: (BuildContext context, GoRouterState state) {
+          print('state');
+          print(state.extra);
           final storyId = state.pathParameters['storyId']!;
           // print('id' + id);
           return DetailStoryScreen(

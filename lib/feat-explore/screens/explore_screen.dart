@@ -143,7 +143,7 @@ class CategoryCarousel extends HookConsumerWidget {
     final current = useState(0);
 
     final categories =
-        useQuery(['categories'], () => CategoryService().fetchAllCategories());
+        useQuery(['categories'], () => CategoryReposity().fetchCategory());
 
     if (categories.isLoading) {
       return const Text('Loading...');

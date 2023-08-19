@@ -1,8 +1,7 @@
 import 'dart:convert';
 
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/models/Story.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -27,9 +26,28 @@ class StoryRepostitory {
     }
   }
 
-  Future<void> createStory() async {
+  Future<Story> fetchStoriesById(String storyId) async {
+    final url = Uri.parse(storiesEndpoint + '/${storyId}');
+    final response = await http.get(url);
+    print('res');
+    print(response.body);
+    print(response.statusCode == 200);
+    if (response.statusCode == 200) {
+      final Story result = jsonDecode(response.body)['data'];
+      return Story.fromJson(result as Map<String, dynamic>);
+    } else {
+      throw Exception('Failed to load stories');
+    }
+  }
+
+  Future<void> createStory(body) async {
+    print('ako');
     final url = Uri.parse(storiesEndpoint);
-    final response = await http.post(url);
+    Map<String, String> header = {
+      "Content-type": "multipart/form-data",
+      "Accept": "application/json",
+    };
+    final response = await http.post(headers: header, url, body: body);
     print('res');
     print(response.statusCode);
     print(response.body);

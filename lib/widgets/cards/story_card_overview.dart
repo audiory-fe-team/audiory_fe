@@ -27,7 +27,7 @@ class StoryCardOverView extends StatelessWidget {
                 height: 135,
                 decoration: ShapeDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(this.coverUrl ?? ''),
+                    image: NetworkImage(coverUrl! ?? ''),
                     fit: BoxFit.fill,
                   ),
                   shape: RoundedRectangleBorder(
