@@ -12,10 +12,10 @@ class AppTabNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget child = HomeScreeen();
+    Widget child = HomeScreen();
 
     if (tabItem == 'Home')
-      child = HomeScreeen();
+      child = HomeScreen();
     else if (tabItem == 'Explore')
       child = WriterScreen();
     else if (tabItem == 'Library')

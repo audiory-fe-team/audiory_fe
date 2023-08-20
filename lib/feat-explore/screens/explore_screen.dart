@@ -1,22 +1,24 @@
 import 'dart:math';
 
-import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
-import 'package:audiory_v0/models/Author.dart';
 import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
-import 'package:audiory_v0/feat-explore/constants/mock_data.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/explore_top_bar.dart';
+import 'package:audiory_v0/services/category_services.dart';
+import 'package:audiory_v0/services/story_services.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_outlined_button.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fquery/fquery.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -28,61 +30,73 @@ class ExploreScreen extends StatelessWidget {
       body: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ListView(children: const [
-            SizedBox(height: 24),
+          child: ListView(children: [
+            const SizedBox(height: 24),
             CategoryCarousel(),
-            SizedBox(height: 24),
-            HeaderWithLink(title: 'Thịnh hành', link: ''),
-            SizedBox(height: 12),
-            StoryScrollList(storyList: STORIES),
-            SizedBox(height: 24),
-            AuthorRecommendation(),
-            SizedBox(height: 24),
-            CategoryStories(categoryId: 1),
-            SizedBox(height: 24),
-            CategoryStories(categoryId: 2),
+            const SizedBox(height: 24),
+            const HeaderWithLink(title: 'Thịnh hành', link: ''),
+            const SizedBox(height: 12),
+            // StoryScrollList(storyList: STORIES),
+            const SizedBox(height: 24),
+            // const AuthorRecommendation(),
+            const SizedBox(height: 24),
+            const CategoryStories(categoryId: 1),
+            const SizedBox(height: 24),
+            const CategoryStories(categoryId: 2),
           ])),
       bottomNavigationBar: const AppBottomNavigationBar(),
     );
   }
 }
 
-class AuthorRecommendation extends StatelessWidget {
-  const AuthorRecommendation({super.key});
+// class AuthorRecommendation extends StatelessWidget {
+//   const AuthorRecommendation({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Column(mainAxisSize: MainAxisSize.min, children: [
-      const HeaderWithLink(title: 'Có thể bạn sẽ thích', link: ''),
-      const SizedBox(height: 12),
-      SizedBox(
-          width: double.infinity,
-          height: 124,
-          child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: AUTHOR.length,
-              itemBuilder: (BuildContext context, int index) {
-                Author author = AUTHOR[index];
-                return Padding(
-                  padding: const EdgeInsets.only(right: 12),
-                  child: SuggestedAuthor(
-                    name: author.name,
-                    follower: author.follower,
-                    coverUrl: author.coverUrl,
-                  ),
-                );
-              })),
-    ]);
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(mainAxisSize: MainAxisSize.min, children: [
+//       const HeaderWithLink(title: 'Có thể bạn sẽ thích', link: ''),
+//       const SizedBox(height: 12),
+//       SizedBox(
+//           width: double.infinity,
+//           height: 124,
+//           child: ListView.builder(
+//               scrollDirection: Axis.horizontal,
+//               itemCount: AUTHOR.length,
+//               itemBuilder: (BuildContext context, int index) {
+//                 Author author = AUTHOR[index];
+//                 return Padding(
+//                   padding: const EdgeInsets.only(right: 12),
+//                   child: SuggestedAuthor(
+//                     name: author.name,
+//                     follower: author.follower,
+//                     coverUrl: author.coverUrl,
+//                   ),
+//                 );
+//               })),
+//     ]);
+//   }
+// }
 
-class CategoryStories extends StatelessWidget {
+class CategoryStories extends HookWidget {
   final int categoryId;
 
   const CategoryStories({super.key, required this.categoryId});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(
+    BuildContext context,
+  ) {
+    final storyList =
+        useQuery(['story_all'], () => StoryService().fetchStories());
+
+    if (storyList.isLoading) {
+      return const Text('Loading...');
+    }
+    if (storyList.isError) {
+      return const Text('Oops something happen');
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -93,14 +107,13 @@ class CategoryStories extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: STORIES.sublist(0, 1).asMap().entries.map((entry) {
+          children: storyList.data!.sublist(0, 1).asMap().entries.map((entry) {
             Story story = entry.value;
             return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Container(color: Colors.amber));
-            // child: StoryCardDetail(
-            //   story: story,
-            // ));
+                child: StoryCardDetail(
+                  story: story,
+                ));
           }).toList(),
         ),
         SingleChildScrollView(
@@ -108,11 +121,13 @@ class CategoryStories extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: STORIES
+              children: (storyList.data ?? [])
                   .map((story) => Padding(
                         padding: const EdgeInsets.only(right: 12),
                         child: StoryCardOverView(
-                            title: story.title, coverUrl: story.coverUrl),
+                            title: story.title,
+                            coverUrl: story.cover_url,
+                            id: story.id),
                       ))
                   .toList(),
             ))
@@ -121,22 +136,24 @@ class CategoryStories extends StatelessWidget {
   }
 }
 
-class CategoryCarousel extends StatefulWidget {
-  const CategoryCarousel({super.key});
-
-  @override
-  State<StatefulWidget> createState() {
-    return _CategoryCarouselState();
-  }
-}
-
-class _CategoryCarouselState extends State<CategoryCarousel> {
-  int _current = 0;
+class CategoryCarousel extends HookConsumerWidget {
   final CarouselController _controller = CarouselController();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final current = useState(0);
+
+    final categories =
+        useQuery(['categories'], () => CategoryReposity().fetchCategory());
+
+    if (categories.isLoading) {
+      return const Text('Loading...');
+    }
+    if (categories.isError) {
+      return const Text('Oops something happen');
+    }
+
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final int pageNum = (CATEGORIES.length / 6).ceil();
+    final int pageNum = ((categories.data ?? []).length / 6).ceil();
     return SizedBox(
         height: 132,
         child: Column(children: [
@@ -147,9 +164,7 @@ class _CategoryCarouselState extends State<CategoryCarousel> {
                 viewportFraction: 1.0,
                 enlargeCenterPage: false,
                 onPageChanged: (index, reason) {
-                  setState(() {
-                    _current = index;
-                  });
+                  current.value = index;
                 }),
             items: List.generate(pageNum, (index) {
               return Builder(
@@ -168,16 +183,18 @@ class _CategoryCarouselState extends State<CategoryCarousel> {
                             1.fr,
                             1.fr,
                           ],
-                          children: CATEGORIES
-                              .sublist(index * 6,
-                                  min(index * 6 + 6, CATEGORIES.length))
+                          children: (categories.data ?? [])
+                              .sublist(
+                                  index * 6,
+                                  min(index * 6 + 6,
+                                      (categories.data ?? []).length))
                               .asMap()
                               .entries
                               .map((entry) {
                             Category category = entry.value;
                             return CategoryBadge(
-                              imgUrl: category.coverUrl ?? '',
-                              title: category.title ?? '',
+                              imgUrl: category.imageUrl ?? '',
+                              title: category.name ?? '',
                             );
                           }).toList()));
                 },
@@ -191,13 +208,13 @@ class _CategoryCarouselState extends State<CategoryCarousel> {
               return GestureDetector(
                 onTap: () => _controller.animateToPage(index),
                 child: Container(
-                    width: _current == index ? 6 : 4,
-                    height: _current == index ? 6 : 4,
+                    width: current == index ? 6 : 4,
+                    height: current == index ? 6 : 4,
                     margin: const EdgeInsets.symmetric(
                         vertical: 0, horizontal: 3.0),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: _current == index
+                      color: current == index
                           ? appColors.primaryBase
                           : appColors.skyLight,
                     )),

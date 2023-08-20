@@ -22,15 +22,7 @@ class AppBarNavigator extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final User? user = Auth().currentUser;
-    Widget child = CustomAppBar(
-      title: Text(
-        'Trang chủ',
-        style: Theme.of(context)
-            .textTheme
-            .bodyLarge
-            ?.copyWith(color: appColors.primaryBase),
-      ),
-    );
+    Widget child = HomeTopBar();
 
     if (tabItem == 'Home') {
       child = HomeTopBar();

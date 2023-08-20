@@ -64,4 +64,24 @@ class Chapter {
       paragraphs: paragraphs,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "story_id": story_id,
+        "current_version_id": current_version_id,
+        "product_id": product_id,
+        "title": title,
+        "is_draft": is_draft,
+        "is_paywalled": is_paywalled,
+        "author_earning": author_earning,
+        "read_count": read_count,
+        "vote_count": vote_count,
+        "comment_count": comment_count,
+        "created_date": created_date,
+        "updated_date": updated_date,
+        "is_enabled": is_enabled,
+        "chapter_version": chapter_version,
+        "paragraphs":
+            paragraphs.map((paragraph) => paragraph.toJson()).toList(),
+      };
 }

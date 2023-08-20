@@ -1,7 +1,5 @@
 import 'package:audiory_v0/config/app_router.dart';
-import 'package:audiory_v0/layout/main_layout.dart';
-import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
-import 'package:audiory_v0/services/auth_services.dart';
+
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
 
@@ -9,7 +7,11 @@ import 'package:flutter/material.dart';
 //auth
 import "package:firebase_core/firebase_core.dart";
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:fquery/fquery.dart';
 
+final queryClient = QueryClient(
+  defaultQueryOptions: DefaultQueryOptions(),
+);
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -21,7 +23,11 @@ Future<void> main() async {
       messagingSenderId: "",
     ),
   );
-  runApp(const ProviderScope(child: MyApp()));
+
+  runApp(QueryClientProvider(
+    queryClient: queryClient,
+    child: const ProviderScope(child: MyApp()),
+  ));
 }
 
 ThemeManager _themeManager = ThemeManager();

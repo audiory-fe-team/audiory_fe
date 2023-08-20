@@ -2,26 +2,22 @@ import 'dart:math';
 
 import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
-import 'package:audiory_v0/layout/bottom_bar.dart';
-import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
-import 'package:audiory_v0/models/StoryServer.dart';
+import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import '../constants/mock_data.dart';
 
-class HomeScreeen extends ConsumerWidget {
-  const HomeScreeen({super.key});
+class HomeScreen extends ConsumerWidget {
+  const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<StoryServer>> storyList =
-        ref.watch(storyFutureProvider);
+    final AsyncValue<List<Story>> storyList = ref.watch(storyFutureProvider);
 
     return Scaffold(
       appBar: const HomeTopBar(),
@@ -38,7 +34,7 @@ class HomeScreeen extends ConsumerWidget {
               const SizedBox(height: 12),
               storyList.when(
                   data: (storyList) => StoryScrollList(
-                        storyServerList: storyList,
+                        storyList: storyList,
                       ),
                   error: (err, stack) => Text(err.toString()),
                   loading: () => Center(
@@ -74,7 +70,7 @@ class HomeScreeen extends ConsumerWidget {
               const SizedBox(height: 12),
               storyList.when(
                   data: (storyList) => StoryScrollList(
-                        storyServerList: storyList,
+                        storyList: storyList,
                       ),
                   error: (err, stack) => Text(err.toString()),
                   loading: () => Center(
@@ -87,7 +83,7 @@ class HomeScreeen extends ConsumerWidget {
               const SizedBox(height: 12),
               storyList.when(
                   data: (storyList) => StoryScrollList(
-                        storyServerList: storyList,
+                        storyList: storyList,
                       ),
                   error: (err, stack) => Text(err.toString()),
                   loading: () => Center(
@@ -98,17 +94,31 @@ class HomeScreeen extends ConsumerWidget {
               //NOTE: Continue reading section
               const HeaderWithLink(title: 'Tiếp tục đọc', link: ''),
               const SizedBox(height: 12),
-              Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: STORIES.sublist(0, 3).asMap().entries.map((entry) {
-                    Story story = entry.value;
-                    return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: Container(color: Colors.amber));
-                    // child: StoryCardDetail(
-                    //   story: story,
-                    // ));
-                  }).toList()),
+              storyList.when(
+                  data: (storyList) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: storyList
+                          .map((story) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: StoryCardDetail(
+                                story: story,
+                              )))
+                          .toList()),
+                  error: (err, stack) => Text(err.toString()),
+                  loading: () => const Center(
+                        child: CircularProgressIndicator(),
+                      )),
+              // Column(
+              //     mainAxisSize: MainAxisSize.min,
+              //     children: STORIES.sublist(0, 3).asMap().entries.map((entry) {
+              //       // Story story = entry.value;
+              //       return Padding(
+              //           padding: const EdgeInsets.only(bottom: 12),
+              //           child: Container(color: Colors.amber)
+              //       child: StoryCardDetail(
+              //         story: story,
+              //       ));
+              //     }).toList()),
               const SizedBox(height: 32),
             ],
           )),
@@ -183,8 +193,8 @@ class RankingListBadge extends StatelessWidget {
           Text(label,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                    color: selected ? appColors.inkBase : appColors.primaryBase,
-                  )),
+                  color: selected ? appColors.inkBase : Colors.white,
+                  fontWeight: FontWeight.w400)),
         ],
       ),
     );
@@ -192,7 +202,7 @@ class RankingListBadge extends StatelessWidget {
 }
 
 class HomeRankingList extends StatelessWidget {
-  final List<StoryServer>? storyList;
+  final List<Story>? storyList;
   static const options = ['Truyện hot tháng', 'Truyện bình luận nhiều'];
 
   const HomeRankingList({super.key, this.storyList = const []});
@@ -202,7 +212,7 @@ class HomeRankingList extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const HeaderWithLink(title: 'BXH Tháng này', link: ''),
+        const HeaderWithLink(title: 'BXH Tháng này', link: '/ranking'),
         const SizedBox(height: 12),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -229,13 +239,13 @@ class HomeRankingList extends StatelessWidget {
               .asMap()
               .entries
               .map((entry) {
-            StoryServer story = entry.value;
+            Story story = entry.value;
             int index = entry.key;
             return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: HomeRankingCard(
                   order: index + 1,
-                  storyServer: story,
+                  story: story,
                   icon: InkWell(
                     child: SvgPicture.asset(
                       'assets/icons/heart.svg',

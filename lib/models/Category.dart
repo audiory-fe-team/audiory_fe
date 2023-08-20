@@ -1,51 +1,41 @@
 class Category {
-  dynamic? id;
-  String? name;
-  String? imageUrl;
-  String? createdDate;
-  String? updatedDate;
-  bool? isEnabled;
-  List<dynamic>? stories;
-  int? categoryRanking;
+  final String id;
+  final String? name;
+  final String? imageUrl;
+  final String? createdDate;
+  final String? updatedDate;
+  final bool? isEnabled;
+  // final List<dynamic>? stories;
+  // final dynamic categoryRanking;
 
-  //mock
-  String? coverUrl;
-  String? title;
+  Category({
+    required this.id,
+    this.name,
+    this.imageUrl,
+    this.createdDate,
+    this.updatedDate,
+    this.isEnabled,
+  });
 
-  Category(
-      {this.id,
-      this.name,
-      this.imageUrl,
-      this.createdDate,
-      this.updatedDate,
-      this.isEnabled,
-      this.stories,
-      this.categoryRanking,
-      //mock data
-      this.coverUrl,
-      this.title});
-
-  Category.fromJson(Map<String, dynamic> json) {
-    id = json['id'];
-    name = json['name'];
-    imageUrl = json['image_url'];
-    createdDate = json['created_date'];
-    updatedDate = json['updated_date'];
-    isEnabled = json['is_enabled'];
-    stories = json['stories'];
-    categoryRanking = json['category_ranking'];
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(
+      id: json['id'],
+      name: json['name'],
+      imageUrl: json['image_url'],
+      createdDate: json['created_date'],
+      updatedDate: json['updated_date'],
+      isEnabled: json['is_enabled'],
+    );
   }
 
   Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['id'] = this.id;
-    data['name'] = this.name;
-    data['image_url'] = this.imageUrl;
-    data['created_date'] = this.createdDate;
-    data['updated_date'] = this.updatedDate;
-    data['is_enabled'] = this.isEnabled;
-    data['stories'] = this.stories;
-    data['category_ranking'] = this.categoryRanking;
-    return data;
+    return {
+      'id': id,
+      'name': name,
+      'image_url': imageUrl,
+      'created_date': createdDate,
+      'updated_date': updatedDate,
+      'is_enabled': isEnabled,
+    };
   }
 }

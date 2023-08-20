@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Category.dart';
+import 'package:audiory_v0/models/Category.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -31,7 +32,7 @@ class CategoryReposity {
       final List<dynamic> result = jsonDecode(response.body)['data'];
       return result.map((i) => Category.fromJson(i)).toList();
     } else {
-      throw Exception('Failed to category');
+      throw Exception('Failed to load stories');
     }
   }
 }

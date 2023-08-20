@@ -1,5 +1,7 @@
-import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:audiory_v0/feat-explore/utils/ranking.dart';
+import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
@@ -7,8 +9,7 @@ import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/main_layout.dart';
-import 'package:audiory_v0/models/StoryServer.dart';
-import 'package:audiory_v0/screens/detail_story/detail_story_screen.dart';
+import 'package:audiory_v0/feat-read/detail_story_screen.dart';
 import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
@@ -21,7 +22,6 @@ import 'package:go_router/go_router.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
-import 'package:page_transition/page_transition.dart';
 
 class AppRoutes {
   static final GoRouter routes = GoRouter(
@@ -51,6 +51,25 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        name: 'ranking',
+        path: '/ranking',
+        builder: (BuildContext context, GoRouterState state) {
+          final typeString = state.queryParameters["type"];
+          RankingType type = mapStringToRankingType(typeString);
+          final metricString = state.queryParameters["metric"];
+          RankingMetric metric = mapStringToRankingMetric(metricString);
+          final timeString = state.queryParameters["time"];
+          RankingTimeRange time = mapStringToRankingTimeRange(timeString);
+
+          return RankingScreen(
+            key: state.pageKey,
+            type: type,
+            metric: metric,
+            time: time,
+          );
+        },
+      ),
+      GoRoute(
           path: '/explore',
           name: 'explore',
           builder: (BuildContext context, GoRouterState state) {
@@ -62,8 +81,8 @@ class AppRoutes {
               name: 'explore_search',
               pageBuilder: (context, state) => CustomTransitionPage<void>(
                   key: state.pageKey,
-                  child: SearchScreen(),
-                  transitionDuration: Duration(milliseconds: 400),
+                  child: const SearchScreen(),
+                  transitionDuration: const Duration(milliseconds: 400),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     const begin =

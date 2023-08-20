@@ -1,16 +1,14 @@
 import 'dart:convert';
 
-import 'package:audiory_v0/feat-explore/models/filter.dart';
-import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/Author.dart';
 import 'package:http/http.dart' as http;
 
-class StoryService {
+class AuthorService {
   static const baseURL = "http://34.29.203.235:3500/api";
-  static final storiesEndpoint = baseURL + "/stories";
+  static final authorEndpoint = baseURL + "/users";
 
-  Future<List<Story>> fetchStories({String keyword = ''}) async {
-    final url = Uri.parse(storiesEndpoint)
+  Future<List<Author>> fetchAllAuthors({String keyword = ''}) async {
+    final url = Uri.parse(authorEndpoint)
         .replace(queryParameters: {'keyword': keyword ?? ''});
     Map<String, String> header = {
       "Content-type": "application/json",
@@ -20,18 +18,17 @@ class StoryService {
     if (response.statusCode == 200) {
       final List result = json.decode(response.body)['data'];
 
-      return result.map((i) => Story.fromJson(i)).toList();
+      return result.map((i) => Author.fromJson(i)).toList();
     } else {
-      throw Exception('Failed to load stories');
+      throw Exception('Failed to load authors');
     }
   }
 
-  Future<Story> fetchStoryById(String? storyId) async {
-    if (storyId == null) {
-      throw Exception('Failed to fetch story');
+  Future<Author?> fetchAuthorById(String? authorId) async {
+    if (authorId == null || authorId == '') {
+      return null;
     }
-
-    final url = Uri.parse(storiesEndpoint + "/$storyId");
+    final url = Uri.parse(authorEndpoint + "/$authorId");
     Map<String, String> header = {
       "Content-type": "application/json",
       "Accept": "application/json"
@@ -41,10 +38,16 @@ class StoryService {
     final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
-      final Story story = Story.fromJson(json.decode(responseBody)['data']);
-      return story;
+      try {
+        final Author author =
+            Author.fromJson(json.decode(responseBody)['data']);
+        return author;
+      } catch (error) {
+        print(error);
+        throw Exception(error.toString());
+      }
     } else {
-      throw Exception('Failed to chapter');
+      throw Exception('Failed to author');
     }
   }
 }
