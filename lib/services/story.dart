@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/models/StoryServer.dart';
+import 'package:audiory_v0/services/toast_services.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -67,7 +68,7 @@ class StoryRepostitory {
     // print('res');
     // print(response.statusCode);
     // print(response.body);
-    if (response.statusCode == 200) {
+    if (encoded['code'] == 200) {
       // final List<dynamic> result = jsonDecode(response.body)['data'];
       // return result.map((i) => StoryServer.fromJson(i)).toList();
     } else {
