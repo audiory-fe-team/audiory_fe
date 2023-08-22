@@ -10,6 +10,7 @@ import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/main_layout.dart';
 import 'package:audiory_v0/feat-read/detail_story_screen.dart';
+import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 
@@ -93,7 +94,12 @@ class AppRoutes {
                 name: 'explore_result',
                 builder: (BuildContext context, GoRouterState state) {
                   final keyword = state.queryParameters["keyword"];
-                  return ResultScreen(keyword: keyword ?? '');
+                  final searchForProfile =
+                      state.queryParameters["searchForProfile"];
+                  return ResultScreen(
+                      key: state.pageKey,
+                      keyword: keyword ?? '',
+                      searchForProfile: searchForProfile == 'true');
                 })
           ]),
       GoRoute(
@@ -110,8 +116,11 @@ class AppRoutes {
           routes: [
             GoRoute(
               path: 'chapter/:chapterId',
+              name: 'chapter_detail',
               builder: (BuildContext context, GoRouterState state) {
                 String? chapterId = state.pathParameters["chapterId"];
+                if (chapterId == null || chapterId == '')
+                  return NotFoundScreen();
                 return ReadingScreen(
                   chapterId: chapterId,
                 );

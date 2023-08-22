@@ -1,27 +1,41 @@
-import 'package:audiory_v0/api/story_provider.dart';
+import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/result_top_bar.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
+import 'package:audiory_v0/services/profile_services.dart';
+import 'package:audiory_v0/services/story_services.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:fquery/fquery.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ResultScreen extends HookConsumerWidget {
   final String keyword;
-  final bool searchForAuthor; //NOTE: Search for stories or
+  final bool searchForProfile; //NOTE: Search for stories or
   const ResultScreen({
     super.key,
     required this.keyword,
-    this.searchForAuthor = false,
+    this.searchForProfile = false,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final tabController = useTabController(initialLength: 2, initialIndex: 0);
-    final stories = ref.watch(storiesProvider(keyword));
+    final tabController = useTabController(
+        initialLength: 2, initialIndex: searchForProfile ? 1 : 0);
+
+    final storiesQuery = useQuery(['story', 'search', keyword],
+        () => StoryService().fetchStories(keyword: keyword),
+        enabled: searchForProfile == false);
+
+    final profileQuery = useQuery(['profile', 'search', keyword],
+        () => ProfileService().fetchAllProfiles(keyword: keyword),
+        enabled: searchForProfile == true);
+
     final tabState = useState(0);
 
     return Scaffold(
@@ -37,14 +51,11 @@ class ResultScreen extends HookConsumerWidget {
                   TabBar(
                     controller: tabController,
                     onTap: (value) {
-                      if (tabState.value == value) return;
-                      tabState.value = value;
-                      // print("haha");
-                      // GoRouter.of(context)
-                      //     .goNamed("explore_result", queryParameters: {
-                      //   "keyword": keyword,
-                      //   "searchForAuthor": (value == 1),
-                      // });
+                      GoRouter.of(context)
+                          .pushNamed("explore_result", queryParameters: {
+                        "keyword": keyword,
+                        "searchForProfile": (value == 1),
+                      });
                     },
                     labelColor: appColors.primaryBase,
                     unselectedLabelColor: appColors.inkLight,
@@ -63,49 +74,35 @@ class ResultScreen extends HookConsumerWidget {
                   ),
                   Builder(builder: (_) {
                     if (tabState.value == 0) {
-                      return stories.when(
-                          data: (stories) => Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: stories
-                                    .map((story) =>
-                                        StoryCardDetail(story: story))
-                                    .toList(),
-                              ),
-                          error: (error, stack) {
-                            return const Center(
-                                child: Text(
-                                    'Oops, something unexpected happened'));
-                          },
-                          loading: () => Center(
-                                  child: CircularProgressIndicator(
-                                color: appColors.primaryBase,
-                              )));
+                      if (storiesQuery.isError) {
+                        return Center(
+                            child: Text(storiesQuery.error.toString()));
+                      }
+                      return Skeletonizer(
+                          enabled: storiesQuery.isFetching,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: (storiesQuery.isFetching
+                                    ? skeletonStories
+                                    : (storiesQuery.data ?? []))
+                                .map((story) => StoryCardDetail(story: story))
+                                .toList(),
+                          ));
                     } else {
-                      return Column(mainAxisSize: MainAxisSize.min, children: [
-                        const SizedBox(
-                          height: 12,
-                        ),
-                        Container(
-                          height: 50,
-                          color: Colors.amber,
-                          margin: const EdgeInsets.only(bottom: 12),
-                        ),
-                        Container(
-                          height: 50,
-                          color: Colors.amber,
-                          margin: const EdgeInsets.only(bottom: 12),
-                        ),
-                        Container(
-                          height: 50,
-                          color: Colors.amber,
-                          margin: const EdgeInsets.only(bottom: 12),
-                        ),
-                        Container(
-                          height: 50,
-                          color: Colors.amber,
-                          margin: const EdgeInsets.only(bottom: 12),
-                        ),
-                      ]); //2nd tabView
+                      if (profileQuery.isError) {
+                        return Center(
+                            child: Text(profileQuery.error.toString()));
+                      }
+                      return Skeletonizer(
+                          enabled: profileQuery.isFetching,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: (profileQuery.isFetching
+                                    ? skeletonProfiles
+                                    : (profileQuery.data ?? skeletonProfiles))
+                                .map((profile) => Text(profile.fullName ?? ''))
+                                .toList(),
+                          ));
                     }
                   }),
                 ],

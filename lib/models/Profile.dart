@@ -1,7 +1,7 @@
 import 'package:audiory_v0/models/Library.dart';
 import 'package:audiory_v0/models/Story.dart';
 
-class Author {
+class Profile {
   final String? avatarUrl;
   final String? backgroundUrl;
   final String? bankAccountNumber;
@@ -26,7 +26,7 @@ class Author {
   final List<Story>? stories;
   final Library? library;
 
-  Author({
+  Profile({
     this.avatarUrl,
     this.backgroundUrl,
     this.bankAccountNumber,
@@ -52,11 +52,11 @@ class Author {
     this.library,
   });
 
-  factory Author.fromJson(Map<String, dynamic> json) {
+  factory Profile.fromJson(Map<String, dynamic> json) {
     List<dynamic> storiesJson = json["stories"] ?? [];
     List<Story> stories = storiesJson.map((p) => Story.fromJson(p)).toList();
 
-    return Author(
+    return Profile(
       avatarUrl: json['avatar_url'],
       backgroundUrl: json['background_url'],
       bankAccountNumber: json['bank_account_number'],
@@ -78,7 +78,8 @@ class Author {
       reportCount: json['report_count'],
       updatedDate: json['updated_date'],
       username: json['username'],
-      library: Library.fromJson(json['library']),
+      library:
+          json['library'] == null ? null : Library.fromJson(json['library']),
       stories: stories,
     );
   }

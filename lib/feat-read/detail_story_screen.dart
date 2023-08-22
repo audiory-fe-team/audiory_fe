@@ -1,21 +1,24 @@
-import 'package:audiory_v0/models/Author.dart';
+import 'package:audiory_v0/constants/gifts.dart';
+import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/models/Chapter.dart';
+import 'package:audiory_v0/models/Gift.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/feat-read/widgets/chapter.dart';
-import 'package:audiory_v0/feat-read/widgets/commentCard.dart';
-import 'package:audiory_v0/feat-read/widgets/detail_story_bottom_bar.dart';
-import 'package:audiory_v0/feat-read/widgets/supporterCard.dart';
-import 'package:audiory_v0/services/author_services.dart';
+import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
+import 'package:audiory_v0/services/profile_services.dart';
 import 'package:audiory_v0/services/story_services.dart';
+import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
+import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
-import 'package:audiory_v0/widgets/paginators/number_paginator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:number_paginator/number_paginator.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 import '../theme/theme_constants.dart';
 import '../widgets/category_badge.dart';
@@ -32,26 +35,18 @@ class DetailStoryScreen extends HookConsumerWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
     final tabController = useTabController(initialLength: 2);
+    final paginatorController = NumberPaginatorController();
     final storyQuery =
         useQuery(['story', id], () => StoryService().fetchStoryById(id));
 
-    final authorQuery = useQuery(['author', storyQuery.data?.author_id],
-        () => AuthorService().fetchAuthorById(storyQuery.data?.author_id),
+    final authorQuery = useQuery(['profile', storyQuery.data?.author_id],
+        () => ProfileService().fetchProfileById(storyQuery.data?.author_id),
         enabled: storyQuery.isSuccess);
 
     final tabState = useState(0);
+    final selectedItem = useState<Gift>(GIFT_LIST[0]);
 
     Widget donateGiftModal() {
-      const GIFTS = [
-        'rose',
-        'teddy',
-        'golden',
-        'knife',
-        'ring',
-        'flower',
-        'diamond',
-        'golden',
-      ];
       return Expanded(
           child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -70,12 +65,17 @@ class DetailStoryScreen extends HookConsumerWidget {
                   alignment: WrapAlignment.spaceEvenly,
                   spacing: 4,
                   runSpacing: 12,
-                  children: GIFTS
-                      .map((option) => Padding(
-                          padding: const EdgeInsets.only(right: 8),
-                          child: DonateItemCard(
-                            name: option,
-                          )))
+                  children: GIFT_LIST
+                      .map((option) => TapEffectWrapper(
+                          onTap: () {
+                            selectedItem.value = option;
+                          },
+                          child: Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: DonateItemCard(
+                                gift: option,
+                                selected: (selectedItem.value == option),
+                              ))))
                       .toList(),
                 ),
               )
@@ -94,8 +94,8 @@ class DetailStoryScreen extends HookConsumerWidget {
               children: [
             Column(
               children: [
-                Row(
-                  children: [
+                Skeleton.keep(
+                  child: Row(children: [
                     Image.asset(
                       'assets/images/chapter_colored.png',
                       width: 16,
@@ -105,18 +105,18 @@ class DetailStoryScreen extends HookConsumerWidget {
                       'Chương',
                       style: sharedHeaderStyle,
                     )
-                  ],
+                  ]),
                 ),
                 const SizedBox(height: 4),
-                Text((story?.chapters?.length ?? '').toString(),
+                Text((story?.chapters?.length ?? '1000').toString(),
                     style: sharedNumberStyle)
               ],
             ),
             VerticalDivider(),
             Column(
               children: [
-                Row(
-                  children: [
+                Skeleton.keep(
+                  child: Row(children: [
                     Image.asset(
                       'assets/images/view_colored.png',
                       width: 16,
@@ -126,7 +126,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                       'Lượt đọc',
                       style: sharedHeaderStyle,
                     )
-                  ],
+                  ]),
                 ),
                 const SizedBox(height: 4),
                 Text((story?.read_count ?? '').toString(),
@@ -136,8 +136,8 @@ class DetailStoryScreen extends HookConsumerWidget {
             VerticalDivider(),
             Column(
               children: [
-                Row(
-                  children: [
+                Skeleton.keep(
+                  child: Row(children: [
                     Image.asset(
                       'assets/images/comment_colored.png',
                       width: 16,
@@ -147,7 +147,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                       'Bình luận',
                       style: sharedHeaderStyle,
                     )
-                  ],
+                  ]),
                 ),
                 const SizedBox(height: 4),
                 Text((story?.vote_count ?? '').toString(),
@@ -157,8 +157,8 @@ class DetailStoryScreen extends HookConsumerWidget {
             VerticalDivider(),
             Column(
               children: [
-                Row(
-                  children: [
+                Skeleton.keep(
+                  child: Row(children: [
                     Image.asset(
                       'assets/images/vote_colored.png',
                       width: 16,
@@ -168,7 +168,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                       'Bình chọn',
                       style: sharedHeaderStyle,
                     )
-                  ],
+                  ]),
                 ),
                 const SizedBox(height: 4),
                 Text((story?.vote_count ?? '').toString(),
@@ -184,18 +184,21 @@ class DetailStoryScreen extends HookConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 110,
-            height: 165,
-            decoration: ShapeDecoration(
-              image: DecorationImage(
-                image: NetworkImage(story?.cover_url ?? ''),
-                fit: BoxFit.fill,
-              ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-          ),
+          Skeleton.replace(
+              width: 110,
+              height: 165,
+              child: Container(
+                width: 110,
+                height: 165,
+                decoration: ShapeDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(story?.cover_url ?? ''),
+                    fit: BoxFit.fill,
+                  ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+              )),
           const SizedBox(height: 24),
           Text(
             story?.title ?? '',
@@ -206,7 +209,9 @@ class DetailStoryScreen extends HookConsumerWidget {
       );
     }
 
-    Widget chapterView(Story? story, BuildContext context) {
+    Widget chapterView(
+      Story? story,
+    ) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,23 +219,22 @@ class DetailStoryScreen extends HookConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Cập nhật đến chương',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style: textTheme.headlineSmall,
               ),
               Container(
+                  child: IntrinsicHeight(
                 child: Row(children: [
-                  Text(
-                    'Mới nhất',
-                    style: TextStyle(color: appColors.primaryBase),
-                  ),
-                  const SizedBox(
-                    width: 4,
-                  ),
-                  const Text('Cũ nhất')
+                  Text('Mới nhất', style: textTheme.labelLarge),
+                  const VerticalDivider(),
+                  Text('Cũ nhất', style: textTheme.labelLarge)
                 ]),
-              ),
+              )),
             ],
+          ),
+          const SizedBox(
+            height: 12,
           ),
           Column(
             children: (story?.chapters ?? []).asMap().entries.map((entry) {
@@ -244,20 +248,27 @@ class DetailStoryScreen extends HookConsumerWidget {
                   ));
             }).toList(),
           ),
-          const ListWithPaginator()
+          NumberPaginator(
+            config: NumberPaginatorUIConfig(
+              buttonSelectedBackgroundColor: appColors.primaryBase,
+              buttonUnselectedForegroundColor: appColors.primaryBase,
+            ),
+            controller: paginatorController,
+            numberPages: 100,
+            onPageChange: (index) {
+              print(index);
+            },
+          )
         ],
       );
     }
 
-    Widget detailView(Story? story, BuildContext context) {
+    Widget detailView(Story? story) {
       return Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const SizedBox(
-            height: 12,
-          ),
           Text('Giới thiệu', style: textTheme.headlineSmall),
           const SizedBox(
             height: 8,
@@ -269,7 +280,9 @@ class DetailStoryScreen extends HookConsumerWidget {
             trimMode: TrimMode.Line,
             trimCollapsedText: ' Xem thêm',
             trimExpandedText: ' Ẩn bớt',
-            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w400),
+            style: textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w400,
+                fontFamily: GoogleFonts.sourceSansPro().fontFamily),
             moreStyle:
                 textTheme.titleMedium?.copyWith(color: appColors.primaryBase),
           ),
@@ -310,7 +323,6 @@ class DetailStoryScreen extends HookConsumerWidget {
               ),
             ],
           ),
-          // _supporterList(),
           const SizedBox(
             height: 8,
           ),
@@ -340,146 +352,219 @@ class DetailStoryScreen extends HookConsumerWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        leading: GestureDetector(
-          onTap: () => context.pop(),
-          child: const Icon(Icons.arrow_back),
+        appBar: AppBar(
+          leading: GestureDetector(
+            onTap: () => context.pop(),
+            child: const Icon(Icons.arrow_back),
+          ),
+          title: Text(
+            storyQuery.data?.title ?? 'Loading...',
+            style: const TextStyle(color: Colors.black),
+          ),
+          actions: [
+            GestureDetector(
+              child: const Icon(Icons.more_vert_sharp),
+            )
+          ],
         ),
-        title: Text(
-          storyQuery.data?.title ?? 'Loading...',
-          style: const TextStyle(color: Colors.black),
-        ),
-        actions: [
-          GestureDetector(
-            child: const Icon(Icons.more_vert_sharp),
-          )
-        ],
-      ),
-      body: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Builder(builder: (context) {
-                  if (storyQuery.isLoading) {
-                    return Center(
-                        child: CircularProgressIndicator(
-                      color: appColors.primaryBase,
-                    ));
-                  }
-                  if (storyQuery.isError) {
-                    return const Text('Failed');
-                  }
-                  return storyInfo(storyQuery.data);
-                }),
-                const SizedBox(height: 12),
-                //NOTE: Author image
-                Builder(builder: (context) {
-                  if (authorQuery.isLoading) {
-                    return Center(
-                        child: CircularProgressIndicator(
-                      color: appColors.primaryBase,
-                    ));
-                  }
-                  if (authorQuery.isError) {
-                    return const Text('Failed fetch author');
-                  }
-                  return Material(
-                      child: InkWell(
-                          onTap: () async {
-                            // context.go('/profile');
-                          },
-                          child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Container(
-                                  width: 32,
-                                  height: 32,
-                                  decoration: ShapeDecoration(
-                                    image: DecorationImage(
-                                      image: NetworkImage(
-                                          authorQuery.data?.avatarUrl ?? ''),
-                                      fit: BoxFit.fill,
-                                    ),
-                                    shape: CircleBorder(),
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  authorQuery.data?.fullName ?? '',
-                                  style: textTheme.titleMedium!
-                                      .copyWith(fontWeight: FontWeight.w400),
-                                )
-                              ])));
-                }),
-                const SizedBox(height: 24),
-                interactionInfo(storyQuery.data),
-                const SizedBox(height: 24),
-                Builder(builder: (context) {
-                  if (storyQuery.isLoading) {
-                    return Center(
-                        child: CircularProgressIndicator(
-                      color: appColors.primaryBase,
-                    ));
-                  }
-                  if (storyQuery.isError) {
-                    return const Text('Failed');
-                  }
-                  return SizedBox(
-                      width: double.infinity,
-                      child: Wrap(
-                        alignment: WrapAlignment.center,
-                        spacing: 1,
-                        runSpacing: 6,
-                        children: (storyQuery.data?.tags ?? [])
-                            .map((tag) => Padding(
-                                padding: const EdgeInsets.only(right: 8),
-                                child: RankingListBadge(
-                                  label: tag.name,
-                                  selected: false,
-                                )))
-                            .toList(),
-                      ));
-                }),
+        body: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: RefreshIndicator(
+                onRefresh: () async {
+                  storyQuery.refetch();
+                  authorQuery.refetch();
+                },
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 12),
+                      Skeletonizer(
+                          enabled: storyQuery.isFetching,
+                          child: storyInfo(storyQuery.isFetching
+                              ? skeletonStory
+                              : storyQuery.data)),
 
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 12),
-                  child: TabBar(
-                    onTap: (value) {
-                      if (tabState.value != value) tabState.value = value;
-                    },
-                    controller: tabController,
-                    labelColor: appColors.primaryBase,
-                    unselectedLabelColor: appColors.inkLight,
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 16),
-                    indicatorColor: appColors.primaryBase,
-                    labelStyle: textTheme.titleLarge,
-                    tabs: const [
-                      Tab(
-                        text: 'Chi tiết',
+                      const SizedBox(height: 12),
+                      //NOTE: Profile image
+                      Skeletonizer(
+                          enabled: authorQuery.isFetching,
+                          child: Material(
+                              child: InkWell(
+                                  onTap: () async {
+                                    // context.go('/profile');
+                                  },
+                                  child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Skeleton.replace(
+                                            width: 32,
+                                            height: 32,
+                                            child: Container(
+                                              width: 32,
+                                              height: 32,
+                                              decoration: ShapeDecoration(
+                                                image: DecorationImage(
+                                                  image: NetworkImage(
+                                                      authorQuery.data
+                                                              ?.avatarUrl ??
+                                                          ''),
+                                                  fit: BoxFit.fill,
+                                                ),
+                                                shape: CircleBorder(),
+                                              ),
+                                            )),
+                                        const SizedBox(width: 8),
+                                        Text(
+                                          authorQuery.isFetching
+                                              ? generateFakeString(16)
+                                              : authorQuery.data?.fullName ??
+                                                  '',
+                                          style: textTheme.titleMedium!
+                                              .copyWith(
+                                                  fontWeight: FontWeight.w400),
+                                        )
+                                      ])))),
+
+                      const SizedBox(height: 24),
+                      Skeletonizer(
+                          enabled: storyQuery.isFetching,
+                          child: interactionInfo(storyQuery.isFetching
+                              ? skeletonStory
+                              : storyQuery.data)),
+                      const SizedBox(height: 24),
+                      Skeletonizer(
+                          enabled: storyQuery.isFetching,
+                          child: SizedBox(
+                              width: double.infinity,
+                              child: Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 6,
+                                runSpacing: 6,
+                                children: ((storyQuery.isFetching
+                                            ? skeletonStory.tags
+                                            : storyQuery.data?.tags) ??
+                                        [])
+                                    .map((tag) => RankingListBadge(
+                                          label: tag.name,
+                                          selected: false,
+                                        ))
+                                    .toList(),
+                              ))),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        child: TabBar(
+                          onTap: (value) {
+                            if (tabState.value != value) tabState.value = value;
+                          },
+                          controller: tabController,
+                          labelColor: appColors.primaryBase,
+                          unselectedLabelColor: appColors.inkLight,
+                          labelPadding:
+                              const EdgeInsets.symmetric(horizontal: 16),
+                          indicatorColor: appColors.primaryBase,
+                          labelStyle: textTheme.titleLarge,
+                          tabs: const [
+                            Tab(
+                              text: 'Chi tiết',
+                            ),
+                            Tab(
+                              text: 'Chương',
+                            )
+                          ],
+                        ),
                       ),
-                      Tab(
-                        text: 'Chương',
-                      )
+                      const SizedBox(height: 12),
+                      Builder(builder: (context) {
+                        if (tabState.value == 0) {
+                          return Skeletonizer(
+                              enabled: storyQuery.isFetching,
+                              child: detailView(storyQuery.isFetching
+                                  ? skeletonStory
+                                  : storyQuery.data));
+                        }
+                        return Skeletonizer(
+                            enabled: storyQuery.isFetching,
+                            child: chapterView(storyQuery.isFetching
+                                ? skeletonStory
+                                : storyQuery.data));
+                      }),
                     ],
                   ),
-                ),
-                Builder(builder: (context) {
-                  if (tabState.value == 0) {
-                    return detailView(storyQuery.data, context);
-                  }
-                  return chapterView(storyQuery.data, context);
-                }),
-              ],
-            ),
-          )),
-      bottomNavigationBar: const DetailStoryBottomBar(),
-    );
+                ))),
+        bottomNavigationBar: Material(
+            elevation: 10,
+            child: Container(
+              height: 74,
+              width: double.infinity,
+              margin: EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TapEffectWrapper(
+                      onTap: () {},
+                      child: Container(
+                          width: 50,
+                          child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.favorite,
+                                  size: 24,
+                                  color: appColors.primaryBase,
+                                ),
+                                Text('Yêu thích',
+                                    style: textTheme.labelLarge!.copyWith(
+                                      color: appColors.primaryBase,
+                                    ))
+                              ]))),
+                  TapEffectWrapper(
+                      onTap: () {},
+                      child: Container(
+                          width: 50,
+                          child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.bookmark,
+                                  size: 24,
+                                  color: appColors.primaryBase,
+                                ),
+                                Text('Lưu trữ',
+                                    style: textTheme.labelLarge!.copyWith(
+                                      color: appColors.primaryBase,
+                                    ))
+                              ]))),
+                  Expanded(
+                      child: FilledButton(
+                          onPressed: () {
+                            GoRouter.of(context).pushNamed("chapter_detail",
+                                pathParameters: {
+                                  "chapterId":
+                                      storyQuery.data?.chapters?[0].id ?? ''
+                                });
+                          },
+                          style: ButtonStyle(
+                              backgroundColor: MaterialStatePropertyAll(
+                                  appColors.primaryBase)),
+                          child: Text(
+                            'Đọc',
+                            style: textTheme.titleMedium!
+                                .copyWith(color: Colors.white),
+                          )))
+                ],
+              ),
+            )));
   }
 }

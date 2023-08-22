@@ -1,14 +1,18 @@
 // import 'package:audioplayers/audioplayers.dart';
-import 'package:audiory_v0/api/chapter_provider.dart';
+import 'package:audiory_v0/constants/skeletons.dart';
+import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/screens/reading/bottom_bar.dart';
 import 'package:audiory_v0/screens/reading/reading_top_bar.dart';
+import 'package:audiory_v0/services/chapter_services.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fquery/fquery.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ReadingScreen extends HookConsumerWidget {
   final String? chapterId;
@@ -21,7 +25,9 @@ class ReadingScreen extends HookConsumerWidget {
     final _fontSize = useState(16);
     final _showCommentByParagraph = useState(true);
 
-    final chapter = ref.watch(chapterProvider(chapterId));
+    final chapterQuery = useQuery(['chapter', chapterId],
+        () => ChapterServices().fetchChapterDetail(chapterId),
+        enabled: chapterId != null);
 
     void _changeStyle(
         [Color? bgColor, int? fontSize, bool? showCommentByParagraph]) {
@@ -36,30 +42,28 @@ class ReadingScreen extends HookConsumerWidget {
     return Scaffold(
       backgroundColor: _bgColor.value,
       appBar: const ReadingTopBar(),
-      body: chapter.when(
-        loading: () => Center(
-            child: CircularProgressIndicator(
-          color: appColors.primaryBase,
-        )),
-        error: (error, stack) =>
-            Center(child: Text('Oops, something unexpected happened')),
-        data: (chapter) => Padding(
+      body: Skeletonizer(
+        enabled: chapterQuery.isFetching,
+        child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: ListView(
               children: [
                 const SizedBox(height: 24),
                 ReadingScreenHeader(
                   num: 1,
-                  name: 'Câu chuyện về cánh cửa',
-                  view: chapter.read_count ?? 0,
-                  vote: chapter.vote_count ?? 0,
-                  comment: chapter.comment_count ?? 0,
+                  chapter: chapterQuery.isFetching
+                      ? skeletonChapter
+                      : chapterQuery.data ?? skeletonChapter,
                 ),
                 const SizedBox(height: 24),
                 // ChapterAudioPlayer(),
                 const SizedBox(height: 24),
                 ChapterContent(
-                  content: chapter.paragraphs ?? [],
+                  content: (chapterQuery.isFetching
+                              ? skeletonChapter
+                              : chapterQuery.data)
+                          ?.paragraphs ??
+                      [],
                   fontSize: _fontSize.value,
                 ),
                 SizedBox(
@@ -509,18 +513,13 @@ class ChapterContent extends StatelessWidget {
 
 class ReadingScreenHeader extends StatelessWidget {
   final int num;
-  final String name;
-  final int view;
-  final int vote;
-  final int comment;
+  final Chapter chapter;
 
-  const ReadingScreenHeader(
-      {super.key,
-      required this.num,
-      required this.name,
-      required this.view,
-      required this.vote,
-      required this.comment});
+  const ReadingScreenHeader({
+    super.key,
+    required this.num,
+    required this.chapter,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -529,7 +528,8 @@ class ReadingScreenHeader extends StatelessWidget {
     return Column(children: [
       Text('Chương ' + num.toString() + ":",
           style: Theme.of(context).textTheme.bodyLarge),
-      Text(name, style: Theme.of(context).textTheme.bodyLarge, softWrap: true),
+      Text(chapter.title,
+          style: Theme.of(context).textTheme.bodyLarge, softWrap: true),
       const SizedBox(height: 12),
       Container(
         height: 24,
@@ -544,7 +544,7 @@ class ReadingScreenHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                view.toString(),
+                chapter.read_count.toString(),
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!
@@ -563,7 +563,7 @@ class ReadingScreenHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                vote.toString(),
+                chapter.vote_count.toString(),
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!
@@ -582,7 +582,7 @@ class ReadingScreenHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                comment.toString(),
+                chapter.comment_count.toString(),
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!

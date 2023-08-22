@@ -1,25 +1,25 @@
 class ReadingProgress {
-  String chapterId;
+  String? chapterId;
   String id;
-  String libraryId;
-  int readingPosition;
-  String storyId;
+  String? libraryId;
+  int? readingPosition;
+  String? storyId;
 
   ReadingProgress({
-    required this.chapterId,
+    this.chapterId,
     required this.id,
-    required this.libraryId,
-    required this.readingPosition,
-    required this.storyId,
+    this.libraryId,
+    this.readingPosition,
+    this.storyId,
   });
 
   factory ReadingProgress.fromJson(Map<String, dynamic> json) {
     return ReadingProgress(
-      chapterId: json['chapter_id'] as String,
-      id: json['id'] as String,
-      libraryId: json['library_id'] as String,
-      readingPosition: json['reading_position'] as int,
-      storyId: json['story_id'] as String,
+      chapterId: json['chapter_id'],
+      id: json['id'],
+      libraryId: json['library_id'],
+      readingPosition: json['reading_position'],
+      storyId: json['story_id'],
     );
   }
 

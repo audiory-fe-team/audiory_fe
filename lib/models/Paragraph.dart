@@ -1,12 +1,11 @@
 class Paragraph {
   final String id;
-  final String chapter_id;
-  final int order;
+  final String? chapter_id;
+  final int? order;
   final String content;
-  final int comment_count;
-  final String?
-      comments; // It could be a List or null, depending on your API response
-  final String audio_url;
+  final int? comment_count;
+  final String? comments;
+  final String? audio_url;
 
   Paragraph({
     required this.id,

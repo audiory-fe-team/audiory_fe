@@ -1,3 +1,4 @@
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 
 class ChapterItem extends StatelessWidget {
@@ -7,39 +8,30 @@ class ChapterItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
     return Container(
       width: double.maxFinite,
-      height: 40,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       clipBehavior: Clip.antiAlias,
       decoration: ShapeDecoration(
-        color: Color(0xFFF4F4F4),
+        color: appColors.skyLightest,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text(
             title,
-            style: TextStyle(
-              color: Color(0xFF72777A),
-              fontSize: 14,
-              fontStyle: FontStyle.italic,
-              fontFamily: 'Source Sans Pro',
-              fontWeight: FontWeight.w400,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium,
+            overflow: TextOverflow.ellipsis,
           ),
           Text(
-            '20 giờ trước',
-            style: TextStyle(
-              color: Color(0xFF72777A),
-              fontSize: 10,
-              fontStyle: FontStyle.italic,
-              fontFamily: 'Source Sans Pro',
-              fontWeight: FontWeight.w400,
-            ),
+            time,
+            style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                fontStyle: FontStyle.italic, color: appColors.inkLighter),
           ),
         ],
       ),

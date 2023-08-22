@@ -233,7 +233,7 @@ class HomeRankingList extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: storyList!
-              .where((element) => element.read_count! > 1000)
+              // .where((element) => element.read_count! > 1000)
               .toList()
               .sublist(0, min(storyList!.length, 5))
               .asMap()

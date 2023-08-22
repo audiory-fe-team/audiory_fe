@@ -1,14 +1,14 @@
 import 'dart:convert';
 
-import 'package:audiory_v0/models/Author.dart';
+import 'package:audiory_v0/models/Profile.dart';
 import 'package:http/http.dart' as http;
 
-class AuthorService {
+class ProfileService {
   static const baseURL = "http://34.29.203.235:3500/api";
-  static final authorEndpoint = baseURL + "/users";
+  static final profileEndpoint = baseURL + "/users";
 
-  Future<List<Author>> fetchAllAuthors({String keyword = ''}) async {
-    final url = Uri.parse(authorEndpoint)
+  Future<List<Profile>> fetchAllProfiles({String keyword = ''}) async {
+    final url = Uri.parse(profileEndpoint)
         .replace(queryParameters: {'keyword': keyword ?? ''});
     Map<String, String> header = {
       "Content-type": "application/json",
@@ -18,17 +18,17 @@ class AuthorService {
     if (response.statusCode == 200) {
       final List result = json.decode(response.body)['data'];
 
-      return result.map((i) => Author.fromJson(i)).toList();
+      return result.map((i) => Profile.fromJson(i)).toList();
     } else {
-      throw Exception('Failed to load authors');
+      throw Exception('Failed to load profiles');
     }
   }
 
-  Future<Author?> fetchAuthorById(String? authorId) async {
-    if (authorId == null || authorId == '') {
+  Future<Profile?> fetchProfileById(String? profileId) async {
+    if (profileId == null || profileId == '') {
       return null;
     }
-    final url = Uri.parse(authorEndpoint + "/$authorId");
+    final url = Uri.parse(profileEndpoint + "/$profileId" + "/profile");
     Map<String, String> header = {
       "Content-type": "application/json",
       "Accept": "application/json"
@@ -39,15 +39,14 @@ class AuthorService {
 
     if (response.statusCode == 200) {
       try {
-        final Author author =
-            Author.fromJson(json.decode(responseBody)['data']);
-        return author;
+        final Profile profile =
+            Profile.fromJson(json.decode(responseBody)['data']);
+        return profile;
       } catch (error) {
-        print(error);
         throw Exception(error.toString());
       }
     } else {
-      throw Exception('Failed to author');
+      throw Exception('Failed to fetch profile');
     }
   }
 }
