@@ -13,10 +13,11 @@ class Chapter {
   final int? read_count;
   final int? vote_count;
   final int? comment_count;
-  final String created_date;
-  final String updated_date;
+  final String? created_date;
+  final String? updated_date;
   final bool? is_enabled;
-  final chapter_version; // It could be null or a String, depending on your API response
+  final String?
+      chapter_version; // It could be null or a String, depending on your API response
   final List<Paragraph>? paragraphs;
 
   Chapter({
@@ -31,9 +32,9 @@ class Chapter {
     this.read_count,
     this.vote_count,
     this.comment_count,
-    required this.created_date,
-    required this.updated_date,
-    required this.is_enabled,
+    this.created_date,
+    this.updated_date,
+    this.is_enabled,
     this.chapter_version,
     this.paragraphs,
   });

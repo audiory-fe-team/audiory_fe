@@ -12,10 +12,6 @@ class CategoryReposity {
   static final categoryEndpoint = baseURL + "/categories";
 
   Future<List<Category>> fetchCategory() async {
-    // if (CategoryId == null) {
-    //   throw Exception('Failed to fetch category');
-    // }
-
     final url = Uri.parse(categoryEndpoint);
     Map<String, String> header = {
       "Content-type": "application/json",

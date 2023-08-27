@@ -1,8 +1,12 @@
+import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 
 class ReadingTopBar extends StatelessWidget implements PreferredSizeWidget {
-  const ReadingTopBar({super.key});
+  final String? storyName;
+  final String? storyId;
+  const ReadingTopBar({super.key, this.storyName = '', this.storyId = ''});
 
   @override
   Size get preferredSize => const Size.fromHeight(64);
@@ -20,11 +24,16 @@ class ReadingTopBar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SvgPicture.asset('assets/icons/left-arrow.svg',
-                      width: 24, height: 24),
+                  TapEffectWrapper(
+                      onTap: () {
+                        if (storyId != null)
+                          GoRouter.of(context).go('/story/${storyId}');
+                      },
+                      child: SvgPicture.asset('assets/icons/left-arrow.svg',
+                          width: 24, height: 24)),
                   const SizedBox(width: 4),
                   Expanded(
-                      child: Text('Trường hợp kỳ lạ của Tiến sĩ Peppa Pig',
+                      child: Text(storyName ?? '',
                           textAlign: TextAlign.left,
                           overflow: TextOverflow.ellipsis,
                           style: Theme.of(context).textTheme.headlineSmall)),

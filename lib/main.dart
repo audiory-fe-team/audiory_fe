@@ -8,12 +8,20 @@ import 'package:flutter/material.dart';
 import "package:firebase_core/firebase_core.dart";
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:fquery/fquery.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 
 final queryClient = QueryClient(
   defaultQueryOptions: DefaultQueryOptions(),
 );
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
+
+  // await JustAudioBackground.init(
+  //     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+  //     androidNotificationChannelName: 'Audio playback',
+  //     androidNotificationOngoing: true);
 
   await Firebase.initializeApp(
     options: const FirebaseOptions(

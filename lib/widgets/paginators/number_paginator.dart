@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:number_paginator/number_paginator.dart';
 
-import '../../feat-read/widgets/chapter.dart';
+import '../../feat-read/widgets/chapter_item.dart';
 
 class ListWithPaginator extends StatefulWidget {
   const ListWithPaginator();

@@ -32,7 +32,7 @@ class Story {
   final bool? is_enabled;
   final List<Chapter>? chapters;
 
-  Story(
+  const Story(
       {required this.id,
       this.author_id,
       this.tags,
@@ -60,18 +60,18 @@ class Story {
       this.updated_date,
       this.is_enabled,
       this.chapters});
+
   factory Story.fromJson(Map<String, dynamic> json) {
     List<dynamic> chapterJsonList = json['chapters'] ?? [];
-    List<Chapter> chapters = (chapterJsonList ?? [])
+    List<Chapter> chapters = chapterJsonList
         .map((chapterJson) => Chapter.fromJson(chapterJson))
         .toList();
     List<dynamic> tagsJsonList = json['tags'] ?? [];
-    List<Tag> tags = (tagsJsonList).map((tag) => Tag.fromJson(tag)).toList();
+    List<Tag> tags = tagsJsonList.map((tag) => Tag.fromJson(tag)).toList();
 
     return Story(
         id: json["id"],
         author_id: json["author_id"] ?? 'null',
-        // category_ranking: List<int>.from(json["category_ranking"] ?? []),
         category_id: json["category_id"] ?? 'null',
         title: json["title"],
         description: json["description"] ?? 'null',
@@ -101,8 +101,6 @@ class Story {
   Map<String, dynamic> toJson() => {
         "id": id,
         "author_id": author_id,
-        // "tags": tags,
-        // "category_ranking": category_ranking,
         "category_id": category_id,
         "title": title,
         "description": description,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class StoryCardOverView extends StatelessWidget {
   final String id;
@@ -12,62 +13,40 @@ class StoryCardOverView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        onTap: () {
-          GoRouter.of(context).push("/story/" + id);
-        },
-        child: Container(
-          width: 95,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
+      onTap: () {
+        GoRouter.of(context).push("/story/" + id);
+      },
+      child: SizedBox(
+        width: 95,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Skeleton.replace(
                 width: 95,
                 height: 135,
-                decoration: ShapeDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(coverUrl! ?? ''),
-                    fit: BoxFit.fill,
-                  ),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  shadows: const [
-                    BoxShadow(
-                      color: Color(0x0C06070D),
-                      blurRadius: 14,
-                      offset: Offset(0, 7),
-                      spreadRadius: 0,
-                    )
-                  ],
-                ),
-              ),
-              const SizedBox(height: 8),
-              Container(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 95,
-                      child: Text(
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        this.title,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Color(0xFF404446),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                child: Container(
+                  width: 95,
+                  height: 135,
+                  decoration: ShapeDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(coverUrl ?? ''),
+                      fit: BoxFit.fill,
                     ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ));
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                  ),
+                )),
+            const SizedBox(height: 8),
+            Text(this.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.titleMedium),
+          ],
+        ),
+      ),
+    );
   }
 }

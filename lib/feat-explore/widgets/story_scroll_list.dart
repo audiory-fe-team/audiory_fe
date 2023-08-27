@@ -8,18 +8,18 @@ class StoryScrollList extends StatelessWidget {
   final List<Story>? storyList;
   final int? length;
 
-  const StoryScrollList(
-      {super.key, this.storyList = const [], this.length = 5});
-
+  const StoryScrollList({super.key, required this.storyList, this.length = 5});
   @override
   Widget build(BuildContext context) {
+    final list = storyList ?? [];
+
     return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: storyList!
-              .take(min(storyList!.length, 10))
+          children: list
+              .take(min(list.length, 10))
               .map((story) => Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: StoryCardOverView(
