@@ -1,19 +1,46 @@
 // import 'package:audioplayers/audioplayers.dart';
-import 'package:audiory_v0/api/chapter_provider.dart';
+import 'dart:math';
+
+import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:audiory_v0/constants/skeletons.dart';
+import 'package:audiory_v0/feat-read/layout/bottom_bar.dart';
+import 'package:audiory_v0/feat-read/layout/reading_top_bar.dart';
+import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
-import 'package:audiory_v0/screens/reading/bottom_bar.dart';
-import 'package:audiory_v0/screens/reading/reading_top_bar.dart';
+import 'package:audiory_v0/services/chapter_services.dart';
+import 'package:audiory_v0/services/story_services.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fquery/fquery.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ReadingScreen extends HookConsumerWidget {
   final String? chapterId;
 
   const ReadingScreen({super.key, this.chapterId});
+
+  List<Widget> chapterContent(
+      {List<Paragraph>? paragraphs,
+      int fontSize = 16,
+      required AppColors appColors,
+      required TextTheme textTheme}) {
+    return (paragraphs ?? [])
+        .map((para) => Column(children: [
+              Text(para.content,
+                  style: textTheme.bodyLarge!
+                      .copyWith(fontSize: fontSize.toDouble())),
+              const SizedBox(height: 24)
+            ]))
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,7 +48,14 @@ class ReadingScreen extends HookConsumerWidget {
     final _fontSize = useState(16);
     final _showCommentByParagraph = useState(true);
 
-    final chapter = ref.watch(chapterProvider(chapterId));
+    final scrollController = new ItemScrollController();
+
+    final chapterQuery = useQuery(['chapter', chapterId],
+        () => ChapterServices().fetchChapterDetail(chapterId),
+        enabled: chapterId != null);
+    final storyQuery = useQuery(['story', chapterQuery.data?.story_id],
+        () => StoryService().fetchStoryById(chapterQuery.data?.story_id ?? ''),
+        enabled: chapterQuery.data?.story_id != null);
 
     void _changeStyle(
         [Color? bgColor, int? fontSize, bool? showCommentByParagraph]) {
@@ -32,79 +66,88 @@ class ReadingScreen extends HookConsumerWidget {
     }
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       backgroundColor: _bgColor.value,
-      appBar: const ReadingTopBar(),
-      body: chapter.when(
-        loading: () => Center(
-            child: CircularProgressIndicator(
-          color: appColors.primaryBase,
-        )),
-        error: (error, stack) =>
-            Center(child: Text('Oops, something unexpected happened')),
-        data: (chapter) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: ListView(
-              children: [
-                const SizedBox(height: 24),
-                ReadingScreenHeader(
-                  num: 1,
-                  name: 'Câu chuyện về cánh cửa',
-                  view: chapter.read_count ?? 0,
-                  vote: chapter.vote_count ?? 0,
-                  comment: chapter.comment_count ?? 0,
-                ),
-                const SizedBox(height: 24),
-                // ChapterAudioPlayer(),
-                const SizedBox(height: 24),
-                ChapterContent(
-                  content: chapter.paragraphs ?? [],
-                  fontSize: _fontSize.value,
-                ),
-                SizedBox(
-                  height: 32,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ActionButton(
-                          title: 'Bình chọn',
-                          iconName: 'heart',
-                          onPressed: () {}),
-                      const SizedBox(width: 12),
-                      ActionButton(
-                          title: 'Tặng quà',
-                          iconName: 'gift',
-                          onPressed: () {}),
-                      const SizedBox(width: 12),
-                      ActionButton(
-                          title: 'Chia sẻ',
-                          iconName: 'share',
-                          onPressed: () {}),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  height: 38,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ChapterNavigateButton(
-                        onPressed: () => {},
-                        disabled: true,
+      appBar: ReadingTopBar(
+        storyName: storyQuery.data?.title,
+        storyId: chapterQuery.data?.story_id,
+      ),
+      body: Skeletonizer(
+        enabled: chapterQuery.isFetching,
+        child: RefreshIndicator(
+            onRefresh: () async {
+              chapterQuery.refetch();
+            },
+            child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                child: ListView(
+                  children: [
+                    ReadingScreenHeader(
+                      num: 1,
+                      chapter: chapterQuery.isFetching
+                          ? skeletonChapter
+                          : chapterQuery.data ?? skeletonChapter,
+                    ),
+                    const SizedBox(height: 24),
+                    ChapterAudioPlayer(
+                      chapter: chapterQuery.data,
+                    ),
+                    const SizedBox(height: 24),
+                    ...chapterContent(
+                        paragraphs: (chapterQuery.isFetching
+                                ? skeletonChapter
+                                : chapterQuery.data)
+                            ?.paragraphs,
+                        fontSize: _fontSize.value,
+                        appColors: appColors,
+                        textTheme: textTheme),
+                    Skeleton.keep(
+                        child: SizedBox(
+                      height: 32,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ActionButton(
+                              title: 'Bình chọn',
+                              iconName: 'heart',
+                              onPressed: () {}),
+                          const SizedBox(width: 12),
+                          ActionButton(
+                              title: 'Tặng quà',
+                              iconName: 'gift',
+                              onPressed: () {}),
+                          const SizedBox(width: 12),
+                          ActionButton(
+                              title: 'Chia sẻ',
+                              iconName: 'share',
+                              onPressed: () {}),
+                        ],
                       ),
-                      const SizedBox(width: 12),
-                      ChapterNavigateButton(
-                        next: true,
-                        onPressed: () => {},
+                    )),
+                    const SizedBox(height: 24),
+                    Skeleton.keep(
+                        child: SizedBox(
+                      height: 38,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ChapterNavigateButton(
+                            onPressed: () => {},
+                            disabled: true,
+                          ),
+                          const SizedBox(width: 12),
+                          ChapterNavigateButton(
+                            next: true,
+                            onPressed: () => {},
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-            )),
+                    )),
+                  ],
+                ))),
       ),
       bottomNavigationBar: ReadingBottomBar(
         changeStyle: _changeStyle,
@@ -113,13 +156,221 @@ class ReadingScreen extends HookConsumerWidget {
   }
 }
 
-// class ChapterAudioPlayer extends HookWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     // final player = AudioPlayer();
-//     // return StreamWidget(player: player);
-//   }
-// }
+class PositionAudio {
+  final Duration position;
+  final Duration bufferedPosition;
+  final Duration? duration;
+  const PositionAudio(this.position, this.bufferedPosition, this.duration);
+}
+
+class AudioControl extends StatelessWidget {
+  final AudioPlayer audioPlayer;
+  const AudioControl({super.key, required this.audioPlayer});
+
+  @override
+  Widget build(BuildContext context) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    return Row(mainAxisSize: MainAxisSize.min, children: [
+      IconButton(
+          onPressed: () {
+            audioPlayer.seekToPrevious();
+          },
+          icon: Icon(
+            Icons.skip_previous_rounded,
+            size: 24,
+            color: appColors.inkBase,
+          )),
+      IconButton(
+          onPressed: () {
+            audioPlayer.seek(
+                Duration(seconds: max(audioPlayer.position.inSeconds - 10, 0)));
+          },
+          icon: Icon(
+            Icons.replay_10,
+            size: 24,
+            color: appColors.inkBase,
+          )),
+      StreamBuilder<PlayerState>(
+          stream: audioPlayer.playerStateStream,
+          builder: ((context, snapshot) {
+            final playerState = snapshot.data;
+            final processingState = playerState?.processingState;
+            final playing = playerState?.playing;
+
+            if (!(playing ?? false)) {
+              return FilledButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll(appColors.primaryBase),
+                      shape: MaterialStatePropertyAll(CircleBorder()),
+                      elevation: MaterialStatePropertyAll(1)),
+                  child: Icon(
+                    Icons.play_arrow_rounded,
+                    size: 24,
+                    color: Colors.white,
+                  ),
+                  onPressed: audioPlayer.play);
+            } else if (processingState != ProcessingState.completed) {
+              return FilledButton(
+                  style: ButtonStyle(
+                      backgroundColor:
+                          MaterialStatePropertyAll(appColors.skyLighter),
+                      shape: MaterialStatePropertyAll(CircleBorder()),
+                      elevation: MaterialStatePropertyAll(1)),
+                  child: Icon(
+                    Icons.pause_rounded,
+                    size: 24,
+                    color: Colors.white,
+                  ),
+                  onPressed: audioPlayer.pause);
+            }
+
+            return FilledButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                        MaterialStatePropertyAll(appColors.primaryBase),
+                    shape: MaterialStatePropertyAll(CircleBorder()),
+                    elevation: MaterialStatePropertyAll(1)),
+                child: Icon(
+                  Icons.play_arrow_rounded,
+                  size: 24,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  audioPlayer.seek(Duration.zero);
+                  audioPlayer.play();
+                });
+          })),
+      IconButton(
+          onPressed: () {
+            audioPlayer.seek(Duration(
+                seconds: min(audioPlayer.position.inSeconds + 10,
+                    audioPlayer.duration?.inSeconds ?? 0)));
+          },
+          icon: Icon(
+            Icons.forward_10,
+            size: 24,
+            color: appColors.inkBase,
+          )),
+      IconButton(
+          onPressed: () {
+            audioPlayer.seekToNext();
+          },
+          icon: Icon(
+            Icons.skip_next_rounded,
+            size: 24,
+            color: appColors.inkBase,
+          )),
+    ]);
+  }
+}
+
+class AudioMedia extends StatelessWidget {
+  final String title;
+  final String artist;
+
+  const AudioMedia({super.key, required this.title, required this.artist});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Text(title, style: Theme.of(context).textTheme.titleMedium),
+      Text(artist, style: Theme.of(context).textTheme.titleSmall),
+    ]);
+  }
+}
+
+class ChapterAudioPlayer extends HookWidget {
+  final Chapter? chapter;
+  const ChapterAudioPlayer({super.key, required this.chapter});
+
+  @override
+  Widget build(BuildContext context) {
+    final player = AudioPlayer();
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final Stream<PositionAudio> positionAudioStream =
+        Rx.combineLatest3<Duration, Duration, Duration?, PositionAudio>(
+            player.positionStream,
+            player.bufferedPositionStream,
+            player.durationStream,
+            (position, bufferedPosition, duration) =>
+                PositionAudio(position, bufferedPosition, duration));
+    final playlist = ConcatenatingAudioSource(
+        children: (chapter?.paragraphs ?? [])
+            .map((p) => AudioSource.uri(
+                Uri.parse('http://34.29.203.235:3500${p.audio_url}'),
+                tag: MediaItem(
+                    id: p.id,
+                    title: 'Chapter ${p.id}',
+                    artist: 'Trung Nguyen')))
+            .toList());
+
+    useEffect(() {
+      try {
+        player.setLoopMode(LoopMode.all);
+        player.setAudioSource(playlist);
+      } catch (error) {
+        print(error.toString());
+      }
+      return () => player.dispose();
+    }, [player, chapter]);
+
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+            color: appColors.skyLightest,
+            borderRadius: BorderRadius.circular(8)),
+        child: Column(
+          children: [
+            Text(
+              'Nghe audio',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+                width: double.infinity,
+                child: Text('Cung cấp bởi FPT AI',
+                    style: Theme.of(context)
+                        .textTheme
+                        .labelMedium!
+                        .copyWith(fontStyle: FontStyle.italic))),
+            Skeleton.keep(
+                child: StreamBuilder(
+                    stream: positionAudioStream,
+                    builder: (context, snapshot) {
+                      final position = snapshot.data;
+                      return ProgressBar(
+                        barHeight: 4,
+                        baseBarColor: Colors.white,
+                        bufferedBarColor: appColors.primaryLightest,
+                        progressBarColor: appColors.primaryBase,
+                        thumbColor: appColors.primaryBase,
+                        thumbRadius: 5,
+                        timeLabelTextStyle:
+                            Theme.of(context).textTheme.labelLarge,
+                        progress: position?.position ?? Duration.zero,
+                        buffered: position?.bufferedPosition ?? Duration.zero,
+                        total: position?.duration ?? Duration.zero,
+                        onSeek: player.seek,
+                      );
+                    })),
+            StreamBuilder<SequenceState?>(
+                stream: player.sequenceStateStream,
+                builder: (context, snapshot) {
+                  final state = snapshot.data;
+                  if (state?.sequence.isEmpty ?? true) {
+                    return const SizedBox();
+                  }
+                  final metadata = state!.currentSource!.tag as MediaItem;
+                  return AudioMedia(
+                      title: metadata.title, artist: metadata.artist ?? '');
+                }),
+            AudioControl(audioPlayer: player)
+          ],
+        ));
+  }
+}
 
 class SettingModelUseHooks extends HookWidget {
   final Function([Color? bgColor, int? fontSize, bool? showCommentByParagraph])
@@ -146,7 +397,7 @@ class SettingModelUseHooks extends HookWidget {
 
     return Expanded(
       child: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
@@ -178,7 +429,7 @@ class SettingModelUseHooks extends HookWidget {
                             _selectedOption.value = idx;
                           },
                           child: Padding(
-                              padding: EdgeInsets.only(right: 8),
+                              padding: const EdgeInsets.only(right: 8),
                               child: Container(
                                   height: 30,
                                   width: 30,
@@ -233,9 +484,10 @@ class SettingModelUseHooks extends HookWidget {
                 Container(
                   decoration: BoxDecoration(
                       border: Border.all(color: appColors.skyLighter),
-                      borderRadius: BorderRadius.all(Radius.circular(50))),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(50))),
                   child: Padding(
-                      padding: EdgeInsets.all(5),
+                      padding: const EdgeInsets.all(5),
                       child: Expanded(
                           child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -261,7 +513,7 @@ class SettingModelUseHooks extends HookWidget {
                               keyboardType: TextInputType.number,
                               style: Theme.of(context).textTheme.bodyMedium,
                               controller: sizeController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 border: InputBorder.none,
                                 contentPadding: EdgeInsets.all(0),
                               ),
@@ -297,7 +549,7 @@ class SettingModelUseHooks extends HookWidget {
                       style: Theme.of(context).textTheme.titleLarge,
                     )),
                 Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
                     child: Row(
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -329,7 +581,7 @@ class SettingModelUseHooks extends HookWidget {
                         Navigator.pop(context);
                       },
                       style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.all(12),
+                          padding: const EdgeInsets.all(12),
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30)),
                           side: BorderSide(
@@ -353,7 +605,7 @@ class SettingModelUseHooks extends HookWidget {
                       },
                       style: FilledButton.styleFrom(
                         backgroundColor: appColors.primaryBase,
-                        padding: EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(12),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30)),
                       ),
@@ -483,44 +735,15 @@ class ActionButton extends StatelessWidget {
   }
 }
 
-class ChapterContent extends StatelessWidget {
-  final List<Paragraph> content;
-  final int fontSize;
-  const ChapterContent(
-      {super.key, required this.content, required this.fontSize});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: content
-          .map((para) => Column(children: [
-                Text(para.content,
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyLarge!
-                        .copyWith(fontSize: fontSize.toDouble())),
-                const SizedBox(height: 24)
-              ]))
-          .toList(),
-    );
-  }
-}
-
 class ReadingScreenHeader extends StatelessWidget {
   final int num;
-  final String name;
-  final int view;
-  final int vote;
-  final int comment;
+  final Chapter chapter;
 
-  const ReadingScreenHeader(
-      {super.key,
-      required this.num,
-      required this.name,
-      required this.view,
-      required this.vote,
-      required this.comment});
+  const ReadingScreenHeader({
+    super.key,
+    required this.num,
+    required this.chapter,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -529,7 +752,8 @@ class ReadingScreenHeader extends StatelessWidget {
     return Column(children: [
       Text('Chương ' + num.toString() + ":",
           style: Theme.of(context).textTheme.bodyLarge),
-      Text(name, style: Theme.of(context).textTheme.bodyLarge, softWrap: true),
+      Text(chapter.title,
+          style: Theme.of(context).textTheme.bodyLarge, softWrap: true),
       const SizedBox(height: 12),
       Container(
         height: 24,
@@ -544,7 +768,7 @@ class ReadingScreenHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                view.toString(),
+                chapter.read_count.toString(),
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!
@@ -563,7 +787,7 @@ class ReadingScreenHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                vote.toString(),
+                chapter.vote_count.toString(),
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!
@@ -582,7 +806,7 @@ class ReadingScreenHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                comment.toString(),
+                chapter.comment_count.toString(),
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!

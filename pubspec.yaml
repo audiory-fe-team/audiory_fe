@@ -59,6 +59,13 @@ dependencies:
   readmore: ^2.2.0
   form_builder_validators: ^9.0.0
   form_builder_image_picker: ^4.0.0
+  skeletonizer: ^0.7.0
+  flutter_dotenv: ^5.1.0
+  just_audio: ^0.9.34
+  audio_video_progress_bar: ^1.0.1
+  just_audio_background: ^0.0.1-beta.10
+  rxdart: ^0.27.7
+  scrollable_positioned_list: ^0.3.8
 
 dev_dependencies:
   flutter_test:
@@ -84,6 +91,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - .env
     - assets/mock_data/sample_data_nomedia.json
   #   - images/a_dot_ham.jpeg
 

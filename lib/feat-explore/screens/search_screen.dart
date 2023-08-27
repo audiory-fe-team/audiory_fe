@@ -1,5 +1,4 @@
 import 'package:audiory_v0/feat-explore/screens/layout/search_top_bar.dart';
-import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
