@@ -69,8 +69,6 @@ class _MyAppState extends ConsumerState<MyApp> {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // late final _router = GoRouter(routes: _routesBuilder, error: _errorBuilder);
-
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Audiory app',
@@ -78,6 +76,9 @@ class _MyAppState extends ConsumerState<MyApp> {
       darkTheme: darkTheme,
       themeMode: _themeManager.themeMode,
       routerConfig: AppRoutes.routes,
+      // routeInformationParser: AppRoutes.routes.routeInformationParser,
+      // routeInformationProvider: AppRoutes.routes.routeInformationProvider,
+      // routerDelegate: AppRoutes.routes.routerDelegate,
     );
   }
 }

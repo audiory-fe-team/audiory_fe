@@ -10,18 +10,20 @@ import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/main_layout.dart';
-import 'package:audiory_v0/feat-read/screens/detail_story_screen.dart';
-import 'package:audiory_v0/layout/not_found_screen.dart';
+import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
+
+import '../feat-read/screens/detail_story_screen.dart';
 
 class AppRoutes {
   static final GoRouter routes = GoRouter(
@@ -40,6 +42,13 @@ class AppRoutes {
           name: 'home',
           path: '/',
           builder: (BuildContext context, GoRouterState state) {
+            // return AnimatedSplashScreen(
+            //     duration: 3000,
+            //     splash: SplashScreen(),
+            //     nextScreen: AppMainLayout(),
+            //     splashTransition: SplashTransition.fadeTransition,
+            //     pageTransitionType: PageTransitionType.scale,
+            //     backgroundColor: Colors.white);
             return const AppMainLayout();
           },
           routes: [
@@ -95,12 +104,7 @@ class AppRoutes {
                       name: 'explore_result',
                       builder: (BuildContext context, GoRouterState state) {
                         final keyword = state.queryParameters["keyword"];
-                        final searchForProfile =
-                            state.queryParameters["searchForProfile"];
-                        return ResultScreen(
-                            key: state.pageKey,
-                            keyword: keyword ?? '',
-                            searchForProfile: searchForProfile == 'true');
+                        return ResultScreen(keyword: keyword ?? '');
                       })
                 ]),
             GoRoute(
@@ -108,7 +112,7 @@ class AppRoutes {
                 name: 'story_detail',
                 builder: (BuildContext context, GoRouterState state) {
                   final storyId = state.pathParameters['storyId']!;
-                  print(storyId);
+                  // print(storyId);
                   // print('id' + id);
                   return DetailStoryScreen(
                     id: storyId,
@@ -117,12 +121,8 @@ class AppRoutes {
                 routes: [
                   GoRoute(
                     path: 'chapter/:chapterId',
-                    name: 'chapter_detail',
                     builder: (BuildContext context, GoRouterState state) {
                       String? chapterId = state.pathParameters["chapterId"];
-                      print(chapterId);
-                      if (chapterId == null || chapterId == '')
-                        return NotFoundScreen();
                       return ReadingScreen(
                         chapterId: chapterId,
                       );
@@ -148,25 +148,38 @@ class AppRoutes {
         name: 'composeStory',
         path: '/composeStory',
         builder: (BuildContext context, GoRouterState state) {
-          return ComposeScreen();
+          //extra
+          final extraMap = state.extra as Map<String, dynamic>;
+          if (kDebugMode) {
+            print('storyId');
+            print(extraMap['storyId'] == '' ? 'emtpry' : 'no');
+          }
+          final storyId = extraMap['storyId'] as String;
+          return ComposeScreen(
+              //extra
+              storyId: storyId);
         },
       ),
       GoRoute(
         name: 'composeChapter',
-        path: '/composeChapter/:storyTitle',
+        path: '/composeChapter',
         builder: (BuildContext context, GoRouterState state) {
-          final storyTitle = state.pathParameters['storyTitle']!;
+          //extra
+          final extraMap = state.extra as Map<String, dynamic>;
+          final story = extraMap['story'] as Story;
+          final chapterId = extraMap['chapterId'] as String;
           return ComposeChapterScreen(
-            storyTitle: storyTitle,
-          );
+              //extra
+              story: story,
+              chapterId: chapterId);
         },
       ),
       GoRoute(
         name: 'detailStory',
         path: '/detailStory/:storyId',
         builder: (BuildContext context, GoRouterState state) {
-          print('state');
-          print(state.extra);
+          // print('state');
+          // print(state.extra);
           final storyId = state.pathParameters['storyId']!;
           // print('id' + id);
           return DetailStoryScreen(
@@ -193,8 +206,7 @@ class AppRoutes {
   );
 
   static String? _redirect(BuildContext context, GoRouterState state) {
-    final User? user = Auth().currentUser;
-    print(user != null);
+    final User? user = AuthService().currentUser;
     // return user != null ? null : context.namedLocation('/login');
     return user != null
         ? null

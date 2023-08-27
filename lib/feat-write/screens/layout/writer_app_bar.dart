@@ -14,7 +14,7 @@ class WriterCustomAppBar extends StatefulWidget {
 }
 
 class _WriterCustomAppBarState extends State<WriterCustomAppBar> {
-  final User? user = Auth().currentUser;
+  final User? user = AuthService().currentUser;
 
   @override
   Widget build(BuildContext context) {

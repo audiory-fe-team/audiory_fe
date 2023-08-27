@@ -1,8 +1,11 @@
 import 'dart:convert';
 
+import 'package:audiory_v0/models/AuthUser.dart';
+import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
@@ -11,15 +14,15 @@ import '../../services/auth_services.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/custom_app_bar.dart';
 
-class ProfileScreenTest extends StatefulWidget {
+class ProfileScreenTest extends ConsumerStatefulWidget {
   const ProfileScreenTest({super.key});
 
   @override
-  State<ProfileScreenTest> createState() => ProfileScreenTestState();
+  ConsumerState<ProfileScreenTest> createState() => ProfileScreenTestState();
 }
 
-class ProfileScreenTestState extends State<ProfileScreenTest> {
-  final User? authUser = Auth().currentUser;
+class ProfileScreenTestState extends ConsumerState<ProfileScreenTest> {
+  final User? authUser = AuthService().currentUser;
   final FlutterSecureStorage storage = FlutterSecureStorage();
   // AuthUser? authUser;
   // Future<void> getAuthUser() async {
@@ -29,8 +32,8 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
   //   print(authUser);
   // }
 
-  Widget _userEmail() {
-    return Text(authUser?.email == null ? 'Null' : authUser!.email as String);
+  Widget _userEmail(User authUser) {
+    return Text(authUser.email == null ? 'Null' : authUser.email as String);
   }
 
   // Widget _userId() {
@@ -38,7 +41,7 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
   // }
 
   Future<void> signOut() async {
-    await Auth().singOut();
+    await AuthService().singOut();
     context.go('/login');
   }
 
@@ -67,6 +70,7 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    // final AsyncValue<UserServer> authUser = ref.watch(authUserProvider);
 
     return SafeArea(
       child: Scaffold(
@@ -92,9 +96,9 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
-              _userEmail(),
+              _userEmail(authUser!),
               // _userId(),
-              authUser == null ? _signInButton() : _signOutButton()
+              // authUser == null ? _signInButton() : _signOutButton()
             ],
           ),
         ),

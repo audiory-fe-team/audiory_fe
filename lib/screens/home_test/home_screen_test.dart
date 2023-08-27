@@ -15,10 +15,10 @@ class HomeScreenTest extends StatefulWidget {
 }
 
 class _HomeScreenTestState extends State<HomeScreenTest> {
-  final User? user = Auth().currentUser;
+  final User? user = AuthService().currentUser;
 
   Future<void> signOut() async {
-    await Auth().singOut();
+    await AuthService().singOut();
     context.go('/login');
   }
 

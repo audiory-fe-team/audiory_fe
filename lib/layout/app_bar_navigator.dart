@@ -21,7 +21,7 @@ class AppBarNavigator extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final User? user = Auth().currentUser;
+    final User? user = AuthService().currentUser;
     Widget child = HomeTopBar();
 
     if (tabItem == 'Home') {

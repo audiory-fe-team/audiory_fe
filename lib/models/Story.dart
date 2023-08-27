@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Tag.dart';
 
@@ -19,6 +21,8 @@ class Story {
   final int? author_earning_percentage;
   final String? paywall_effective_date;
   final int? num_free_chapters;
+  final int? published_count;
+  final int? draft_count;
   final int? report_count;
   final int? vote_count;
   final int? read_count;
@@ -46,6 +50,8 @@ class Story {
       this.author_earning_percentage,
       this.paywall_effective_date,
       this.num_free_chapters,
+      this.published_count,
+      this.draft_count,
       this.report_count,
       this.vote_count,
       this.read_count,
@@ -79,6 +85,8 @@ class Story {
         author_earning_percentage: json["author_earning_percentage"],
         paywall_effective_date: json["paywall_effective_date"] ?? 'null',
         num_free_chapters: json["num_free_chapters"],
+        published_count: json["published_count"],
+        draft_count: json["draft_count"],
         report_count: json["report_count"],
         vote_count: json["vote_count"],
         read_count: json["read_count"],
@@ -97,11 +105,11 @@ class Story {
         "title": title,
         "description": description,
         "cover_url": cover_url,
-        "is_draft": is_draft,
-        "is_mature": is_mature,
-        "is_completed": is_completed,
-        "is_copyright": is_copyright,
-        "is_paywalled": is_paywalled,
+        "is_draft": is_draft as bool,
+        "is_mature": is_mature as bool,
+        "is_completed": is_completed as bool,
+        "is_copyright": is_copyright as bool,
+        "is_paywalled": is_paywalled as bool,
         "coin_cost": coin_cost,
         "author_earning_percentage": author_earning_percentage,
         "paywall_effective_date": paywall_effective_date,
@@ -112,8 +120,8 @@ class Story {
         "explicit_percentage": explicit_percentage,
         "created_date": created_date,
         "updated_date": updated_date,
-        "is_enabled": is_enabled,
-        "chapters": chapters?.map((chapter) => chapter.toJson()).toList(),
-        "tags": tags?.map((tag) => tag.toJson()).toList()
+        "is_enabled": is_enabled as bool,
+        "chapters": [],
+        "tags": []
       };
 }
