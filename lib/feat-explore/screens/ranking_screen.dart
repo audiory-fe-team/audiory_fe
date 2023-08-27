@@ -4,7 +4,6 @@ import 'package:audiory_v0/feat-explore/screens/layout/ranking_top_bar.dart';
 import 'package:audiory_v0/feat-explore/widgets/author_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/ranking_dropdown.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_rank_card.dart';
-import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
@@ -89,8 +88,8 @@ class RankingScreen extends HookConsumerWidget {
               height: 24,
             ),
             Builder(builder: (_) {
-              if (type == RankingType.author) return AuthorRanking();
-              if (type == RankingType.reader) return ReaderRanking();
+              if (type == RankingType.author) return const AuthorRanking();
+              if (type == RankingType.reader) return const ReaderRanking();
               return StoryRanking(
                 metric: metric,
                 time: time,
@@ -114,7 +113,6 @@ class StoryRanking extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
     return Expanded(
@@ -247,7 +245,7 @@ class AuthorRanking extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    // final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
     return Expanded(
@@ -380,7 +378,7 @@ class ReaderRanking extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    // final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
     return Expanded(

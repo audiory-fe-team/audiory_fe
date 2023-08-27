@@ -28,7 +28,7 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
   String errorMessage = '';
 
   Widget _submitButton() {
-    var provider = Provider.of<Auth>(context, listen: false);
+    var provider = Provider.of<AuthService>(context, listen: false);
 
     return AppFilledButton(
         title: 'Đăng ký',

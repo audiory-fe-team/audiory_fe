@@ -1,10 +1,7 @@
-import 'package:audiory_v0/models/Author.dart';
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-read/widgets/chapter.dart';
-import 'package:audiory_v0/feat-read/widgets/commentCard.dart';
 import 'package:audiory_v0/feat-read/widgets/detail_story_bottom_bar.dart';
-import 'package:audiory_v0/feat-read/widgets/supporterCard.dart';
 import 'package:audiory_v0/services/author_services.dart';
 import 'package:audiory_v0/services/story_services.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
@@ -42,6 +39,7 @@ class DetailStoryScreen extends HookConsumerWidget {
     final tabState = useState(0);
 
     Widget donateGiftModal() {
+      // ignore: constant_identifier_names
       const GIFTS = [
         'rose',
         'teddy',

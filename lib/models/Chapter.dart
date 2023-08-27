@@ -7,36 +7,35 @@ class Chapter {
   final String?
       product_id; // It could be null or a String, depending on your API response
   final String title;
-  final bool is_draft;
-  final bool is_paywalled;
-  final int author_earning;
-  final int read_count;
-  final int vote_count;
-  final int comment_count;
+  final bool? is_draft;
+  final bool? is_paywalled;
+  final int? author_earning;
+  final int? read_count;
+  final int? vote_count;
+  final int? comment_count;
   final String created_date;
   final String updated_date;
-  final bool is_enabled;
-  final String?
-      chapter_version; // It could be null or a String, depending on your API response
-  final List<Paragraph> paragraphs;
+  final bool? is_enabled;
+  final chapter_version; // It could be null or a String, depending on your API response
+  final List<Paragraph>? paragraphs;
 
   Chapter({
     required this.id,
     required this.story_id,
-    required this.current_version_id,
-    required this.product_id,
+    this.current_version_id,
+    this.product_id,
     required this.title,
-    required this.is_draft,
-    required this.is_paywalled,
-    required this.author_earning,
-    required this.read_count,
-    required this.vote_count,
-    required this.comment_count,
+    this.is_draft,
+    this.is_paywalled,
+    this.author_earning,
+    this.read_count,
+    this.vote_count,
+    this.comment_count,
     required this.created_date,
     required this.updated_date,
     required this.is_enabled,
-    required this.chapter_version,
-    required this.paragraphs,
+    this.chapter_version,
+    this.paragraphs,
   });
 
   // Factory constructor to create a Chapter from JSON
@@ -61,7 +60,7 @@ class Chapter {
       updated_date: json["updated_date"],
       is_enabled: json["is_enabled"],
       chapter_version: json["chapter_version"] ?? 'null',
-      paragraphs: paragraphs,
+      paragraphs: null,
     );
   }
 
@@ -82,6 +81,6 @@ class Chapter {
         "is_enabled": is_enabled,
         "chapter_version": chapter_version,
         "paragraphs":
-            paragraphs.map((paragraph) => paragraph.toJson()).toList(),
+            paragraphs?.map((paragraph) => paragraph.toJson()).toList(),
       };
 }

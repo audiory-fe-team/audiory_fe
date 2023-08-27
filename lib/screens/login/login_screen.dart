@@ -1,11 +1,9 @@
 import 'package:audiory_v0/screens/forgot_password/forgot_password_screen.dart';
 
-import 'package:audiory_v0/screens/loading_page/loading_screen.dart';
-import 'package:audiory_v0/screens/register/register_screen.dart';
-import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/filled_button.dart';
 import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -13,16 +11,15 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -33,7 +30,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      await Auth().createUserWithEmailAndPassword(
+      await AuthService().createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
     } on FirebaseAuthException catch (e) {}
   }
@@ -41,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> signInGoogle() async {
     // var provider = Provider.of<Auth>(context, listen: false);
     try {
-      await Auth().signInWithGoogle();
+      await AuthService().signInWithGoogle();
       // if (provider.isBack) {
       //   context.go('/');
       // }
@@ -70,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
         bgColor: Color(0xFF439A97),
         onPressed: () async {
           try {
-            await Auth().signInWithEmailAndPassword(
+            await AuthService().signInWithEmailAndPassword(
                 email: emailController.text, password: passwordController.text);
             // context.go('/');
             // if (provider.message != '') {

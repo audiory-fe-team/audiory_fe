@@ -1,5 +1,4 @@
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -67,8 +66,8 @@ class StoryCardDetail extends StatelessWidget {
                         width: double.infinity,
                         child: Text(
                           story.title,
-                          style: textTheme.titleLarge!.merge(
-                              TextStyle(overflow: TextOverflow.ellipsis)),
+                          style: textTheme.titleLarge?.merge(
+                              const TextStyle(overflow: TextOverflow.ellipsis)),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -77,7 +76,7 @@ class StoryCardDetail extends StatelessWidget {
                         child: Text(
                           story.description ?? '',
                           maxLines: 2,
-                          style: textTheme.labelLarge!.copyWith(
+                          style: textTheme.labelLarge?.copyWith(
                               color: appColors.inkLight,
                               fontStyle: FontStyle.italic,
                               overflow: TextOverflow.ellipsis),
@@ -158,28 +157,24 @@ class StoryCardDetail extends StatelessWidget {
                                     width: 14, height: 14),
                                 const SizedBox(width: 8),
                                 Text(
-                                    (story.num_free_chapters.toString() ??
-                                            'error') +
-                                        ' chương',
+                                    '${story.num_free_chapters.toString() ?? 'error'} chương',
                                     style: textTheme.titleSmall!
                                         .copyWith(fontStyle: FontStyle.italic)),
                               ],
                             ),
                             const SizedBox(width: 6),
-                            Container(
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset('assets/icons/eye.svg',
-                                      width: 14, height: 14),
-                                  const SizedBox(width: 8),
-                                  Text(story.read_count.toString() ?? 'error',
-                                      style: textTheme.titleSmall!.copyWith(
-                                          fontStyle: FontStyle.italic)),
-                                ],
-                              ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                SvgPicture.asset('assets/icons/eye.svg',
+                                    width: 14, height: 14),
+                                const SizedBox(width: 8),
+                                Text(story.read_count.toString() ?? 'error',
+                                    style: textTheme.titleSmall!
+                                        .copyWith(fontStyle: FontStyle.italic)),
+                              ],
                             ),
                           ],
                         ),
