@@ -72,6 +72,7 @@ class ResultScreen extends HookConsumerWidget {
                       )
                     ],
                   ),
+                  const SizedBox(height: 24),
                   Builder(builder: (_) {
                     if (tabState.value == 0) {
                       if (storiesQuery.isError) {
@@ -80,14 +81,26 @@ class ResultScreen extends HookConsumerWidget {
                       }
                       return Skeletonizer(
                           enabled: storiesQuery.isFetching,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: (storiesQuery.isFetching
-                                    ? skeletonStories
-                                    : (storiesQuery.data ?? []))
-                                .map((story) => StoryCardDetail(story: story))
-                                .toList(),
-                          ));
+                          child: Expanded(
+                              child: SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: (storiesQuery.isFetching
+                                            ? skeletonStories
+                                            : (storiesQuery.data ?? []))
+                                        .map((story) => GestureDetector(
+                                            onTap: () {
+                                              GoRouter.of(context)
+                                                  .push("/story/${story.id}");
+                                            },
+                                            child: Padding(
+                                                padding:
+                                                    EdgeInsets.only(bottom: 24),
+                                                child: StoryCardDetail(
+                                                    story: story))))
+                                        .toList(),
+                                  ))));
                     } else {
                       if (profileQuery.isError) {
                         return Center(

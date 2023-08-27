@@ -17,8 +17,10 @@ class StoryService {
       "Accept": "application/json"
     };
     final response = await http.get(url, headers: header);
+    final responseBody = utf8.decode(response.bodyBytes);
+
     if (response.statusCode == 200) {
-      final List result = json.decode(response.body)['data'];
+      final List result = json.decode(responseBody)['data'];
 
       return result.map((i) => Story.fromJson(i)).toList();
     } else {

@@ -1,15 +1,19 @@
 import 'package:audiory_v0/constants/gifts.dart';
 import 'package:audiory_v0/constants/skeletons.dart';
+import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Gift.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
 import 'package:audiory_v0/services/profile_services.dart';
 import 'package:audiory_v0/services/story_services.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
+import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
+import 'package:audiory_v0/widgets/story_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,8 +24,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../theme/theme_constants.dart';
-import '../widgets/category_badge.dart';
 import 'package:readmore/readmore.dart';
 
 class DetailStoryScreen extends HookConsumerWidget {
@@ -354,7 +356,9 @@ class DetailStoryScreen extends HookConsumerWidget {
     return Scaffold(
         appBar: AppBar(
           leading: GestureDetector(
-            onTap: () => context.pop(),
+            onTap: () {
+              GoRouter.of(context).pop();
+            },
             child: const Icon(Icons.arrow_back),
           ),
           title: Text(
@@ -451,7 +455,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                                             ? skeletonStory.tags
                                             : storyQuery.data?.tags) ??
                                         [])
-                                    .map((tag) => RankingListBadge(
+                                    .map((tag) => StoryTag(
                                           label: tag.name,
                                           selected: false,
                                         ))
@@ -549,11 +553,13 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Expanded(
                       child: FilledButton(
                           onPressed: () {
-                            GoRouter.of(context).pushNamed("chapter_detail",
-                                pathParameters: {
-                                  "chapterId":
-                                      storyQuery.data?.chapters?[0].id ?? ''
-                                });
+                            GoRouter.of(context)
+                                .pushNamed("chapter_detail", pathParameters: {
+                              "storyId": storyQuery.data?.id ?? '',
+                              "chapterId":
+                                  // storyQuery.data?.chapters?[0].id ?? ''
+                                  '41ccaddf-3b96-11ee-8842-e0d4e8a18075'
+                            });
                           },
                           style: ButtonStyle(
                               backgroundColor: MaterialStatePropertyAll(

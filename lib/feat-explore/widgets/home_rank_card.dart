@@ -68,7 +68,7 @@ class HomeRankingCard extends StatelessWidget {
             height: 70,
             decoration: ShapeDecoration(
               image: DecorationImage(
-                image: NetworkImage(story!.cover_url ?? ''),
+                image: NetworkImage(story.cover_url ?? ''),
                 fit: BoxFit.fill,
               ),
               shape: RoundedRectangleBorder(
@@ -93,7 +93,7 @@ class HomeRankingCard extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: Text(
-                    story!.title,
+                    story.title,
                     style: const TextStyle(
                       overflow: TextOverflow.ellipsis,
                       color: Colors.black,

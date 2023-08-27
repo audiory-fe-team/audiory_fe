@@ -138,6 +138,8 @@ class CategoryStories extends HookWidget {
 
 class CategoryCarousel extends HookConsumerWidget {
   final CarouselController _controller = CarouselController();
+
+  CategoryCarousel({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final current = useState(0);
@@ -154,6 +156,7 @@ class CategoryCarousel extends HookConsumerWidget {
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final int pageNum = ((categories.data ?? []).length / 6).ceil();
+
     return SizedBox(
         height: 132,
         child: Column(children: [
@@ -162,7 +165,7 @@ class CategoryCarousel extends HookConsumerWidget {
             options: CarouselOptions(
                 height: 132 - 16 - 6,
                 viewportFraction: 1.0,
-                enlargeCenterPage: false,
+                enlargeCenterPage: true,
                 onPageChanged: (index, reason) {
                   current.value = index;
                 }),
@@ -208,13 +211,13 @@ class CategoryCarousel extends HookConsumerWidget {
               return GestureDetector(
                 onTap: () => _controller.animateToPage(index),
                 child: Container(
-                    width: current == index ? 6 : 4,
-                    height: current == index ? 6 : 4,
+                    width: current.value == index ? 6 : 4,
+                    height: current.value == index ? 6 : 4,
                     margin: const EdgeInsets.symmetric(
                         vertical: 0, horizontal: 3.0),
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: current == index
+                      color: current.value == index
                           ? appColors.primaryBase
                           : appColors.skyLight,
                     )),

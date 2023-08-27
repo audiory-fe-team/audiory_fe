@@ -14,10 +14,6 @@ class CategoryReposity {
   static final categoryEndpoint = baseURL + "/categories";
 
   Future<List<Category>> fetchCategory() async {
-    // if (CategoryId == null) {
-    //   throw Exception('Failed to fetch category');
-    // }
-
     final url = Uri.parse(categoryEndpoint);
     Map<String, String> header = {
       "Content-type": "application/json",
@@ -25,11 +21,10 @@ class CategoryReposity {
     };
 
     final response = await http.get(url, headers: header);
-    print('res');
-    print(response.body);
+    final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
-      final List<dynamic> result = jsonDecode(response.body)['data'];
+      final List<dynamic> result = jsonDecode(responseBody)['data'];
       return result.map((i) => Category.fromJson(i)).toList();
     } else {
       throw Exception('Failed to load stories');

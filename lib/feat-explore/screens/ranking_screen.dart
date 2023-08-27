@@ -4,7 +4,6 @@ import 'package:audiory_v0/feat-explore/screens/layout/ranking_top_bar.dart';
 import 'package:audiory_v0/feat-explore/widgets/author_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/ranking_dropdown.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_rank_card.dart';
-import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 

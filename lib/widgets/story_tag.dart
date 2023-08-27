@@ -1,11 +1,11 @@
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 
-class RankingListBadge extends StatelessWidget {
+class StoryTag extends StatelessWidget {
   final String label;
   final bool selected;
 
-  const RankingListBadge({required this.label, this.selected = false});
+  const StoryTag({required this.label, this.selected = false});
 
   @override
   Widget build(BuildContext context) {

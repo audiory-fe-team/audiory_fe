@@ -1,127 +1,124 @@
 import 'dart:math';
 
+import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/state/state_manager.dart';
+import 'package:audiory_v0/services/story_services.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fquery/fquery.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends HookWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final AsyncValue<List<Story>> storyList = ref.watch(storyFutureProvider);
-
+  Widget build(BuildContext context) {
+    final storiesQuery =
+        useQuery(['stories'], () => StoryService().fetchStories());
     return Scaffold(
       appBar: const HomeTopBar(),
-      body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ListView(
-            children: [
-              const SizedBox(height: 32),
-              const HomeBanners(),
-              const SizedBox(height: 32),
+      body: RefreshIndicator(
+          onRefresh: () async {
+            storiesQuery.refetch();
+          },
+          child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ListView(
+                children: [
+                  const SizedBox(height: 32),
+                  const HomeBanners(),
+                  const SizedBox(height: 32),
 
-              //NOTE: Recommendations section
-              const HeaderWithLink(title: 'Có thể bạn sẽ thích', link: ''),
-              const SizedBox(height: 12),
-              storyList.when(
-                  data: (storyList) => StoryScrollList(
-                        storyList: storyList,
-                      ),
-                  error: (err, stack) => Text(err.toString()),
-                  loading: () => Center(
-                        child: CircularProgressIndicator(),
+                  //NOTE: Recommendations section
+                  Skeletonizer(
+                      enabled: storiesQuery.isFetching,
+                      child: const HeaderWithLink(
+                          title: 'Có thể bạn sẽ thích', link: '')),
+                  const SizedBox(height: 12),
+                  Skeletonizer(
+                      enabled: storiesQuery.isFetching,
+                      child: StoryScrollList(
+                        storyList: storiesQuery.isFetching
+                            ? skeletonStories
+                            : storiesQuery.data,
+                      )),
+                  const SizedBox(height: 32),
+                  //NOTE: Ranking section
+                  Skeletonizer(
+                      enabled: storiesQuery.isFetching,
+                      child: HomeRankingList(
+                        storyList: storiesQuery.isFetching
+                            ? skeletonStories
+                            : storiesQuery.data,
                       )),
 
-              const SizedBox(height: 32),
-              //NOTE: Ranking section
-              storyList.when(
-                  data: (storyList) => HomeRankingList(
-                        storyList: storyList,
-                      ),
-                  error: (err, stack) => Text(err.toString()),
-                  loading: () => Center(
-                        child: CircularProgressIndicator(),
+                  const SizedBox(height: 32),
+
+                  //NOTE: Hot section
+                  Skeletonizer(
+                      enabled: storiesQuery.isFetching,
+                      child:
+                          const HeaderWithLink(title: 'Thịnh hành', link: '')),
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 176,
+                    child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.network(
+                          'https://i0.wp.com/bookcoversbymelody.com/wp-content/uploads/2017/07/A-Brush-With-Vampires-FB-Banner.jpg?ssl=1',
+                          fit: BoxFit.cover,
+                        )),
+                  ),
+                  const SizedBox(height: 12),
+                  Skeletonizer(
+                      enabled: storiesQuery.isFetching,
+                      child: StoryScrollList(
+                        storyList: storiesQuery.isFetching
+                            ? skeletonStories
+                            : storiesQuery.data,
                       )),
 
-              const SizedBox(height: 32),
-
-              //NOTE: Hot section
-              const HeaderWithLink(title: 'Thịnh hành', link: ''),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                height: 176,
-                child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      'https://i0.wp.com/bookcoversbymelody.com/wp-content/uploads/2017/07/A-Brush-With-Vampires-FB-Banner.jpg?ssl=1',
-                      fit: BoxFit.cover,
-                    )),
-              ),
-              const SizedBox(height: 12),
-              storyList.when(
-                  data: (storyList) => StoryScrollList(
-                        storyList: storyList,
-                      ),
-                  error: (err, stack) => Text(err.toString()),
-                  loading: () => Center(
-                        child: CircularProgressIndicator(),
+                  //NOTE: Paid section
+                  const HeaderWithLink(title: 'Truyện trả phí', link: ''),
+                  const SizedBox(height: 12),
+                  Skeletonizer(
+                      enabled: storiesQuery.isFetching,
+                      child: StoryScrollList(
+                        storyList: storiesQuery.isFetching
+                            ? skeletonStories
+                            : storiesQuery.data,
                       )),
-              const SizedBox(height: 32),
+                  const SizedBox(height: 32),
 
-              //NOTE: Paid section
-              const HeaderWithLink(title: 'Truyện trả phí', link: ''),
-              const SizedBox(height: 12),
-              storyList.when(
-                  data: (storyList) => StoryScrollList(
-                        storyList: storyList,
-                      ),
-                  error: (err, stack) => Text(err.toString()),
-                  loading: () => Center(
-                        child: CircularProgressIndicator(),
-                      )),
-              const SizedBox(height: 32),
+                  //NOTE: Continue reading section
+                  const HeaderWithLink(title: 'Tiếp tục đọc', link: ''),
+                  const SizedBox(height: 12),
+                  Skeletonizer(
+                      enabled: storiesQuery.isFetching,
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: ((storiesQuery.isFetching
+                                      ? skeletonStories
+                                      : storiesQuery.data) ??
+                                  [])
+                              .map((story) => Padding(
+                                  padding: const EdgeInsets.only(bottom: 12),
+                                  child: StoryCardDetail(
+                                    story: story,
+                                  )))
+                              .toList())),
 
-              //NOTE: Continue reading section
-              const HeaderWithLink(title: 'Tiếp tục đọc', link: ''),
-              const SizedBox(height: 12),
-              storyList.when(
-                  data: (storyList) => Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: storyList
-                          .map((story) => Padding(
-                              padding: const EdgeInsets.only(bottom: 12),
-                              child: StoryCardDetail(
-                                story: story,
-                              )))
-                          .toList()),
-                  error: (err, stack) => Text(err.toString()),
-                  loading: () => const Center(
-                        child: CircularProgressIndicator(),
-                      )),
-              // Column(
-              //     mainAxisSize: MainAxisSize.min,
-              //     children: STORIES.sublist(0, 3).asMap().entries.map((entry) {
-              //       // Story story = entry.value;
-              //       return Padding(
-              //           padding: const EdgeInsets.only(bottom: 12),
-              //           child: Container(color: Colors.amber)
-              //       child: StoryCardDetail(
-              //         story: story,
-              //       ));
-              //     }).toList()),
-              const SizedBox(height: 32),
-            ],
-          )),
+                  const SizedBox(height: 32),
+                ],
+              ))),
     );
   }
 }
@@ -232,10 +229,9 @@ class HomeRankingList extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
-          children: storyList!
-              // .where((element) => element.read_count! > 1000)
+          children: (storyList ?? [])
               .toList()
-              .sublist(0, min(storyList!.length, 5))
+              .sublist(0, min(storyList?.length ?? 0, 5))
               .asMap()
               .entries
               .map((entry) {

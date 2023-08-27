@@ -5,13 +5,13 @@ import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/main_layout.dart';
-import 'package:audiory_v0/feat-read/detail_story_screen.dart';
+import 'package:audiory_v0/feat-read/screens/detail_story_screen.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
-import 'package:audiory_v0/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 
 import 'package:audiory_v0/services/auth_services.dart';
@@ -37,95 +37,98 @@ class AppRoutes {
     },
     routes: [
       GoRoute(
-        name: 'home',
-        path: '/',
-        builder: (BuildContext context, GoRouterState state) {
-          return const AppMainLayout();
-        },
-      ),
-      GoRoute(
-        name: 'ranking',
-        path: '/ranking',
-        builder: (BuildContext context, GoRouterState state) {
-          final typeString = state.queryParameters["type"];
-          RankingType type = mapStringToRankingType(typeString);
-          final metricString = state.queryParameters["metric"];
-          RankingMetric metric = mapStringToRankingMetric(metricString);
-          final timeString = state.queryParameters["time"];
-          RankingTimeRange time = mapStringToRankingTimeRange(timeString);
-
-          return RankingScreen(
-            key: state.pageKey,
-            type: type,
-            metric: metric,
-            time: time,
-          );
-        },
-      ),
-      GoRoute(
-          path: '/explore',
-          name: 'explore',
+          name: 'home',
+          path: '/',
           builder: (BuildContext context, GoRouterState state) {
-            return const ExploreScreen();
+            return const AppMainLayout();
           },
           routes: [
             GoRoute(
-              path: 'search',
-              name: 'explore_search',
-              pageBuilder: (context, state) => CustomTransitionPage<void>(
-                  key: state.pageKey,
-                  child: const SearchScreen(),
-                  transitionDuration: const Duration(milliseconds: 400),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    const begin =
-                        Offset(1, 0.0); // Start from right side of the screen
-                    const end = Offset.zero; // End at the center of the screen
-                    final tween = Tween(begin: begin, end: end);
-                    final offsetAnimation = animation
-                        .drive(tween.chain(CurveTween(curve: Curves.easeIn)));
-
-                    return SlideTransition(
-                        position: offsetAnimation, child: child);
-                  }),
-            ),
-            GoRoute(
-                path: 'result',
-                name: 'explore_result',
-                builder: (BuildContext context, GoRouterState state) {
-                  final keyword = state.queryParameters["keyword"];
-                  final searchForProfile =
-                      state.queryParameters["searchForProfile"];
-                  return ResultScreen(
-                      key: state.pageKey,
-                      keyword: keyword ?? '',
-                      searchForProfile: searchForProfile == 'true');
-                })
-          ]),
-      GoRoute(
-          path: '/story/:storyId',
-          name: 'story_detail',
-          builder: (BuildContext context, GoRouterState state) {
-            final storyId = state.pathParameters['storyId']!;
-            print(storyId);
-            // print('id' + id);
-            return DetailStoryScreen(
-              id: storyId,
-            );
-          },
-          routes: [
-            GoRoute(
-              path: 'chapter/:chapterId',
-              name: 'chapter_detail',
+              name: 'ranking',
+              path: 'ranking',
               builder: (BuildContext context, GoRouterState state) {
-                String? chapterId = state.pathParameters["chapterId"];
-                if (chapterId == null || chapterId == '')
-                  return NotFoundScreen();
-                return ReadingScreen(
-                  chapterId: chapterId,
+                final typeString = state.queryParameters["type"];
+                RankingType type = mapStringToRankingType(typeString);
+                final metricString = state.queryParameters["metric"];
+                RankingMetric metric = mapStringToRankingMetric(metricString);
+                final timeString = state.queryParameters["time"];
+                RankingTimeRange time = mapStringToRankingTimeRange(timeString);
+
+                return RankingScreen(
+                  key: state.pageKey,
+                  type: type,
+                  metric: metric,
+                  time: time,
                 );
               },
-            )
+            ),
+            GoRoute(
+                path: 'explore',
+                name: 'explore',
+                builder: (BuildContext context, GoRouterState state) {
+                  return const ExploreScreen();
+                },
+                routes: [
+                  GoRoute(
+                    path: 'search',
+                    name: 'explore_search',
+                    pageBuilder: (context, state) => CustomTransitionPage<void>(
+                        key: state.pageKey,
+                        child: const SearchScreen(),
+                        transitionDuration: const Duration(milliseconds: 400),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(
+                              1, 0.0); // Start from right side of the screen
+                          const end =
+                              Offset.zero; // End at the center of the screen
+                          final tween = Tween(begin: begin, end: end);
+                          final offsetAnimation = animation.drive(
+                              tween.chain(CurveTween(curve: Curves.easeIn)));
+
+                          return SlideTransition(
+                              position: offsetAnimation, child: child);
+                        }),
+                  ),
+                  GoRoute(
+                      path: 'result',
+                      name: 'explore_result',
+                      builder: (BuildContext context, GoRouterState state) {
+                        final keyword = state.queryParameters["keyword"];
+                        final searchForProfile =
+                            state.queryParameters["searchForProfile"];
+                        return ResultScreen(
+                            key: state.pageKey,
+                            keyword: keyword ?? '',
+                            searchForProfile: searchForProfile == 'true');
+                      })
+                ]),
+            GoRoute(
+                path: 'story/:storyId',
+                name: 'story_detail',
+                builder: (BuildContext context, GoRouterState state) {
+                  final storyId = state.pathParameters['storyId']!;
+                  print(storyId);
+                  // print('id' + id);
+                  return DetailStoryScreen(
+                    id: storyId,
+                  );
+                },
+                routes: [
+                  GoRoute(
+                    path: 'chapter/:chapterId',
+                    name: 'chapter_detail',
+                    builder: (BuildContext context, GoRouterState state) {
+                      String? chapterId = state.pathParameters["chapterId"];
+                      print(chapterId);
+                      if (chapterId == null || chapterId == '')
+                        return NotFoundScreen();
+                      return ReadingScreen(
+                        chapterId: chapterId,
+                      );
+                    },
+                  )
+                ]),
           ]),
       GoRoute(
         name: 'login',
