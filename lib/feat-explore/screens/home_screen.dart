@@ -174,8 +174,7 @@ class RankingListBadge extends StatelessWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return Container(
-      height: 25,
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: ShapeDecoration(
         color: selected ? appColors.primaryBase : Colors.white,
         shape: RoundedRectangleBorder(
@@ -190,7 +189,7 @@ class RankingListBadge extends StatelessWidget {
           Text(label,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: selected ? appColors.inkBase : Colors.white,
+                  color: selected ? Colors.white : appColors.inkBase,
                   fontWeight: FontWeight.w400)),
         ],
       ),

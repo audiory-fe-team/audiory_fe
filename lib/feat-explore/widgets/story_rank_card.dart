@@ -53,7 +53,7 @@ class StoryRankCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       width: double.infinity,
       height: 107,
       child: Row(
@@ -65,10 +65,9 @@ class StoryRankCard extends StatelessWidget {
             width: 75,
             height: 107,
             decoration: ShapeDecoration(
-              image: DecorationImage(
+              image: const DecorationImage(
                 image: NetworkImage(
-                    'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg' ??
-                        ''),
+                    'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
                 fit: BoxFit.fill,
               ),
               shape: RoundedRectangleBorder(

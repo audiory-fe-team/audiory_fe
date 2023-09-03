@@ -12,6 +12,7 @@ import 'package:audiory_v0/services/story_services.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
@@ -22,7 +23,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class ReadingScreen extends HookConsumerWidget {
+class ReadingScreen extends HookWidget {
   final String? chapterId;
 
   const ReadingScreen({super.key, this.chapterId});
@@ -43,10 +44,10 @@ class ReadingScreen extends HookConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final _bgColor = useState(Colors.white);
-    final _fontSize = useState(16);
-    final _showCommentByParagraph = useState(true);
+  Widget build(BuildContext context) {
+    final bgColor = useState(Colors.white);
+    final fontSize = useState(16);
+    final showCommentByParagraph = useState(true);
 
     final scrollController = new ItemScrollController();
 
@@ -58,18 +59,18 @@ class ReadingScreen extends HookConsumerWidget {
         enabled: chapterQuery.data?.story_id != null);
 
     void _changeStyle(
-        [Color? bgColor, int? fontSize, bool? showCommentByParagraph]) {
-      _bgColor.value = bgColor ?? _bgColor.value;
-      _fontSize.value = fontSize ?? _fontSize.value;
-      _showCommentByParagraph.value =
-          showCommentByParagraph ?? _showCommentByParagraph.value;
+        [Color? newBgColor, int? newFontSize, bool? isShowCommentByParagraph]) {
+      bgColor.value = newBgColor ?? bgColor.value;
+      fontSize.value = newFontSize ?? fontSize.value;
+      showCommentByParagraph.value =
+          isShowCommentByParagraph ?? showCommentByParagraph.value;
     }
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      backgroundColor: _bgColor.value,
+      backgroundColor: bgColor.value,
       appBar: ReadingTopBar(
         storyName: storyQuery.data?.title,
         storyId: chapterQuery.data?.story_id,
@@ -81,8 +82,7 @@ class ReadingScreen extends HookConsumerWidget {
               chapterQuery.refetch();
             },
             child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ListView(
                   children: [
                     ReadingScreenHeader(
@@ -101,7 +101,7 @@ class ReadingScreen extends HookConsumerWidget {
                                 ? skeletonChapter
                                 : chapterQuery.data)
                             ?.paragraphs,
-                        fontSize: _fontSize.value,
+                        fontSize: fontSize.value,
                         appColors: appColors,
                         textTheme: textTheme),
                     Skeleton.keep(
@@ -152,6 +152,10 @@ class ReadingScreen extends HookConsumerWidget {
       bottomNavigationBar: ReadingBottomBar(
         changeStyle: _changeStyle,
       ),
+      floatingActionButton:
+          Container(width: double.infinity, height: 50, color: Colors.green),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 }
@@ -197,42 +201,42 @@ class AudioControl extends StatelessWidget {
             final playerState = snapshot.data;
             final processingState = playerState?.processingState;
             final playing = playerState?.playing;
-
+            print(playing);
             if (!(playing ?? false)) {
               return FilledButton(
                   style: ButtonStyle(
                       backgroundColor:
                           MaterialStatePropertyAll(appColors.primaryBase),
-                      shape: MaterialStatePropertyAll(CircleBorder()),
-                      elevation: MaterialStatePropertyAll(1)),
-                  child: Icon(
+                      shape: const MaterialStatePropertyAll(CircleBorder()),
+                      elevation: const MaterialStatePropertyAll(1)),
+                  onPressed: audioPlayer.play,
+                  child: const Icon(
                     Icons.play_arrow_rounded,
                     size: 24,
                     color: Colors.white,
-                  ),
-                  onPressed: audioPlayer.play);
+                  ));
             } else if (processingState != ProcessingState.completed) {
               return FilledButton(
                   style: ButtonStyle(
                       backgroundColor:
-                          MaterialStatePropertyAll(appColors.skyLighter),
-                      shape: MaterialStatePropertyAll(CircleBorder()),
-                      elevation: MaterialStatePropertyAll(1)),
-                  child: Icon(
+                          MaterialStatePropertyAll(appColors.primaryBase),
+                      shape: const MaterialStatePropertyAll(CircleBorder()),
+                      elevation: const MaterialStatePropertyAll(1)),
+                  onPressed: audioPlayer.pause,
+                  child: const Icon(
                     Icons.pause_rounded,
                     size: 24,
                     color: Colors.white,
-                  ),
-                  onPressed: audioPlayer.pause);
+                  ));
             }
 
             return FilledButton(
                 style: ButtonStyle(
                     backgroundColor:
                         MaterialStatePropertyAll(appColors.primaryBase),
-                    shape: MaterialStatePropertyAll(CircleBorder()),
-                    elevation: MaterialStatePropertyAll(1)),
-                child: Icon(
+                    shape: const MaterialStatePropertyAll(CircleBorder()),
+                    elevation: const MaterialStatePropertyAll(1)),
+                child: const Icon(
                   Icons.play_arrow_rounded,
                   size: 24,
                   color: Colors.white,
@@ -283,7 +287,9 @@ class AudioMedia extends StatelessWidget {
 
 class ChapterAudioPlayer extends HookWidget {
   final Chapter? chapter;
-  const ChapterAudioPlayer({super.key, required this.chapter});
+  final Function? onPlayNextPara;
+  const ChapterAudioPlayer(
+      {super.key, required this.chapter, this.onPlayNextPara});
 
   @override
   Widget build(BuildContext context) {
@@ -297,14 +303,14 @@ class ChapterAudioPlayer extends HookWidget {
             (position, bufferedPosition, duration) =>
                 PositionAudio(position, bufferedPosition, duration));
     final playlist = ConcatenatingAudioSource(
-        children: (chapter?.paragraphs ?? [])
-            .map((p) => AudioSource.uri(
-                Uri.parse('http://34.29.203.235:3500${p.audio_url}'),
-                tag: MediaItem(
-                    id: p.id,
-                    title: 'Chapter ${p.id}',
-                    artist: 'Trung Nguyen')))
-            .toList());
+        children: (chapter?.paragraphs ?? []).asMap().entries.map((entry) {
+      int idx = entry.key;
+      Paragraph p = entry.value;
+      return AudioSource.uri(
+          Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audio_url}'),
+          tag: MediaItem(
+              id: p.id, title: 'Para ${idx}', artist: 'Trung Nguyen'));
+    }).toList());
 
     useEffect(() {
       try {
@@ -317,7 +323,7 @@ class ChapterAudioPlayer extends HookWidget {
     }, [player, chapter]);
 
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
             color: appColors.skyLightest,
             borderRadius: BorderRadius.circular(8)),
@@ -355,17 +361,17 @@ class ChapterAudioPlayer extends HookWidget {
                         onSeek: player.seek,
                       );
                     })),
-            StreamBuilder<SequenceState?>(
-                stream: player.sequenceStateStream,
-                builder: (context, snapshot) {
-                  final state = snapshot.data;
-                  if (state?.sequence.isEmpty ?? true) {
-                    return const SizedBox();
-                  }
-                  final metadata = state!.currentSource!.tag as MediaItem;
-                  return AudioMedia(
-                      title: metadata.title, artist: metadata.artist ?? '');
-                }),
+            // StreamBuilder<SequenceState?>(
+            //     stream: player.sequenceStateStream,
+            //     builder: (context, snapshot) {
+            //       final state = snapshot.data;
+            //       if (state?.sequence.isEmpty ?? true) {
+            //         return const SizedBox();
+            //       }
+            //       final metadata = state!.currentSource!.tag as MediaItem;
+            //       return AudioMedia(
+            //           title: metadata.title, artist: metadata.artist ?? '');
+            //     }),
             AudioControl(audioPlayer: player)
           ],
         ));
@@ -381,8 +387,8 @@ class SettingModelUseHooks extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final _selectedOption = useState(0);
-    final _fontSize = useState(16);
-    final _showCommentByParagraph = useState(false);
+    final fontSize = useState(16);
+    final showCommentByParagraph = useState(false);
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final List<Color> DEFAULT_OPTION = [
@@ -393,7 +399,7 @@ class SettingModelUseHooks extends HookWidget {
 
     final sizeController = useTextEditingController(text: "16");
 
-    useEffect(() {}, [_selectedOption, _fontSize]);
+    useEffect(() {}, [_selectedOption, fontSize]);
 
     return Expanded(
       child: Padding(
@@ -559,9 +565,9 @@ class SettingModelUseHooks extends HookWidget {
                         Checkbox(
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
-                          value: _showCommentByParagraph.value,
+                          value: showCommentByParagraph.value,
                           onChanged: (value) {
-                            _showCommentByParagraph.value = value ?? false;
+                            showCommentByParagraph.value = value ?? false;
                           },
                           shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(4)),
@@ -600,7 +606,7 @@ class SettingModelUseHooks extends HookWidget {
                   child: FilledButton(
                       onPressed: () {
                         changeStyle(DEFAULT_OPTION[_selectedOption.value],
-                            _fontSize.value, _showCommentByParagraph.value);
+                            fontSize.value, showCommentByParagraph.value);
                         Navigator.pop(context);
                       },
                       style: FilledButton.styleFrom(
@@ -716,7 +722,7 @@ class ActionButton extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           SvgPicture.asset(
-            'assets/icons/' + iconName + '.svg',
+            'assets/icons/$iconName.svg',
             width: 12,
             height: 12,
             color: appColors.primaryBase,

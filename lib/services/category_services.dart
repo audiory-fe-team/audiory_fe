@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Category.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -10,8 +11,7 @@ final categoryRepositoryProvider =
     Provider<CategoryReposity>((_) => CategoryReposity());
 
 class CategoryReposity {
-  static const baseURL = "http://34.29.203.235:3500/api";
-  static final categoryEndpoint = baseURL + "/categories";
+  static final categoryEndpoint = "${dotenv.get('API_BASE_URL')}/categories";
 
   Future<List<Category>> fetchCategory() async {
     final url = Uri.parse(categoryEndpoint);

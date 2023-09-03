@@ -1,13 +1,11 @@
 import 'dart:convert';
 
-import 'package:audiory_v0/feat-explore/models/filter.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class StoryService {
-  static const baseURL = "http://34.29.203.235:3500/api";
-  static final storiesEndpoint = baseURL + "/stories";
+  static final storiesEndpoint = "${dotenv.get('API_BASE_URL')}/stories";
 
   Future<List<Story>> fetchStories({String keyword = ''}) async {
     final url = Uri.parse(storiesEndpoint)

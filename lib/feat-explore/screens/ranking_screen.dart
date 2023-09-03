@@ -88,8 +88,8 @@ class RankingScreen extends HookConsumerWidget {
               height: 24,
             ),
             Builder(builder: (_) {
-              if (type == RankingType.author) return AuthorRanking();
-              if (type == RankingType.reader) return ReaderRanking();
+              if (type == RankingType.author) return const AuthorRanking();
+              if (type == RankingType.reader) return const ReaderRanking();
               return StoryRanking(
                 metric: metric,
                 time: time,
@@ -113,7 +113,6 @@ class StoryRanking extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
     return Expanded(
@@ -134,20 +133,20 @@ class StoryRanking extends HookWidget {
                           .copyWith(fontWeight: FontWeight.w600),
                       items: const [
                         DropdownMenuItem(
-                          child: Text('Lượt đọc'),
                           value: RankingMetric.view,
+                          child: Text('Lượt đọc'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Bình chọn'),
                           value: RankingMetric.vote,
+                          child: Text('Bình chọn'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Tặng quà'),
                           value: RankingMetric.gift,
+                          child: Text('Tặng quà'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Bình luận'),
                           value: RankingMetric.comment,
+                          child: Text('Bình luận'),
                         ),
                       ],
                       onChanged: (value) {
@@ -175,27 +174,27 @@ class StoryRanking extends HookWidget {
                           overflow: TextOverflow.ellipsis),
                       items: const [
                         DropdownMenuItem(
-                          child: Text('Hôm nay'),
                           value: RankingTimeRange.today,
+                          child: Text('Hôm nay'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Tuần này'),
                           value: RankingTimeRange.this_week,
+                          child: Text('Tuần này'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Tháng này'),
                           value: RankingTimeRange.this_month,
+                          child: Text('Tháng này'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Năm nay'),
                           value: RankingTimeRange.this_year,
+                          child: Text('Năm nay'),
                         ),
                         DropdownMenuItem(
+                          value: RankingTimeRange.all_time,
                           child: Text(
                             'Từ trước đến nay',
                             overflow: TextOverflow.ellipsis,
                           ),
-                          value: RankingTimeRange.all_time,
                         ),
                       ],
                       onChanged: (value) {
@@ -213,7 +212,7 @@ class StoryRanking extends HookWidget {
         const SizedBox(
           height: 24,
         ),
-        Expanded(
+        const Expanded(
             child: SingleChildScrollView(
                 child: Column(
           // scrollDirection: Axis.vertical,
@@ -246,7 +245,6 @@ class AuthorRanking extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
     return Expanded(
@@ -267,20 +265,20 @@ class AuthorRanking extends HookWidget {
                           .copyWith(fontWeight: FontWeight.w600),
                       items: const [
                         DropdownMenuItem(
-                          child: Text('Lượt đọc'),
                           value: RankingMetric.view,
+                          child: Text('Lượt đọc'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Bình chọn'),
                           value: RankingMetric.vote,
+                          child: Text('Bình chọn'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Tặng quà'),
                           value: RankingMetric.gift,
+                          child: Text('Tặng quà'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Người theo dõi'),
                           value: RankingMetric.follower,
+                          child: Text('Người theo dõi'),
                         ),
                       ],
                       onChanged: (value) {
@@ -308,27 +306,27 @@ class AuthorRanking extends HookWidget {
                           overflow: TextOverflow.ellipsis),
                       items: const [
                         DropdownMenuItem(
-                          child: Text('Hôm nay'),
                           value: RankingTimeRange.today,
+                          child: Text('Hôm nay'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Tuần này'),
                           value: RankingTimeRange.this_week,
+                          child: Text('Tuần này'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Tháng này'),
                           value: RankingTimeRange.this_month,
+                          child: Text('Tháng này'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Năm nay'),
                           value: RankingTimeRange.this_year,
+                          child: Text('Năm nay'),
                         ),
                         DropdownMenuItem(
+                          value: RankingTimeRange.all_time,
                           child: Text(
                             'Từ trước đến nay',
                             overflow: TextOverflow.ellipsis,
                           ),
-                          value: RankingTimeRange.all_time,
                         ),
                       ],
                       onChanged: (value) {
@@ -346,7 +344,7 @@ class AuthorRanking extends HookWidget {
         const SizedBox(
           height: 24,
         ),
-        Expanded(
+        const Expanded(
             child: SingleChildScrollView(
                 child: Column(
           // scrollDirection: Axis.vertical,
@@ -379,7 +377,6 @@ class ReaderRanking extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
     return Expanded(
@@ -400,20 +397,20 @@ class ReaderRanking extends HookWidget {
                           .copyWith(fontWeight: FontWeight.w600),
                       items: const [
                         DropdownMenuItem(
-                          child: Text('Lượt đọc'),
                           value: RankingMetric.view,
+                          child: Text('Lượt đọc'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Bình chọn'),
                           value: RankingMetric.vote,
+                          child: Text('Bình chọn'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Tặng quà'),
                           value: RankingMetric.gift,
+                          child: Text('Tặng quà'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Người theo dõi'),
                           value: RankingMetric.follower,
+                          child: Text('Người theo dõi'),
                         ),
                       ],
                       onChanged: (value) {
@@ -441,27 +438,27 @@ class ReaderRanking extends HookWidget {
                           overflow: TextOverflow.ellipsis),
                       items: const [
                         DropdownMenuItem(
-                          child: Text('Hôm nay'),
                           value: RankingTimeRange.today,
+                          child: Text('Hôm nay'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Tuần này'),
                           value: RankingTimeRange.this_week,
+                          child: Text('Tuần này'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Tháng này'),
                           value: RankingTimeRange.this_month,
+                          child: Text('Tháng này'),
                         ),
                         DropdownMenuItem(
-                          child: Text('Năm nay'),
                           value: RankingTimeRange.this_year,
+                          child: Text('Năm nay'),
                         ),
                         DropdownMenuItem(
+                          value: RankingTimeRange.all_time,
                           child: Text(
                             'Từ trước đến nay',
                             overflow: TextOverflow.ellipsis,
                           ),
-                          value: RankingTimeRange.all_time,
                         ),
                       ],
                       onChanged: (value) {
@@ -479,7 +476,7 @@ class ReaderRanking extends HookWidget {
         const SizedBox(
           height: 24,
         ),
-        Expanded(
+        const Expanded(
             child: SingleChildScrollView(
                 child: Column(
           // scrollDirection: Axis.vertical,

@@ -1,6 +1,5 @@
 import 'package:audiory_v0/constants/gifts.dart';
 import 'package:audiory_v0/constants/skeletons.dart';
-import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Gift.dart';
 import 'package:audiory_v0/models/Story.dart';
@@ -12,7 +11,6 @@ import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
-import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -114,7 +112,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                     style: sharedNumberStyle)
               ],
             ),
-            VerticalDivider(),
+            const VerticalDivider(),
             Column(
               children: [
                 Skeleton.keep(
@@ -135,7 +133,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                     style: sharedNumberStyle)
               ],
             ),
-            VerticalDivider(),
+            const VerticalDivider(),
             Column(
               children: [
                 Skeleton.keep(
@@ -156,7 +154,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                     style: sharedNumberStyle)
               ],
             ),
-            VerticalDivider(),
+            const VerticalDivider(),
             Column(
               children: [
                 Skeleton.keep(
@@ -225,14 +223,13 @@ class DetailStoryScreen extends HookConsumerWidget {
                 'Cập nhật đến chương',
                 style: textTheme.headlineSmall,
               ),
-              Container(
-                  child: IntrinsicHeight(
+              IntrinsicHeight(
                 child: Row(children: [
                   Text('Mới nhất', style: textTheme.labelLarge),
                   const VerticalDivider(),
                   Text('Cũ nhất', style: textTheme.labelLarge)
                 ]),
-              )),
+              ),
             ],
           ),
           const SizedBox(
@@ -245,7 +242,7 @@ class DetailStoryScreen extends HookConsumerWidget {
               return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
                   child: ChapterItem(
-                    title: 'Chương ${index + 1}: ' + chapter.title,
+                    title: 'Chương ${index + 1}: ${chapter.title}',
                     time: '20',
                   ));
             }).toList(),
@@ -299,7 +296,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                 'Người ủng hộ',
                 style: textTheme.headlineSmall,
               ),
-              Container(
+              SizedBox(
                 height: 34,
                 child: AppIconButton(
                     title: 'Tặng quà',
@@ -421,7 +418,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                                                           ''),
                                                   fit: BoxFit.fill,
                                                 ),
-                                                shape: CircleBorder(),
+                                                shape: const CircleBorder(),
                                               ),
                                             )),
                                         const SizedBox(width: 8),
@@ -507,8 +504,8 @@ class DetailStoryScreen extends HookConsumerWidget {
             child: Container(
               height: 74,
               width: double.infinity,
-              margin: EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(),
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: const BoxDecoration(),
               child: Row(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -516,7 +513,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                 children: [
                   TapEffectWrapper(
                       onTap: () {},
-                      child: Container(
+                      child: SizedBox(
                           width: 50,
                           child: Column(
                               mainAxisSize: MainAxisSize.max,
@@ -534,7 +531,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                               ]))),
                   TapEffectWrapper(
                       onTap: () {},
-                      child: Container(
+                      child: SizedBox(
                           width: 50,
                           child: Column(
                               mainAxisSize: MainAxisSize.max,

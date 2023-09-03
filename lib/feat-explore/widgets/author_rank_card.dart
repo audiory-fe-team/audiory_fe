@@ -53,7 +53,7 @@ class AuthorRankCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 16),
       width: double.infinity,
       height: 60,
       child: Row(
@@ -64,11 +64,10 @@ class AuthorRankCard extends StatelessWidget {
           Container(
             width: 60,
             height: 60,
-            decoration: ShapeDecoration(
+            decoration: const ShapeDecoration(
               image: DecorationImage(
                 image: NetworkImage(
-                    'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg' ??
-                        ''),
+                    'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
                 fit: BoxFit.fill,
               ),
               shape: CircleBorder(),

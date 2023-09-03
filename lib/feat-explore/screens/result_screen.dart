@@ -108,14 +108,19 @@ class ResultScreen extends HookConsumerWidget {
                       }
                       return Skeletonizer(
                           enabled: profileQuery.isFetching,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: (profileQuery.isFetching
-                                    ? skeletonProfiles
-                                    : (profileQuery.data ?? skeletonProfiles))
-                                .map((profile) => Text(profile.fullName ?? ''))
-                                .toList(),
-                          ));
+                          child: Expanded(
+                              child: SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: (profileQuery.isFetching
+                                            ? skeletonProfiles
+                                            : (profileQuery.data ??
+                                                skeletonProfiles))
+                                        .map((profile) =>
+                                            Text(profile.fullName ?? ''))
+                                        .toList(),
+                                  ))));
                     }
                   }),
                 ],

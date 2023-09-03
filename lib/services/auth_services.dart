@@ -5,6 +5,7 @@ import 'package:audiory_v0/models/body/signin_body.dart';
 import 'package:audiory_v0/models/body/signup_body.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import "package:flutter/material.dart";
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
@@ -28,8 +29,7 @@ class Auth extends ChangeNotifier {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  String baseURL = "http://34.29.203.235:3500/api";
-  String authrUrl = "http://34.29.203.235:3500/api/auth";
+  String authrUrl = "${dotenv.get('API_BASE_URL')}/auth";
 
   Timer? _timer;
   Future<void> signInWithEmailAndPassword({
@@ -81,7 +81,7 @@ class Auth extends ChangeNotifier {
         username: username,
         full_name: fullname,
         password: password);
-    var url = Uri.parse(baseURL + '/users');
+    var url = Uri.parse('${dotenv.get('API_BASE_URL')}/users');
     print(body);
     Map<String, String> header = {
       "Content-type": "application/json",

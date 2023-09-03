@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:audiory_v0/models/Story.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -9,8 +10,7 @@ final storyRepositoryProvider =
     Provider<StoryRepostitory>((_) => StoryRepostitory());
 
 class StoryRepostitory {
-  static final baseURL = "http://34.29.203.235:3500/api";
-  static final storiesEndpoint = baseURL + "/stories";
+  static final storiesEndpoint = "${dotenv.get('API_BASE_URL')}/stories";
 
   Future<List<Story>> fetchStories() async {
     final url = Uri.parse(storiesEndpoint);
