@@ -16,9 +16,31 @@ class ReadingBottomBar extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _liked = useState(false);
-
+    final liked = useState(false);
+    final settingOpen = useState(false);
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    void handleOpenChapter() {}
+    void handleToggleLike() {
+      //NOTE:Call api like
+      liked.value = !liked.value;
+    }
+
+    void handleOpenComment() {
+      //NOTE: Navigate to comment of chapter page
+    }
+
+    void handleOpenSetting() {
+      settingOpen.value = true;
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) {
+            return SettingModel(
+              changeStyle: changeStyle,
+            );
+          }).whenComplete(() {
+        settingOpen.value = false;
+      });
+    }
 
     // void _onItemTapped(int index) {
     //   switch (index) {
@@ -57,8 +79,8 @@ class ReadingBottomBar extends HookWidget {
     final sharedTextStyle = Theme.of(context).textTheme.labelLarge;
     return Material(
         elevation: 10,
-        child: Container(
-            height: 74,
+        child: SizedBox(
+            height: 65,
             width: double.infinity,
             child: Material(
                 color: appColors.skyLightest,
@@ -69,76 +91,114 @@ class ReadingBottomBar extends HookWidget {
                     children: [
                       Expanded(
                           child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
                               customBorder: CircleBorder(),
                               onTap: () {},
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.format_list_bulleted),
+                                  Icon(
+                                    Icons.format_list_bulleted,
+                                    color: appColors.skyBase,
+                                  ),
                                   Text(
                                     'Chương',
-                                    style: sharedTextStyle,
+                                    style: sharedTextStyle?.copyWith(
+                                        color: appColors.skyBase),
                                   )
                                 ],
                               ))),
                       Expanded(
                           child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
                               customBorder: CircleBorder(),
                               onTap: () {},
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.format_list_bulleted),
+                                  Icon(Icons.favorite,
+                                      color: liked.value
+                                          ? appColors.primaryBase
+                                          : appColors.skyBase),
                                   Text(
-                                    'Chương',
-                                    style: sharedTextStyle,
+                                    'Bình chọn',
+                                    style: sharedTextStyle?.copyWith(
+                                        color: liked.value
+                                            ? appColors.primaryBase
+                                            : appColors.skyBase),
                                   )
                                 ],
                               ))),
                       Expanded(
                           child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
                               customBorder: CircleBorder(),
                               onTap: () {},
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.format_list_bulleted),
+                                  Icon(
+                                    Icons.chat_bubble_rounded,
+                                    color: appColors.skyBase,
+                                  ),
                                   Text(
-                                    'Chương',
-                                    style: sharedTextStyle,
+                                    'Bình luận',
+                                    style: sharedTextStyle?.copyWith(
+                                        color: appColors.skyBase),
                                   )
                                 ],
                               ))),
                       Expanded(
                           child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
                               customBorder: CircleBorder(),
-                              onTap: () {},
+                              onTap: () {
+                                handleOpenSetting();
+                              },
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.format_list_bulleted),
+                                  Icon(
+                                    Icons.settings,
+                                    color: settingOpen.value
+                                        ? appColors.primaryBase
+                                        : appColors.skyBase,
+                                  ),
                                   Text(
-                                    'Chương',
-                                    style: sharedTextStyle,
+                                    'Cài đặt',
+                                    style: sharedTextStyle?.copyWith(
+                                        color: settingOpen.value
+                                            ? appColors.primaryBase
+                                            : appColors.skyBase),
                                   )
                                 ],
                               ))),
                       Expanded(
                           child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
                               customBorder: CircleBorder(),
                               onTap: () {},
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.format_list_bulleted),
+                                  Icon(
+                                    Icons.share,
+                                    color: appColors.skyBase,
+                                  ),
                                   Text(
-                                    'Chương',
-                                    style: sharedTextStyle,
+                                    'Chia sẻ',
+                                    style: sharedTextStyle?.copyWith(
+                                        color: appColors.skyBase),
                                   )
                                 ],
                               ))),

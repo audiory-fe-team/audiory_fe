@@ -16,6 +16,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
+import 'package:hidable/hidable.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
@@ -49,7 +50,9 @@ class ReadingScreen extends HookWidget {
     final fontSize = useState(16);
     final showCommentByParagraph = useState(true);
 
-    final scrollController = new ItemScrollController();
+    final scrollController = useScrollController();
+
+    final player = AudioPlayer();
 
     final chapterQuery = useQuery(['chapter', chapterId],
         () => ChapterServices().fetchChapterDetail(chapterId),
@@ -69,6 +72,37 @@ class ReadingScreen extends HookWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
+    useEffect(() {
+      final playlist = ConcatenatingAudioSource(
+          children: (chapterQuery.data?.paragraphs ?? [])
+              .asMap()
+              .entries
+              .map((entry) {
+        int idx = entry.key;
+        Paragraph p = entry.value;
+        return AudioSource.uri(
+            Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audio_url}'),
+            tag: MediaItem(
+                id: p.id,
+                title: storyQuery.data?.title ?? '',
+                artist: 'Chương ${1} - Đoạn ${idx + 1}'));
+      }).toList());
+      try {
+        player.setLoopMode(LoopMode.all);
+        player.setAudioSource(playlist);
+      } catch (error) {
+        print(error.toString());
+      }
+    }, [player, chapterQuery.data]);
+
+    useEffect(() {
+      print(player.sequence?.map((e) => e.duration).toList().toString());
+    }, [player]);
+
+    useEffect(() {
+      return () => player.dispose();
+    });
+
     return Scaffold(
       backgroundColor: bgColor.value,
       appBar: ReadingTopBar(
@@ -84,9 +118,12 @@ class ReadingScreen extends HookWidget {
             child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ListView(
+                  controller: scrollController,
                   children: [
+                    const SizedBox(height: 24),
                     ReadingScreenHeader(
-                      num: 1,
+                      num: (storyQuery.data?.chapters ?? [])
+                          .indexWhere((element) => element.id == chapterId),
                       chapter: chapterQuery.isFetching
                           ? skeletonChapter
                           : chapterQuery.data ?? skeletonChapter,
@@ -94,6 +131,7 @@ class ReadingScreen extends HookWidget {
                     const SizedBox(height: 24),
                     ChapterAudioPlayer(
                       chapter: chapterQuery.data,
+                      player: player,
                     ),
                     const SizedBox(height: 24),
                     ...chapterContent(
@@ -149,11 +187,126 @@ class ReadingScreen extends HookWidget {
                   ],
                 ))),
       ),
-      bottomNavigationBar: ReadingBottomBar(
-        changeStyle: _changeStyle,
-      ),
-      floatingActionButton:
-          Container(width: double.infinity, height: 50, color: Colors.green),
+      bottomNavigationBar: Hidable(
+          controller: scrollController,
+          child: ReadingBottomBar(
+            changeStyle: _changeStyle,
+          )),
+      floatingActionButton: HookBuilder(builder: (_) {
+        final playingStream = useStream(player.playingStream);
+        final positionAudioStream = useStream(
+            Rx.combineLatest3<Duration, Duration, Duration?, PositionAudio>(
+                player.positionStream,
+                player.bufferedPositionStream,
+                player.durationStream,
+                (position, bufferedPosition, duration) =>
+                    PositionAudio(position, bufferedPosition, duration)));
+        final playing = playingStream.data ?? false;
+        final position = positionAudioStream.data;
+        if (playing == false && position?.position == Duration.zero)
+          return const SizedBox();
+        return Container(
+            margin: const EdgeInsets.symmetric(horizontal: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: appColors.skyLighter,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            height: 50,
+            child: Stack(
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                        width: 20,
+                        height: 35,
+                        decoration: ShapeDecoration(
+                          image: DecorationImage(
+                            image:
+                                NetworkImage(storyQuery.data?.cover_url ?? ''),
+                            fit: BoxFit.fill,
+                          ),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(storyQuery.data?.title ?? '',
+                              style: textTheme.titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.bold)),
+                          const SizedBox(height: 4),
+                          StreamBuilder(
+                              stream: player.sequenceStateStream,
+                              builder: (_, snapshot) {
+                                final playerState = snapshot.data;
+                                final currentParaIndex =
+                                    playerState?.currentIndex ?? 0;
+                                return Text(
+                                    'Chương 1 - Đoạn ${currentParaIndex + 1}',
+                                    style: textTheme.labelLarge?.copyWith(
+                                      fontStyle: FontStyle.italic,
+                                    ));
+                              }),
+                        ],
+                      )
+                    ]),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Builder(builder: (context) {
+                          if (!(playing ?? false)) {
+                            return GestureDetector(
+                              onTap: () {
+                                player.play();
+                              },
+                              child: Icon(Icons.play_arrow_rounded,
+                                  size: 30, color: appColors.inkLight),
+                            );
+                          } else {
+                            return GestureDetector(
+                              onTap: () {
+                                player.pause();
+                              },
+                              child: Icon(Icons.pause_rounded,
+                                  size: 30, color: appColors.inkLight),
+                            );
+                          }
+                        })
+                      ],
+                    )
+                  ],
+                ),
+                Positioned(
+                    bottom: 1,
+                    width: MediaQuery.of(context).size.width,
+                    child: Container(
+                        height: 2,
+                        child: ProgressBar(
+                          barHeight: 2,
+                          baseBarColor: Colors.white,
+                          bufferedBarColor: appColors.primaryLightest,
+                          progressBarColor: appColors.primaryBase,
+                          thumbColor: appColors.primaryBase,
+                          thumbRadius: 0,
+                          timeLabelTextStyle:
+                              Theme.of(context).textTheme.labelLarge,
+                          progress: position?.position ?? Duration.zero,
+                          buffered: position?.bufferedPosition ?? Duration.zero,
+                          total: position?.duration ?? Duration.zero,
+                          onSeek: player.seek,
+                        ))),
+              ],
+            ));
+      }),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
     );
@@ -201,7 +354,6 @@ class AudioControl extends StatelessWidget {
             final playerState = snapshot.data;
             final processingState = playerState?.processingState;
             final playing = playerState?.playing;
-            print(playing);
             if (!(playing ?? false)) {
               return FilledButton(
                   style: ButtonStyle(
@@ -287,45 +439,32 @@ class AudioMedia extends StatelessWidget {
 
 class ChapterAudioPlayer extends HookWidget {
   final Chapter? chapter;
+  final AudioPlayer player;
   final Function? onPlayNextPara;
   const ChapterAudioPlayer(
-      {super.key, required this.chapter, this.onPlayNextPara});
+      {super.key,
+      required this.chapter,
+      this.onPlayNextPara,
+      required this.player});
 
   @override
   Widget build(BuildContext context) {
-    final player = AudioPlayer();
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final Stream<PositionAudio> positionAudioStream =
+    final AppColors? appColors = Theme.of(context).extension<AppColors>();
+    final positionAudioStream = useStream(
         Rx.combineLatest3<Duration, Duration, Duration?, PositionAudio>(
             player.positionStream,
             player.bufferedPositionStream,
             player.durationStream,
             (position, bufferedPosition, duration) =>
-                PositionAudio(position, bufferedPosition, duration));
-    final playlist = ConcatenatingAudioSource(
-        children: (chapter?.paragraphs ?? []).asMap().entries.map((entry) {
-      int idx = entry.key;
-      Paragraph p = entry.value;
-      return AudioSource.uri(
-          Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audio_url}'),
-          tag: MediaItem(
-              id: p.id, title: 'Para ${idx}', artist: 'Trung Nguyen'));
-    }).toList());
-
-    useEffect(() {
-      try {
-        player.setLoopMode(LoopMode.all);
-        player.setAudioSource(playlist);
-      } catch (error) {
-        print(error.toString());
-      }
-      return () => player.dispose();
-    }, [player, chapter]);
-
+                PositionAudio(position, bufferedPosition, duration)));
+    final position = positionAudioStream.data;
+    // final sequenceStateStream = useStream(player.sequenceStateStream);
+    // final totalDuration = sequenceStateStream.data?.sequence.fold(Duration.zero,
+    //     (previous, element) => previous + (element.duration ?? Duration.zero));
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-            color: appColors.skyLightest,
+            color: appColors?.skyLightest,
             borderRadius: BorderRadius.circular(8)),
         child: Column(
           children: [
@@ -342,25 +481,19 @@ class ChapterAudioPlayer extends HookWidget {
                         .labelMedium!
                         .copyWith(fontStyle: FontStyle.italic))),
             Skeleton.keep(
-                child: StreamBuilder(
-                    stream: positionAudioStream,
-                    builder: (context, snapshot) {
-                      final position = snapshot.data;
-                      return ProgressBar(
-                        barHeight: 4,
-                        baseBarColor: Colors.white,
-                        bufferedBarColor: appColors.primaryLightest,
-                        progressBarColor: appColors.primaryBase,
-                        thumbColor: appColors.primaryBase,
-                        thumbRadius: 5,
-                        timeLabelTextStyle:
-                            Theme.of(context).textTheme.labelLarge,
-                        progress: position?.position ?? Duration.zero,
-                        buffered: position?.bufferedPosition ?? Duration.zero,
-                        total: position?.duration ?? Duration.zero,
-                        onSeek: player.seek,
-                      );
-                    })),
+                child: ProgressBar(
+              barHeight: 4,
+              baseBarColor: Colors.white,
+              bufferedBarColor: appColors?.primaryLightest,
+              progressBarColor: appColors?.primaryBase,
+              thumbColor: appColors?.primaryBase,
+              thumbRadius: 5,
+              timeLabelTextStyle: Theme.of(context).textTheme.labelLarge,
+              progress: position?.position ?? Duration.zero,
+              buffered: position?.bufferedPosition ?? Duration.zero,
+              total: position?.duration ?? Duration.zero,
+              onSeek: player.seek,
+            )),
             // StreamBuilder<SequenceState?>(
             //     stream: player.sequenceStateStream,
             //     builder: (context, snapshot) {
@@ -378,11 +511,11 @@ class ChapterAudioPlayer extends HookWidget {
   }
 }
 
-class SettingModelUseHooks extends HookWidget {
+class SettingModel extends HookWidget {
   final Function([Color? bgColor, int? fontSize, bool? showCommentByParagraph])
       changeStyle;
 
-  const SettingModelUseHooks({super.key, required this.changeStyle});
+  const SettingModel({super.key, required this.changeStyle});
 
   @override
   Widget build(BuildContext context) {

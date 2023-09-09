@@ -352,6 +352,7 @@ class DetailStoryScreen extends HookConsumerWidget {
 
     return Scaffold(
         appBar: AppBar(
+          elevation: 2,
           leading: GestureDetector(
             onTap: () {
               GoRouter.of(context).pop();
@@ -502,7 +503,7 @@ class DetailStoryScreen extends HookConsumerWidget {
         bottomNavigationBar: Material(
             elevation: 10,
             child: Container(
-              height: 74,
+              height: 65,
               width: double.infinity,
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: const BoxDecoration(),
