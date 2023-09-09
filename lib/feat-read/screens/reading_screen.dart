@@ -7,8 +7,8 @@ import 'package:audiory_v0/feat-read/layout/bottom_bar.dart';
 import 'package:audiory_v0/feat-read/layout/reading_top_bar.dart';
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
-import 'package:audiory_v0/services/chapter_services.dart';
-import 'package:audiory_v0/services/story_services.dart';
+import 'package:audiory_v0/repositories/chapter.repository.dart';
+import 'package:audiory_v0/repositories/story.repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
@@ -55,10 +55,12 @@ class ReadingScreen extends HookWidget {
     final player = AudioPlayer();
 
     final chapterQuery = useQuery(['chapter', chapterId],
-        () => ChapterServices().fetchChapterDetail(chapterId),
+        () => ChapterRepository().fetchChapterDetail(chapterId),
         enabled: chapterId != null);
-    final storyQuery = useQuery(['story', chapterQuery.data?.story_id],
-        () => StoryService().fetchStoryById(chapterQuery.data?.story_id ?? ''),
+    final storyQuery = useQuery(
+        ['story', chapterQuery.data?.story_id],
+        () => StoryRepostitory()
+            .fetchStoryById(chapterQuery.data?.story_id ?? ''),
         enabled: chapterQuery.data?.story_id != null);
 
     void _changeStyle(

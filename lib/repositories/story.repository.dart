@@ -12,12 +12,13 @@ final storyRepositoryProvider =
 class StoryRepostitory {
   static final storiesEndpoint = "${dotenv.get('API_BASE_URL')}/stories";
 
-  Future<List<Story>> fetchStories() async {
-    final url = Uri.parse(storiesEndpoint);
+  Future<List<Story>> fetchStories({String? keyword = ''}) async {
+    final url = Uri.parse(storiesEndpoint)
+        .replace(queryParameters: {'keyword': keyword ?? ''});
+
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
 
-    print(response.statusCode == 200);
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(responseBody)['data'];
       return result.map((i) => Story.fromJson(i)).toList();
@@ -26,12 +27,10 @@ class StoryRepostitory {
     }
   }
 
-  Future<Story> fetchStoriesById(String storyId) async {
-    final url = Uri.parse(storiesEndpoint + '/${storyId}');
+  Future<Story> fetchStoryById(String storyId) async {
+    final url = Uri.parse('$storiesEndpoint/$storyId');
     final response = await http.get(url);
-    print('res');
-    print(response.body);
-    print(response.statusCode == 200);
+
     if (response.statusCode == 200) {
       final Story result = jsonDecode(response.body)['data'];
       return Story.fromJson(result as Map<String, dynamic>);
@@ -41,16 +40,13 @@ class StoryRepostitory {
   }
 
   Future<void> createStory(body) async {
-    print('ako');
     final url = Uri.parse(storiesEndpoint);
     Map<String, String> header = {
       "Content-type": "multipart/form-data",
       "Accept": "application/json",
     };
     final response = await http.post(headers: header, url, body: body);
-    print('res');
-    print(response.statusCode);
-    print(response.body);
+
     if (response.statusCode == 200) {
       // final List<dynamic> result = jsonDecode(response.body)['data'];
       // return result.map((i) => Story.fromJson(i)).toList();

@@ -4,12 +4,12 @@ import 'package:audiory_v0/models/Profile.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
-class ProfileService {
+class ProfileRepository {
   static final profileEndpoint = "${dotenv.get('API_BASE_URL')}/users";
 
-  Future<List<Profile>> fetchAllProfiles({String keyword = ''}) async {
+  Future<List<Profile>> fetchAllProfiles({String? keyword = ''}) async {
     final url = Uri.parse(profileEndpoint)
-        .replace(queryParameters: {'keyword': keyword ?? ''});
+        .replace(queryParameters: {'keyword': keyword});
     Map<String, String> header = {
       "Content-type": "application/json",
       "Accept": "application/json"

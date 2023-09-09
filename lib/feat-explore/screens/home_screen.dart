@@ -6,13 +6,14 @@ import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/services/story_services.dart';
+import 'package:audiory_v0/services/story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeScreen extends HookWidget {
@@ -21,7 +22,7 @@ class HomeScreen extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final storiesQuery =
-        useQuery(['stories'], () => StoryService().fetchStories());
+        useQuery(['stories'], () => StoryRepostitory().fetchStories());
     return Scaffold(
       appBar: const HomeTopBar(),
       body: RefreshIndicator(
@@ -39,8 +40,8 @@ class HomeScreen extends HookWidget {
                   //NOTE: Recommendations section
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
-                      child: const HeaderWithLink(
-                          title: 'Có thể bạn sẽ thích', link: '')),
+                      child:
+                          const HeaderWithLink(title: 'Có thể bạn sẽ thích')),
                   const SizedBox(height: 12),
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
@@ -64,8 +65,7 @@ class HomeScreen extends HookWidget {
                   //NOTE: Hot section
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
-                      child:
-                          const HeaderWithLink(title: 'Thịnh hành', link: '')),
+                      child: const HeaderWithLink(title: 'Thịnh hành')),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
@@ -87,7 +87,7 @@ class HomeScreen extends HookWidget {
                       )),
 
                   //NOTE: Paid section
-                  const HeaderWithLink(title: 'Truyện trả phí', link: ''),
+                  const HeaderWithLink(title: 'Truyện trả phí'),
                   const SizedBox(height: 12),
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
@@ -99,7 +99,7 @@ class HomeScreen extends HookWidget {
                   const SizedBox(height: 32),
 
                   //NOTE: Continue reading section
-                  const HeaderWithLink(title: 'Tiếp tục đọc', link: ''),
+                  const HeaderWithLink(title: 'Tiếp tục đọc'),
                   const SizedBox(height: 12),
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
@@ -205,6 +205,8 @@ class HomeRankingList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
     return SizedBox(
       width: double.infinity,
       child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -251,6 +253,32 @@ class HomeRankingList extends StatelessWidget {
                 ));
           }).toList(),
         ),
+        const SizedBox(height: 12),
+        Material(
+            child: InkWell(
+          onTap: () {
+            GoRouter.of(context).go("/ranking");
+          },
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: BoxDecoration(
+                gradient: LinearGradient(
+                    colors: [appColors.primaryBase, appColors.primaryLighter]),
+                color: appColors.primaryLightest,
+                borderRadius: BorderRadius.circular(6)),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Text(
+                'Xem them',
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(color: Colors.white),
+              ),
+              const SizedBox(width: 4),
+              Icon(Icons.bar_chart_rounded)
+            ]),
+          ),
+        ))
       ]),
     );
   }

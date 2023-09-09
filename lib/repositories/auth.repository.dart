@@ -9,7 +9,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'dart:developer' as logDev;
 
 import 'package:jwt_decoder/jwt_decoder.dart';
 
@@ -31,7 +30,7 @@ class Auth extends ChangeNotifier {
 
   String authrUrl = "${dotenv.get('API_BASE_URL')}/auth";
 
-  Timer? _timer;
+  // Timer? _timer;
   Future<void> signInWithEmailAndPassword({
     required String email,
     required String password,
@@ -90,8 +89,7 @@ class Auth extends ChangeNotifier {
     try {
       final response = await http.post(url,
           headers: header, body: jsonEncode(body.toJson()));
-      print('res');
-      print(response.body);
+
       if (response.statusCode == 200) {
         isBack = true;
       }
@@ -100,7 +98,6 @@ class Auth extends ChangeNotifier {
       }
       isLoading = false;
     } on Exception catch (err) {
-      print(err);
       message = err.toString();
     }
     isLoading = false;
@@ -128,7 +125,7 @@ class Auth extends ChangeNotifier {
         //begin interactive sign in process;
 
         //obtain auth detail from request
-        final GoogleSignInAuthentication gAuth = await gUser!.authentication;
+        final GoogleSignInAuthentication gAuth = await gUser.authentication;
         //create a new credentiall for user
 
         final credential = GoogleAuthProvider.credential(
@@ -145,7 +142,7 @@ class Auth extends ChangeNotifier {
         User? user = userCredential.user;
 
         if (user != null) {
-          final url = Uri.parse(authrUrl + "/login-with-google");
+          final url = Uri.parse("$authrUrl/login-with-google");
           Map<String, String> header = {
             "Content-type": "application/json",
             "Accept": "application/json",
@@ -192,6 +189,8 @@ class Auth extends ChangeNotifier {
           }
         }
       }
-    } on Exception catch (err) {}
+    } on Exception catch (err) {
+      print(err);
+    }
   }
 }

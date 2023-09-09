@@ -7,9 +7,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
 final categoryRepositoryProvider =
-    Provider<CategoryReposity>((_) => CategoryReposity());
+    Provider<CategoryRepository>((_) => CategoryRepository());
 
-class CategoryReposity {
+class CategoryRepository {
   static final categoryEndpoint = "${dotenv.get('API_BASE_URL')}/categories";
 
   Future<List<Category>> fetchCategory() async {

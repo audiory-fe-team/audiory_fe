@@ -4,8 +4,8 @@ import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Gift.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
-import 'package:audiory_v0/services/profile_services.dart';
-import 'package:audiory_v0/services/story_services.dart';
+import 'package:audiory_v0/repositories/profile.repository.dart';
+import 'package:audiory_v0/repositories/story.repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
@@ -37,10 +37,10 @@ class DetailStoryScreen extends HookConsumerWidget {
     final tabController = useTabController(initialLength: 2);
     final paginatorController = NumberPaginatorController();
     final storyQuery =
-        useQuery(['story', id], () => StoryService().fetchStoryById(id));
+        useQuery(['story', id], () => StoryRepostitory().fetchStoryById(id));
 
     final authorQuery = useQuery(['profile', storyQuery.data?.author_id],
-        () => ProfileService().fetchProfileById(storyQuery.data?.author_id),
+        () => ProfileRepository().fetchProfileById(storyQuery.data?.author_id),
         enabled: storyQuery.isSuccess);
 
     final tabState = useState(0);

@@ -5,8 +5,8 @@ import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/explore_top_bar.dart';
-import 'package:audiory_v0/services/category_services.dart';
-import 'package:audiory_v0/services/story_services.dart';
+import 'package:audiory_v0/repositories/category.repository.dart';
+import 'package:audiory_v0/repositories/story.repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_outlined_button.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -88,7 +88,7 @@ class CategoryStories extends HookWidget {
     BuildContext context,
   ) {
     final storyList =
-        useQuery(['story_all'], () => StoryService().fetchStories());
+        useQuery(['story_all'], () => StoryRepostitory().fetchStories());
 
     if (storyList.isLoading) {
       return const Text('Loading...');
@@ -145,7 +145,7 @@ class CategoryCarousel extends HookConsumerWidget {
     final current = useState(0);
 
     final categories =
-        useQuery(['categories'], () => CategoryReposity().fetchCategory());
+        useQuery(['categories'], () => CategoryRepository().fetchCategory());
 
     if (categories.isLoading) {
       return const Text('Loading...');
