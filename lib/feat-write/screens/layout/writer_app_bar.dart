@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../repositories/auth.repository.dart';
 import '../../../theme/theme_constants.dart';
@@ -14,7 +13,7 @@ class WriterCustomAppBar extends StatefulWidget {
 }
 
 class _WriterCustomAppBarState extends State<WriterCustomAppBar> {
-  final User? user = Auth().currentUser;
+  final User? user = AuthRepository().currentUser;
 
   @override
   Widget build(BuildContext context) {

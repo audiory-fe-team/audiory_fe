@@ -23,10 +23,12 @@ class AppTextInputField extends StatefulWidget {
 
   //textinput field
   final String name; //form field name, must have
+  final TextInputType? textInputType; //form field name, must have
   final String? initialValue;
   final String? hintText;
   final TextStyle? hintTextStyle;
-
+  final Widget? prefixIcon;
+  final Widget? suffixIcon;
   const AppTextInputField(
       {super.key,
       this.label,
@@ -42,14 +44,18 @@ class AppTextInputField extends StatefulWidget {
       this.hintText = '',
       this.isTextArea = false,
       this.minLines = 1,
-      this.hintTextStyle});
+      this.hintTextStyle,
+      this.prefixIcon,
+      this.suffixIcon,
+      this.textInputType = TextInputType.text});
 
   @override
   State<AppTextInputField> createState() => _AppTextInputFieldState();
 }
 
 class _AppTextInputFieldState extends State<AppTextInputField> {
-  String _enteredText = '';
+  late String _enteredText =
+      widget.initialValue != '' ? widget.initialValue as String : '';
 
   Widget _inputTextFormField(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -61,48 +67,49 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
           _enteredText = value as String;
         })
       },
-
+      keyboardType: widget.textInputType,
       name: widget.name,
       initialValue: widget.initialValue!,
       minLines: widget.minLines!,
-      maxLines: widget.minLines! ?? null, //dynamic height
+      maxLines: widget.minLines!, //dynamic height
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             style: BorderStyle.solid,
             color: appColors.skyDark,
           ),
-          borderRadius: widget.isTextArea != null && widget.isTextArea == true
-              ? BorderRadius.all(Radius.circular(10))
-              : BorderRadius.all(Radius.circular(80)),
+          borderRadius: widget.isTextArea != null && widget.isTextArea! == true
+              ? const BorderRadius.all(Radius.circular(10))
+              : const BorderRadius.all(Radius.circular(80)),
         ),
 
         border: OutlineInputBorder(
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             style: BorderStyle.solid,
             color: Color(0xFF439A97),
           ),
           borderRadius: widget.isTextArea != null && widget.isTextArea == true
-              ? BorderRadius.all(Radius.circular(10))
-              : BorderRadius.all(Radius.circular(80)),
+              ? const BorderRadius.all(Radius.circular(10))
+              : const BorderRadius.all(Radius.circular(80)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(
+          borderSide: const BorderSide(
             style: BorderStyle.solid,
             color: Color(0xFF439A97),
           ),
           borderRadius: widget.isTextArea != null && widget.isTextArea == true
-              ? BorderRadius.all(Radius.circular(10))
-              : BorderRadius.all(Radius.circular(80)),
+              ? const BorderRadius.all(Radius.circular(10))
+              : const BorderRadius.all(Radius.circular(80)),
         ),
         filled: true,
         hintText: widget.hintText!,
+        prefixIcon: widget.prefixIcon,
+        suffixIcon: widget.suffixIcon,
 
-        hintStyle: widget.hintTextStyle != null
-            ? widget.hintTextStyle
-            : TextStyle(
-                color: appColors.skyDark,
-              ),
+        hintStyle: widget.hintTextStyle ??
+            TextStyle(
+              color: appColors.skyDark,
+            ),
         counterText: widget.isTextArea != null && widget.isTextArea == true
             ? '${_enteredText.length.toString()} từ'
             : null,

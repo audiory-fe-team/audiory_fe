@@ -1,4 +1,6 @@
 import 'package:audiory_v0/models/AuthorStory.dart';
+import 'dart:convert';
+
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Tag.dart';
 
@@ -20,6 +22,8 @@ class Story {
   final int? authorEarningPercentage;
   final String? paywallEffectiveDate;
   final int? numFreeChapters;
+  final int? publishedCount;
+  final int? draftCount;
   final int? reportCount;
   final int? voteCount;
   final int? totalVote;
@@ -54,6 +58,8 @@ class Story {
       this.voteCount,
       this.totalRead,
       this.totalVote,
+      this.draftCount,
+      this.publishedCount,
       this.readCount,
       this.explicitPercentage,
       this.createdDate,
@@ -93,6 +99,8 @@ class Story {
         voteCount: json["vote_count"],
         totalRead: json["total_read"],
         readCount: json["read_count"],
+        draftCount: json["draft_count"],
+        publishedCount: json["published_count"],
         explicitPercentage: json["explicit_percentage"],
         createdDate: json["created_date"],
         updatedDate: json["updated_date"],
@@ -123,6 +131,8 @@ class Story {
         "read_count": readCount,
         "total_read": totalRead,
         "total_vote": totalVote,
+        "published_count": publishedCount,
+        "draft_count": draftCount,
         "explicit_percentage": explicitPercentage,
         "created_date": createdDate,
         "updated_date": updatedDate,

@@ -1,19 +1,46 @@
-import 'dart:math';
-
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
-class StoryCardDetail extends StatelessWidget {
+class StoryCardDetailWriter extends StatelessWidget {
   final Story story;
 
-  const StoryCardDetail({super.key, required this.story});
+  const StoryCardDetailWriter({super.key, required this.story});
+  Map<String, dynamic> getStoryStatus(context) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    Map<String, dynamic> map = {
+      'status': 'Đang tiến hành',
+      'color': Colors.black,
+    };
+    if (story.isCompleted as bool) {
+      map.update('status', (value) => 'Hoàn thành');
+      map.update('color', (value) => appColors.primaryBase);
+    } else if (story.isDraft as bool) {
+      map.update('status', (value) => 'Bản thảo');
+      map.update('color', (value) => Colors.orangeAccent);
+    }
+    return map;
+  }
+
+  String formatDate(String? date) {
+    //use package intl
+    DateTime dateTime = DateTime.parse(date as String);
+    return DateFormat('dd/MM/yyyy').format(dateTime);
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final Map<String, dynamic> storyStatus = getStoryStatus(context);
+
+    final popupMenuItem = ['edit', 'share', 'preview', 'cancel', 'delete'];
+    final String selectedValue = popupMenuItem[0];
 
     return Container(
       width: double.infinity,
@@ -67,23 +94,22 @@ class StoryCardDetail extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         child: Text(
-                          story.title,
-                          style: textTheme.titleLarge?.merge(
-                              const TextStyle(overflow: TextOverflow.ellipsis)),
+                          '#${storyStatus['status']}',
+                          style: textTheme.titleMedium!.merge(TextStyle(
+                              overflow: TextOverflow.ellipsis,
+                              color: storyStatus['color'])),
                         ),
                       ),
                       const SizedBox(height: 4),
                       SizedBox(
                         width: double.infinity,
                         child: Text(
-                          story.description ?? '',
-                          maxLines: 2,
-                          style: textTheme.labelLarge?.copyWith(
-                              color: appColors.inkLight,
-                              fontStyle: FontStyle.italic,
-                              overflow: TextOverflow.ellipsis),
+                          story.title,
+                          style: textTheme.titleLarge!.merge(
+                              const TextStyle(overflow: TextOverflow.ellipsis)),
                         ),
                       ),
+                      const SizedBox(height: 24),
                     ],
                   ),
                 ),
@@ -109,36 +135,17 @@ class StoryCardDetail extends StatelessWidget {
                               children: [
                                 SvgPicture.asset('assets/icons/write.svg',
                                     width: 14, height: 14),
-                                const SizedBox(width: 4),
+                                const SizedBox(width: 8),
                                 SizedBox(
                                     width: 140,
-                                    child: Text(story.authorId ?? '',
+                                    child: Text(
+                                        'Cập nhật ${formatDate(story.updatedDate)}',
                                         style: textTheme.titleSmall!.copyWith(
                                             fontStyle: FontStyle.italic,
                                             overflow: TextOverflow.ellipsis))),
                               ],
                             ),
                             const SizedBox(width: 6),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset('assets/icons/heart.svg',
-                                        width: 14, height: 14),
-                                    const SizedBox(width: 3),
-                                    Text(story.voteCount.toString() ?? 'error',
-                                        style: textTheme.titleSmall!.copyWith(
-                                            fontStyle: FontStyle.italic)),
-                                  ],
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
@@ -157,23 +164,9 @@ class StoryCardDetail extends StatelessWidget {
                               children: [
                                 SvgPicture.asset('assets/icons/chapter.svg',
                                     width: 14, height: 14),
-                                const SizedBox(width: 4),
-                                Text(
-                                    '${story.numFreeChapters.toString() ?? 'error'} chương',
-                                    style: textTheme.titleSmall!
-                                        .copyWith(fontStyle: FontStyle.italic)),
-                              ],
-                            ),
-                            const SizedBox(width: 6),
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset('assets/icons/eye.svg',
-                                    width: 14, height: 14),
                                 const SizedBox(width: 8),
-                                Text(story.readCount.toString() ?? 'error',
+                                Text(
+                                    '${story.chapters?.length ?? 'error'} chương + ${story.draftCount} bản thảo',
                                     style: textTheme.titleSmall!
                                         .copyWith(fontStyle: FontStyle.italic)),
                               ],
@@ -182,56 +175,103 @@ class StoryCardDetail extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 6),
-                      Container(
-                        decoration: const BoxDecoration(),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: (story.tags ?? [])
-                              .sublist(0, min(3, story.tags?.length ?? 0))
-                              .map((tag) => Padding(
-                                  padding: EdgeInsets.only(right: 8),
-                                  child: StoryDetailTag(content: tag.name)))
-                              .toList(),
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ],
             ),
           ),
+          Wrap(
+            children: [
+              PopupMenuButton(
+                  onSelected: (value) {
+                    _onSelectStoryAction(value, context);
+                  },
+                  icon: const Icon(Icons.more_vert),
+                  itemBuilder: (context) => [
+                        const PopupMenuItem(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            value: 0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(Icons.edit),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text('Chỉnh sửa'),
+                              ],
+                            )),
+                        const PopupMenuItem(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            value: 1,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(Icons.remove_red_eye_rounded),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text('Xem trước'),
+                              ],
+                            )),
+                        const PopupMenuItem(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            value: 2,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(Icons.ios_share_rounded),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text('Chia sẻ'),
+                              ],
+                            )),
+                        const PopupMenuItem(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            value: 3,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(Icons.play_arrow),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text('Tạm dừng'),
+                              ],
+                            )),
+                        const PopupMenuItem(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            value: 4,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Icon(Icons.delete),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text('Xóa'),
+                              ],
+                            )),
+                      ]),
+            ],
+          ),
         ],
       ),
     );
   }
-}
 
-class StoryDetailTag extends StatelessWidget {
-  final String content;
-  const StoryDetailTag({super.key, required this.content});
+  void _onSelectStoryAction(int value, BuildContext context) {
+    if (kDebugMode) {
+      print('value $value');
+    }
 
-  @override
-  Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: ShapeDecoration(
-        color: appColors.skyLightest,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(content,
-              style: Theme.of(context).textTheme.labelMedium!.copyWith(
-                  color: appColors.skyDark, fontWeight: FontWeight.w600)),
-        ],
-      ),
-    );
+    switch (value) {
+      case 0:
+        context.pushNamed('composeStory', extra: {'storyId': story.id});
+        break;
+      default:
+    }
   }
 }

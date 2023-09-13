@@ -70,7 +70,7 @@ class AuthorRankCard extends StatelessWidget {
                 image: NetworkImage(author.avatarUrl ?? ''),
                 fit: BoxFit.fill,
               ),
-              shape: CircleBorder(),
+              shape: const CircleBorder(),
             ),
           ),
           const SizedBox(width: 12),

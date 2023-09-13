@@ -12,7 +12,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = Auth().currentUser;
+    final User? user = AuthRepository().currentUser;
 
     return SafeArea(
         child: Container(

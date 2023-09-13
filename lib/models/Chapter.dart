@@ -61,7 +61,7 @@ class Chapter {
       updated_date: json["updated_date"],
       is_enabled: json["is_enabled"],
       chapter_version: json["chapter_version"] ?? 'null',
-      paragraphs: paragraphs,
+      paragraphs: null,
     );
   }
 
