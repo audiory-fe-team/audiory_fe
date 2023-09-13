@@ -17,7 +17,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:hidable/hidable.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:rxdart/rxdart.dart';
@@ -27,7 +26,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 class ReadingScreen extends HookWidget {
   final String? chapterId;
 
-  const ReadingScreen({super.key, this.chapterId});
+  ReadingScreen({super.key, this.chapterId});
 
   List<Widget> chapterContent(
       {List<Paragraph>? paragraphs,
@@ -44,6 +43,8 @@ class ReadingScreen extends HookWidget {
         .toList();
   }
 
+  final player = AudioPlayer();
+
   @override
   Widget build(BuildContext context) {
     final bgColor = useState(Colors.white);
@@ -51,8 +52,6 @@ class ReadingScreen extends HookWidget {
     final showCommentByParagraph = useState(true);
 
     final scrollController = useScrollController();
-
-    final player = AudioPlayer();
 
     final chapterQuery = useQuery(['chapter', chapterId],
         () => ChapterRepository().fetchChapterDetail(chapterId),
@@ -63,7 +62,7 @@ class ReadingScreen extends HookWidget {
             .fetchStoryById(chapterQuery.data?.story_id ?? ''),
         enabled: chapterQuery.data?.story_id != null);
 
-    void _changeStyle(
+    void changeStyle(
         [Color? newBgColor, int? newFontSize, bool? isShowCommentByParagraph]) {
       bgColor.value = newBgColor ?? bgColor.value;
       fontSize.value = newFontSize ?? fontSize.value;
@@ -90,7 +89,7 @@ class ReadingScreen extends HookWidget {
                 artist: 'Chương ${1} - Đoạn ${idx + 1}'));
       }).toList());
       try {
-        player.setLoopMode(LoopMode.all);
+        // player.setLoopMode(LoopMode.off);
         player.setAudioSource(playlist);
       } catch (error) {
         print(error.toString());
@@ -103,7 +102,7 @@ class ReadingScreen extends HookWidget {
 
     useEffect(() {
       return () => player.dispose();
-    });
+    }, []);
 
     return Scaffold(
       backgroundColor: bgColor.value,
@@ -192,7 +191,7 @@ class ReadingScreen extends HookWidget {
       bottomNavigationBar: Hidable(
           controller: scrollController,
           child: ReadingBottomBar(
-            changeStyle: _changeStyle,
+            changeStyle: changeStyle,
           )),
       floatingActionButton: HookBuilder(builder: (_) {
         final playingStream = useStream(player.playingStream);
@@ -229,7 +228,7 @@ class ReadingScreen extends HookWidget {
                         decoration: ShapeDecoration(
                           image: DecorationImage(
                             image:
-                                NetworkImage(storyQuery.data?.cover_url ?? ''),
+                                NetworkImage(storyQuery.data?.coverUrl ?? ''),
                             fit: BoxFit.fill,
                           ),
                           shape: RoundedRectangleBorder(
@@ -265,7 +264,7 @@ class ReadingScreen extends HookWidget {
                       mainAxisSize: MainAxisSize.max,
                       children: [
                         Builder(builder: (context) {
-                          if (!(playing ?? false)) {
+                          if (!(playing)) {
                             return GestureDetector(
                               onTap: () {
                                 player.play();
@@ -521,7 +520,7 @@ class SettingModel extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _selectedOption = useState(0);
+    final selectedOption = useState(0);
     final fontSize = useState(16);
     final showCommentByParagraph = useState(false);
 
@@ -533,8 +532,6 @@ class SettingModel extends HookWidget {
     ];
 
     final sizeController = useTextEditingController(text: "16");
-
-    useEffect(() {}, [_selectedOption, fontSize]);
 
     return Expanded(
       child: Padding(
@@ -567,7 +564,7 @@ class SettingModel extends HookWidget {
                       Color val = entry.value;
                       return GestureDetector(
                           onTap: () {
-                            _selectedOption.value = idx;
+                            selectedOption.value = idx;
                           },
                           child: Padding(
                               padding: const EdgeInsets.only(right: 8),
@@ -577,7 +574,7 @@ class SettingModel extends HookWidget {
                                   decoration: BoxDecoration(
                                     color: val,
                                     shape: BoxShape.circle,
-                                    border: _selectedOption.value == idx
+                                    border: selectedOption.value == idx
                                         ? Border.all(
                                             color: appColors.primaryBase,
                                             width: 2,
@@ -740,7 +737,7 @@ class SettingModel extends HookWidget {
               Expanded(
                   child: FilledButton(
                       onPressed: () {
-                        changeStyle(DEFAULT_OPTION[_selectedOption.value],
+                        changeStyle(DEFAULT_OPTION[selectedOption.value],
                             fontSize.value, showCommentByParagraph.value);
                         Navigator.pop(context);
                       },

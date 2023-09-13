@@ -39,8 +39,8 @@ class DetailStoryScreen extends HookConsumerWidget {
     final storyQuery =
         useQuery(['story', id], () => StoryRepostitory().fetchStoryById(id));
 
-    final authorQuery = useQuery(['profile', storyQuery.data?.author_id],
-        () => ProfileRepository().fetchProfileById(storyQuery.data?.author_id),
+    final authorQuery = useQuery(['profile', storyQuery.data?.authorId],
+        () => ProfileRepository().fetchProfileById(storyQuery.data?.authorId),
         enabled: storyQuery.isSuccess);
 
     final tabState = useState(0);
@@ -129,7 +129,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   ]),
                 ),
                 const SizedBox(height: 4),
-                Text((story?.read_count ?? '').toString(),
+                Text((story?.readCount ?? '').toString(),
                     style: sharedNumberStyle)
               ],
             ),
@@ -150,7 +150,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   ]),
                 ),
                 const SizedBox(height: 4),
-                Text((story?.vote_count ?? '').toString(),
+                Text((story?.voteCount ?? '').toString(),
                     style: sharedNumberStyle)
               ],
             ),
@@ -171,7 +171,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   ]),
                 ),
                 const SizedBox(height: 4),
-                Text((story?.vote_count ?? '').toString(),
+                Text((story?.voteCount ?? '').toString(),
                     style: sharedNumberStyle)
               ],
             ),
@@ -192,7 +192,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                 height: 165,
                 decoration: ShapeDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(story?.cover_url ?? ''),
+                    image: NetworkImage(story?.coverUrl ?? ''),
                     fit: BoxFit.fill,
                   ),
                   shape: RoundedRectangleBorder(

@@ -6,7 +6,7 @@ import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/services/story.dart';
+import 'package:audiory_v0/repositories/story.repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
@@ -40,8 +40,12 @@ class HomeScreen extends HookWidget {
                   //NOTE: Recommendations section
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
-                      child:
-                          const HeaderWithLink(title: 'Có thể bạn sẽ thích')),
+                      child: HeaderWithLink(
+                          icon: Image.asset(
+                            "assets/images/home_for_you.png",
+                            width: 24,
+                          ),
+                          title: 'Có thể bạn sẽ thích')),
                   const SizedBox(height: 12),
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
@@ -65,7 +69,12 @@ class HomeScreen extends HookWidget {
                   //NOTE: Hot section
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
-                      child: const HeaderWithLink(title: 'Thịnh hành')),
+                      child: HeaderWithLink(
+                          icon: Image.asset(
+                            "assets/images/home_trend.png",
+                            width: 24,
+                          ),
+                          title: 'Thịnh hành')),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
@@ -85,9 +94,12 @@ class HomeScreen extends HookWidget {
                             ? skeletonStories
                             : storiesQuery.data,
                       )),
-
+                  const SizedBox(height: 32),
                   //NOTE: Paid section
-                  const HeaderWithLink(title: 'Truyện trả phí'),
+                  HeaderWithLink(
+                      icon: Image.asset("assets/images/home_paid.png",
+                          width: 24, fit: BoxFit.cover),
+                      title: 'Truyện trả phí'),
                   const SizedBox(height: 12),
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
@@ -99,7 +111,12 @@ class HomeScreen extends HookWidget {
                   const SizedBox(height: 32),
 
                   //NOTE: Continue reading section
-                  const HeaderWithLink(title: 'Tiếp tục đọc'),
+                  HeaderWithLink(
+                      icon: Image.asset(
+                        "assets/images/home_continue_reading.png",
+                        width: 24,
+                      ),
+                      title: 'Tiếp tục đọc'),
                   const SizedBox(height: 12),
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
@@ -210,7 +227,13 @@ class HomeRankingList extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const HeaderWithLink(title: 'BXH Tháng này', link: '/ranking'),
+        HeaderWithLink(
+            icon: Image.asset(
+              "assets/images/home_ranking.png",
+              width: 24,
+            ),
+            title: 'BXH Tháng này',
+            link: '/ranking'),
         const SizedBox(height: 12),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
@@ -253,29 +276,25 @@ class HomeRankingList extends StatelessWidget {
                 ));
           }).toList(),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 6),
         Material(
             child: InkWell(
           onTap: () {
-            GoRouter.of(context).go("/ranking");
+            GoRouter.of(context).push("/ranking");
           },
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-                gradient: LinearGradient(
-                    colors: [appColors.primaryBase, appColors.primaryLighter]),
-                color: appColors.primaryLightest,
+                // gradient: LinearGradient(
+                //     colors: [appColors.primaryBase, appColors.primaryLighter]),
+                // color: appColors.primaryLightest,
                 borderRadius: BorderRadius.circular(6)),
             child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Text(
-                'Xem them',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleMedium
-                    ?.copyWith(color: Colors.white),
-              ),
-              const SizedBox(width: 4),
-              Icon(Icons.bar_chart_rounded)
+              Text('Xem thêm',
+                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                        decoration: TextDecoration.underline,
+                        color: appColors.primaryBase,
+                      )),
             ]),
           ),
         ))

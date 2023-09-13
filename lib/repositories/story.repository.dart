@@ -30,10 +30,11 @@ class StoryRepostitory {
   Future<Story> fetchStoryById(String storyId) async {
     final url = Uri.parse('$storiesEndpoint/$storyId');
     final response = await http.get(url);
+    final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
-      final Story result = jsonDecode(response.body)['data'];
-      return Story.fromJson(result as Map<String, dynamic>);
+      final result = jsonDecode(responseBody)['data'];
+      return Story.fromJson(result);
     } else {
       throw Exception('Failed to load stories');
     }

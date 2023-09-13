@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
-import 'package:audiory_v0/services/auth_services.dart';
+import 'package:audiory_v0/repositories/auth.repository.dart';
 import "package:go_router/go_router.dart";
 
 class HomeScreenTest extends StatefulWidget {

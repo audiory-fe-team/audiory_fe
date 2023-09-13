@@ -13,7 +13,7 @@ import 'package:audiory_v0/feat-read/screens/detail_story_screen.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 
-import 'package:audiory_v0/services/auth_services.dart';
+import 'package:audiory_v0/repositories/auth.repository.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
@@ -52,12 +52,13 @@ class AppRoutes {
                 RankingMetric metric = mapStringToRankingMetric(metricString);
                 final timeString = state.queryParameters["time"];
                 RankingTimeRange time = mapStringToRankingTimeRange(timeString);
-
+                final category = state.queryParameters["category"];
                 return RankingScreen(
                   key: state.pageKey,
                   type: type,
                   metric: metric,
                   time: time,
+                  category: category,
                 );
               },
             ),

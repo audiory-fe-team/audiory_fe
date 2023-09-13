@@ -3,16 +3,15 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 
 class RankingDropdownWrapper extends StatelessWidget {
-  final String title;
+  final Widget icon;
   final Widget child; // Define a child property for the DropdownButton
 
   const RankingDropdownWrapper(
-      {super.key, required this.child, this.title = ''});
+      {super.key, required this.child, required this.icon});
 
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final textTheme = Theme.of(context).textTheme;
 
     return Container(
         height: 30,
@@ -24,7 +23,10 @@ class RankingDropdownWrapper extends StatelessWidget {
           color: appColors.skyLightest,
         ),
         child: Row(children: [
-          Text(title, style: textTheme.titleSmall),
+          icon,
+          const SizedBox(
+            width: 4,
+          ),
           DropdownButtonHideUnderline(child: child)
         ]));
   }

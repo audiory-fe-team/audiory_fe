@@ -7,7 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../services/auth_services.dart';
+import '../../../repositories/auth.repository.dart';
 import '../../../theme/theme_constants.dart';
 
 class RegisterBodyScreen extends StatefulWidget {

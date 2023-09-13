@@ -24,7 +24,7 @@ class StoryScrollList extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 12),
                     child: StoryCardOverView(
                       title: story.title,
-                      coverUrl: story.cover_url,
+                      coverUrl: story.coverUrl,
                       id: story.id,
                     ),
                   ))

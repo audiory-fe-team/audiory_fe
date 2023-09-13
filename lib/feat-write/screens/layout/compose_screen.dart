@@ -1,5 +1,5 @@
 import 'package:audiory_v0/models/Category.dart';
-import 'package:audiory_v0/services/story.dart';
+import 'package:audiory_v0/repositories/story.repository.dart';
 import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';

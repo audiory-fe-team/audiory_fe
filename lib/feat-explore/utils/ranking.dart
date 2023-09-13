@@ -4,8 +4,6 @@ RankingType mapStringToRankingType(String? typeString) {
   switch (typeString) {
     case "author":
       return RankingType.author;
-    case "reader":
-      return RankingType.reader;
     default:
       return RankingType.story;
   }
@@ -13,36 +11,30 @@ RankingType mapStringToRankingType(String? typeString) {
 
 RankingMetric mapStringToRankingMetric(String? metricString) {
   switch (metricString) {
-    case "view":
-      return RankingMetric.view;
-    case "vote":
-      return RankingMetric.vote;
-    case "comment":
-      return RankingMetric.comment;
-    case "gift":
-      return RankingMetric.gift;
-    case "follower":
-      return RankingMetric.follower;
+    case "total_view":
+      return RankingMetric.total_read;
+    case "total_vote":
+      return RankingMetric.total_vote;
+    case "total_comment":
+      return RankingMetric.total_comment;
+
     default:
-      return RankingMetric.view;
+      return RankingMetric.total_read;
   }
 }
 
 RankingTimeRange mapStringToRankingTimeRange(String? timeRangeString) {
-  print(timeRangeString);
   switch (timeRangeString) {
-    case "today":
-      return RankingTimeRange.today;
-    case "this_week":
-      return RankingTimeRange.this_week;
-    case "this_month":
-      return RankingTimeRange.this_month;
-    case "this_year":
-      return RankingTimeRange.this_year;
+    case "daily":
+      return RankingTimeRange.daily;
+    case "weekly":
+      return RankingTimeRange.weekly;
+    case "monthly":
+      return RankingTimeRange.monthly;
     case "all_time":
       return RankingTimeRange.all_time;
     default:
-      return RankingTimeRange.this_month;
+      return RankingTimeRange.monthly;
   }
 }
 

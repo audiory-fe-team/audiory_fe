@@ -2,8 +2,7 @@ import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
-import '../../models/Story.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeRankingCard extends StatelessWidget {
   final Story story;
@@ -54,80 +53,84 @@ class HomeRankingCard extends StatelessWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
-    return SizedBox(
-      width: double.infinity,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          getBadgeWidget(order),
-          const SizedBox(width: 12),
-          Container(
-            width: 50,
-            height: 70,
-            decoration: ShapeDecoration(
-              image: DecorationImage(
-                image: NetworkImage(story.cover_url ?? ''),
-                fit: BoxFit.fill,
-              ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4)),
-              shadows: const [
-                BoxShadow(
-                  color: Color(0x0C06070D),
-                  blurRadius: 14,
-                  offset: Offset(0, 7),
-                  spreadRadius: 0,
-                )
-              ],
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: Text(
-                    story.title,
-                    style: const TextStyle(
-                      overflow: TextOverflow.ellipsis,
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+    return GestureDetector(
+        onTap: () {
+          GoRouter.of(context).push("/story/${story.id}");
+        },
+        child: SizedBox(
+          width: double.infinity,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              getBadgeWidget(order),
+              const SizedBox(width: 12),
+              Container(
+                width: 50,
+                height: 70,
+                decoration: ShapeDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(story.coverUrl ?? ''),
+                    fit: BoxFit.fill,
                   ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4)),
+                  shadows: const [
+                    BoxShadow(
+                      color: Color(0x0C06070D),
+                      blurRadius: 14,
+                      offset: Offset(0, 7),
+                      spreadRadius: 0,
+                    )
+                  ],
                 ),
-                const SizedBox(height: 2),
-                Row(
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SvgPicture.asset(
-                      'assets/icons/heart.svg',
-                      width: 8,
-                      height: 8,
-                      color: appColors.skyDark,
+                    SizedBox(
+                      width: double.infinity,
+                      child: Text(
+                        story.title,
+                        style: const TextStyle(
+                          overflow: TextOverflow.ellipsis,
+                          color: Colors.black,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 2),
-                    Text(
-                      (story.vote_count ?? 0).toString(),
-                      style: textTheme.labelLarge!.copyWith(
+                    const SizedBox(height: 2),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/icons/heart.svg',
+                          width: 8,
+                          height: 8,
                           color: appColors.skyDark,
-                          fontStyle: FontStyle.italic),
+                        ),
+                        const SizedBox(width: 2),
+                        Text(
+                          (story.voteCount ?? 0).toString(),
+                          style: textTheme.labelLarge!.copyWith(
+                              color: appColors.skyDark,
+                              fontStyle: FontStyle.italic),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 }

@@ -34,7 +34,13 @@ class ExploreScreen extends StatelessWidget {
             const SizedBox(height: 24),
             CategoryCarousel(),
             const SizedBox(height: 24),
-            const HeaderWithLink(title: 'Thịnh hành', link: ''),
+            HeaderWithLink(
+                icon: Image.asset(
+                  "assets/images/home_trend.png",
+                  width: 24,
+                ),
+                title: 'Thịnh hành',
+                link: ''),
             const SizedBox(height: 12),
             // StoryScrollList(storyList: STORIES),
             const SizedBox(height: 24),
@@ -126,7 +132,7 @@ class CategoryStories extends HookWidget {
                         padding: const EdgeInsets.only(right: 12),
                         child: StoryCardOverView(
                             title: story.title,
-                            coverUrl: story.cover_url,
+                            coverUrl: story.coverUrl,
                             id: story.id),
                       ))
                   .toList(),
@@ -239,9 +245,9 @@ class CategoryBadge extends StatelessWidget {
     return Stack(children: [
       SizedBox(
           width: double.infinity,
-          // height: 47,
+          height: 53,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(8),
             child: Image.network(imgUrl, fit: BoxFit.cover),
           )),
       Positioned(
