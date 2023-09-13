@@ -68,7 +68,8 @@ class StoryCardDetail extends StatelessWidget {
                         width: double.infinity,
                         child: Text(
                           story.title,
-                          style: textTheme.titleLarge?.merge(
+                          maxLines: 2,
+                          style: textTheme.titleMedium?.merge(
                               const TextStyle(overflow: TextOverflow.ellipsis)),
                         ),
                       ),
@@ -112,7 +113,7 @@ class StoryCardDetail extends StatelessWidget {
                                 const SizedBox(width: 4),
                                 SizedBox(
                                     width: 140,
-                                    child: Text(story.authorId ?? '',
+                                    child: Text(story.author?.fullName ?? '',
                                         style: textTheme.titleSmall!.copyWith(
                                             fontStyle: FontStyle.italic,
                                             overflow: TextOverflow.ellipsis))),
@@ -159,7 +160,7 @@ class StoryCardDetail extends StatelessWidget {
                                     width: 14, height: 14),
                                 const SizedBox(width: 4),
                                 Text(
-                                    '${story.numFreeChapters.toString() ?? 'error'} chương',
+                                    '${(story.numFreeChapters ?? 0).toString()} chương',
                                     style: textTheme.titleSmall!
                                         .copyWith(fontStyle: FontStyle.italic)),
                               ],
@@ -173,7 +174,7 @@ class StoryCardDetail extends StatelessWidget {
                                 SvgPicture.asset('assets/icons/eye.svg',
                                     width: 14, height: 14),
                                 const SizedBox(width: 8),
-                                Text(story.readCount.toString() ?? 'error',
+                                Text(story.readCount.toString(),
                                     style: textTheme.titleSmall!
                                         .copyWith(fontStyle: FontStyle.italic)),
                               ],
@@ -191,7 +192,7 @@ class StoryCardDetail extends StatelessWidget {
                           children: (story.tags ?? [])
                               .sublist(0, min(3, story.tags?.length ?? 0))
                               .map((tag) => Padding(
-                                  padding: EdgeInsets.only(right: 8),
+                                  padding: const EdgeInsets.only(right: 8),
                                   child: StoryDetailTag(content: tag.name)))
                               .toList(),
                         ),

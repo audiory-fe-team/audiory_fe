@@ -18,7 +18,6 @@ class SearchTopBar extends HookWidget implements PreferredSizeWidget {
     final controller = useTextEditingController();
     Timer? debounce;
 
-    useEffect(() {}, []);
     return SafeArea(
         child: Container(
             width: double.infinity,

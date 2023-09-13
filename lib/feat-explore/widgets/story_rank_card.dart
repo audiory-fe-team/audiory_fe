@@ -112,7 +112,6 @@ class StoryRankCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
@@ -146,7 +145,7 @@ class StoryRankCard extends StatelessWidget {
                     child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    getTitle(order, story.title ?? 'Tiêu đề truyện', context),
+                    getTitle(order, story.title, context),
                     const SizedBox(height: 8),
                     Row(
                       children: [

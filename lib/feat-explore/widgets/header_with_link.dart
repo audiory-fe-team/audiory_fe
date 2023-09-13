@@ -1,6 +1,4 @@
-import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class HeaderWithLink extends StatelessWidget {
   final Widget? icon;
@@ -11,7 +9,7 @@ class HeaderWithLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    // final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return SizedBox(
       width: double.infinity,
