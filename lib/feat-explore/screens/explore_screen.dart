@@ -5,8 +5,8 @@ import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/explore_top_bar.dart';
-import 'package:audiory_v0/services/category_services.dart';
-import 'package:audiory_v0/services/story_services.dart';
+import 'package:audiory_v0/repositories/category.repository.dart';
+import 'package:audiory_v0/repositories/story.repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_outlined_button.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -34,7 +34,13 @@ class ExploreScreen extends StatelessWidget {
             const SizedBox(height: 24),
             CategoryCarousel(),
             const SizedBox(height: 24),
-            const HeaderWithLink(title: 'Thịnh hành', link: ''),
+            HeaderWithLink(
+                icon: Image.asset(
+                  "assets/images/home_trend.png",
+                  width: 24,
+                ),
+                title: 'Thịnh hành',
+                link: ''),
             const SizedBox(height: 12),
             // StoryScrollList(storyList: STORIES),
             const SizedBox(height: 24),
@@ -88,7 +94,7 @@ class CategoryStories extends HookWidget {
     BuildContext context,
   ) {
     final storyList =
-        useQuery(['story_all'], () => StoryService().fetchStories());
+        useQuery(['story_all'], () => StoryRepostitory().fetchStories());
 
     if (storyList.isLoading) {
       return const Text('Loading...');
@@ -126,7 +132,7 @@ class CategoryStories extends HookWidget {
                         padding: const EdgeInsets.only(right: 12),
                         child: StoryCardOverView(
                             title: story.title,
-                            coverUrl: story.cover_url,
+                            coverUrl: story.coverUrl,
                             id: story.id),
                       ))
                   .toList(),
@@ -145,7 +151,7 @@ class CategoryCarousel extends HookConsumerWidget {
     final current = useState(0);
 
     final categories =
-        useQuery(['categories'], () => CategoryReposity().fetchCategory());
+        useQuery(['categories'], () => CategoryRepository().fetchCategory());
 
     if (categories.isLoading) {
       return const Text('Loading...');
@@ -239,9 +245,9 @@ class CategoryBadge extends StatelessWidget {
     return Stack(children: [
       SizedBox(
           width: double.infinity,
-          // height: 47,
+          height: 53,
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(8.0),
+            borderRadius: BorderRadius.circular(8),
             child: Image.network(imgUrl, fit: BoxFit.cover),
           )),
       Positioned(

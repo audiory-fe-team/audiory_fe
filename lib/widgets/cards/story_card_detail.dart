@@ -42,7 +42,7 @@ class StoryCardDetail extends StatelessWidget {
                   height: 135,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(story.cover_url ?? ''),
+                      image: NetworkImage(story.coverUrl ?? ''),
                       fit: BoxFit.fill,
                     ),
                   ),
@@ -112,7 +112,7 @@ class StoryCardDetail extends StatelessWidget {
                                 const SizedBox(width: 4),
                                 SizedBox(
                                     width: 140,
-                                    child: Text(story.author_id ?? '',
+                                    child: Text(story.authorId ?? '',
                                         style: textTheme.titleSmall!.copyWith(
                                             fontStyle: FontStyle.italic,
                                             overflow: TextOverflow.ellipsis))),
@@ -132,7 +132,7 @@ class StoryCardDetail extends StatelessWidget {
                                     SvgPicture.asset('assets/icons/heart.svg',
                                         width: 14, height: 14),
                                     const SizedBox(width: 3),
-                                    Text(story.vote_count.toString() ?? 'error',
+                                    Text(story.voteCount.toString() ?? 'error',
                                         style: textTheme.titleSmall!.copyWith(
                                             fontStyle: FontStyle.italic)),
                                   ],
@@ -159,7 +159,7 @@ class StoryCardDetail extends StatelessWidget {
                                     width: 14, height: 14),
                                 const SizedBox(width: 4),
                                 Text(
-                                    '${story.num_free_chapters.toString() ?? 'error'} chương',
+                                    '${story.numFreeChapters.toString() ?? 'error'} chương',
                                     style: textTheme.titleSmall!
                                         .copyWith(fontStyle: FontStyle.italic)),
                               ],
@@ -173,7 +173,7 @@ class StoryCardDetail extends StatelessWidget {
                                 SvgPicture.asset('assets/icons/eye.svg',
                                     width: 14, height: 14),
                                 const SizedBox(width: 8),
-                                Text(story.read_count.toString() ?? 'error',
+                                Text(story.readCount.toString() ?? 'error',
                                     style: textTheme.titleSmall!
                                         .copyWith(fontStyle: FontStyle.italic)),
                               ],

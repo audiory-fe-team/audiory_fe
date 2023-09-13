@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import '/services/auth_services.dart';
+import '../../../repositories/auth.repository.dart';
 
 class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeTopBar({super.key});
@@ -12,7 +12,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = AuthService().currentUser;
+    final User? user = AuthRepository().currentUser;
 
     return SafeArea(
         child: Container(

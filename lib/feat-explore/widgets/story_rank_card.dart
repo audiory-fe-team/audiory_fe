@@ -1,59 +1,122 @@
+import 'dart:math';
+
+import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class StoryRankCard extends StatelessWidget {
   final Story story;
   final int order;
   final Widget? icon;
+  final RankingMetric metric;
 
   const StoryRankCard(
       {super.key,
       required this.story,
       required this.order,
-      this.icon = const SizedBox(width: 12, height: 12)});
+      this.icon = const SizedBox(width: 12, height: 12),
+      required this.metric});
+
+  Widget getBadgeWidget(int order, BuildContext context) {
+    if (order > 3) {
+      return SizedBox(
+          width: 24,
+          height: 24,
+          child: Center(
+              child: Text(order.toString(),
+                  style: Theme.of(context).textTheme.headlineMedium)));
+    }
+    String badgePath = '';
+    switch (order) {
+      case 1:
+        badgePath = 'assets/images/gold_badge.png';
+        break;
+      case 2:
+        badgePath = 'assets/images/silver_badge.png';
+        break;
+      case 3:
+        badgePath = 'assets/images/bronze_badge.png';
+        break;
+    }
+    return SizedBox(
+      width: 24,
+      height: 24,
+      child: Center(
+          child: Image.asset(
+        badgePath,
+        fit: BoxFit.fitWidth,
+        width: 24,
+      )),
+    );
+  }
+
+  Widget getTitle(int order, String title, BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    if (order > 3) {
+      return Text(
+        story.title,
+        style: textTheme.titleMedium?.copyWith(color: appColors.primaryBase),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+    LinearGradient gradient = const LinearGradient(colors: []);
+    switch (order) {
+      case 1:
+        gradient = LinearGradient(colors: [
+          const Color.fromARGB(255, 219, 168, 40),
+          Colors.yellow.shade400,
+        ]);
+        break;
+      case 2:
+        gradient = const LinearGradient(colors: [
+          Color.fromRGBO(150, 138, 163, 1),
+          Color.fromRGBO(234, 235, 250, 1),
+        ]);
+        break;
+      case 3:
+        gradient = const LinearGradient(colors: [
+          Color.fromRGBO(112, 97, 73, 1),
+          Color.fromRGBO(223, 219, 214, 1),
+        ]);
+        break;
+    }
+    return GradientText(title,
+        style: textTheme.titleMedium?.copyWith(overflow: TextOverflow.clip),
+        gradient: gradient);
+  }
+
+  String getStatisticString(Story story, RankingMetric metric) {
+    switch (metric) {
+      case RankingMetric.total_read:
+        {
+          return "${story.totalRead ?? 0} lượt xem";
+        }
+      case RankingMetric.total_vote:
+        {
+          return "${story.totalVote ?? 0} bình chọn";
+        }
+      default:
+        {
+          return "${story.totalVote ?? 0} bình chọn";
+        }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Widget getBadgeWidget(int order) {
-      if (order > 3) {
-        return SizedBox(
-            width: 24,
-            height: 24,
-            child: Center(
-                child: Text(order.toString(),
-                    style: Theme.of(context).textTheme.headlineMedium)));
-      }
-      String badgePath = '';
-      switch (order) {
-        case 1:
-          badgePath = 'assets/images/gold_badge.png';
-          break;
-        case 2:
-          badgePath = 'assets/images/silver_badge.png';
-          break;
-        case 3:
-          badgePath = 'assets/images/bronze_badge.png';
-          break;
-      }
-      return SizedBox(
-        width: 24,
-        height: 24,
-        child: Center(
-            child: Image.asset(
-          badgePath,
-          fit: BoxFit.fitWidth,
-          width: 24,
-        )),
-      );
-    }
-
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
     return Container(
-      margin: EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 12),
       width: double.infinity,
       height: 107,
       child: Row(
@@ -65,9 +128,8 @@ class StoryRankCard extends StatelessWidget {
             width: 75,
             height: 107,
             decoration: ShapeDecoration(
-              image: const DecorationImage(
-                image: NetworkImage(
-                    'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+              image: DecorationImage(
+                image: NetworkImage(story.coverUrl ?? ''),
                 fit: BoxFit.fill,
               ),
               shape: RoundedRectangleBorder(
@@ -77,56 +139,70 @@ class StoryRankCard extends StatelessWidget {
           const SizedBox(width: 12),
           Expanded(
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.max,
               children: [
                 Expanded(
                     child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Trường hợp kỳ lạ của Tiến sĩ Jekyll và Mr Hyde',
-                      style: textTheme.titleMedium,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    getTitle(order, story.title ?? 'Tiêu đề truyện', context),
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        SvgPicture.asset(
-                          'assets/icons/write.svg',
-                          width: 14,
-                        ),
+                        Skeleton.replace(
+                            width: 14,
+                            height: 14,
+                            child: SvgPicture.asset(
+                              'assets/icons/write.svg',
+                              width: 14,
+                            )),
                         const SizedBox(width: 6),
                         Text(
-                          'Lê Phát Sáng',
-                          style: textTheme.titleSmall!
-                              .copyWith(fontStyle: FontStyle.italic),
+                          story.author?.fullName ?? 'Ẩn danh',
+                          style: textTheme.titleSmall,
                           overflow: TextOverflow.ellipsis,
                         )
                       ],
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 6),
                     Row(
                       children: [
-                        SvgPicture.asset(
-                          'assets/icons/eye.svg',
-                          width: 14,
-                          color: appColors.primaryBase,
-                        ),
-                        const SizedBox(width: 6),
+                        // Skeleton.replace(
+                        //     width: 14,
+                        //     height: 14,
+                        //     child: SvgPicture.asset(
+                        //       'assets/icons/eye.svg',
+                        //       width: 14,
+                        //       color: appColors.primaryBase,
+                        //     )),
+                        // const SizedBox(width: 6),
                         Text(
-                          '1,805, 834 lượt xem',
+                          getStatisticString(story, metric),
                           style: textTheme.titleSmall!.copyWith(
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.w600,
-                              color: appColors.primaryBase),
+                            fontStyle: FontStyle.italic,
+                            fontWeight: FontWeight.w600,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         )
                       ],
-                    )
+                    ),
+                    const Expanded(child: SizedBox()),
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: (story.tags ?? [])
+                          .sublist(0, min(3, story.tags?.length ?? 0))
+                          .map((tag) => Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: StoryDetailTag(content: tag.name)))
+                          .toList(),
+                    ),
                   ],
                 )),
                 const SizedBox(width: 12),
-                getBadgeWidget(order),
+                getBadgeWidget(order, context),
               ],
             ),
           ),

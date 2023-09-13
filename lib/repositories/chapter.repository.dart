@@ -5,7 +5,7 @@ import 'package:audiory_v0/models/Chapter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class ChapterServices {
+class ChapterRepository {
   static final chapterEndpoint = "${dotenv.get('API_BASE_URL')}/chapters";
   static final chapterVersionEndpoint =
       "${dotenv.get('API_BASE_URL')}/chapter-version";

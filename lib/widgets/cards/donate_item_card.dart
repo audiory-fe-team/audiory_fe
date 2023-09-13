@@ -1,6 +1,5 @@
 import 'package:audiory_v0/models/Gift.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 
 import '../../theme/theme_constants.dart';
 

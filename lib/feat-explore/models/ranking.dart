@@ -1,5 +1,5 @@
-enum RankingType { story, author, reader }
+enum RankingType { story, author }
 
-enum RankingMetric { view, vote, comment, gift, follower }
+enum RankingMetric { total_read, total_vote, total_comment }
 
-enum RankingTimeRange { today, this_week, this_month, this_year, all_time }
+enum RankingTimeRange { daily, weekly, monthly, all_time }

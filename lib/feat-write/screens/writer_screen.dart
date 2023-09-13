@@ -1,6 +1,8 @@
 import 'dart:math';
 
 import 'package:audiory_v0/feat-write/widgets/story_card_detail_writer.dart';
+import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,9 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../models/Story.dart';
-import '../../services/auth_services.dart';
-import '../../state/state_manager.dart';
+
+import '../../repositories/auth.repository.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/custom_app_bar.dart';
 
@@ -23,7 +24,7 @@ class WriterScreen extends ConsumerStatefulWidget {
 }
 
 class _WriterScreenState extends ConsumerState<WriterScreen> {
-  final User? authUser = AuthService().currentUser;
+  final User? authUser = AuthRepository().currentUser;
   @override
   void initState() {
     if (kDebugMode) {

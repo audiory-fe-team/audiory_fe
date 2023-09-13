@@ -4,16 +4,16 @@ import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
-import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/main_layout.dart';
+import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 
-import 'package:audiory_v0/services/auth_services.dart';
+import 'package:audiory_v0/repositories/auth.repository.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -62,12 +62,13 @@ class AppRoutes {
                 RankingMetric metric = mapStringToRankingMetric(metricString);
                 final timeString = state.queryParameters["time"];
                 RankingTimeRange time = mapStringToRankingTimeRange(timeString);
-
+                final category = state.queryParameters["category"];
                 return RankingScreen(
                   key: state.pageKey,
                   type: type,
                   metric: metric,
                   time: time,
+                  category: category,
                 );
               },
             ),
@@ -111,11 +112,9 @@ class AppRoutes {
                 path: 'story/:storyId',
                 name: 'story_detail',
                 builder: (BuildContext context, GoRouterState state) {
-                  final storyId = state.pathParameters['storyId']!;
-                  // print(storyId);
-                  // print('id' + id);
+                  final storyId = state.pathParameters['storyId'];
                   return DetailStoryScreen(
-                    id: storyId,
+                    id: storyId ?? '',
                   );
                 },
                 routes: [
@@ -123,6 +122,9 @@ class AppRoutes {
                     path: 'chapter/:chapterId',
                     builder: (BuildContext context, GoRouterState state) {
                       String? chapterId = state.pathParameters["chapterId"];
+                      if (chapterId == null || chapterId == '') {
+                        return const NotFoundScreen();
+                      }
                       return ReadingScreen(
                         chapterId: chapterId,
                       );
@@ -178,8 +180,6 @@ class AppRoutes {
         name: 'detailStory',
         path: '/detailStory/:storyId',
         builder: (BuildContext context, GoRouterState state) {
-          // print('state');
-          // print(state.extra);
           final storyId = state.pathParameters['storyId']!;
           // print('id' + id);
           return DetailStoryScreen(
@@ -206,7 +206,7 @@ class AppRoutes {
   );
 
   static String? _redirect(BuildContext context, GoRouterState state) {
-    final User? user = AuthService().currentUser;
+    final User? user = AuthRepository().currentUser;
     // return user != null ? null : context.namedLocation('/login');
     return user != null
         ? null

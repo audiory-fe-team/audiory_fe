@@ -9,7 +9,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
-import 'package:audiory_v0/services/auth_services.dart';
+import 'package:audiory_v0/repositories/auth.repository.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -30,7 +30,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      await AuthService().createUserWithEmailAndPassword(
+      await AuthRepository().createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
     } on FirebaseAuthException catch (e) {}
   }
@@ -38,7 +38,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> signInGoogle() async {
     // var provider = Provider.of<Auth>(context, listen: false);
     try {
-      await AuthService().signInWithGoogle();
+      await AuthRepository().signInWithGoogle();
       // if (provider.isBack) {
       //   context.go('/');
       // }
@@ -67,7 +67,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         bgColor: Color(0xFF439A97),
         onPressed: () async {
           try {
-            await AuthService().signInWithEmailAndPassword(
+            await AuthRepository().signInWithEmailAndPassword(
                 email: emailController.text, password: passwordController.text);
             // context.go('/');
             // if (provider.message != '') {

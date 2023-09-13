@@ -17,10 +17,10 @@ class StoryCardDetailWriter extends StatelessWidget {
       'status': 'Đang tiến hành',
       'color': Colors.black,
     };
-    if (story.is_completed as bool) {
+    if (story.isCompleted as bool) {
       map.update('status', (value) => 'Hoàn thành');
       map.update('color', (value) => appColors.primaryBase);
-    } else if (story.is_draft as bool) {
+    } else if (story.isDraft as bool) {
       map.update('status', (value) => 'Bản thảo');
       map.update('color', (value) => Colors.orangeAccent);
     }
@@ -69,7 +69,7 @@ class StoryCardDetailWriter extends StatelessWidget {
                   height: 135,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(story.cover_url ?? ''),
+                      image: NetworkImage(story.coverUrl ?? ''),
                       fit: BoxFit.fill,
                     ),
                   ),
@@ -139,7 +139,7 @@ class StoryCardDetailWriter extends StatelessWidget {
                                 SizedBox(
                                     width: 140,
                                     child: Text(
-                                        'Cập nhật ${formatDate(story.updated_date)}',
+                                        'Cập nhật ${formatDate(story.updatedDate)}',
                                         style: textTheme.titleSmall!.copyWith(
                                             fontStyle: FontStyle.italic,
                                             overflow: TextOverflow.ellipsis))),
@@ -166,7 +166,7 @@ class StoryCardDetailWriter extends StatelessWidget {
                                     width: 14, height: 14),
                                 const SizedBox(width: 8),
                                 Text(
-                                    '${story.chapters?.length ?? 'error'} chương + ${story.draft_count} bản thảo',
+                                    '${story.chapters?.length ?? 'error'} chương + ${story.draftCount} bản thảo',
                                     style: textTheme.titleSmall!
                                         .copyWith(fontStyle: FontStyle.italic)),
                               ],

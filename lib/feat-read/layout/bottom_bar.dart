@@ -16,76 +16,192 @@ class ReadingBottomBar extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final _liked = useState(false);
-
+    final liked = useState(false);
+    final settingOpen = useState(false);
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
-    void _onItemTapped(int index) {
-      switch (index) {
-        case 0:
-          {
-            break;
-          }
-        case 1:
-          {
-            //NOTE: Call api like the chapter
-            _liked.value = !_liked.value;
-            break;
-          }
-        case 2:
-          {
-            break;
-          }
-        case 3:
-          {
-            showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) {
-                  return SettingModelUseHooks(
-                    changeStyle: changeStyle,
-                  );
-                });
-            break;
-          }
-        case 4:
-          {
-            break;
-          }
-      }
+    void handleOpenChapter() {}
+    void handleToggleLike() {
+      //NOTE:Call api like
+      liked.value = !liked.value;
     }
 
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      items: const <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: Icon(Icons.format_list_bulleted),
-          label: 'Chương',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.favorite),
-          label: 'Yêu thích',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.chat_bubble_outline),
-          label: 'Bình luận',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings),
-          label: 'Cài đặt',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.share),
-          label: 'Chia sẻ',
-        ),
-      ],
-      currentIndex: 1,
-      onTap: _onItemTapped,
-      selectedLabelStyle: Theme.of(context).textTheme.labelLarge,
-      unselectedLabelStyle: Theme.of(context).textTheme.labelLarge,
-      unselectedItemColor: appColors.skyBase,
-      selectedItemColor:
-          _liked.value ? appColors.primaryBase : appColors.skyBase,
-      showUnselectedLabels: true,
-    );
+    void handleOpenComment() {
+      //NOTE: Navigate to comment of chapter page
+    }
+
+    void handleOpenSetting() {
+      settingOpen.value = true;
+      showModalBottomSheet(
+          context: context,
+          builder: (BuildContext context) {
+            return SettingModel(
+              changeStyle: changeStyle,
+            );
+          }).whenComplete(() {
+        settingOpen.value = false;
+      });
+    }
+
+    // void _onItemTapped(int index) {
+    //   switch (index) {
+    //     case 0:
+    //       {
+    //         break;
+    //       }
+    //     case 1:
+    //       {
+    //         //NOTE: Call api like the chapter
+    //         _liked.value = !_liked.value;
+    //         break;
+    //       }
+    //     case 2:
+    //       {
+    //         break;
+    //       }
+    //     case 3:
+    //       {
+    //         showModalBottomSheet(
+    //             context: context,
+    //             builder: (BuildContext context) {
+    //               return SettingModelUseHooks(
+    //                 changeStyle: changeStyle,
+    //               );
+    //             });
+    //         break;
+    //       }
+    //     case 4:
+    //       {
+    //         break;
+    //       }
+    //   }
+    // }
+
+    final sharedTextStyle = Theme.of(context).textTheme.labelLarge;
+    return Material(
+        elevation: 10,
+        child: SizedBox(
+            height: 65,
+            width: double.infinity,
+            child: Material(
+                color: appColors.skyLightest,
+                child: Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                          child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
+                              customBorder: CircleBorder(),
+                              onTap: () {},
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.format_list_bulleted,
+                                    color: appColors.skyBase,
+                                  ),
+                                  Text(
+                                    'Chương',
+                                    style: sharedTextStyle?.copyWith(
+                                        color: appColors.skyBase),
+                                  )
+                                ],
+                              ))),
+                      Expanded(
+                          child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
+                              customBorder: CircleBorder(),
+                              onTap: () {},
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.favorite,
+                                      color: liked.value
+                                          ? appColors.primaryBase
+                                          : appColors.skyBase),
+                                  Text(
+                                    'Bình chọn',
+                                    style: sharedTextStyle?.copyWith(
+                                        color: liked.value
+                                            ? appColors.primaryBase
+                                            : appColors.skyBase),
+                                  )
+                                ],
+                              ))),
+                      Expanded(
+                          child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
+                              customBorder: CircleBorder(),
+                              onTap: () {},
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.chat_bubble_rounded,
+                                    color: appColors.skyBase,
+                                  ),
+                                  Text(
+                                    'Bình luận',
+                                    style: sharedTextStyle?.copyWith(
+                                        color: appColors.skyBase),
+                                  )
+                                ],
+                              ))),
+                      Expanded(
+                          child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
+                              customBorder: CircleBorder(),
+                              onTap: () {
+                                handleOpenSetting();
+                              },
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.settings,
+                                    color: settingOpen.value
+                                        ? appColors.primaryBase
+                                        : appColors.skyBase,
+                                  ),
+                                  Text(
+                                    'Cài đặt',
+                                    style: sharedTextStyle?.copyWith(
+                                        color: settingOpen.value
+                                            ? appColors.primaryBase
+                                            : appColors.skyBase),
+                                  )
+                                ],
+                              ))),
+                      Expanded(
+                          child: InkWell(
+                              overlayColor: MaterialStatePropertyAll(
+                                  appColors.primaryLightest),
+                              customBorder: CircleBorder(),
+                              onTap: () {},
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.share,
+                                    color: appColors.skyBase,
+                                  ),
+                                  Text(
+                                    'Chia sẻ',
+                                    style: sharedTextStyle?.copyWith(
+                                        color: appColors.skyBase),
+                                  )
+                                ],
+                              ))),
+                    ]))));
   }
 }

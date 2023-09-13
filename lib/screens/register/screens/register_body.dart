@@ -1,13 +1,10 @@
 import 'package:audiory_v0/screens/login/login_screen.dart';
-import 'package:audiory_v0/screens/register/screens/flow_one.dart';
 import 'package:audiory_v0/widgets/buttons/filled_button.dart';
-import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../services/auth_services.dart';
+import '../../../repositories/auth.repository.dart';
 import '../../../theme/theme_constants.dart';
 
 class RegisterBodyScreen extends StatefulWidget {
@@ -28,7 +25,7 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
   String errorMessage = '';
 
   Widget _submitButton() {
-    var provider = Provider.of<AuthService>(context, listen: false);
+    var provider = Provider.of<AuthRepository>(context, listen: false);
 
     return AppFilledButton(
         title: 'Đăng ký',

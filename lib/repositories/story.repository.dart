@@ -1,27 +1,28 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 
-import '../models/Chapter.dart';
+import 'package:flutter/foundation.dart';
 
 final storyRepositoryProvider =
     Provider<StoryRepostitory>((_) => StoryRepostitory());
 
 class StoryRepostitory {
-  static final baseURL = "http://34.29.203.235:3500/api";
-  static final storiesEndpoint = baseURL + "/stories";
+  static final storiesEndpoint = "${dotenv.get('API_BASE_URL')}/stories";
 
-  Future<List<Story>> fetchStories() async {
-    final url = Uri.parse(storiesEndpoint);
+  Future<List<Story>> fetchStories({String? keyword = ''}) async {
+    final url = Uri.parse(storiesEndpoint)
+        .replace(queryParameters: {'keyword': keyword ?? ''});
+
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
 
-    print(response.statusCode == 200);
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(responseBody)['data'];
       return result.map((i) => Story.fromJson(i)).toList();
@@ -30,25 +31,15 @@ class StoryRepostitory {
     }
   }
 
-  Future<Story?> fetchStoriesById(String? storyId) async {
-    if (storyId == null) {
-      return null;
-    }
-
+  Future<Story> fetchStoryById(String storyId) async {
     final url = Uri.parse('$storiesEndpoint/$storyId');
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
 
-    if (kDebugMode) {
-      print('res');
-      print(jsonDecode(responseBody)['data']);
-    }
-
     if (response.statusCode == 200) {
       final result = jsonDecode(responseBody)['data'];
-      return Story.fromJson(result as Map<String, dynamic>);
+      return Story.fromJson(result);
     } else {
-      return null;
       throw Exception('Failed to load stories');
     }
   }
@@ -78,7 +69,7 @@ class StoryRepostitory {
 
   Future<List<Story>> fetchStoriesByUserId(String userId) async {
     final url = Uri.parse(
-        '$baseURL/users/72d9245a-399d-11ee-8181-0242ac120002/stories');
+        '$storiesEndpoint/users/72d9245a-399d-11ee-8181-0242ac120002/stories');
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {

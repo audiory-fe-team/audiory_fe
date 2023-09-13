@@ -14,9 +14,9 @@ import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../models/AuthUser.dart';
 
-final authServiceProvider = Provider<AuthService>((_) => AuthService());
+final authServiceProvider = Provider<AuthRepository>((_) => AuthRepository());
 
-class AuthService extends ChangeNotifier {
+class AuthRepository extends ChangeNotifier {
   bool isLoading = false;
   bool isBack = false;
   String message = '';

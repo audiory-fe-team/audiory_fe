@@ -9,7 +9,7 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../services/chapter_services.dart';
+import '../../../repositories/chapter.repository.dart';
 import '../../../theme/theme_constants.dart';
 import '../../../widgets/input/text_input.dart';
 
@@ -208,7 +208,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                       print(body);
                     }
                     //call api
-                    bool isCreated = await ChapterServices()
+                    bool isCreated = await ChapterRepository()
                         .createChapterVersion(body,
                             _formKey.currentState!.fields['photos']!.value);
                     isCreated

@@ -1,10 +1,13 @@
+import 'dart:async';
+
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 
-class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {
-  const SearchTopBar({super.key});
+class SearchTopBar extends HookWidget implements PreferredSizeWidget {
+  final Function(String) onSearchValueChange;
+  const SearchTopBar({super.key, required this.onSearchValueChange});
 
   @override
   Size get preferredSize => const Size.fromHeight(56);
@@ -12,7 +15,10 @@ class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final controller = useTextEditingController();
+    Timer? debounce;
 
+    useEffect(() {}, []);
     return SafeArea(
         child: Container(
             width: double.infinity,
@@ -24,6 +30,13 @@ class SearchTopBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 Expanded(
                     child: TextField(
+                  controller: controller,
+                  onChanged: (value) {
+                    if (debounce?.isActive ?? false) debounce?.cancel();
+                    debounce = Timer(const Duration(milliseconds: 500), () {
+                      onSearchValueChange(value);
+                    });
+                  },
                   onSubmitted: (value) {
                     GoRouter.of(context).goNamed("explore_result",
                         queryParameters: {'keyword': value});

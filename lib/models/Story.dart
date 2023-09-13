@@ -1,3 +1,4 @@
+import 'package:audiory_v0/models/AuthorStory.dart';
 import 'dart:convert';
 
 import 'package:audiory_v0/models/Chapter.dart';
@@ -5,61 +6,67 @@ import 'package:audiory_v0/models/Tag.dart';
 
 class Story {
   final String id;
-  final String? author_id;
+  final String? authorId;
   final List<Tag>? tags;
   // final List<int>? category_ranking;
-  final String? category_id;
+  final String? categoryId;
   final String title;
   final String? description;
-  final String? cover_url;
-  final bool? is_draft;
-  final bool? is_mature;
-  final bool? is_completed;
-  final bool? is_copyright;
-  final bool? is_paywalled;
-  final int? coin_cost;
-  final int? author_earning_percentage;
-  final String? paywall_effective_date;
-  final int? num_free_chapters;
-  final int? published_count;
-  final int? draft_count;
-  final int? report_count;
-  final int? vote_count;
-  final int? read_count;
-  final int? explicit_percentage;
-  final String? created_date;
-  final String? updated_date;
-  final bool? is_enabled;
+  final String? coverUrl;
+  final bool? isDraft;
+  final bool? isMature;
+  final bool? isCompleted;
+  final bool? isCopyright;
+  final bool? isPaywalled;
+  final int? coinCost;
+  final int? authorEarningPercentage;
+  final String? paywallEffectiveDate;
+  final int? numFreeChapters;
+  final int? publishedCount;
+  final int? draftCount;
+  final int? reportCount;
+  final int? voteCount;
+  final int? totalVote;
+  final int? totalRead;
+  final int? readCount;
+  final int? explicitPercentage;
+  final String? createdDate;
+  final String? updatedDate;
+  final bool? isEnabled;
   final List<Chapter>? chapters;
+  final AuthorStory? author;
 
   const Story(
       {required this.id,
-      this.author_id,
+      this.authorId,
       this.tags,
       // this.category_ranking,
-      this.category_id,
+      this.categoryId,
       required this.title,
       this.description,
-      this.cover_url,
-      this.is_draft,
-      this.is_mature,
-      this.is_completed,
-      this.is_copyright,
-      this.is_paywalled,
-      this.coin_cost,
-      this.author_earning_percentage,
-      this.paywall_effective_date,
-      this.num_free_chapters,
-      this.published_count,
-      this.draft_count,
-      this.report_count,
-      this.vote_count,
-      this.read_count,
-      this.explicit_percentage,
-      this.created_date,
-      this.updated_date,
-      this.is_enabled,
-      this.chapters});
+      this.coverUrl,
+      this.isDraft,
+      this.isMature,
+      this.isCompleted,
+      this.isCopyright,
+      this.isPaywalled,
+      this.coinCost,
+      this.authorEarningPercentage,
+      this.paywallEffectiveDate,
+      this.numFreeChapters,
+      this.reportCount,
+      this.voteCount,
+      this.totalRead,
+      this.totalVote,
+      this.draftCount,
+      this.publishedCount,
+      this.readCount,
+      this.explicitPercentage,
+      this.createdDate,
+      this.updatedDate,
+      this.isEnabled,
+      this.chapters,
+      this.author});
 
   factory Story.fromJson(Map<String, dynamic> json) {
     List<dynamic> chapterJsonList = json['chapters'] ?? [];
@@ -68,60 +75,70 @@ class Story {
         .toList();
     List<dynamic> tagsJsonList = json['tags'] ?? [];
     List<Tag> tags = tagsJsonList.map((tag) => Tag.fromJson(tag)).toList();
+    final AuthorStory? author =
+        json['author'] == null ? null : AuthorStory.fromJson(json['author']);
 
     return Story(
         id: json["id"],
-        author_id: json["author_id"] ?? 'null',
-        category_id: json["category_id"] ?? 'null',
+        authorId: json["author_id"] ?? 'null',
+        categoryId: json["category_id"] ?? 'null',
         title: json["title"],
         description: json["description"] ?? 'null',
-        cover_url: json["cover_url"] ?? 'null',
-        is_draft: json["is_draft"],
-        is_mature: json["is_mature"],
-        is_completed: json["is_completed"],
-        is_copyright: json["is_copyright"],
-        is_paywalled: json["is_paywalled"],
-        coin_cost: json["coin_cost"],
-        author_earning_percentage: json["author_earning_percentage"],
-        paywall_effective_date: json["paywall_effective_date"] ?? 'null',
-        num_free_chapters: json["num_free_chapters"],
-        published_count: json["published_count"],
-        draft_count: json["draft_count"],
-        report_count: json["report_count"],
-        vote_count: json["vote_count"],
-        read_count: json["read_count"],
-        explicit_percentage: json["explicit_percentage"],
-        created_date: json["created_date"],
-        updated_date: json["updated_date"],
-        is_enabled: json["is_enabled"],
+        coverUrl: json["cover_url"] ?? 'null',
+        isDraft: json["is_draft"],
+        isMature: json["is_mature"],
+        isCompleted: json["is_completed"],
+        isCopyright: json["is_copyright"],
+        isPaywalled: json["is_paywalled"],
+        coinCost: json["coin_cost"],
+        authorEarningPercentage: json["author_earning_percentage"],
+        paywallEffectiveDate: json["paywall_effective_date"] ?? 'null',
+        numFreeChapters: json["num_free_chapters"],
+        reportCount: json["report_count"],
+        totalVote: json["total_vote"],
+        voteCount: json["vote_count"],
+        totalRead: json["total_read"],
+        readCount: json["read_count"],
+        draftCount: json["draft_count"],
+        publishedCount: json["published_count"],
+        explicitPercentage: json["explicit_percentage"],
+        createdDate: json["created_date"],
+        updatedDate: json["updated_date"],
+        isEnabled: json["is_enabled"],
         chapters: chapters,
-        tags: tags);
+        tags: tags,
+        author: author);
   }
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "author_id": author_id,
-        "category_id": category_id,
+        "author_id": authorId,
+        "category_id": categoryId,
         "title": title,
         "description": description,
-        "cover_url": cover_url,
-        "is_draft": is_draft as bool,
-        "is_mature": is_mature as bool,
-        "is_completed": is_completed as bool,
-        "is_copyright": is_copyright as bool,
-        "is_paywalled": is_paywalled as bool,
-        "coin_cost": coin_cost,
-        "author_earning_percentage": author_earning_percentage,
-        "paywall_effective_date": paywall_effective_date,
-        "num_free_chapters": num_free_chapters,
-        "report_count": report_count,
-        "vote_count": vote_count,
-        "read_count": read_count,
-        "explicit_percentage": explicit_percentage,
-        "created_date": created_date,
-        "updated_date": updated_date,
-        "is_enabled": is_enabled as bool,
-        "chapters": [],
-        "tags": []
+        "cover_url": coverUrl,
+        "is_draft": isDraft,
+        "is_mature": isMature,
+        "is_completed": isCompleted,
+        "is_copyright": isCopyright,
+        "is_paywalled": isPaywalled,
+        "coin_cost": coinCost,
+        "author_earning_percentage": authorEarningPercentage,
+        "paywall_effective_date": paywallEffectiveDate,
+        "num_free_chapters": numFreeChapters,
+        "report_count": reportCount,
+        "vote_count": voteCount,
+        "read_count": readCount,
+        "total_read": totalRead,
+        "total_vote": totalVote,
+        "published_count": publishedCount,
+        "draft_count": draftCount,
+        "explicit_percentage": explicitPercentage,
+        "created_date": createdDate,
+        "updated_date": updatedDate,
+        "is_enabled": isEnabled,
+        "chapters": chapters?.map((chapter) => chapter.toJson()).toList(),
+        "tags": tags?.map((tag) => tag.toJson()).toList(),
+        "author": author?.toJson(),
       };
 }

@@ -1,3 +1,4 @@
+import 'package:audiory_v0/repositories/story.repository.dart';
 import 'dart:convert';
 
 import 'package:audiory_v0/feat-write/widgets/edit_chapter_card.dart';
@@ -18,7 +19,6 @@ import 'package:textfield_tags/textfield_tags.dart';
 import '../../../models/Chapter.dart';
 import '../../../models/Story.dart';
 import '../../../models/Tag.dart';
-import '../../../services/story.dart';
 import '../../../theme/theme_constants.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
@@ -310,7 +310,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                 fit: BoxFit.fill,
                 validator: FormBuilderValidators.required(),
                 backgroundColor: appColors.skyLighter,
-                initialValue: [editingStory?.cover_url],
+                initialValue: [editingStory?.coverUrl],
                 availableImageSources: const [
                   ImageSourceOption.gallery
                 ], //only gallery
@@ -352,7 +352,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
         categoryList.when(
             data: (categoryList) => FormBuilderDropdown(
                 name: 'category',
-                initialValue: editingStory?.category_id ?? categoryList[0].id,
+                initialValue: editingStory?.categoryId ?? categoryList[0].id,
                 selectedItemBuilder: (context) => List.generate(
                       categoryList.length,
                       (index) => Text(
@@ -383,7 +383,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
 
         isEdit
             ? FormBuilderSwitch(
-                initialValue: editingStory?.is_completed ?? false,
+                initialValue: editingStory?.isCompleted ?? false,
                 activeColor: appColors.primaryBase,
                 decoration: InputDecoration(focusColor: appColors.primaryBase),
                 name: 'isComplete',
@@ -404,7 +404,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                 height: 0,
               ),
         FormBuilderSwitch(
-          initialValue: editingStory?.is_mature ?? false,
+          initialValue: editingStory?.isMature ?? false,
           activeColor: appColors.primaryBase,
           name: 'isMature',
           title: Column(
@@ -431,7 +431,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
         isEdit
             ? FormBuilderSwitch(
                 initialValue:
-                    editingStory != null ? editingStory?.is_paywalled : false,
+                    editingStory != null ? editingStory?.isPaywalled : false,
                 activeColor: appColors.primaryBase,
                 onChanged: (value) {
                   setState(() {
@@ -471,7 +471,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                     label: "Phí mỗi chương",
                     hintText: 'Nhập số coin mong muốn',
                     initialValue:
-                        isEdit ? '${editingStory?.coin_cost.toString()}' : '0',
+                        isEdit ? '${editingStory?.coinCost.toString()}' : '0',
                   ),
                   // this can be null ??? why
                   AppTextInputField(
@@ -480,7 +480,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                     label: "Số chương miễn phí",
                     hintText: 'Nhập số chương mong muốn',
                     initialValue: isEdit
-                        ? '${editingStory?.num_free_chapters!.toString()}'
+                        ? '${editingStory?.numFreeChapters.toString()}'
                         : '0',
                   ),
                   const SizedBox(
@@ -493,7 +493,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
               ),
 
         FormBuilderCheckbox(
-            initialValue: editingStory?.is_copyright,
+            initialValue: editingStory?.isCopyright,
             contentPadding: EdgeInsets.zero,
             checkColor: appColors.skyLightest,
             activeColor: appColors.primaryBase,

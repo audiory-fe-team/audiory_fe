@@ -1,7 +1,3 @@
-import 'dart:convert';
-
-import 'package:audiory_v0/models/AuthUser.dart';
-import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../models/User.dart';
-import '../../services/auth_services.dart';
+import '../../repositories/auth.repository.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/custom_app_bar.dart';
 
@@ -22,7 +17,7 @@ class ProfileScreenTest extends ConsumerStatefulWidget {
 }
 
 class ProfileScreenTestState extends ConsumerState<ProfileScreenTest> {
-  final User? authUser = AuthService().currentUser;
+  final User? authUser = AuthRepository().currentUser;
   final FlutterSecureStorage storage = FlutterSecureStorage();
   // AuthUser? authUser;
   // Future<void> getAuthUser() async {
@@ -41,7 +36,7 @@ class ProfileScreenTestState extends ConsumerState<ProfileScreenTest> {
   // }
 
   Future<void> signOut() async {
-    await AuthService().singOut();
+    await AuthRepository().singOut();
     context.go('/login');
   }
 

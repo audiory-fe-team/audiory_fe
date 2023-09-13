@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
-import 'package:audiory_v0/services/auth_services.dart';
+import 'package:audiory_v0/repositories/auth.repository.dart';
 import "package:go_router/go_router.dart";
 
 class HomeScreenTest extends StatefulWidget {
@@ -15,10 +15,10 @@ class HomeScreenTest extends StatefulWidget {
 }
 
 class _HomeScreenTestState extends State<HomeScreenTest> {
-  final User? user = AuthService().currentUser;
+  final User? user = AuthRepository().currentUser;
 
   Future<void> signOut() async {
-    await AuthService().singOut();
+    await AuthRepository().singOut();
     context.go('/login');
   }
 

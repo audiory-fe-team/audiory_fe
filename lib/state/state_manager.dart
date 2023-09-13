@@ -2,9 +2,9 @@ import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
-import 'package:audiory_v0/services/auth_services.dart';
-import 'package:audiory_v0/services/category_services.dart';
-import 'package:audiory_v0/services/story.dart';
+import 'package:audiory_v0/repositories/auth.repository.dart';
+import 'package:audiory_v0/repositories/category.repository.dart';
+import 'package:audiory_v0/repositories/story.repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final storyFutureProvider = FutureProvider<List<Story>>((ref) async {
@@ -16,7 +16,7 @@ final storyFutureProvider = FutureProvider<List<Story>>((ref) async {
 final storyByIdFutureProvider =
     FutureProvider.autoDispose.family<Story?, String>((ref, storyId) async {
   final repository = ref.read(storyRepositoryProvider);
-  return repository.fetchStoriesById(storyId);
+  return repository.fetchStoryById(storyId);
 });
 
 final allChaptersStoryByIdFutureProvider = FutureProvider.autoDispose

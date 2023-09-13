@@ -1,16 +1,17 @@
+import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class AuthorRankCard extends StatelessWidget {
-  final Story story;
+  final Profile author;
   final int order;
   final Widget? icon;
 
   const AuthorRankCard(
       {super.key,
-      required this.story,
+      required this.author,
       required this.order,
       this.icon = const SizedBox(width: 12, height: 12)});
 
@@ -64,13 +65,12 @@ class AuthorRankCard extends StatelessWidget {
           Container(
             width: 60,
             height: 60,
-            decoration: const ShapeDecoration(
+            decoration: ShapeDecoration(
               image: DecorationImage(
-                image: NetworkImage(
-                    'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
+                image: NetworkImage(author.avatarUrl ?? ''),
                 fit: BoxFit.fill,
               ),
-              shape: CircleBorder(),
+              shape: const CircleBorder(),
             ),
           ),
           const SizedBox(width: 12),
@@ -84,7 +84,7 @@ class AuthorRankCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Tác giả X',
+                      author.fullName ?? 'Ẩn danh',
                       style: textTheme.titleMedium,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
