@@ -1,8 +1,7 @@
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/result_top_bar.dart';
-import 'package:audiory_v0/layout/bottom_bar.dart';
-import 'package:audiory_v0/repositories/profile.repository.dart';
-import 'package:audiory_v0/repositories/story.repository.dart';
+import 'package:audiory_v0/repositories/profile_repository.dart';
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 
@@ -35,18 +34,19 @@ class ResultScreen extends HookConsumerWidget {
     final profileQuery = useQuery(['profile', 'search', keyword],
         () => ProfileRepository().fetchAllProfiles(keyword: keyword),
         enabled: searchForProfile == true);
-
     final tabState = useState(0);
 
+    print(storiesQuery.error);
     return Scaffold(
       appBar: ResultTopBar(keyword: keyword),
       body: SafeArea(
           child: Container(
               width: double.infinity,
               margin: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Expanded(
+                  child: Column(
+                // mainAxisSize: MainAxisSize.min,
+                // mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TabBar(
                     controller: tabController,
@@ -132,8 +132,7 @@ class ResultScreen extends HookConsumerWidget {
                     }
                   }),
                 ],
-              ))),
-      bottomNavigationBar: const AppBottomNavigationBar(),
+              )))),
     );
   }
 }

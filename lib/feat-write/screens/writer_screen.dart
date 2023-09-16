@@ -12,7 +12,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../repositories/auth.repository.dart';
+import '../../repositories/auth_repository.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/custom_app_bar.dart';
 

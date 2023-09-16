@@ -1,4 +1,5 @@
 import 'package:audiory_v0/screens/forgot_password/forgot_password_screen.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:audiory_v0/widgets/buttons/filled_button.dart';
 import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
@@ -9,7 +10,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
-import 'package:audiory_v0/repositories/auth.repository.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
@@ -51,59 +52,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  Widget _errorMessage() {
-    return Text(
-      errorMessage,
-      style: const TextStyle(color: Colors.red),
-    );
-  }
-
-  Widget _submitButton() {
-    // var provider = Provider.of<Auth>(context, listen: false);
-
-    return AppFilledButton(
-        title: 'Đăng nhập',
-        color: Colors.white,
-        bgColor: Color(0xFF439A97),
-        onPressed: () async {
-          try {
-            await AuthRepository().signInWithEmailAndPassword(
-                email: emailController.text, password: passwordController.text);
-            // context.go('/');
-            // if (provider.message != '') {
-            //   print('alo');
-            //   setState(() {
-            //     errorMessage = provider.message;
-            //   });
-            // }
-          } on Exception catch (e) {
-            print(e);
-          }
-        });
-  }
-
-  Widget _linkToRegisterScreen() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Chưa có tài khoản?',
-          textAlign: TextAlign.right,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(),
-        ),
-        GestureDetector(
-          onTap: () => {context.go('/register')},
-          child: Text(
-            'Đăng ký',
-            textAlign: TextAlign.right,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold, color: Color(0xFF439A97)),
-          ),
-        ),
-      ],
-    );
-  }
-
   _press(BuildContext context) {
     Navigator.push(
       context,
@@ -114,6 +62,60 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     double size = MediaQuery.of(context).size.height;
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    Widget _errorMessage() {
+      return Text(
+        errorMessage,
+        style: const TextStyle(color: Colors.red),
+      );
+    }
+
+    Widget _submitButton() {
+      // var provider = Provider.of<Auth>(context, listen: false);
+
+      return AppFilledButton(
+          title: 'Đăng nhập',
+          color: Colors.white,
+          bgColor: appColors.primaryBase,
+          onPressed: () async {
+            try {
+              await AuthRepository().signInWithEmailAndPassword(
+                  email: emailController.text,
+                  password: passwordController.text);
+              // context.go('/');
+              // if (provider.message != '') {
+              //   print('alo');
+              //   setState(() {
+              //     errorMessage = provider.message;
+              //   });
+              // }
+            } on Exception catch (e) {
+              print(e);
+            }
+          });
+    }
+
+    Widget _linkToRegisterScreen() {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Chưa có tài khoản?',
+            textAlign: TextAlign.right,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(),
+          ),
+          GestureDetector(
+            onTap: () => {context.go('/register')},
+            child: Text(
+              'Đăng ký',
+              textAlign: TextAlign.right,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold, color: appColors.primaryBase),
+            ),
+          ),
+        ],
+      );
+    }
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -125,16 +127,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
-                  margin: EdgeInsets.symmetric(vertical: 2.0),
-                  height: size * 0.35,
-                  child: Image(
+                  margin: const EdgeInsets.symmetric(vertical: 2.0),
+                  height: size * 0.30,
+                  child: const Image(
                       height: double.maxFinite,
                       image:
                           AssetImage('assets/images/man_holding_pencil.png'))),
               Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   height: size * 0.6,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,26 +146,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium
-                              ?.copyWith(color: Color(0xff000000))),
+                              ?.copyWith(color: appColors.inkBase)),
                       Column(
                         children: <Widget>[
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 8.0),
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
                               controller: emailController,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
-                                      style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
-                                    ),
+                                        style: BorderStyle.solid,
+                                        color: appColors.primaryBase),
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(80)),
                                   ),
                                   border: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
+                                      color: appColors.primaryBase,
                                     ),
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(80)),
@@ -170,7 +172,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
+                                      color: appColors.primaryBase,
                                     ),
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(80)),
@@ -193,15 +195,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 8.0),
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
                               controller: passwordController,
                               obscureText: true,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
+                                      color: appColors.primaryBase,
                                     ),
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(80)),
@@ -213,7 +215,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
+                                      color: appColors.primaryBase,
                                     ),
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(80)),
@@ -239,7 +241,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 4.0),
+                            margin: const EdgeInsets.symmetric(vertical: 4.0),
                             width: double.infinity,
                             child: GestureDetector(
                               onTap: () => {
@@ -255,7 +257,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       .textTheme
                                       .titleLarge
                                       ?.copyWith(
-                                          color: Color(0xFF404446),
+                                          color: const Color(0xFF404446),
                                           fontSize: 13.0,
                                           fontWeight: FontWeight.bold)),
                             ),
@@ -266,14 +268,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       Container(
                           width: double.infinity,
-                          margin: EdgeInsets.symmetric(vertical: 8.0),
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
                           child: _linkToRegisterScreen()),
                       Container(
                         width: double.infinity,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Divider(
+                            const Divider(
                               height: 1.0,
                             ),
                             SizedBox(
@@ -287,7 +289,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       ?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 10,
-                                        color: Color(0xFF71727A),
+                                        color: const Color(0xFF71727A),
                                       ),
                                 )),
                             Row(
@@ -312,7 +314,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     icon: FontAwesomeIcons.facebookF,
                                     size: 12.0,
                                     color: Colors.white,
-                                    bgColor: Color(0xFF006FFD),
+                                    bgColor: const Color(0xFF006FFD),
                                     onPressed: () {}),
                               ],
                             )

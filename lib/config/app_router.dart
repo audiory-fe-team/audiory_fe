@@ -1,3 +1,4 @@
+import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
@@ -8,12 +9,12 @@ import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
-import 'package:audiory_v0/layout/main_layout.dart';
+import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 
-import 'package:audiory_v0/repositories/auth.repository.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
 import 'package:flutter/foundation.dart';
@@ -26,7 +27,12 @@ import "package:firebase_auth/firebase_auth.dart";
 import '../feat-read/screens/detail_story_screen.dart';
 
 class AppRoutes {
+  static final _rootNavigatorKey = GlobalKey<NavigatorState>();
+
+  static final _shellNavigatorKey = GlobalKey<NavigatorState>();
+
   static final GoRouter routes = GoRouter(
+    navigatorKey: _rootNavigatorKey,
     debugLogDiagnostics: true,
     initialLocation: '/',
     errorBuilder: (context, state) {
@@ -38,23 +44,32 @@ class AppRoutes {
       return const SizedBox.shrink();
     },
     routes: [
-      GoRoute(
-          name: 'home',
-          path: '/',
-          builder: (BuildContext context, GoRouterState state) {
-            // return AnimatedSplashScreen(
-            //     duration: 3000,
-            //     splash: SplashScreen(),
-            //     nextScreen: AppMainLayout(),
-            //     splashTransition: SplashTransition.fadeTransition,
-            //     pageTransitionType: PageTransitionType.scale,
-            //     backgroundColor: Colors.white);
-            return const AppMainLayout();
+      ShellRoute(
+          navigatorKey: _shellNavigatorKey,
+          builder: (context, state, child) {
+            return Scaffold(
+              body: child,
+              bottomNavigationBar: const AppBottomNavigationBar(),
+            );
           },
           routes: [
             GoRoute(
+              name: 'home',
+              path: '/',
+              builder: (BuildContext context, GoRouterState state) {
+                // return AnimatedSplashScreen(
+                //     duration: 3000,
+                //     splash: SplashScreen(),
+                //     nextScreen: AppMainLayout(),
+                //     splashTransition: SplashTransition.fadeTransition,
+                //     pageTransitionType: PageTransitionType.scale,
+                //     backgroundColor: Colors.white);
+                return const HomeScreen();
+              },
+            ),
+            GoRoute(
+              path: '/ranking',
               name: 'ranking',
-              path: 'ranking',
               builder: (BuildContext context, GoRouterState state) {
                 final typeString = state.queryParameters["type"];
                 RankingType type = mapStringToRankingType(typeString);
@@ -73,7 +88,7 @@ class AppRoutes {
               },
             ),
             GoRoute(
-                path: 'explore',
+                path: '/explore',
                 name: 'explore',
                 builder: (BuildContext context, GoRouterState state) {
                   return const ExploreScreen();
@@ -109,28 +124,46 @@ class AppRoutes {
                       })
                 ]),
             GoRoute(
-                path: 'story/:storyId',
-                name: 'story_detail',
-                builder: (BuildContext context, GoRouterState state) {
-                  final storyId = state.pathParameters['storyId'];
-                  return DetailStoryScreen(
-                    id: storyId ?? '',
-                  );
-                },
-                routes: [
-                  GoRoute(
-                    path: 'chapter/:chapterId',
-                    builder: (BuildContext context, GoRouterState state) {
-                      String? chapterId = state.pathParameters["chapterId"];
-                      if (chapterId == null || chapterId == '') {
-                        return const NotFoundScreen();
-                      }
-                      return ReadingScreen(
-                        chapterId: chapterId,
-                      );
-                    },
-                  )
-                ]),
+              name: 'profile',
+              path: '/profile',
+              builder: (_, GoRouterState state) {
+                return const ProfileScreenTest();
+              },
+              redirect: _redirect,
+            ),
+            GoRoute(
+              name: 'writer',
+              path: '/writer',
+              builder: (BuildContext context, GoRouterState state) {
+                return const WriterScreen();
+              },
+            ),
+          ]),
+      GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/story/:storyId',
+          name: 'story_detail',
+          builder: (BuildContext context, GoRouterState state) {
+            final storyId = state.pathParameters['storyId'];
+            return DetailStoryScreen(
+              id: storyId ?? '',
+            );
+          },
+          routes: [
+            GoRoute(
+              parentNavigatorKey: _rootNavigatorKey,
+              path: 'chapter/:chapterId',
+              name: 'chapter_detail',
+              builder: (BuildContext context, GoRouterState state) {
+                String? chapterId = state.pathParameters["chapterId"];
+                if (chapterId == null || chapterId == '') {
+                  return const NotFoundScreen();
+                }
+                return ReadingScreen(
+                  chapterId: chapterId,
+                );
+              },
+            )
           ]),
       GoRoute(
         name: 'login',
@@ -174,32 +207,6 @@ class AppRoutes {
               //extra
               story: story,
               chapterId: chapterId);
-        },
-      ),
-      GoRoute(
-        name: 'detailStory',
-        path: '/detailStory/:storyId',
-        builder: (BuildContext context, GoRouterState state) {
-          final storyId = state.pathParameters['storyId']!;
-          // print('id' + id);
-          return DetailStoryScreen(
-            id: storyId,
-          );
-        },
-      ),
-      GoRoute(
-        name: 'profile',
-        path: '/profile',
-        builder: (_, GoRouterState state) {
-          return const ProfileScreenTest();
-        },
-        redirect: _redirect,
-      ),
-      GoRoute(
-        name: 'writer',
-        path: '/writer',
-        builder: (BuildContext context, GoRouterState state) {
-          return const WriterScreen();
         },
       ),
     ],

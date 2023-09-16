@@ -1,12 +1,11 @@
 import 'dart:math';
 
-import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/explore_top_bar.dart';
-import 'package:audiory_v0/repositories/category.repository.dart';
-import 'package:audiory_v0/repositories/story.repository.dart';
+import 'package:audiory_v0/repositories/category_repository.dart';
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_outlined_button.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -50,7 +49,6 @@ class ExploreScreen extends StatelessWidget {
             const SizedBox(height: 24),
             const CategoryStories(categoryId: 2),
           ])),
-      bottomNavigationBar: const AppBottomNavigationBar(),
     );
   }
 }
@@ -160,7 +158,7 @@ class CategoryCarousel extends HookConsumerWidget {
       return const Text('Oops something happen');
     }
 
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final AppColors? appColors = Theme.of(context).extension<AppColors>();
     final int pageNum = ((categories.data ?? []).length / 6).ceil();
 
     return SizedBox(
@@ -224,8 +222,8 @@ class CategoryCarousel extends HookConsumerWidget {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: current.value == index
-                          ? appColors.primaryBase
-                          : appColors.skyLight,
+                          ? appColors?.primaryBase
+                          : appColors?.skyLight,
                     )),
               );
             }).toList(),
@@ -282,7 +280,7 @@ class SuggestedAuthor extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final AppColors? appColors = Theme.of(context).extension<AppColors>();
 
     return SizedBox(
         width: 70,
@@ -351,7 +349,8 @@ class SuggestedAuthor extends StatelessWidget {
                 style: OutlinedButton.styleFrom(
                     minimumSize: Size.zero, // Set this
                     padding: EdgeInsets.zero,
-                    side: BorderSide(color: appColors.secondaryBase),
+                    side: BorderSide(
+                        color: appColors?.secondaryBase ?? Colors.transparent),
                     alignment: Alignment.center // and this
                     ),
                 child: Row(
@@ -361,7 +360,7 @@ class SuggestedAuthor extends StatelessWidget {
                       'assets/icons/heart.svg',
                       width: 10,
                       height: 10,
-                      color: appColors.secondaryBase,
+                      color: appColors?.secondaryBase,
                     ),
                     const SizedBox(
                       width: 2,
@@ -371,7 +370,7 @@ class SuggestedAuthor extends StatelessWidget {
                       style: Theme.of(context)
                           .textTheme
                           .labelLarge!
-                          .copyWith(color: appColors.secondaryBase),
+                          .copyWith(color: appColors?.secondaryBase),
                     )
                   ],
                 ),

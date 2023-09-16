@@ -18,10 +18,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
-  // await JustAudioBackground.init(
-  //     androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-  //     androidNotificationChannelName: 'Audio playback',
-  //     androidNotificationOngoing: true);
+  await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
+      androidNotificationChannelName: 'Audio playback',
+      androidNotificationOngoing: true);
 
   await Firebase.initializeApp(
     options: const FirebaseOptions(

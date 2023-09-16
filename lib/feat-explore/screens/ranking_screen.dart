@@ -8,8 +8,8 @@ import 'package:audiory_v0/feat-explore/widgets/ranking_dropdown.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_rank_card.dart';
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/repositories/category.repository.dart';
-import 'package:audiory_v0/repositories/ranking.repository.dart';
+import 'package:audiory_v0/repositories/category_repository.dart';
+import 'package:audiory_v0/repositories/ranking_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';

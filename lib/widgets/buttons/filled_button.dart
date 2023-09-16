@@ -26,11 +26,10 @@ class AppFilledButton extends StatelessWidget {
         elevation: 2.0,
       ),
       child: Text(title,
-          style: TextStyle(
-              color: color,
-              fontFamily: 'Source San Pro',
-              fontSize: 16.0,
-              fontWeight: FontWeight.w500)),
+          style: Theme.of(context)
+              .textTheme
+              .titleLarge
+              ?.copyWith(color: color, fontSize: 16)),
     );
   }
 }

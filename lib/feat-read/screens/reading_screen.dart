@@ -7,8 +7,8 @@ import 'package:audiory_v0/feat-read/layout/bottom_bar.dart';
 import 'package:audiory_v0/feat-read/layout/reading_top_bar.dart';
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
-import 'package:audiory_v0/repositories/chapter.repository.dart';
-import 'package:audiory_v0/repositories/story.repository.dart';
+import 'package:audiory_v0/repositories/chapter_repository.dart';
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
@@ -20,7 +20,6 @@ import 'package:hidable/hidable.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ReadingScreen extends HookWidget {

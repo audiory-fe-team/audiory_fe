@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../../../repositories/auth.repository.dart';
+import '../../../repositories/auth_repository.dart';
 import '../../../theme/theme_constants.dart';
 import '../../../widgets/custom_app_bar.dart';
 
