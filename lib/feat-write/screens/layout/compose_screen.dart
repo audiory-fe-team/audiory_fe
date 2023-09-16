@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:audiory_v0/feat-write/data/api/chapter_api.dart';
+import 'package:audiory_v0/feat-write/data/repositories/chapter_repository.dart';
 import 'package:audiory_v0/feat-write/widgets/edit_chapter_card.dart';
 import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
@@ -60,14 +62,30 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
     super.initState();
     // "ref" can be used in all life-cycles of a StatefulWidget.
     ref.read(categoryFutureProvider);
-    ref.read(storyByIdFutureProvider(widget.storyId as String));
+    widget.storyId ??
+        ref.read(storyByIdFutureProvider(widget.storyId as String)
+            as ProviderListenable<String?>);
+
     ref.read(allChaptersStoryByIdFutureProvider(widget.storyId as String));
 
     //tags initial
     _controller = TextfieldTagsController();
   }
 
+  Widget _requiredAsterisk() {
+    return Text(
+      '*',
+      style: Theme.of(context)
+          .textTheme
+          .headlineMedium
+          ?.copyWith(color: Colors.red),
+    );
+  }
+
   Widget _tagsController(context, List<Tag>? tags) {
+    //at least one tag
+    //each tag has length 2<= tag <=256
+    //each tag can contain special character except comma(,)
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return Column(
@@ -75,12 +93,17 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
-              'Từ khóa',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Text(
+                  'Từ khóa',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                _requiredAsterisk()
+              ],
             ),
             GestureDetector(
               child: Text(
@@ -105,10 +128,10 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
           initialTags: tags != null
               ? List.generate(tags.length, (index) => tags[index].name)
               : [],
-          textSeparators: const [','],
+          textSeparators: const [','], //add enter keyup
           letterCase: LetterCase.normal,
           validator: (String tag) {
-            if (tag.trim().length <= 2 && tag.trim().length > 256) {
+            if (tag.trim().length < 2 || tag.trim().length > 256) {
               return 'Thẻ nhiều hơn 2 ký tự';
             } else if (_controller!.getTags!.contains(tag)) {
               return 'Lặp từ khóa';
@@ -275,10 +298,60 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
     if (story != null) {
       // _displayMotionToast('success', 'Thành công', 'Tạo truyện thành công');
       _displaySnackBar('Tạo truyện thành công');
-      await context.pushNamed('composeChapter', extra: {'story': story});
+      await context.push('/composeChapter', extra: {'story': story});
     } else {
       _displaySnackBar('Tạo truyện thất bại');
       // _displayMotionToast('error', 'Lỗi', 'Tạo truyện bị lỗi');
+    }
+  }
+
+  Future<void> onEditStoryPressed(Story? story) async {
+    if (kDebugMode) {
+      print('story');
+      print(story);
+    }
+    if (story != null) {
+      // _displayMotionToast('success', 'Thành công', 'Tạo truyện thành công');
+      _displaySnackBar('Sửa truyện thành công');
+      // await context.pushNamed('composeChapter', extra: {'story': story});
+    } else {
+      _displaySnackBar('Sửa truyện thất bại');
+      // _displayMotionToast('error', 'Lỗi', 'Tạo truyện bị lỗi');
+    }
+  }
+
+  Future<void> manageStory(
+      isEdit, String? storyId, Map<String, String>? body, formFile) async {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return const Center(child: CircularProgressIndicator());
+        });
+
+    Story? story = isEdit
+        ? await StoryRepostitory().editStory(storyId as String, body,
+            _formKey.currentState!.fields['photos']!.value)
+        : await StoryRepostitory()
+            .createStory(body, _formKey.currentState!.fields['photos']!.value);
+
+    //hide progress
+    // ignore: use_build_context_synchronously
+    context.pop();
+
+    String content;
+    print(story);
+    if (story != null) {
+      content = isEdit ? 'Cập nhật thành công' : 'Tạo thành công';
+      _displaySnackBar(content);
+      // ignore: use_build_context_synchronously
+      context.pushNamed('composeChapter',
+          extra: {'chapterId': story.chapters?[0].id, 'story': story});
+    } else {
+      content = isEdit ? 'Cập nhật thất bại' : 'Tạo thất bại';
+      _displaySnackBar(content);
+      // ignore: use_build_context_synchronously
+      context.pushNamed('composeChapter',
+          extra: {'chapterId': story?.chapters?[0].id, 'story': story});
     }
   }
 
@@ -291,12 +364,17 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
       key: _formKey,
       initialValue: const {'title': '', 'description': 'Miêu tả'},
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(
-          'Ảnh',
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+        Row(
+          children: [
+            Text(
+              'Ảnh',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            _requiredAsterisk()
+          ],
         ),
         const SizedBox(
           height: 5,
@@ -327,6 +405,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
         AppTextInputField(
           hintText: 'Nhập tiêu đề',
           label: 'Tiêu đề',
+          isRequired: true,
           name: 'title',
           marginVertical: 10,
           initialValue: isEdit ? editingStory?.title : '',
@@ -335,16 +414,22 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
           name: 'description',
           isTextArea: true,
           label: "Miêu tả",
+          isRequired: true,
           minLines: 7,
           hintText: 'Miêu tả truyện',
           initialValue: isEdit ? editingStory?.description : '',
         ),
-        Text(
-          'Thể loại',
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(fontWeight: FontWeight.bold),
+        Row(
+          children: [
+            Text(
+              'Thể loại',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            _requiredAsterisk()
+          ],
         ),
         const SizedBox(
           height: 5,
@@ -370,8 +455,12 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                           ),
                         ))),
             error: (err, stack) => Text(err.toString()),
-            loading: () => const Center(
-                  child: CircularProgressIndicator(),
+            loading: () => SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 )),
         const SizedBox(
           height: 15,
@@ -403,6 +492,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
             : const SizedBox(
                 height: 0,
               ),
+
         FormBuilderSwitch(
           initialValue: editingStory?.is_mature ?? false,
           activeColor: appColors.primaryBase,
@@ -427,11 +517,68 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
             ],
           ),
         ),
+        const SizedBox(
+          height: 5,
+        ),
+        Row(
+          children: [
+            Text(
+              'Bản quyền',
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            _requiredAsterisk()
+          ],
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        FormBuilderDropdown(
+            onChanged: (value) {
+              _formKey.currentState!.save();
+            },
+            name: 'isCopyright',
+            initialValue: CopyRights.values[0].isCopyRight,
+            selectedItemBuilder: (context) => List.generate(
+                  CopyRights.values.length,
+                  (index) => Text(
+                    CopyRights.values[index].copyRightTitle,
+                    selectionColor: appColors.primaryBase,
+                  ),
+                ),
+            items: List.generate(
+                CopyRights.values.length,
+                (index) => DropdownMenuItem(
+                      value: CopyRights.values[index].isCopyRight,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            CopyRights.values[index].copyRightTitle,
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          Text(
+                            CopyRights.values[index].copyRightContent,
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: appColors.inkLight),
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          )
+                        ],
+                      ),
+                    ))),
+
         //additional form for editing
+        //only true when coin_cost > 0
         isEdit
             ? FormBuilderSwitch(
                 initialValue:
-                    editingStory != null ? editingStory?.is_paywalled : false,
+                    editingStory != null ? editingStory.is_paywalled : false,
                 activeColor: appColors.primaryBase,
                 onChanged: (value) {
                   setState(() {
@@ -462,7 +609,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
             : const SizedBox(
                 height: 0,
               ),
-        isPaywalled != false
+        isPaywalled != false && (editingStory?.is_paywalled ?? false)
             ? Column(
                 children: [
                   AppTextInputField(
@@ -471,7 +618,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                     label: "Phí mỗi chương",
                     hintText: 'Nhập số coin mong muốn',
                     initialValue:
-                        isEdit ? '${editingStory?.coin_cost.toString()}' : '0',
+                        isEdit ? '${editingStory?.coin_cost ?? '0'}' : '0',
                   ),
                   // this can be null ??? why
                   AppTextInputField(
@@ -480,7 +627,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                     label: "Số chương miễn phí",
                     hintText: 'Nhập số chương mong muốn',
                     initialValue: isEdit
-                        ? '${editingStory?.num_free_chapters!.toString()}'
+                        ? '${editingStory?.num_free_chapters ?? '0'}'
                         : '0',
                   ),
                   const SizedBox(
@@ -492,47 +639,74 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                 height: 0,
               ),
 
-        FormBuilderCheckbox(
-            initialValue: editingStory?.is_copyright,
-            contentPadding: EdgeInsets.zero,
-            checkColor: appColors.skyLightest,
-            activeColor: appColors.primaryBase,
-            name: 'isCopyright',
-            title: const Text('Truyện không vi phạm bản quyền'),
-            validator:
-                FormBuilderValidators.required(errorText: 'Bạn phải xác nhận')),
+        // FormBuilderCheckbox(
+        //     initialValue: editingStory?.is_copyright,
+        //     contentPadding: EdgeInsets.zero,
+        //     checkColor: appColors.skyLightest,
+        //     activeColor: appColors.primaryBase,
+        //     name: 'isCopyright',
+        //     title: const Text('Truyện không vi phạm bản quyền'),
+        //     validator:
+        //         FormBuilderValidators.required(errorText: 'Bạn phải xác nhận')),
         //chapters list
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Mục lục',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            Text(
-              '${editingStory?.chapters!.length} chương',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold, color: appColors.inkLighter),
-            ),
-          ],
-        ),
+        isEdit
+            ? Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Mục lục',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    '${editingStory?.chapters!.length} chương',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: appColors.inkLighter),
+                  ),
+                ],
+              )
+            : const SizedBox(
+                height: 0,
+              ),
         // provider for chapters
+
         editingStory != null && editingStory.chapters!.isNotEmpty
             ? Column(
                 children:
                     List?.generate(editingStory.chapters!.length, (index) {
                   return EditChapterCard(
                     index: index + 1,
-                    chapter: editingStory.chapters![index],
+                    chapter: editingStory.chapters?[index],
                   );
                 }),
               )
             : const SizedBox(
                 height: 0,
               ),
+        editingStory != null
+            ? Center(
+                child: GestureDetector(
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text('Thêm chương mới'),
+                  ),
+                  onTap: () async {
+                    // Chapter? newChapter = (await ChapterApi()
+                    //     .createChapter(editingStory)) as Chapter?;
+                    // context.pushNamed('composeChapter',
+                    //     extra: {'story': editingStory, 'chapterId': ''});
+                  },
+                ),
+              )
+            : const SizedBox(
+                height: 0,
+              ),
+        const SizedBox(
+          height: 10,
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -575,37 +749,64 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                       print(tags);
                     }
                     body['tags'] = jsonEncode(tags);
-                    body['coin_cost'] = '100';
                     body['description'] =
                         _formKey.currentState!.fields['description']!.value;
 
                     body['is_completed'] = 'false';
                     body['is_copyright'] = _formKey
-                        .currentState!.fields['isCopyright']!.value
-                        .toString();
+                        .currentState!.fields['isCopyright']?.value
+                        .toString() as String;
 
                     body['is_draft'] = 'false';
                     body['is_mature'] = _formKey
-                        .currentState!.fields['isMature']!.value
-                        .toString();
-                    body['is_paywalled'] = 'false';
-                    // body['paywall_effective_date'] = null;
+                        .currentState!.fields['isMature']?.value
+                        .toString() as String;
+
                     body['title'] =
                         _formKey.currentState!.fields['title']!.value;
                     body['form_file'] = _formKey
                         .currentState!.fields['photos']!.value
                         .toString();
 
+                    //edit body
+                    body['is_paywalled'] = isEdit
+                        ? _formKey.currentState!.fields['isPaywalled']!.value
+                            .toString()
+                        : 'false';
+
+                    if (isEdit) {
+                      body['paywall_effective_date'] =
+                          DateTime.now().toUtc().toIso8601String();
+                      body['coin_cost'] =
+                          _formKey.currentState!.fields['isPaywalled']!.value
+                              ? _formKey.currentState!.fields['coinCost']!.value
+                                  .toString()
+                              : '0';
+
+                      body['num_free_chapters'] =
+                          _formKey.currentState!.fields['isPaywalled']!.value
+                              ? _formKey.currentState!
+                                  .fields['numFreeChapters']!.value
+                                  .toString()
+                              : '0';
+                    }
                     if (kDebugMode) {
                       print(_formKey.currentState!.value);
                       print('body');
                       print(body);
                     }
-
-                    Story? story = await StoryRepostitory().createStory(
-                        body, _formKey.currentState!.fields['photos']!.value);
-
-                    onCreateStoryPressed(story);
+                    manageStory(isEdit, editingStory?.id, body,
+                        _formKey.currentState!.fields['photos']!.value);
+                    // Story? story = isEdit
+                    //     ? await StoryRepostitory().editStory(
+                    //         editingStory?.id,
+                    //         body,
+                    //         _formKey.currentState!.fields['photos']!.value)
+                    //     : await StoryRepostitory().createStory(body,
+                    //         _formKey.currentState!.fields['photos']!.value);
+                    // isEdit
+                    //     ? onEditStoryPressed(story)
+                    //     : onCreateStoryPressed(story);
                   }
                 },
                 title: isEdit ? 'Cập nhật' : 'Tạo mới',
@@ -640,7 +841,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
             },
             icon: const Icon(Icons.arrow_back)),
         title: Text(
-          isEdit ? 'Sửa truyện' : 'Truyện mới',
+          isEdit ? 'Sửa truyện ' : 'Truyện mới',
           style: Theme.of(context)
               .textTheme
               .titleLarge
@@ -657,8 +858,13 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                         child: _createStoryForm(context, story, null),
                       ),
                   error: (err, stack) => Text(err.toString()),
-                  loading: () => const Center(
-                        child: CircularProgressIndicator(),
+                  //center loading indicator
+                  loading: () => SizedBox(
+                        width: MediaQuery.of(context).size.width,
+                        height: MediaQuery.of(context).size.height,
+                        child: const Center(
+                          child: CircularProgressIndicator(),
+                        ),
                       ))
               : Padding(
                   padding: const EdgeInsets.all(16),
@@ -668,4 +874,17 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
       ),
     );
   }
+}
+
+enum CopyRights {
+  isCopy(true, 'Bảo lưu mọi quyền',
+      'Bạn không cho phép người khác sử dụng hay chỉnh sửa tác phẩm dưới bất kỳ hình thức nào mà không có sự cho phép của bạn'),
+  isNotCopy(false, 'Phạm vi công cộng',
+      'Điều này cho phép bất cứ ai sử dụng truyện của bạn cho bất kỳ mục đích nào - họ có thể in ấn, bán haowjc chuyển thể truyện của bạn thành phim');
+
+  const CopyRights(
+      this.isCopyRight, this.copyRightTitle, this.copyRightContent);
+  final bool isCopyRight;
+  final String copyRightTitle;
+  final String copyRightContent;
 }

@@ -1,11 +1,15 @@
 import 'package:audiory_v0/models/Category.dart';
-import 'package:audiory_v0/models/Chapter.dart';
-import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:audiory_v0/services/category_services.dart';
+import 'package:audiory_v0/services/chapter_services.dart';
+import 'package:audiory_v0/services/profile_services.dart';
 import 'package:audiory_v0/services/story.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../models/Chapter.dart';
+import '../models/Profile.dart';
+import '../models/Story.dart';
 
 final storyFutureProvider = FutureProvider<List<Story>>((ref) async {
   final repository = ref.read(storyRepositoryProvider);
@@ -19,12 +23,6 @@ final storyByIdFutureProvider =
   return repository.fetchStoriesById(storyId);
 });
 
-final allChaptersStoryByIdFutureProvider = FutureProvider.autoDispose
-    .family<List<Chapter>?, String>((ref, storyId) async {
-  final repository = ref.read(storyRepositoryProvider);
-  return repository.fetchAllChaptersStoryById(storyId);
-});
-
 //combine
 // final storyInformationByIdFutureProvider = FutureProvider<>((ref) async {
 //   final repository =  ref.watch(storyByIdFutureProvider);
@@ -35,9 +33,10 @@ final categoryFutureProvider = FutureProvider<List<Category>>((ref) async {
   return repository.fetchCategory();
 });
 
-final storyOfUserProvider = FutureProvider<List<Story>>((ref) async {
+final storyOfUserProvider =
+    FutureProvider.family<List<Story>, String>((ref, userId) async {
   final repository = ref.read(storyRepositoryProvider);
-  return repository.fetchStoriesByUserId('');
+  return repository.fetchStoriesByUserId(userId);
 });
 
 final authUserProvider = FutureProvider<UserServer?>((ref) async {
@@ -45,7 +44,21 @@ final authUserProvider = FutureProvider<UserServer?>((ref) async {
   return repository.signInWithGoogle();
 });
 
-// final detailStoryFutureProvider = FutureProvider<StoryServer>((ref) async {
-//   final repository = ref.read(detaiStoryRepositoryProvider);
-//   return repository.fetchStoriesById();
-// });
+//CHAPTER
+
+final allChaptersStoryByIdFutureProvider = FutureProvider.autoDispose
+    .family<List<Chapter>?, String>((ref, storyId) async {
+  final repository = ref.read(storyRepositoryProvider);
+  return repository.fetchAllChaptersStoryById(storyId);
+});
+
+final chapterByIdFutureProvider =
+    FutureProvider.autoDispose.family<Chapter?, String>((ref, chapterId) async {
+  final repository = ref.read(chapterRepositoryProvider);
+  return repository.fetchChapterById(chapterId);
+});
+
+
+//CHAPTER VERSION
+
+

@@ -42,7 +42,7 @@ class DetailStoryScreen extends HookConsumerWidget {
         useQuery(['story', id], () => StoryService().fetchStoryById(id));
 
     final authorQuery = useQuery(['profile', storyQuery.data?.author_id],
-        () => ProfileService().fetchProfileById(storyQuery.data?.author_id),
+        () => ProfileRepository().fetchProfileById(storyQuery.data?.author_id),
         enabled: storyQuery.isSuccess);
 
     final tabState = useState(0);

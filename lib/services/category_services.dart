@@ -8,7 +8,7 @@ final categoryRepositoryProvider =
     Provider<CategoryReposity>((_) => CategoryReposity());
 
 class CategoryReposity {
-  static const baseURL = "http://34.29.203.235:3500/api";
+  static const baseURL = "http://34.71.125.94:3500/api";
   static final categoryEndpoint = baseURL + "/categories";
 
   Future<List<Category>> fetchCategory() async {

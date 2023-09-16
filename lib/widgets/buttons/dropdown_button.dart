@@ -14,12 +14,12 @@ class AppDropdownButton extends StatelessWidget {
         child: DropdownButton(
           onChanged: null,
           dropdownColor: Colors.white,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             backgroundColor: Colors.white,
           ),
           value: 'ar',
-          items: [
+          items: const [
             DropdownMenuItem(child: Text('English'), value: 'en'),
             DropdownMenuItem(child: Text('العربية'), value: 'ar'),
           ],

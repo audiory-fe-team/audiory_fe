@@ -13,7 +13,7 @@ class AppOutlinedButton extends StatelessWidget {
   final TextStyle? textStyle;
   final Widget? child;
 
-  AppOutlinedButton({
+  const AppOutlinedButton({
     Key? key,
     this.onPressed,
     this.onLongPress,

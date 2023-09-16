@@ -1,26 +1,52 @@
-import 'package:audiory_v0/screens/register/screens/flow_three.dart';
-import 'package:audiory_v0/widgets/buttons/filled_button.dart';
+import 'package:audiory_v0/widgets/buttons/icon_button.dart';
+import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:flutter/material.dart';
-import 'package:audiory_v0/screens/register/screens/register_body.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../services/auth_services.dart';
+import '../../../theme/theme_constants.dart';
 
 class FlowTwoScreen extends StatefulWidget {
-  const FlowTwoScreen({super.key});
+  final Map<String, String>? signUpBody;
+
+  const FlowTwoScreen({super.key, this.signUpBody});
 
   @override
   State<FlowTwoScreen> createState() => _FlowTwoScreenState();
 }
 
 class _FlowTwoScreenState extends State<FlowTwoScreen> {
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController codeController = TextEditingController();
+  void _displaySnackBar(String? content) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: appColors.primaryBase,
+      duration: const Duration(seconds: 3),
+      content: Text(content as String),
+      action: SnackBarAction(
+        textColor: appColors.skyBase,
+        label: 'Undo',
+        onPressed: () {},
+      ),
+    ));
+  }
+
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
     String? gender;
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text(''),
           elevation: 0,
         ),
-        body: Container(
+        body: SizedBox(
           // margin: EdgeInsets.symmetric(horizontal: 2.0, vertical: 4.0),
           height: size.height,
           width: size.width,
@@ -31,84 +57,138 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
-                    flex: 1,
+                    flex: 2,
                     child: Center(
-                      child: Text("Bạn hứng thú với vai trò nào?",
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(color: Color(0xff000000))),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text("Nhập mã xác nhận?",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineMedium
+                                  ?.copyWith(color: const Color(0xff000000))),
+                          Container(
+                            margin: const EdgeInsets.only(top: 16),
+                            width: size.width / 1.5,
+                            child: Text(
+                              "Mã xác nhận đã được gửi đến email abc@gmail.com",
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyMedium
+                                  ?.copyWith(
+                                    color: appColors.inkBase,
+                                  ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ],
+                      ),
                     )),
                 Expanded(
                   flex: 9,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 0),
-                          child: const Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                SizedBox(
-                                    width: double.infinity,
-                                    height: 180,
-                                    child: Image(
-                                        height: double.maxFinite,
-                                        image: AssetImage(
-                                            'assets/images/reading_girl.png'))),
-                              ]),
-                        ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            AppFilledButton(
-                              title: 'Đọc',
-                              color: Colors.black,
-                              bgColor: Colors.white,
-                              onPressed: () => {},
+                  child: Container(
+                    width: size.width,
+                    margin:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(
+                            height: 8.0,
+                          ),
+                          TextFormField(
+                            maxLength: 4,
+                            controller: codeController,
+                            textAlign: TextAlign.center,
+                            decoration: const InputDecoration(
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  style: BorderStyle.solid,
+                                  color: Color(0xFF439A97),
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(80)),
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(80)),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  style: BorderStyle.solid,
+                                  color: Color(0xFF439A97),
+                                ),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(80)),
+                              ),
+                              filled: true,
+                              hintStyle: TextStyle(
+                                color: Color.fromARGB(255, 228, 212, 212),
+                                fontSize: 24,
+                                fontFamily: 'Source San Pro',
+                                fontWeight: FontWeight.w400,
+                                letterSpacing: 0.06,
+                              ),
+                              fillColor: Colors.white70,
+                              floatingLabelAlignment:
+                                  FloatingLabelAlignment.center,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 1.0, horizontal: 24.0),
                             ),
-                            Padding(padding: EdgeInsets.symmetric(vertical: 3)),
-                            AppFilledButton(
-                              title: 'Sáng tác',
-                              color: Colors.black,
-                              bgColor: Colors.white,
-                              onPressed: () => {},
+                          ),
+                          Container(
+                            width: size.width,
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            child: AppIconButton(
+                              title: "Tiếp tục",
+                              color: Colors.white,
+                              bgColor: const Color(0xFF439A97),
+                              onPressed: () async {
+                                print('body ${widget.signUpBody}');
+                                print(
+                                    'code ${widget.signUpBody?['verifyCode'] == codeController.text}');
+
+                                final response = await AuthService().signUp(
+                                    email:
+                                        widget.signUpBody?['email'] as String,
+                                    password: widget.signUpBody?['password']
+                                        as String,
+                                    username: widget.signUpBody?['username']
+                                        as String,
+                                    fullname: widget.signUpBody?['username']
+                                        as String,
+                                    code: codeController.text);
+
+                                if (response == 200) {
+                                  _displaySnackBar('Tạo acc thành công');
+                                  // ignore: use_build_context_synchronously
+                                  context.go('/login');
+                                } else {
+                                  _displaySnackBar('Sai mã xác nhận');
+                                }
+
+                                // context.push('/flowFour');
+                              },
                             ),
-                            Padding(padding: EdgeInsets.symmetric(vertical: 3)),
-                            AppFilledButton(
-                              title: 'Đọc và sáng tác',
-                              color: Colors.black,
-                              bgColor: Colors.white,
-                              onPressed: () => {},
-                            ),
-                          ],
-                        ),
-                      ]),
+                          ),
+                          GestureDetector(
+                            onTap: () async {
+                              final result = await AuthService().verifyEmail(
+                                  email: widget.signUpBody?['email'] as String);
+                              if (result == 200) {
+                                _displaySnackBar('Gửi mã thành công');
+                              }
+                            },
+                            child: Center(
+                                child: Text('Gửi lại mã',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium)),
+                          )
+                        ]),
+                  ),
                 ),
-                Expanded(
-                    flex: 2,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AppFilledButton(
-                          title: "Tiếp tục",
-                          color: Colors.white,
-                          bgColor: Color(0xFF439A97),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const FlowThreeScreen()),
-                            );
-                          },
-                        )
-                      ],
-                    )),
               ]),
         ));
   }

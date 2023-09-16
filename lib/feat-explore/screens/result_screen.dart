@@ -33,7 +33,7 @@ class ResultScreen extends HookConsumerWidget {
         enabled: searchForProfile == false);
 
     final profileQuery = useQuery(['profile', 'search', keyword],
-        () => ProfileService().fetchAllProfiles(keyword: keyword),
+        () => ProfileRepository().fetchAllProfiles(keyword: keyword),
         enabled: searchForProfile == true);
 
     final tabState = useState(0);

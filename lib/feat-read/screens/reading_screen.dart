@@ -34,7 +34,7 @@ class ReadingScreen extends HookConsumerWidget {
       required TextTheme textTheme}) {
     return (paragraphs ?? [])
         .map((para) => Column(children: [
-              Text(para.content,
+              Text(para.content as String,
                   style: textTheme.bodyLarge!
                       .copyWith(fontSize: fontSize.toDouble())),
               const SizedBox(height: 24)
@@ -51,7 +51,7 @@ class ReadingScreen extends HookConsumerWidget {
     final scrollController = new ItemScrollController();
 
     final chapterQuery = useQuery(['chapter', chapterId],
-        () => ChapterServices().fetchChapterDetail(chapterId),
+        () => ChapterRepository().fetchChapterDetail(chapterId),
         enabled: chapterId != null);
     final storyQuery = useQuery(['story', chapterQuery.data?.story_id],
         () => StoryService().fetchStoryById(chapterQuery.data?.story_id ?? ''),
@@ -299,7 +299,7 @@ class ChapterAudioPlayer extends HookWidget {
     final playlist = ConcatenatingAudioSource(
         children: (chapter?.paragraphs ?? [])
             .map((p) => AudioSource.uri(
-                Uri.parse('http://34.29.203.235:3500${p.audio_url}'),
+                Uri.parse('http://34.71.125.94:3500${p.audio_url}'),
                 tag: MediaItem(
                     id: p.id,
                     title: 'Chapter ${p.id}',

@@ -1,8 +1,14 @@
+import 'dart:convert';
+
+import 'package:audiory_v0/services/auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import '/services/auth_services.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+import '../../../models/AuthUser.dart';
 
 class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeTopBar({super.key});
@@ -12,7 +18,79 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final User? user = AuthService().currentUser;
+    const storage = FlutterSecureStorage();
+    UserServer? currentUser;
+    User? authUser = AuthService().currentUser;
+
+    Future<UserServer?> getUserDetails() async {
+      String? value = await storage.read(key: 'currentUser');
+      print('val : $value');
+      currentUser =
+          value != null ? UserServer.fromJson(jsonDecode(value)['data']) : null;
+
+      if (kDebugMode) {
+        print('currentuser ${currentUser?.email}');
+      }
+      return currentUser;
+    }
+
+    Widget _userInfo(UserServer? user) {
+      return Row(
+        children: [
+          Material(
+            child: InkWell(
+              onTap: () async {
+                context.push('/profile');
+              },
+              customBorder: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(90),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50.0),
+                child: authUser?.photoURL == null
+                    ? Image.asset(
+                        'assets/images/user-avatar.jpg',
+                        width: 40,
+                        height: 40,
+                      )
+                    : Image.network(
+                        '${authUser?.photoURL}',
+                        width: 40,
+                        height: 40,
+                      ),
+                // child: Image.asset(
+                //   'assets/images/user-avatar.jpg',
+                //   width: 40,
+                //   height: 40,
+                // ),
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 8,
+            height: 10,
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const Text(
+                'Xin chào ',
+                style: TextStyle(fontSize: 14),
+              ),
+              Text(
+                user?.email ?? 'Người dùng',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ],
+          ),
+        ],
+      );
+    }
 
     return SafeArea(
         child: Container(
@@ -31,55 +109,26 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    children: [
-                      Material(
-                        child: InkWell(
-                          onTap: () async {
-                            context.go('/profile');
-                          },
-                          customBorder: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(90),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(50.0),
-                            child: user?.photoURL == null
-                                ? Image.asset(
-                                    'assets/images/user-avatar.jpg',
-                                    width: 40,
-                                    height: 40,
-                                  )
-                                : Image.network(
-                                    user?.photoURL as String,
-                                    width: 40,
-                                    height: 40,
-                                  ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 8,
-                        height: 10,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const Text(
-                            'Xin chào',
-                            style: TextStyle(fontSize: 14),
-                          ),
-                          Text(
-                            user?.email ?? 'Default email',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                    ],
+                  FutureBuilder<UserServer?>(
+                    future: getUserDetails(), // async work
+                    builder: (BuildContext context,
+                        AsyncSnapshot<UserServer?> snapshot) {
+                      switch (snapshot.connectionState) {
+                        case ConnectionState.waiting:
+                          return const Skeletonizer(
+                            // ignore: unrelated_type_equality_checks
+                            enabled: ConnectionState.waiting == true,
+                            child: Text(''),
+                          );
+
+                        default:
+                          if (snapshot.hasError) {
+                            return _userInfo(null);
+                          } else {
+                            return _userInfo(snapshot.data as UserServer);
+                          }
+                      }
+                    },
                   ),
                   Row(
                     children: [

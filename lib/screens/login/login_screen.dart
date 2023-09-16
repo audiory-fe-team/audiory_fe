@@ -1,6 +1,7 @@
-import 'package:audiory_v0/screens/forgot_password/forgot_password_screen.dart';
+import 'dart:convert';
+import 'dart:io';
 
-import 'package:audiory_v0/widgets/buttons/filled_button.dart';
+import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,6 +12,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:audiory_v0/services/auth_services.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../theme/theme_constants.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -36,12 +39,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> signInGoogle() async {
-    // var provider = Provider.of<Auth>(context, listen: false);
     try {
       await AuthService().signInWithGoogle();
       // if (provider.isBack) {
       //   context.go('/');
       // }
+      // ignore: use_build_context_synchronously
       context.go('/');
     } on FirebaseAuthException catch (e) {
       // setState(() {
@@ -58,31 +61,71 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  Widget _submitButton() {
-    // var provider = Provider.of<Auth>(context, listen: false);
+  void _displaySnackBar(String? content) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    return AppFilledButton(
-        title: 'Đăng nhập',
-        color: Colors.white,
-        bgColor: Color(0xFF439A97),
-        onPressed: () async {
-          try {
-            await AuthService().signInWithEmailAndPassword(
-                email: emailController.text, password: passwordController.text);
-            // context.go('/');
-            // if (provider.message != '') {
-            //   print('alo');
-            //   setState(() {
-            //     errorMessage = provider.message;
-            //   });
-            // }
-          } on Exception catch (e) {
-            print(e);
-          }
-        });
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      backgroundColor: appColors.primaryBase,
+      duration: const Duration(seconds: 3),
+      content: Text(content as String),
+      action: SnackBarAction(
+        textColor: appColors.skyBase,
+        label: 'Undo',
+        onPressed: () {},
+      ),
+    ));
   }
 
-  Widget _linkToRegisterScreen() {
+  Widget _submitButton() {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    bool isInvalid =
+        emailController.text.isEmpty || passwordController.text.isEmpty;
+    return SizedBox(
+      width: double.infinity,
+      child: AppIconButton(
+          title: 'Đăng nhập',
+          bgColor: isInvalid ? appColors.skyDark : appColors.primaryBase,
+          onPressed: isInvalid
+              ? () async {
+                  FocusManager.instance.primaryFocus!.unfocus();
+                  _displaySnackBar('Không được để trống');
+                }
+              : () async {
+                  try {
+                    // ignore: use_build_context_synchronously
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        });
+
+                    final res = await AuthService().signInWithEmailAndPassword(
+                        email: emailController.text,
+                        password: passwordController.text);
+                    // ignore: use_build_context_synchronously
+                    context.pop();
+
+                    if (res.statusCode == 200) {
+                      FocusManager.instance.primaryFocus!.unfocus();
+                      passwordController.clear();
+                      // ignore: use_build_context_synchronously
+                      context.go('/');
+                      _displaySnackBar('Đăng nhập thành công');
+                    } else {
+                      FocusManager.instance.primaryFocus!.unfocus();
+                      passwordController.clear();
+                      final message = jsonDecode(res.body)['message'];
+                      _displaySnackBar(message);
+                    }
+                  } on Exception catch (e) {
+                    print(e);
+                  }
+                }),
+    );
+  }
+
+  Widget _linkToRegisterScreen(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -104,13 +147,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  _press(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     double size = MediaQuery.of(context).size.height;
@@ -127,14 +163,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: <Widget>[
               Container(
-                  margin: EdgeInsets.symmetric(vertical: 2.0),
+                  margin: const EdgeInsets.symmetric(vertical: 2.0),
                   height: size * 0.35,
-                  child: Image(
+                  child: const Image(
                       height: double.maxFinite,
                       image:
                           AssetImage('assets/images/man_holding_pencil.png'))),
               Container(
-                  margin: EdgeInsets.symmetric(horizontal: 16.0),
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   height: size * 0.6,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,47 +179,62 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           style: Theme.of(context)
                               .textTheme
                               .headlineMedium
-                              ?.copyWith(color: Color(0xff000000))),
+                              ?.copyWith(color: const Color(0xff000000))),
                       Column(
                         children: <Widget>[
+                          // const AppTextInputField(
+                          //   name: 'emailOrUsername',
+                          //   hintText: 'Tên đăng nhập / Email',
+                          //   isRequired: true,
+                          // ),
+                          // const AppTextInputField(
+                          //   name: 'password',
+                          //   hintText: 'Mật khẩu',
+                          //   isRequired: true,
+                          // ),
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 8.0),
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
+                              onSaved: (event) {
+                                emailController.text.isEmpty
+                                    ? _displaySnackBar('Không được để trống')
+                                    : null;
+                              },
                               controller: emailController,
                               decoration: const InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(80)),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    style: BorderStyle.solid,
+                                    color: Color(0xFF439A97),
                                   ),
-                                  border: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(80)),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(80)),
+                                ),
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    style: BorderStyle.solid,
+                                    color: Color(0xFF439A97),
                                   ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
-                                    ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(80)),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(80)),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(
+                                    style: BorderStyle.solid,
+                                    color: Color(0xFF439A97),
                                   ),
-                                  filled: true,
-                                  hintStyle: TextStyle(
-                                      color:
-                                          Color.fromARGB(255, 228, 212, 212)),
-                                  fillColor: Colors.white70,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      vertical: 1.0, horizontal: 24),
-                                  labelText: "Tên đăng nhập",
-                                  focusColor: Colors.black12),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(80)),
+                                ),
+                                filled: true,
+                                hintStyle: TextStyle(
+                                    color: Color.fromARGB(255, 228, 212, 212)),
+                                fillColor: Colors.white70,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 1.0, horizontal: 24),
+                                labelText: "Tên đăng nhập / Email",
+                                focusColor: Colors.black12,
+                              ),
                               // validator: (value) {
                               //   if (value == null || value.isEmpty) {
                               //     return 'Nhập tên đăng nhập của bạn';
@@ -193,8 +244,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 8.0),
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
+                              onSaved: (event) {
+                                emailController.text.isEmpty
+                                    ? _displaySnackBar('Không được để trống')
+                                    : null;
+                              },
                               controller: passwordController,
                               obscureText: true,
                               decoration: const InputDecoration(
@@ -227,8 +283,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     letterSpacing: 0.06,
                                   ),
                                   fillColor: Colors.white70,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 24.0),
+                                  contentPadding:
+                                      EdgeInsets.symmetric(horizontal: 24.0),
                                   labelText: "Mật khẩu"),
                               // validator: (value) {
                               //   if (value == null || value.isEmpty) {
@@ -239,16 +295,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                           Container(
-                            margin: EdgeInsets.symmetric(vertical: 4.0),
+                            margin: const EdgeInsets.symmetric(vertical: 4.0),
                             width: double.infinity,
                             child: GestureDetector(
-                              onTap: () => {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const ForgotPasswordScreen()))
-                              },
+                              onTap: () => {},
                               child: Text('Quên mật khẩu?',
                                   textAlign: TextAlign.right,
                                   style: Theme.of(context)
@@ -266,14 +316,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       Container(
                           width: double.infinity,
-                          margin: EdgeInsets.symmetric(vertical: 8.0),
-                          child: _linkToRegisterScreen()),
-                      Container(
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: _linkToRegisterScreen(context)),
+                      SizedBox(
                         width: double.infinity,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Divider(
+                            const Divider(
                               height: 1.0,
                             ),
                             SizedBox(
@@ -312,7 +362,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     icon: FontAwesomeIcons.facebookF,
                                     size: 12.0,
                                     color: Colors.white,
-                                    bgColor: Color(0xFF006FFD),
+                                    bgColor: const Color(0xFF006FFD),
                                     onPressed: () {}),
                               ],
                             )
