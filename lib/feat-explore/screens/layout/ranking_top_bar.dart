@@ -1,6 +1,4 @@
-import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class RankingTopBar extends StatelessWidget implements PreferredSizeWidget {
   const RankingTopBar({super.key});

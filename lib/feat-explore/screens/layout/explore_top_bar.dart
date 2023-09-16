@@ -6,7 +6,7 @@ class ExploreTopBar extends StatelessWidget implements PreferredSizeWidget {
   const ExploreTopBar({super.key});
 
   @override
-  Size get preferredSize => Size.fromHeight(65);
+  Size get preferredSize => Size.fromHeight(58);
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +18,7 @@ class ExploreTopBar extends StatelessWidget implements PreferredSizeWidget {
               Container(
                   width: double.infinity,
                   child: Center(
-                      child: Text('Tìm kiếm',
+                      child: Text('Khám phá',
                           style: Theme.of(context).textTheme.headlineMedium))),
               Positioned(
                 right: 0,

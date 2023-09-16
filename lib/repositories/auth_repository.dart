@@ -8,7 +8,6 @@ import "package:flutter/material.dart";
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
-import 'dart:developer' as logDev;
 
 import 'package:jwt_decoder/jwt_decoder.dart';
 

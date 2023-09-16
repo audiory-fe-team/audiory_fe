@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../../../repositories/auth.repository.dart';
+import '../../../repositories/auth_repository.dart';
 import '../../../theme/theme_constants.dart';
 
 class RegisterBodyScreen extends StatefulWidget {

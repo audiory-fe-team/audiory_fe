@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../repositories/auth.repository.dart';
+import '../../repositories/auth_repository.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/custom_app_bar.dart';
 

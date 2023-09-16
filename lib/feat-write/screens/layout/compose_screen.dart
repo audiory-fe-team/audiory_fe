@@ -1,4 +1,4 @@
-import 'package:audiory_v0/repositories/story.repository.dart';
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'dart:convert';
 
 import 'package:audiory_v0/feat-write/widgets/edit_chapter_card.dart';

@@ -8,10 +8,9 @@ import 'package:audiory_v0/feat-explore/widgets/ranking_dropdown.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_rank_card.dart';
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/repositories/category.repository.dart';
-import 'package:audiory_v0/repositories/ranking.repository.dart';
+import 'package:audiory_v0/repositories/category_repository.dart';
+import 'package:audiory_v0/repositories/ranking_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -128,8 +127,6 @@ class StoryRanking extends HookWidget {
       super.key});
   @override
   Widget build(BuildContext context) {
-    final CarouselController controller = CarouselController();
-
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final page = useState(1);
