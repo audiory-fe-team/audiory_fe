@@ -126,7 +126,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                           if (snapshot.hasError) {
                             return _userInfo(null);
                           } else {
-                            return _userInfo(snapshot.data as UserServer);
+                            return _userInfo(snapshot.data ?? null);
                           }
                       }
                     },

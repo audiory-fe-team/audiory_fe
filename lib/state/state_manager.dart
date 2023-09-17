@@ -6,7 +6,6 @@ import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/Chapter.dart';
-import '../models/Profile.dart';
 import '../models/Story.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 

@@ -1,9 +1,9 @@
+import 'package:audiory_v0/feat-explore/screens/category_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
-import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
@@ -121,12 +121,16 @@ class AppRoutes {
                         }),
                   ),
                   GoRoute(
-                      path: 'result',
-                      name: 'explore_result',
-                      builder: (BuildContext context, GoRouterState state) {
-                        final keyword = state.queryParameters["keyword"];
-                        return ResultScreen(keyword: keyword ?? '');
-                      })
+                    name: 'explore_category',
+                    path: 'category/:categoryName',
+                    builder: (_, GoRouterState state) {
+                      final categoryName = state.pathParameters["categoryName"];
+                      if (categoryName != null && categoryName != "") {
+                        return CategoryScreen(categoryName: categoryName);
+                      }
+                      return const NotFoundScreen();
+                    },
+                  ),
                 ]),
             GoRoute(
               name: 'profile',

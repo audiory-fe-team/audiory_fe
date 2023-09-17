@@ -33,28 +33,9 @@ class SearchScreen extends HookWidget {
     final category = useState<String?>(null);
     final isPaywall = useState<String?>(null);
     final isMature = useState<String?>(null);
+    final tags = useState<String?>(null);
 
     final searchController = useTextEditingController();
-
-    // final fetchStory = useCallback((int pageKey,
-    //     PagingController<int, SearchStory> pagingController) async {
-    //   try {
-    //     final newItems = await SearchRepository.searchStory(
-    //         keyword: searchValue.value, offset: pageKey, limit: _pageSize);
-    //     final isLastPage = newItems.length < _pageSize;
-    //     if (isLastPage) {
-    //       pagingController.appendLastPage(newItems);
-    //     } else {
-    //       final nextPageKey = pageKey + newItems.length;
-    //       pagingController.appendPage(newItems, nextPageKey);
-    //     }
-    //   } catch (error) {
-    //     pagingController.error = error;
-    //   }
-    // }, [
-    //   searchValue.value,
-    //   sortBy.value,
-    // ]);
 
     final PagingController<int, SearchStory> storiesPagingController =
         usePagingController(
@@ -65,6 +46,7 @@ class SearchScreen extends HookWidget {
                 final newItems = await SearchRepository.searchStory(
                     keyword: searchValue.value,
                     category: category.value,
+                    tags: tags.value,
                     sortBy: sortBy.value,
                     isPaywalled: isPaywall.value,
                     isMature: isMature.value,
@@ -127,20 +109,6 @@ class SearchScreen extends HookWidget {
                   builder: (context) {
                     final tabState = useState(0);
                     final tabController = useTabController(initialLength: 2);
-                    final sortedTags = useMemoized(() {
-                      final Map<String, int> tagsOccurMap = {};
-                      storiesPagingController.itemList?.forEach((story) {
-                        story.tags?.split(",").forEach((tag) {
-                          tagsOccurMap[tag] = (tagsOccurMap[tag] ?? 0) + 1;
-                        });
-                      });
-
-                      final sortedTags = tagsOccurMap.entries.toList();
-                      sortedTags.sort((a, b) {
-                        return b.value - a.value;
-                      });
-                      return sortedTags;
-                    }, []);
 
                     if (!isTyping.value) {
                       return Column(mainAxisSize: MainAxisSize.min, children: [
@@ -196,55 +164,8 @@ class SearchScreen extends HookWidget {
                             },
                             child: CustomScrollView(
                               slivers: [
-                                SliverToBoxAdapter(
-                                    child: Row(children: [
-                                  Icon(
-                                    Icons.sell_outlined,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Thẻ',
-                                    style: textTheme.titleMedium,
-                                  )
-                                ])),
-                                const SliverToBoxAdapter(
-                                    child: SizedBox(height: 4)),
-                                SliverToBoxAdapter(
-                                    child: SizedBox(
-                                        width: double.infinity,
-                                        child: Wrap(
-                                          spacing:
-                                              4.0, // gap between adjacent chips
-                                          runSpacing: 4.0,
-                                          children: sortedTags
-                                              .sublist(
-                                                  0, min(7, sortedTags.length))
-                                              .map((e) => Container(
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                      color: appColors
-                                                              ?.primaryBase ??
-                                                          Colors.transparent,
-                                                    ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            20),
-                                                  ),
-                                                  padding: const EdgeInsets
-                                                          .symmetric(
-                                                      horizontal: 8,
-                                                      vertical: 4),
-                                                  child: Text(e.key,
-                                                      style: textTheme
-                                                          .titleSmall
-                                                          ?.copyWith(
-                                                              color: appColors
-                                                                  ?.primaryBase))))
-                                              .toList(),
-                                        ))),
-                                const SliverToBoxAdapter(
-                                    child: SizedBox(height: 12)),
+                                // const SliverToBoxAdapter(
+                                //     child: SizedBox(height: 12)),
                                 if (tabState.value == 0)
                                   SliverToBoxAdapter(child: SearchFilterButton(
                                     onTap: () {
@@ -258,12 +179,23 @@ class SearchScreen extends HookWidget {
                                             category: category.value,
                                             isMature: isMature.value,
                                             isPaywalled: isPaywall.value,
-                                            onSubmit: (p0, p1, p2, p3) {
-                                              sortBy.value = p0;
-                                              category.value = p1;
-                                              isPaywall.value = p2;
-                                              isMature.value = p3;
+                                            tags: tags.value,
+                                            storyList: storiesPagingController
+                                                .itemList,
+                                            onSubmit: (
+                                                {categoryValue,
+                                                isMatureValue,
+                                                isPaywalledValue,
+                                                sortByValue,
+                                                tagsValue}) {
+                                              sortBy.value = sortByValue;
+                                              tags.value = tagsValue;
+                                              category.value = categoryValue;
+                                              isPaywall.value =
+                                                  isPaywalledValue;
+                                              isMature.value = isMatureValue;
 
+                                              //Reload:
                                               storiesPagingController.refresh();
                                             },
                                           );
@@ -521,7 +453,15 @@ class SearchStoryFilter extends HookWidget {
   final String? sortBy;
   final String? isPaywalled;
   final String? isMature;
-  final Function(String?, String?, String?, String?) onSubmit;
+  final String? tags;
+  final List<SearchStory>? storyList;
+  final Function({
+    String? categoryValue,
+    String? sortByValue,
+    String? isPaywalledValue,
+    String? isMatureValue,
+    String? tagsValue,
+  }) onSubmit;
 
   const SearchStoryFilter(
       {super.key,
@@ -529,7 +469,9 @@ class SearchStoryFilter extends HookWidget {
       required this.category,
       required this.isMature,
       required this.isPaywalled,
-      required this.onSubmit});
+      required this.onSubmit,
+      required this.tags,
+      required this.storyList});
 
   @override
   Widget build(BuildContext context) {
@@ -541,9 +483,25 @@ class SearchStoryFilter extends HookWidget {
     final sortByState = useState(sortBy);
     final isPaywalledState = useState(isPaywalled);
     final isMatureState = useState(isMature);
+    final tagsState = useState(tags);
+
+    final sortedTags = useMemoized(() {
+      final Map<String, int> tagsOccurMap = {};
+      storyList?.forEach((story) {
+        story.tags?.split(",").forEach((tag) {
+          tagsOccurMap[tag] = (tagsOccurMap[tag] ?? 0) + 1;
+        });
+      });
+
+      final sortedTags = tagsOccurMap.entries.toList();
+      sortedTags.sort((a, b) {
+        return b.value - a.value;
+      });
+      return sortedTags;
+    }, []);
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       height: MediaQuery.of(context).size.height * 0.75,
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -554,6 +512,7 @@ class SearchStoryFilter extends HookWidget {
       ),
       child: ListView(
         children: [
+          const SizedBox(height: 16),
           Text(
             'Sắp xếp theo',
             style: Theme.of(context).textTheme.headlineSmall,
@@ -592,6 +551,57 @@ class SearchStoryFilter extends HookWidget {
                     ]);
                   }).toList(),
                 ],
+              )),
+          const SizedBox(height: 24),
+          Text(
+            'Thẻ',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                spacing: 4,
+                runSpacing: 4,
+                children:
+                    sortedTags.sublist(0, min(10, sortedTags.length)).map((e) {
+                  final tagName = e.key;
+                  final isSelected =
+                      tagsState.value?.contains(tagName) ?? false;
+                  return GestureDetector(
+                      onTap: () {
+                        if (isSelected == false) {
+                          tagsState.value = '${tagsState.value ?? ''}$tagName,';
+                        } else {
+                          String? newCategoryString =
+                              tagsState.value?.replaceAll('$tagName,', "");
+                          newCategoryString =
+                              newCategoryString?.replaceAll(tagName, "");
+                          tagsState.value = newCategoryString;
+                        }
+                      },
+                      child: Container(
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? appColors?.primaryBase
+                                : Colors.transparent,
+                            border: Border.all(
+                                color: appColors?.primaryBase ??
+                                    Colors.transparent,
+                                width: 1.5),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 4),
+                          child: Text(e.key,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                      color: isSelected
+                                          ? Colors.white
+                                          : appColors?.primaryBase))));
+                }).toList(),
               )),
           const SizedBox(height: 24),
           Text(
@@ -746,6 +756,7 @@ class SearchStoryFilter extends HookWidget {
                       isPaywalledState.value = isPaywalled;
                       categoryState.value = category;
                       sortByState.value = sortBy;
+                      tagsState.value = tags;
                     },
                     style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.all(8),
@@ -766,8 +777,12 @@ class SearchStoryFilter extends HookWidget {
             Expanded(
                 child: FilledButton(
                     onPressed: () {
-                      onSubmit(sortByState.value, categoryState.value,
-                          isPaywalledState.value, isMatureState.value);
+                      onSubmit(
+                          sortByValue: sortByState.value,
+                          categoryValue: categoryState.value,
+                          tagsValue: tagsState.value,
+                          isPaywalledValue: isPaywalledState.value,
+                          isMatureValue: isMatureState.value);
                       Navigator.pop(context);
                     },
                     style: FilledButton.styleFrom(
@@ -783,7 +798,8 @@ class SearchStoryFilter extends HookWidget {
                           .titleMedium
                           ?.copyWith(color: Colors.white),
                     ))),
-          ])
+          ]),
+          const SizedBox(height: 16),
         ],
       ),
     );
