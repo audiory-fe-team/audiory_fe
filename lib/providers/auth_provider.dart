@@ -1,7 +1,6 @@
+import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import '../models/User.dart';
 
 class AuthProvider extends ChangeNotifier {
   User? _user;
@@ -12,16 +11,23 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  AuthUser _userDetails = AuthUser(
-    id: '',
-    username: '',
-    profilePhoto: '',
-    role: '',
-    email: '',
-  );
-  AuthUser get userDetails => _userDetails;
+  UserServer _userDetails = UserServer(
+      id: '',
+      fullName: '',
+      username: '',
+      avatarUrl: '',
+      backgroundUrl: '',
+      facebookUrl: '',
+      numOfFollowers: 0,
+      numOfFollowing: 0,
+      createdDate: '',
+      email: '',
+      isEnabled: true,
+      isOnline: true,
+      updatedDate: '');
+  UserServer get userDetails => _userDetails;
 
-  void setUserDetails(AuthUser userDetail) {
+  void setUserDetails(UserServer userDetail) {
     _userDetails = userDetail;
     notifyListeners();
   }

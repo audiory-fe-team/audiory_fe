@@ -6,15 +6,18 @@ import 'package:audiory_v0/models/Story.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:http/http.dart' as http;
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+
+import 'package:http/http.dart' as http;
 
 final storyRepositoryProvider =
     Provider<StoryRepostitory>((_) => StoryRepostitory());
 
 class StoryRepostitory {
   static final storiesEndpoint = "${dotenv.get('API_BASE_URL')}/stories";
+  final dio = Dio();
 
   Future<List<Story>> fetchStories({String? keyword = ''}) async {
     final url = Uri.parse(storiesEndpoint)
@@ -78,6 +81,58 @@ class StoryRepostitory {
     } else {
       throw Exception('Failed to load stories');
     }
+  }
+
+  //using dio package for calling PATCH request
+  Future<Story?> editStory(String? storyId, body, formFile) async {
+    Map<String, String> header = {
+      "Content-type": "multipart/form-data",
+      "Accept": "application/json",
+    };
+
+    //sending form data
+    final Map<String, String> firstMap = body;
+    final Map<String, MultipartFile> secondeMap;
+    //if the img does not change, do not have form_file field
+    print(formFile[0] is String);
+    if (formFile[0] is String) {
+      secondeMap = {};
+    } else {
+      File file = File(formFile[0].path); //import dart:io
+      secondeMap = {'form_file': await MultipartFile.fromFile(file.path)};
+    }
+
+    //merge 2 map
+    final Map<String, dynamic> finalMap = {};
+    finalMap.addAll(firstMap);
+    finalMap.addAll(secondeMap);
+
+    final FormData formData = FormData.fromMap(finalMap);
+    //create global interceptors
+    // print(formData);
+    try {
+      final response = await dio.patch('$storiesEndpoint/$storyId',
+          data: formData, options: Options(headers: header));
+      print('res');
+      print(response);
+
+      final result = response.data['data']; //do not have to json decode
+      return Story.fromJson(result);
+    } on DioException catch (e) {
+      if (kDebugMode) {
+        print('err');
+        print(e.response);
+      }
+      return null;
+    }
+
+    // if (kDebugMode) {
+    //   print('res');
+    //   print(response);
+    //   print(response.headers);
+    //   print(response.requestOptions);
+    //   print(response.statusCode);
+    // }
   }
 
   Future<Story?> createStory(body, formFile) async {

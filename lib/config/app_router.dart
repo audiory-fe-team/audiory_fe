@@ -5,17 +5,22 @@ import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
+import 'package:audiory_v0/feat-write/screens/layout/preview_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
+import 'package:audiory_v0/screens/register/screens/flow_four.dart';
+import 'package:audiory_v0/screens/register/screens/flow_one.dart';
+import 'package:audiory_v0/screens/register/screens/flow_three.dart';
+import 'package:audiory_v0/screens/register/screens/flow_two.dart';
 
 import 'package:audiory_v0/repositories/auth_repository.dart';
-import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -127,7 +132,7 @@ class AppRoutes {
               name: 'profile',
               path: '/profile',
               builder: (_, GoRouterState state) {
-                return const ProfileScreenTest();
+                return const UserProfileScreen();
               },
               redirect: _redirect,
             ),
@@ -180,6 +185,39 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        name: 'flowOne',
+        path: '/flowOne',
+        builder: (BuildContext context, GoRouterState state) {
+          return const FlowOneScreen();
+        },
+      ),
+      GoRoute(
+        name: 'flowTwo',
+        path: '/flowTwo',
+        builder: (BuildContext context, GoRouterState state) {
+          final extraMap = state.extra as Map<String, dynamic>;
+          if (kDebugMode) {
+            print(extraMap['signUpBody'] == '' ? 'empty' : 'no');
+          }
+          final body = extraMap['signUpBody'] as Map<String, String>;
+          return FlowTwoScreen(signUpBody: body);
+        },
+      ),
+      GoRoute(
+        name: 'flowThree',
+        path: '/flowThree',
+        builder: (BuildContext context, GoRouterState state) {
+          return const FlowThreeScreen();
+        },
+      ),
+      GoRoute(
+        name: 'flowFour',
+        path: '/flowFour',
+        builder: (BuildContext context, GoRouterState state) {
+          return const FLowFourScreen();
+        },
+      ),
+      GoRoute(
         name: 'composeStory',
         path: '/composeStory',
         builder: (BuildContext context, GoRouterState state) {
@@ -187,12 +225,32 @@ class AppRoutes {
           final extraMap = state.extra as Map<String, dynamic>;
           if (kDebugMode) {
             print('storyId');
-            print(extraMap['storyId'] == '' ? 'emtpry' : 'no');
+            print(extraMap['storyId'] == '' ? 'empty' : 'no');
           }
-          final storyId = extraMap['storyId'] as String;
+          final storyId = extraMap['storyId'] as String?;
           return ComposeScreen(
               //extra
               storyId: storyId);
+        },
+      ),
+      GoRoute(
+        name: 'previewChapter',
+        path: '/previewChapter',
+        builder: (BuildContext context, GoRouterState state) {
+          //extra
+
+          final extraMap = state.extra as Map<String, dynamic>;
+          print('extra map ${extraMap}');
+          final chapterId = extraMap['chapterId'] == ''
+              ? null
+              : extraMap['chapterId'] as String?;
+          final storyId =
+              extraMap['storyId'] == '' ? null : extraMap['storyId'] as String?;
+          return PreviewChapterScreen(
+            //extra
+            storyId: storyId,
+            chapterId: chapterId,
+          );
         },
       ),
       GoRoute(
@@ -200,9 +258,12 @@ class AppRoutes {
         path: '/composeChapter',
         builder: (BuildContext context, GoRouterState state) {
           //extra
+
           final extraMap = state.extra as Map<String, dynamic>;
-          final story = extraMap['story'] as Story;
-          final chapterId = extraMap['chapterId'] as String;
+          print('extra map ${extraMap}');
+          final story =
+              extraMap['story'] == '' ? null : extraMap['story'] as Story?;
+          final chapterId = extraMap['chapterId']! as String?;
           return ComposeChapterScreen(
               //extra
               story: story,

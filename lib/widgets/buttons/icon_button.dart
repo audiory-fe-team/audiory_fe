@@ -40,13 +40,14 @@ class AppIconButton extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
               ),
-              minimumSize: Size(double.minPositive, 48),
+              minimumSize: const Size(double.minPositive, 48),
             ),
             label: Text(title == null ? 'Default' : title as String,
-                style: textStyle == null
-                    ? Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: color != null ? color : appColors.skyLightest)
-                    : textStyle),
+                style: textStyle ??
+                    Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: color ?? appColors.skyLightest,
+                          fontWeight: FontWeight.bold,
+                        )),
           );
         } else {
           return ElevatedButton(
@@ -63,11 +64,11 @@ class AppIconButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(title == null ? 'Default' : title as String,
-                    style: textStyle == null
-                        ? Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color:
-                                color != null ? color : appColors.skyLightest)
-                        : textStyle),
+                    style: textStyle ??
+                        Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: color ?? appColors.skyLightest,
+                              fontWeight: FontWeight.bold,
+                            )),
                 const SizedBox(
                   width: 5,
                 ),
@@ -84,13 +85,14 @@ class AppIconButton extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(25),
             ),
-            minimumSize: Size(double.minPositive, 48),
+            minimumSize: const Size(double.minPositive, 48),
           ),
           child: Text(title == null ? 'Default' : title as String,
-              style: textStyle == null
-                  ? Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: color != null ? color : appColors.skyLightest)
-                  : textStyle),
+              style: textStyle ??
+                  Theme.of(context).textTheme.titleLarge?.copyWith(
+                        color: color ?? appColors.skyLightest,
+                        fontWeight: FontWeight.bold,
+                      )),
         );
       }
     });

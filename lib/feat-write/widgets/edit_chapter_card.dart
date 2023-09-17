@@ -51,7 +51,8 @@ class EditChapterCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.pushNamed('composeChapter', extra: {'chapterId': chapter?.id});
+        context.pushNamed('composeChapter',
+            extra: {'chapterId': chapter?.id, 'story': ''});
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -73,7 +74,7 @@ class EditChapterCard extends StatelessWidget {
                 Text(
                   chapter!.title == ''
                       ? 'Chương $index : Tiêu đề'
-                      : 'Chương $index : ${chapter!.title}',
+                      : 'Chương $index : ${chapter?.title}',
                   style: const TextStyle(
                     color: Color(0xFF72777A),
                     fontSize: 16,
@@ -105,9 +106,9 @@ class EditChapterCard extends StatelessWidget {
                     fontWeight: FontWeight.w400,
                   ),
                 ),
-                const Text(
-                  '',
-                  style: TextStyle(
+                Text(
+                  'id: ${chapter?.id}',
+                  style: const TextStyle(
                     color: Color(0xFF72777A),
                     fontSize: 10,
                     fontStyle: FontStyle.italic,

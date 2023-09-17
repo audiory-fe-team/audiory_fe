@@ -53,7 +53,7 @@ class _WritingScreenState extends State<WritingScreen> {
       child: Scaffold(
         body: Column(children: [
           Container(
-            margin: EdgeInsets.all(12),
+            margin: const EdgeInsets.all(12),
             alignment: Alignment.bottomRight,
             child: AppIconButton(
               title: 'Tạo mới',
@@ -70,7 +70,7 @@ class _WritingScreenState extends State<WritingScreen> {
             ),
           ),
           Container(
-            margin: EdgeInsets.all(12),
+            margin: const EdgeInsets.all(12),
             alignment: Alignment.bottomRight,
             child: AppIconButton(
               title: 'Back',
@@ -89,7 +89,7 @@ class _WritingScreenState extends State<WritingScreen> {
               controller: _controller, showAlignmentButtons: false),
           QuillEditor.basic(controller: _controller, readOnly: false),
           Container(
-            margin: EdgeInsets.all(12),
+            margin: const EdgeInsets.all(12),
             alignment: Alignment.bottomRight,
             child: AppIconButton(
               title: 'Lấy json từ file',
@@ -111,7 +111,7 @@ class _WritingScreenState extends State<WritingScreen> {
                           ? Document.fromJson(json as List<dynamic>)
                           : Document()
                         ..insert(0, 'Empty'),
-                      selection: TextSelection.collapsed(offset: 0)),
+                      selection: const TextSelection.collapsed(offset: 0)),
                   readOnly: true)),
         ]),
       ),
