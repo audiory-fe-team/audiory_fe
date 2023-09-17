@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:audiory_v0/feat-explore/screens/layout/search_top_bar.dart';
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/SearchStory.dart';
+import 'package:audiory_v0/repositories/category_repository.dart';
 import 'package:audiory_v0/repositories/search_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/utils/use_paging_controller.dart';
 import 'package:audiory_v0/widgets/cards/profile_card.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
-import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -31,52 +31,77 @@ class SearchScreen extends HookWidget {
     final searchValue = useState('');
     final sortBy = useState<String?>(null);
     final category = useState<String?>(null);
-    final isPaywall = useState<bool?>(null);
-    final isMature = useState<bool>(false);
+    final isPaywall = useState<String?>(null);
+    final isMature = useState<String?>(null);
 
     final searchController = useTextEditingController();
 
-    final fetchStory = useCallback((int pageKey,
-        PagingController<int, SearchStory> pagingController) async {
-      try {
-        final newItems = await SearchRepository.searchStory(
-            keyword: searchValue.value, offset: pageKey, limit: _pageSize);
-        final isLastPage = newItems.length < _pageSize;
-        if (isLastPage) {
-          pagingController.appendLastPage(newItems);
-        } else {
-          final nextPageKey = pageKey + newItems.length;
-          pagingController.appendPage(newItems, nextPageKey);
-        }
-      } catch (error) {
-        pagingController.error = error;
-      }
-    }, [
-      searchValue.value,
-      sortBy.value,
-    ]);
-
-    final fetchProfile = useCallback(
-        (int pageKey, PagingController<int, Profile> pagingController) async {
-      try {
-        final newItems = await SearchRepository.searchUser(
-            keyword: searchValue.value, offset: pageKey, limit: _pageSize);
-        final isLastPage = newItems.length < _pageSize;
-        if (isLastPage) {
-          pagingController.appendLastPage(newItems);
-        } else {
-          final nextPageKey = pageKey + newItems.length;
-          pagingController.appendPage(newItems, nextPageKey);
-        }
-      } catch (error) {
-        pagingController.error = error;
-      }
-    }, [searchValue.value]);
+    // final fetchStory = useCallback((int pageKey,
+    //     PagingController<int, SearchStory> pagingController) async {
+    //   try {
+    //     final newItems = await SearchRepository.searchStory(
+    //         keyword: searchValue.value, offset: pageKey, limit: _pageSize);
+    //     final isLastPage = newItems.length < _pageSize;
+    //     if (isLastPage) {
+    //       pagingController.appendLastPage(newItems);
+    //     } else {
+    //       final nextPageKey = pageKey + newItems.length;
+    //       pagingController.appendPage(newItems, nextPageKey);
+    //     }
+    //   } catch (error) {
+    //     pagingController.error = error;
+    //   }
+    // }, [
+    //   searchValue.value,
+    //   sortBy.value,
+    // ]);
 
     final PagingController<int, SearchStory> storiesPagingController =
-        usePagingController(firstPageKey: 0, onPageRequest: fetchStory);
+        usePagingController(
+            firstPageKey: 0,
+            onPageRequest: (int pageKey,
+                PagingController<int, SearchStory> pagingController) async {
+              try {
+                final newItems = await SearchRepository.searchStory(
+                    keyword: searchValue.value,
+                    category: category.value,
+                    sortBy: sortBy.value,
+                    isPaywalled: isPaywall.value,
+                    isMature: isMature.value,
+                    offset: pageKey,
+                    limit: _pageSize);
+                final isLastPage = newItems.length < _pageSize;
+                if (isLastPage) {
+                  pagingController.appendLastPage(newItems);
+                } else {
+                  final nextPageKey = pageKey + newItems.length;
+                  pagingController.appendPage(newItems, nextPageKey);
+                }
+              } catch (error) {
+                pagingController.error = error;
+              }
+            });
     final PagingController<int, Profile> profilesPagingController =
-        usePagingController(firstPageKey: 0, onPageRequest: fetchProfile);
+        usePagingController(
+            firstPageKey: 0,
+            onPageRequest: (int pageKey,
+                PagingController<int, Profile> pagingController) async {
+              try {
+                final newItems = await SearchRepository.searchUser(
+                    keyword: searchValue.value,
+                    offset: pageKey,
+                    limit: _pageSize);
+                final isLastPage = newItems.length < _pageSize;
+                if (isLastPage) {
+                  pagingController.appendLastPage(newItems);
+                } else {
+                  final nextPageKey = pageKey + newItems.length;
+                  pagingController.appendPage(newItems, nextPageKey);
+                }
+              } catch (error) {
+                pagingController.error = error;
+              }
+            });
 
     return Scaffold(
       appBar: SearchTopBar(
@@ -102,6 +127,20 @@ class SearchScreen extends HookWidget {
                   builder: (context) {
                     final tabState = useState(0);
                     final tabController = useTabController(initialLength: 2);
+                    final sortedTags = useMemoized(() {
+                      final Map<String, int> tagsOccurMap = {};
+                      storiesPagingController.itemList?.forEach((story) {
+                        story.tags?.split(",").forEach((tag) {
+                          tagsOccurMap[tag] = (tagsOccurMap[tag] ?? 0) + 1;
+                        });
+                      });
+
+                      final sortedTags = tagsOccurMap.entries.toList();
+                      sortedTags.sort((a, b) {
+                        return b.value - a.value;
+                      });
+                      return sortedTags;
+                    }, []);
 
                     if (!isTyping.value) {
                       return Column(mainAxisSize: MainAxisSize.min, children: [
@@ -127,28 +166,12 @@ class SearchScreen extends HookWidget {
                           ],
                         ),
                         const SizedBox(height: 12),
-                        SearchFilterButton(
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              builder: (context) {
-                                return SearchStoryFilter(
-                                  category: category.value,
-                                  sortBy: sortBy.value,
-                                  isMature: isMature.value,
-                                  isPaywalled: isPaywall.value,
-                                );
-                              },
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 12),
                         Builder(builder: (context) {
                           if (tabState.value == 1) {
                             return Expanded(
                                 child: RefreshIndicator(
                                     onRefresh: () async {
-                                      storiesPagingController.refresh();
+                                      profilesPagingController.refresh();
                                     },
                                     child: PagedListView<int, Profile>(
                                         pagingController:
@@ -171,17 +194,99 @@ class SearchScreen extends HookWidget {
                             onRefresh: () async {
                               storiesPagingController.refresh();
                             },
-                            child: PagedListView<int, SearchStory>(
-                                pagingController: storiesPagingController,
-                                builderDelegate:
-                                    PagedChildBuilderDelegate<SearchStory>(
-                                        itemBuilder: (context, item,
-                                                index) =>
-                                            Padding(
-                                                padding: const EdgeInsets.only(
-                                                    bottom: 16),
-                                                child: StoryCardDetail(
-                                                    searchStory: item)))),
+                            child: CustomScrollView(
+                              slivers: [
+                                SliverToBoxAdapter(
+                                    child: Row(children: [
+                                  Icon(
+                                    Icons.sell_outlined,
+                                    size: 16,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Thẻ',
+                                    style: textTheme.titleMedium,
+                                  )
+                                ])),
+                                const SliverToBoxAdapter(
+                                    child: SizedBox(height: 4)),
+                                SliverToBoxAdapter(
+                                    child: SizedBox(
+                                        width: double.infinity,
+                                        child: Wrap(
+                                          spacing:
+                                              4.0, // gap between adjacent chips
+                                          runSpacing: 4.0,
+                                          children: sortedTags
+                                              .sublist(
+                                                  0, min(7, sortedTags.length))
+                                              .map((e) => Container(
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                      color: appColors
+                                                              ?.primaryBase ??
+                                                          Colors.transparent,
+                                                    ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            20),
+                                                  ),
+                                                  padding: const EdgeInsets
+                                                          .symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 4),
+                                                  child: Text(e.key,
+                                                      style: textTheme
+                                                          .titleSmall
+                                                          ?.copyWith(
+                                                              color: appColors
+                                                                  ?.primaryBase))))
+                                              .toList(),
+                                        ))),
+                                const SliverToBoxAdapter(
+                                    child: SizedBox(height: 12)),
+                                if (tabState.value == 0)
+                                  SliverToBoxAdapter(child: SearchFilterButton(
+                                    onTap: () {
+                                      showModalBottomSheet(
+                                        backgroundColor: Colors.transparent,
+                                        isScrollControlled: true,
+                                        context: context,
+                                        builder: (context) {
+                                          return SearchStoryFilter(
+                                            sortBy: sortBy.value,
+                                            category: category.value,
+                                            isMature: isMature.value,
+                                            isPaywalled: isPaywall.value,
+                                            onSubmit: (p0, p1, p2, p3) {
+                                              sortBy.value = p0;
+                                              category.value = p1;
+                                              isPaywall.value = p2;
+                                              isMature.value = p3;
+
+                                              storiesPagingController.refresh();
+                                            },
+                                          );
+                                        },
+                                      );
+                                    },
+                                  )),
+                                const SliverToBoxAdapter(
+                                    child: SizedBox(height: 12)),
+                                PagedSliverList<int, SearchStory>(
+                                    pagingController: storiesPagingController,
+                                    builderDelegate:
+                                        PagedChildBuilderDelegate<SearchStory>(
+                                            itemBuilder: (context, item,
+                                                    index) =>
+                                                Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 16),
+                                                    child: StoryCardDetail(
+                                                        searchStory: item))))
+                              ],
+                            ),
                           ));
                         }),
                       ]);
@@ -271,6 +376,9 @@ class SearchScreen extends HookWidget {
                                                 isTyping.value = false;
                                                 tabController.animateTo(0);
                                                 tabState.value = 0;
+
+                                                FocusScope.of(context)
+                                                    .unfocus();
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -359,6 +467,8 @@ class SearchScreen extends HookWidget {
                                                 isTyping.value = false;
                                                 tabController.animateTo(1);
                                                 tabState.value = 1;
+                                                FocusScope.of(context)
+                                                    .unfocus();
                                               },
                                               child: Container(
                                                 decoration: BoxDecoration(
@@ -391,99 +501,289 @@ class SearchScreen extends HookWidget {
 }
 
 class SearchStoryFilter extends HookWidget {
+  static const SORT_BY_OPTION = [
+    {'value': null, 'label': 'Độ phù hợp'},
+    {'value': 'read_count', 'label': 'Lượt đọc'},
+    {'value': 'vote_count', 'label': 'Lượt bình chọn'},
+    {'value': 'updated_date', 'label': 'Ngày cập nhật'}
+  ];
+  static const List<Map<String, String?>> PAYWALLED_OPTION = [
+    {'value': null, 'label': 'Tất cả'},
+    {'value': 'false', 'label': 'Truyện miễn phí'},
+    {'value': 'true', 'label': 'Truyện trả phí'},
+  ];
+  static const List<Map<String, String?>> MATURE_OPTION = [
+    {'value': null, 'label': 'Tất cả'},
+    {'value': 'true', 'label': 'Nội dung an toàn (dưới 18 tuổi)'},
+  ];
+
   final String? category;
   final String? sortBy;
-  final bool? isPaywalled;
-  final bool isMature;
+  final String? isPaywalled;
+  final String? isMature;
+  final Function(String?, String?, String?, String?) onSubmit;
 
   const SearchStoryFilter(
       {super.key,
       required this.sortBy,
       required this.category,
       required this.isMature,
-      required this.isPaywalled});
+      required this.isPaywalled,
+      required this.onSubmit});
 
   @override
   Widget build(BuildContext context) {
+    final AppColors? appColors = Theme.of(context).extension<AppColors>();
+    final categoriesQuery =
+        useQuery(['categories'], () => CategoryRepository().fetchCategory());
+
     final categoryState = useState(category);
     final sortByState = useState(sortBy);
     final isPaywalledState = useState(isPaywalled);
     final isMatureState = useState(isMature);
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      height: MediaQuery.of(context).size.height * 0.75,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16.0),
+          topRight: Radius.circular(16.0),
+        ),
+      ),
       child: ListView(
         children: [
           Text(
-            'Cài đặt',
+            'Sắp xếp theo',
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          const SizedBox(height: 16),
-          //Note: Backgronud color
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                  width: double.infinity,
-                  child: Text(
-                    'Màu trang',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  )),
-              const SizedBox(height: 12),
-              //Note:Background colors option
-              // Row(
-              //   children: [
-              //     ...DEFAULT_OPTION.asMap().entries.map((entry) {
-              //       int idx = entry.key;
-              //       Color val = entry.value;
-              //       return GestureDetector(
-              //           onTap: () {
-              //             selectedOption.value = idx;
-              //           },
-              //           child: Padding(
-              //               padding: const EdgeInsets.only(right: 8),
-              //               child: Container(
-              //                   height: 30,
-              //                   width: 30,
-              //                   decoration: BoxDecoration(
-              //                     color: val,
-              //                     shape: BoxShape.circle,
-              //                     border: selectedOption.value == idx
-              //                         ? Border.all(
-              //                             color: appColors.primaryBase,
-              //                             width: 2,
-              //                             strokeAlign:
-              //                                 BorderSide.strokeAlignOutside)
-              //                         : null,
-              //                   ))));
-              //     }).toList(),
-              //     GestureDetector(
-              //         onTap: () {},
-              //         child: Stack(
-              //           children: [
-              //             Container(
-              //                 height: 30,
-              //                 width: 30,
-              //                 decoration: BoxDecoration(
-              //                   color: appColors.primaryBase,
-              //                   shape: BoxShape.circle,
-              //                 ),
-              //                 child: Center(
-              //                     child: SvgPicture.asset(
-              //                   'assets/icons/plus.svg',
-              //                   color: Colors.white,
-              //                   width: 16,
-              //                   height: 16,
-              //                 ))),
-              //           ],
-              //         )),
-              //   ],
-              // ),
-            ],
+          const SizedBox(height: 12),
+          Container(
+              decoration: BoxDecoration(
+                  color: appColors?.skyLightest,
+                  border: Border.all(
+                      color: appColors?.skyLighter ?? Colors.transparent),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...SORT_BY_OPTION.map((option) {
+                    return Row(children: [
+                      Radio(
+                        visualDensity:
+                            const VisualDensity(horizontal: -2, vertical: -2),
+                        activeColor: appColors?.primaryBase,
+                        splashRadius: 0,
+                        value: option['value'],
+                        groupValue: sortByState.value,
+                        onChanged: (value) {
+                          sortByState.value = value;
+                        },
+                      ),
+                      Text(
+                        option['label'] ?? '',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: appColors?.inkLight),
+                      )
+                    ]);
+                  }).toList(),
+                ],
+              )),
+          const SizedBox(height: 24),
+          Text(
+            'Thể loại',
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
+          const SizedBox(height: 12),
+          Container(
+            decoration: BoxDecoration(
+                color: appColors?.skyLightest,
+                border: Border.all(
+                    color: appColors?.skyLighter ?? Colors.transparent),
+                borderRadius: BorderRadius.circular(8)),
+            child: Expanded(
+                child: GridView(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 1,
+                crossAxisSpacing: 1,
+                childAspectRatio: 5,
+              ),
+              padding: EdgeInsets.zero,
+              physics:
+                  const NeverScrollableScrollPhysics(), // to disable GridView's scrolling
+              shrinkWrap: true,
+              children: [
+                ...(categoriesQuery.data ?? []).map((category) {
+                  return Row(mainAxisSize: MainAxisSize.min, children: [
+                    Transform.scale(
+                        scale: 0.8,
+                        child: Checkbox(
+                          visualDensity: const VisualDensity(
+                              horizontal: VisualDensity.minimumDensity,
+                              vertical: VisualDensity.minimumDensity),
+                          activeColor: appColors?.primaryBase,
+                          splashRadius: 0,
+                          value: categoryState.value
+                                  ?.contains(category.name ?? '#') ??
+                              false,
+                          onChanged: (value) {
+                            final categoryName = (category.name ?? '');
+                            if (value == true) {
+                              categoryState.value =
+                                  '${categoryState.value ?? ''}$categoryName,';
+                            } else {
+                              String? newCategoryString = categoryState.value
+                                  ?.replaceAll('$categoryName,', "");
+                              newCategoryString = newCategoryString?.replaceAll(
+                                  categoryName, "");
+                              categoryState.value = newCategoryString;
+                            }
+                          },
+                        )),
+                    Text(
+                      category.name ?? 'option',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(color: appColors?.inkLight),
+                    )
+                  ]);
+                }).toList(),
+              ],
+            )),
+          ),
+          const SizedBox(height: 24),
+          Text(
+            'Loại truyện',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 12),
+          Container(
+              decoration: BoxDecoration(
+                  color: appColors?.skyLightest,
+                  border: Border.all(
+                      color: appColors?.skyLighter ?? Colors.transparent),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...PAYWALLED_OPTION.map((option) {
+                    return Row(children: [
+                      Radio(
+                        visualDensity:
+                            const VisualDensity(horizontal: -2, vertical: -2),
+                        activeColor: appColors?.primaryBase,
+                        splashRadius: 0,
+                        value: option['value'],
+                        groupValue: isPaywalledState.value,
+                        onChanged: (value) {
+                          isPaywalledState.value = value;
+                        },
+                      ),
+                      Text(
+                        option['label'] ?? '',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: appColors?.inkLight),
+                      )
+                    ]);
+                  }).toList(),
+                ],
+              )),
+          const SizedBox(height: 24),
+          Text(
+            'Nội dung',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+          const SizedBox(height: 12),
+          Container(
+              decoration: BoxDecoration(
+                  color: appColors?.skyLightest,
+                  border: Border.all(
+                      color: appColors?.skyLighter ?? Colors.transparent),
+                  borderRadius: BorderRadius.circular(8)),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ...MATURE_OPTION.map((option) {
+                    return Row(children: [
+                      Radio(
+                        visualDensity:
+                            const VisualDensity(horizontal: -2, vertical: -2),
+                        activeColor: appColors?.primaryBase,
+                        splashRadius: 0,
+                        value: option['value'],
+                        groupValue: isMatureState.value,
+                        onChanged: (value) {
+                          isMatureState.value = value;
+                        },
+                      ),
+                      Text(
+                        option['label'] ?? '',
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(color: appColors?.inkLight),
+                      )
+                    ]);
+                  }).toList(),
+                ],
+              )),
+          const SizedBox(height: 16),
+          Row(mainAxisSize: MainAxisSize.max, children: [
+            Expanded(
+                child: OutlinedButton(
+                    onPressed: () {
+                      isMatureState.value = isMature;
+                      isPaywalledState.value = isPaywalled;
+                      categoryState.value = category;
+                      sortByState.value = sortBy;
+                    },
+                    style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.all(8),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(24)),
+                        side: BorderSide(
+                          color: appColors?.primaryBase ?? Colors.transparent,
+                          width: 1,
+                        )),
+                    child: Text(
+                      'Đặt lại',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(color: appColors?.primaryBase),
+                    ))),
+            const SizedBox(width: 20),
+            Expanded(
+                child: FilledButton(
+                    onPressed: () {
+                      onSubmit(sortByState.value, categoryState.value,
+                          isPaywalledState.value, isMatureState.value);
+                      Navigator.pop(context);
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: appColors?.primaryBase,
+                      padding: const EdgeInsets.all(8),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(24)),
+                    ),
+                    child: Text(
+                      'Áp dụng',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(color: Colors.white),
+                    ))),
+          ])
         ],
       ),
     );

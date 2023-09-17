@@ -10,11 +10,21 @@ class SearchRepository {
   static final searchEndpoint = "${dotenv.get('API_BASE_URL')}/search";
 
   static Future<List<SearchStory>> searchStory(
-      {String keyword = '', int offset = 1, int limit = 10}) async {
+      {String keyword = '',
+      String? category,
+      String? sortBy,
+      String? isPaywalled,
+      String? isMature,
+      int offset = 1,
+      int limit = 10}) async {
     final url = Uri.parse("$searchEndpoint/stories").replace(queryParameters: {
       'keyword': keyword,
       'offset': '$offset',
-      'limit': '$limit'
+      'limit': '$limit',
+      if (category != null) 'category': '$category',
+      if (sortBy != null) 'sort_by': '$sortBy',
+      if (isPaywalled != null) 'is_paywalled': '$isPaywalled',
+      if (isMature != null) 'is_mature': '$isMature',
     });
 
     final response = await http.get(url);

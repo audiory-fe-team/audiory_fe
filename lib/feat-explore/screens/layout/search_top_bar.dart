@@ -52,6 +52,7 @@ class SearchTopBar extends HookWidget implements PreferredSizeWidget {
                       },
                       onSubmitted: (value) {
                         onSubmit();
+                        FocusScope.of(context).unfocus();
                       },
                       style: Theme.of(context).textTheme.bodyMedium,
                       decoration: InputDecoration(
