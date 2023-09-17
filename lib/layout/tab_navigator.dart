@@ -1,9 +1,8 @@
-import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
-import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
-import 'package:audiory_v0/screens/home_test/profile_screen_test.dart';
 import 'package:flutter/material.dart';
+
+import '../feat-manage-profile/screens/user_profile_screen.dart';
 
 class AppTabNavigator extends StatelessWidget {
   final GlobalKey<NavigatorState> navigatorKey;

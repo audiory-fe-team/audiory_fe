@@ -1,3 +1,4 @@
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'dart:convert';
 
 import 'package:audiory_v0/feat-write/data/api/chapter_api.dart';
@@ -20,7 +21,6 @@ import 'package:textfield_tags/textfield_tags.dart';
 import '../../../models/Chapter.dart';
 import '../../../models/Story.dart';
 import '../../../models/Tag.dart';
-import '../../../services/story.dart';
 import '../../../theme/theme_constants.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
@@ -388,7 +388,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                 fit: BoxFit.fill,
                 validator: FormBuilderValidators.required(),
                 backgroundColor: appColors.skyLighter,
-                initialValue: [editingStory?.cover_url],
+                initialValue: [editingStory?.coverUrl],
                 availableImageSources: const [
                   ImageSourceOption.gallery
                 ], //only gallery
@@ -437,7 +437,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
         categoryList.when(
             data: (categoryList) => FormBuilderDropdown(
                 name: 'category',
-                initialValue: editingStory?.category_id ?? categoryList[0].id,
+                initialValue: editingStory?.categoryId ?? categoryList[0].id,
                 selectedItemBuilder: (context) => List.generate(
                       categoryList.length,
                       (index) => Text(
@@ -472,7 +472,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
 
         isEdit
             ? FormBuilderSwitch(
-                initialValue: editingStory?.is_completed ?? false,
+                initialValue: editingStory?.isCompleted ?? false,
                 activeColor: appColors.primaryBase,
                 decoration: InputDecoration(focusColor: appColors.primaryBase),
                 name: 'isComplete',
@@ -494,7 +494,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
               ),
 
         FormBuilderSwitch(
-          initialValue: editingStory?.is_mature ?? false,
+          initialValue: editingStory?.isMature ?? false,
           activeColor: appColors.primaryBase,
           name: 'isMature',
           title: Column(
@@ -578,7 +578,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
         isEdit
             ? FormBuilderSwitch(
                 initialValue:
-                    editingStory != null ? editingStory.is_paywalled : false,
+                    editingStory != null ? editingStory?.isPaywalled : false,
                 activeColor: appColors.primaryBase,
                 onChanged: (value) {
                   setState(() {
@@ -609,27 +609,27 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
             : const SizedBox(
                 height: 0,
               ),
-        isPaywalled != false && (editingStory?.is_paywalled ?? false)
+        isPaywalled != false || editingStory?.isPaywalled == true
             ? Column(
                 children: [
+                  Text(
+                      '${editingStory?.coinCost == null ? '0' : editingStory?.coinCost.toString()}'),
                   AppTextInputField(
                     name: 'coinCost',
                     textInputType: TextInputType.number,
                     label: "Phí mỗi chương",
                     hintText: 'Nhập số coin mong muốn',
-                    initialValue:
-                        isEdit ? '${editingStory?.coin_cost ?? '0'}' : '0',
+                    initialValue: isEdit
+                        ? '${editingStory?.coinCost != null ? '0' : editingStory?.coinCost.toString() as String}'
+                        : '0',
                   ),
                   // this can be null ??? why
                   AppTextInputField(
-                    name: 'numFreeChapters',
-                    textInputType: TextInputType.number,
-                    label: "Số chương miễn phí",
-                    hintText: 'Nhập số chương mong muốn',
-                    initialValue: isEdit
-                        ? '${editingStory?.num_free_chapters ?? '0'}'
-                        : '0',
-                  ),
+                      name: 'numFreeChapters',
+                      textInputType: TextInputType.number,
+                      label: "Số chương miễn phí",
+                      hintText: 'Nhập số chương mong muốn',
+                      initialValue: '0'),
                   const SizedBox(
                     height: 6,
                   ),
@@ -639,15 +639,15 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                 height: 0,
               ),
 
-        // FormBuilderCheckbox(
-        //     initialValue: editingStory?.is_copyright,
-        //     contentPadding: EdgeInsets.zero,
-        //     checkColor: appColors.skyLightest,
-        //     activeColor: appColors.primaryBase,
-        //     name: 'isCopyright',
-        //     title: const Text('Truyện không vi phạm bản quyền'),
-        //     validator:
-        //         FormBuilderValidators.required(errorText: 'Bạn phải xác nhận')),
+        FormBuilderCheckbox(
+            initialValue: editingStory?.isCopyright,
+            contentPadding: EdgeInsets.zero,
+            checkColor: appColors.skyLightest,
+            activeColor: appColors.primaryBase,
+            name: 'isCopyright',
+            title: const Text('Truyện không vi phạm bản quyền'),
+            validator:
+                FormBuilderValidators.required(errorText: 'Bạn phải xác nhận')),
         //chapters list
         isEdit
             ? Row(

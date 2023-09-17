@@ -1,13 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:audiory_v0/models/Chapter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-
-import '../models/Chapter.dart';
+import 'package:dio/dio.dart';
 
 final chapterRepositoryProvider =
     Provider<ChapterRepository>((_) => ChapterRepository());
@@ -83,18 +81,14 @@ class ChapterRepository {
     try {
       final response = await dio.get("$chapterEndpoint/$chapterId",
           options: Options(headers: header));
-      if (kDebugMode) {
-        print('res');
-        print(response);
-      }
+      print('res');
+      print(response);
 
       final Chapter chapter = Chapter.fromJson(response.data['data']);
       return chapter;
     } on DioException catch (e) {
-      if (kDebugMode) {
-        print('err');
-        print(e.response);
-      }
+      print('err');
+      print(e.response);
     }
     return null;
   }

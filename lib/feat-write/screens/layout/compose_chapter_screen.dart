@@ -13,7 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../../models/Chapter.dart';
-import '../../../services/chapter_services.dart';
+import '../../../repositories/chapter_repository.dart';
 import '../../../theme/theme_constants.dart';
 import '../../../widgets/input/text_input.dart';
 

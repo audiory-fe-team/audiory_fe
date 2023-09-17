@@ -2,6 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class Endpoints {
   late String user;
+  late String auth;
   late String story;
   late String chapter;
   late String chapterVersion;
@@ -12,6 +13,7 @@ class Endpoints {
 
     //entities endpoints
     user = "$baseUrl/users";
+    auth = "$baseUrl/auth";
     story = "$baseUrl/stories";
     chapter = "$baseUrl/chapters";
     chapterVersion = "$baseUrl/chapter-version";

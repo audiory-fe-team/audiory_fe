@@ -8,8 +8,8 @@ import 'package:audiory_v0/utils/fake_string_generator.dart';
 final skeletonStory = Story(
     id: '',
     title: 'This is a fake title. This is a fake title.',
-    vote_count: 1000,
-    read_count: 1000,
+    voteCount: 1000,
+    readCount: 1000,
     description: generateFakeString(400),
     tags: [
       Tag(id: '1', name: generateFakeString(7)),

@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../services/auth_services.dart';
 import '../../../theme/theme_constants.dart';
+import '../../../repositories/auth_repository.dart';
 
 class FlowTwoScreen extends StatefulWidget {
   final Map<String, String>? signUpBody;
@@ -71,7 +71,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                             margin: const EdgeInsets.only(top: 16),
                             width: size.width / 1.5,
                             child: Text(
-                              "Mã xác nhận đã được gửi đến email abc@gmail.com",
+                              "Mã xác nhận đã được gửi đến email ${widget.signUpBody?['email']}",
                               style: Theme.of(context)
                                   .textTheme
                                   .bodyMedium
@@ -145,11 +145,11 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                               color: Colors.white,
                               bgColor: const Color(0xFF439A97),
                               onPressed: () async {
-                                print('body ${widget.signUpBody}');
-                                print(
-                                    'code ${widget.signUpBody?['verifyCode'] == codeController.text}');
+                                print('eMAIL ${widget.signUpBody?['email']}');
 
-                                final response = await AuthService().signUp(
+                                print('body ${widget.signUpBody}');
+
+                                final response = await AuthRepository().signUp(
                                     email:
                                         widget.signUpBody?['email'] as String,
                                     password: widget.signUpBody?['password']
@@ -160,12 +160,16 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                                         as String,
                                     code: codeController.text);
 
+                                print(response);
+                                FocusManager.instance.primaryFocus?.unfocus();
+
                                 if (response == 200) {
                                   _displaySnackBar('Tạo acc thành công');
                                   // ignore: use_build_context_synchronously
                                   context.go('/login');
                                 } else {
                                   _displaySnackBar('Sai mã xác nhận');
+                                  codeController.text = '';
                                 }
 
                                 // context.push('/flowFour');
@@ -174,7 +178,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                           ),
                           GestureDetector(
                             onTap: () async {
-                              final result = await AuthService().verifyEmail(
+                              final result = await AuthRepository().verifyEmail(
                                   email: widget.signUpBody?['email'] as String);
                               if (result == 200) {
                                 _displaySnackBar('Gửi mã thành công');

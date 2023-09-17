@@ -1,14 +1,15 @@
 import 'dart:convert';
 
-import 'package:audiory_v0/services/auth_services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import '../../../models/AuthUser.dart';
+import 'package:skeletonizer/skeletonizer.dart';
+
+import '../../../repositories/auth_repository.dart';
 
 class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeTopBar({super.key});
@@ -20,7 +21,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     const storage = FlutterSecureStorage();
     UserServer? currentUser;
-    User? authUser = AuthService().currentUser;
+    User? authUser = AuthRepository().currentUser;
 
     Future<UserServer?> getUserDetails() async {
       String? value = await storage.read(key: 'currentUser');

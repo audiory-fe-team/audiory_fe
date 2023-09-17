@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../services/auth_services.dart';
+import '../../../repositories/auth_repository.dart';
 import '../../../theme/theme_constants.dart';
 
 class RegisterBodyScreen extends StatefulWidget {
@@ -34,14 +34,12 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
         onPressed: () async {
           try {
             final result =
-                await AuthService().verifyEmail(email: emailController.text);
+                await AuthRepository().verifyEmail(email: emailController.text);
 
-            const verifyCode = 'KtaM';
             Map<String, String> body = {
               'email': emailController.text,
               'password': passwordController.text,
               'username': usernameController.text,
-              'verifyCode': verifyCode
             };
             // ignore: use_build_context_synchronously
             context.push('/flowTwo',

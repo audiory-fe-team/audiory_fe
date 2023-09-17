@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:audiory_v0/feat-manage-profile/models/profile_screen_data.dart';
+import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +15,6 @@ import '../../constants/skeletons.dart';
 import '../../models/AuthUser.dart';
 import '../../models/Profile.dart';
 import '../../models/Story.dart';
-import '../../services/auth_services.dart';
 import '../../state/state_manager.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/buttons/icon_button.dart';
@@ -164,21 +164,21 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                   () {
                 context.go('/');
               }, 12),
-              // SingleChildScrollView(
-              //     scrollDirection: Axis.horizontal,
-              //     child: Row(
-              //       mainAxisAlignment: MainAxisAlignment.center,
-              //       crossAxisAlignment: CrossAxisAlignment.start,
-              //       children: story!
-              //           .take(min(story.length, 10))
-              //           .map((story) => Padding(
-              //                 padding: const EdgeInsets.only(right: 12),
-              //                 child: SizedBox(
-              //                     width: size.width - 5,
-              //                     child: StoryCardDetail(story: story)),
-              //               ))
-              //           .toList(),
-              //     )),
+              SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: story!
+                        .take(min(story.length, 10))
+                        .map((story) => Padding(
+                              padding: const EdgeInsets.only(right: 12),
+                              child: SizedBox(
+                                  width: size.width - 5,
+                                  child: StoryCardDetail(story: story)),
+                            ))
+                        .toList(),
+                  )),
               const SizedBox(
                 height: 16,
               ),
@@ -472,7 +472,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
         builder: (context) {
           return const Center(child: CircularProgressIndicator());
         });
-    final bool res = await AuthService().singOut();
+    // final bool res = await AuthService().singOut();
 
     setState(() {
       currentUser = null;

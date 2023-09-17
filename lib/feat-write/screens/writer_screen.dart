@@ -69,7 +69,7 @@ class _WriterScreenState extends ConsumerState<WriterScreen> {
                         padding: const EdgeInsets.only(bottom: 16.0),
                         child: Column(
                           children: [
-                            // StoryCardDetailWriter(story: stories![index]),
+                            StoryCardDetailWriter(story: stories![index]),
                           ],
                         ),
                       );

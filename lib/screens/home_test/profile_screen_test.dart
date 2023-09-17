@@ -1,19 +1,16 @@
 import 'dart:convert';
 
-import 'package:audiory_v0/models/AuthUser.dart';
-import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../providers/auth_provider.dart';
-import '../../services/auth_services.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/custom_app_bar.dart';
+import '../../repositories/auth_repository.dart';
+import '../../models/AuthUser.dart';
 
 class ProfileScreenTest extends StatefulWidget {
   const ProfileScreenTest({super.key});
@@ -23,7 +20,7 @@ class ProfileScreenTest extends StatefulWidget {
 }
 
 class ProfileScreenTestState extends State<ProfileScreenTest> {
-  final User? authUser = AuthService().currentUser;
+  final User? authUser = AuthRepository().currentUser;
   final storage = const FlutterSecureStorage();
   UserServer? currentUser;
 
@@ -78,7 +75,7 @@ class ProfileScreenTestState extends State<ProfileScreenTest> {
         builder: (context) {
           return const Center(child: CircularProgressIndicator());
         });
-    final bool res = await AuthService().singOut();
+    final bool res = await AuthRepository().singOut();
 
     setState(() {
       currentUser = null;

@@ -1,8 +1,7 @@
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/result_top_bar.dart';
-import 'package:audiory_v0/layout/bottom_bar.dart';
-import 'package:audiory_v0/services/profile_services.dart';
-import 'package:audiory_v0/services/story_services.dart';
+import 'package:audiory_v0/repositories/profile_repository.dart';
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 
@@ -29,24 +28,25 @@ class ResultScreen extends HookConsumerWidget {
         initialLength: 2, initialIndex: searchForProfile ? 1 : 0);
 
     final storiesQuery = useQuery(['story', 'search', keyword],
-        () => StoryService().fetchStories(keyword: keyword),
+        () => StoryRepostitory().fetchStories(keyword: keyword),
         enabled: searchForProfile == false);
 
     final profileQuery = useQuery(['profile', 'search', keyword],
         () => ProfileRepository().fetchAllProfiles(keyword: keyword),
         enabled: searchForProfile == true);
-
     final tabState = useState(0);
 
+    print(storiesQuery.error);
     return Scaffold(
       appBar: ResultTopBar(keyword: keyword),
       body: SafeArea(
           child: Container(
               width: double.infinity,
               margin: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
+              child: Expanded(
+                  child: Column(
+                // mainAxisSize: MainAxisSize.min,
+                // mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TabBar(
                     controller: tabController,
@@ -82,25 +82,33 @@ class ResultScreen extends HookConsumerWidget {
                       return Skeletonizer(
                           enabled: storiesQuery.isFetching,
                           child: Expanded(
-                              child: SingleChildScrollView(
-                                  scrollDirection: Axis.vertical,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: (storiesQuery.isFetching
-                                            ? skeletonStories
-                                            : (storiesQuery.data ?? []))
-                                        .map((story) => GestureDetector(
-                                            onTap: () {
-                                              GoRouter.of(context)
-                                                  .push("/story/${story.id}");
-                                            },
-                                            child: Padding(
-                                                padding:
-                                                    EdgeInsets.only(bottom: 24),
-                                                child: StoryCardDetail(
-                                                    story: story))))
-                                        .toList(),
-                                  ))));
+                              child: RefreshIndicator(
+                                  onRefresh: () async {
+                                    if (searchForProfile) {
+                                      profileQuery.refetch();
+                                    }
+                                    storiesQuery.refetch();
+                                  },
+                                  child: SingleChildScrollView(
+                                      scrollDirection: Axis.vertical,
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: (storiesQuery.isFetching
+                                                ? skeletonStories
+                                                : (storiesQuery.data ?? []))
+                                            .map((story) => GestureDetector(
+                                                onTap: () {
+                                                  GoRouter.of(context).push(
+                                                      "/story/${story.id}");
+                                                },
+                                                child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            bottom: 16),
+                                                    child: StoryCardDetail(
+                                                        story: story))))
+                                            .toList(),
+                                      )))));
                     } else {
                       if (profileQuery.isError) {
                         return Center(
@@ -108,19 +116,23 @@ class ResultScreen extends HookConsumerWidget {
                       }
                       return Skeletonizer(
                           enabled: profileQuery.isFetching,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: (profileQuery.isFetching
-                                    ? skeletonProfiles
-                                    : (profileQuery.data ?? skeletonProfiles))
-                                .map((profile) => Text(profile.fullName ?? ''))
-                                .toList(),
-                          ));
+                          child: Expanded(
+                              child: SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: (profileQuery.isFetching
+                                            ? skeletonProfiles
+                                            : (profileQuery.data ??
+                                                skeletonProfiles))
+                                        .map((profile) =>
+                                            Text(profile.fullName ?? ''))
+                                        .toList(),
+                                  ))));
                     }
                   }),
                 ],
-              ))),
-      bottomNavigationBar: const AppBottomNavigationBar(),
+              )))),
     );
   }
 }

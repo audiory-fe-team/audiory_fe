@@ -1,15 +1,14 @@
 import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
-import 'package:audiory_v0/services/auth_services.dart';
-import 'package:audiory_v0/services/category_services.dart';
-import 'package:audiory_v0/services/chapter_services.dart';
-import 'package:audiory_v0/services/profile_services.dart';
-import 'package:audiory_v0/services/story.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
+import 'package:audiory_v0/repositories/category_repository.dart';
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../models/Chapter.dart';
 import '../models/Profile.dart';
 import '../models/Story.dart';
+import 'package:audiory_v0/repositories/chapter_repository.dart';
 
 final storyFutureProvider = FutureProvider<List<Story>>((ref) async {
   final repository = ref.read(storyRepositoryProvider);
@@ -20,7 +19,7 @@ final storyFutureProvider = FutureProvider<List<Story>>((ref) async {
 final storyByIdFutureProvider =
     FutureProvider.autoDispose.family<Story?, String>((ref, storyId) async {
   final repository = ref.read(storyRepositoryProvider);
-  return repository.fetchStoriesById(storyId);
+  return repository.fetchStoryById(storyId);
 });
 
 //combine
@@ -55,7 +54,7 @@ final allChaptersStoryByIdFutureProvider = FutureProvider.autoDispose
 final chapterByIdFutureProvider =
     FutureProvider.autoDispose.family<Chapter?, String>((ref, chapterId) async {
   final repository = ref.read(chapterRepositoryProvider);
-  return repository.fetchChapterById(chapterId);
+  return repository.fetchChapterDetail(chapterId);
 });
 
 

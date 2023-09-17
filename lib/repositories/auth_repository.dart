@@ -3,30 +3,34 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:audiory_v0/providers/auth_provider.dart';
-import 'package:dio/dio.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:flutter/foundation.dart';
+import "package:flutter/material.dart";
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:http/http.dart' as http;
 import 'dart:developer' as logDev;
 
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-import '../core/network/constant/endpoints.dart';
+import '../models/AuthUser.dart';
+import 'package:audiory_v0/providers/auth_provider.dart';
+import 'package:dio/dio.dart';
+
 import '../core/network/dio_client.dart';
 import '../core/network/dio_exceptions.dart';
-import '../models/AuthUser.dart';
+import '../core/network/constant/endpoints.dart';
 
-final authServiceProvider = Provider<AuthService>((_) => AuthService());
+final authServiceProvider = Provider<AuthRepository>((_) => AuthRepository());
 
-class AuthService extends ChangeNotifier {
+class AuthRepository extends ChangeNotifier {
   late DioClient _dioClient;
 
   bool isLoading = false;
+  bool isBack = false;
+  String message = '';
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   User? get currentUser => _firebaseAuth.currentUser;
@@ -35,18 +39,16 @@ class AuthService extends ChangeNotifier {
 
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
-  String baseURL = "http://34.71.125.94:3500/api";
-  String authrUrl = "http://34.71.125.94:3500/api/auth";
+  String baseURL = Endpoints().toString();
+  String authUrl = Endpoints().auth;
 
   Timer? _timer;
-
-  //for auth
 
   Future<dynamic> signInWithEmailAndPassword({
     required String email,
     required String password,
   }) async {
-    var url = Uri.parse('$authrUrl/login');
+    var url = Uri.parse('${Endpoints().auth}/login');
     final fcmToken = await FirebaseMessaging.instance.getToken();
     if (kDebugMode) {
       print('fcmToken $fcmToken');
@@ -80,7 +82,7 @@ class AuthService extends ChangeNotifier {
         'Authorization': 'Bearer $token',
       };
 
-      var uri = Uri.parse('$baseURL/users/$decodedToken');
+      var uri = Uri.parse('${Endpoints().user}/$decodedToken');
       var res = await http.get(uri, headers: header2);
 
       if (res.statusCode == 200) {
@@ -109,7 +111,7 @@ class AuthService extends ChangeNotifier {
       'password': password,
       'verification_code': code
     };
-    var url = Uri.parse('$baseURL/users');
+    var url = Uri.parse(Endpoints().user);
     Map<String, String> header = {
       "Content-type": "application/json",
       "Accept": "application/json",
@@ -134,10 +136,8 @@ class AuthService extends ChangeNotifier {
     String? username,
     String? fullname,
   }) async {
-    Map<String, String> body = {
-      'email': email,
-    };
-    var url = Uri.parse('$authrUrl/send-verification-email');
+    Map<String, String> body = {'email': email};
+    var url = Uri.parse(Endpoints().auth + '/send-verification-email');
     Map<String, String> header = {
       "Content-type": "application/json",
       "Accept": "application/json",
@@ -145,16 +145,11 @@ class AuthService extends ChangeNotifier {
     try {
       final response =
           await http.post(url, headers: header, body: jsonEncode(body));
-      if (kDebugMode) {
-        print('res');
-        print(response.body);
-      }
+      print('res');
+      print(response.body);
+
       return response;
-    } on Exception catch (err) {
-      if (kDebugMode) {
-        print(err);
-      }
-    }
+    } on Exception catch (err) {}
   }
 
   Future<void> createUserWithEmailAndPassword({
@@ -203,9 +198,8 @@ class AuthService extends ChangeNotifier {
         String idToken = tokenResult.token!;
 
         User? user = userCredential.user;
-        print('user $user');
         if (user != null) {
-          final url = Uri.parse("$authrUrl/login-with-google");
+          final url = Uri.parse("$authUrl/login-with-google");
           Map<String, String> header = {
             "Content-type": "application/json",
             "Accept": "application/json",
@@ -214,10 +208,8 @@ class AuthService extends ChangeNotifier {
 
           final response = await http.post(url, headers: header);
 
-          if (kDebugMode) {
-            print('res');
-            print(response.body);
-          }
+          print('res');
+          print(response.body);
 
           if (response.statusCode == 200) {
             final token = jsonDecode(response.body)['data'];
@@ -230,8 +222,6 @@ class AuthService extends ChangeNotifier {
             AuthProvider authProvider = AuthProvider();
             authProvider.setUser(currentUser);
             await getUserDetails(authProvider);
-
-            // return fetchUserInformation(decodedToken['user_id'], token);
           }
         }
       }
@@ -252,11 +242,9 @@ class AuthService extends ChangeNotifier {
         'Authorization': 'Bearer $value',
         'Content-Type': 'application/json; charset=UTF-8'
       };
-      var uri = Uri.parse('$baseURL/users/$id');
+      var uri = Uri.parse('${Endpoints().user}/$id');
       var response = await client.get(uri, headers: headers);
-      if (kDebugMode) {
-        print('response google ${response}');
-      }
+
       if (response.statusCode == 200) {
         var json = response.body;
         storage.write(key: 'currentUser', value: response.body.toString());
@@ -277,7 +265,8 @@ class AuthService extends ChangeNotifier {
           // 'Authorization': 'Bearer $value',
           'Content-Type': 'application/json; charset=UTF-8'
         };
-        var response = await _dioClient.get('${Endpoints().user}/$userId',
+        var response = await _dioClient.get(
+            '${Endpoints().user}/$userId/profile',
             options: Options(headers: headers));
 
         if (response.statusCode == 200) {
@@ -292,6 +281,7 @@ class AuthService extends ChangeNotifier {
       if (kDebugMode) {
         print(errorMessage);
       }
+
       rethrow;
     }
   }

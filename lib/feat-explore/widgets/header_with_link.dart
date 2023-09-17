@@ -1,20 +1,17 @@
-import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class HeaderWithLink extends StatelessWidget {
   final Widget? icon;
   final String title;
-  final String link;
+  final String? link;
 
-  const HeaderWithLink(
-      {this.icon = null, required this.title, required this.link});
+  const HeaderWithLink({super.key, this.icon, required this.title, this.link});
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    // final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    return Container(
+    return SizedBox(
       width: double.infinity,
       child: Row(
         mainAxisSize: MainAxisSize.max,
@@ -23,26 +20,11 @@ class HeaderWithLink extends StatelessWidget {
         children: [
           Row(
             children: [
-              icon ?? Container(),
-              const SizedBox(width: 6),
+              icon ?? const SizedBox(),
+              const SizedBox(width: 2),
               Text(title, style: Theme.of(context).textTheme.headlineMedium),
             ],
           ),
-          InkWell(
-              onTap: () {
-                GoRouter.of(context).push(link);
-              },
-              child: Container(
-                  width: 50,
-                  height: 20,
-                  child: Center(
-                      child: Text('Thêm',
-                          style: TextStyle(
-                            color: appColors.primaryBase,
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            decoration: TextDecoration.underline,
-                          )))))
         ],
       ),
     );

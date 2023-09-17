@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,10 +11,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
-import 'package:audiory_v0/services/auth_services.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../theme/theme_constants.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -33,24 +33,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> createUserWithEmailAndPassword() async {
     try {
-      await AuthService().createUserWithEmailAndPassword(
+      await AuthRepository().createUserWithEmailAndPassword(
           email: emailController.text, password: passwordController.text);
     } on FirebaseAuthException catch (e) {}
   }
 
   Future<void> signInGoogle() async {
     try {
-      await AuthService().signInWithGoogle();
+      await AuthRepository().signInWithGoogle();
       // if (provider.isBack) {
       //   context.go('/');
       // }
       // ignore: use_build_context_synchronously
       context.go('/');
     } on FirebaseAuthException catch (e) {
-      // setState(() {
-      //   errorMessage = provider.message;
-      // });
-      print(e);
+      if (kDebugMode) {
+        print(e);
+      }
     }
   }
 
@@ -100,9 +99,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               child: CircularProgressIndicator());
                         });
 
-                    final res = await AuthService().signInWithEmailAndPassword(
-                        email: emailController.text,
-                        password: passwordController.text);
+                    final res = await AuthRepository()
+                        .signInWithEmailAndPassword(
+                            email: emailController.text,
+                            password: passwordController.text);
                     // ignore: use_build_context_synchronously
                     context.pop();
 
@@ -149,18 +149,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final AppColors? appColors = Theme.of(context).extension<AppColors>();
+
     double size = MediaQuery.of(context).size.height;
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      // appBar: AppBar(
-      //   title: Text(),
-      // ),
       body: SafeArea(
         child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Container(
                   margin: const EdgeInsets.symmetric(vertical: 2.0),
@@ -253,14 +253,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               },
                               controller: passwordController,
                               obscureText: true,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                   enabledBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
+                                      color: appColors!.primaryBase,
                                     ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(80)),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(80)),
                                   ),
                                   border: OutlineInputBorder(
                                     borderRadius:
@@ -269,7 +269,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                   focusedBorder: OutlineInputBorder(
                                     borderSide: BorderSide(
                                       style: BorderStyle.solid,
-                                      color: Color(0xFF439A97),
+                                      color: appColors.primaryBase,
                                     ),
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(80)),
@@ -305,7 +305,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       .textTheme
                                       .titleLarge
                                       ?.copyWith(
-                                          color: Color(0xFF404446),
+                                          color: const Color(0xFF404446),
                                           fontSize: 13.0,
                                           fontWeight: FontWeight.bold)),
                             ),
@@ -337,7 +337,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       ?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 10,
-                                        color: Color(0xFF71727A),
+                                        color: const Color(0xFF71727A),
                                       ),
                                 )),
                             Row(
