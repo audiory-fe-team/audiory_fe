@@ -2,13 +2,49 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:audiory_v0/models/Chapter.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:dio/dio.dart';
+
+final chapterRepositoryProvider =
+    Provider<ChapterRepository>((_) => ChapterRepository());
 
 class ChapterRepository {
   static final chapterEndpoint = "${dotenv.get('API_BASE_URL')}/chapters";
   static final chapterVersionEndpoint =
       "${dotenv.get('API_BASE_URL')}/chapter-version";
+
+  final dio = Dio();
+
+  Future<bool> createChapter(body, formFile) async {
+    final url = Uri.parse(chapterEndpoint);
+    Map<String, String> header = {
+      "Content-type": "multipart/form-data",
+      "Accept": "application/json",
+    };
+
+    final request = await http.MultipartRequest('POST', url)
+      ..fields.addAll(body);
+    request.headers.addAll(header);
+    var response = await request.send();
+    final respStr = await response.stream.bytesToString();
+
+    var encoded = json.decode(respStr);
+    print('res');
+    print(respStr);
+    print(encoded['code']);
+    print(encoded['data']);
+
+    if (response.statusCode == 200) {
+      return true;
+      // final List<dynamic> result = jsonDecode(response.body)['data'];
+      // return result.map((i) => Story.fromJson(i)).toList();
+    } else {
+      return false;
+      throw Exception('Failed to create chapter version');
+    }
+  }
 
   Future<Chapter> fetchChapterDetail(String? chapterId) async {
     if (chapterId == null) {
@@ -31,6 +67,30 @@ class ChapterRepository {
     } else {
       throw Exception('Failed to chapter');
     }
+  }
+
+  Future<Chapter?> fetchChapterById(String? chapterId) async {
+    if (chapterId == null) {
+      throw Exception('Failed to fetch chapter');
+    }
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
+
+    try {
+      final response = await dio.get("$chapterEndpoint/$chapterId",
+          options: Options(headers: header));
+      print('res');
+      print(response);
+
+      final Chapter chapter = Chapter.fromJson(response.data['data']);
+      return chapter;
+    } on DioException catch (e) {
+      print('err');
+      print(e.response);
+    }
+    return null;
   }
 
   Future<bool> createChapterVersion(body, formFile) async {

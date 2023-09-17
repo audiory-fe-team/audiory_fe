@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   //define 2 appbar
   bool? hasAppBar; //default has an appbar
@@ -21,6 +22,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return hasAppBar!
         ? AppBar(
+            elevation: 3.5,
             leading: leading,
             title: title ??
                 Container(
@@ -28,7 +30,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
             actions: actions,
           )
-        : Text('');
+        : const Text('');
   }
 
   @override

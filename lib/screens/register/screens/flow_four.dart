@@ -1,6 +1,8 @@
 import 'package:audiory_v0/screens/register/screens/flow_four.dart';
+import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/outlined_button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class FLowFourScreen extends StatefulWidget {
   const FLowFourScreen({super.key});
@@ -39,11 +41,11 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                         style: Theme.of(context)
                             .textTheme
                             .headlineMedium
-                            ?.copyWith(color: Color(0xff000000))),
+                            ?.copyWith(color: const Color(0xff000000))),
                     Text(
                         "Đừng lo, chỉ mình bạn có thể thấy thông tin cá nhân của mình",
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Color(0xff000000),
+                            color: const Color(0xff000000),
                             fontWeight: FontWeight.normal)),
                   ],
                 ))),
@@ -57,15 +59,15 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                         Center(
                           child: ClipOval(
                             child: SizedBox.fromSize(
-                                size: Size.fromRadius(28), // Image radius
-                                child: Image(
+                                size: const Size.fromRadius(28), // Image radius
+                                child: const Image(
                                     height: double.maxFinite,
                                     image: AssetImage(
                                         'assets/images/default_avt.png'))),
                           ),
                         ),
                         Container(
-                            margin: EdgeInsets.symmetric(vertical: 5.0),
+                            margin: const EdgeInsets.symmetric(vertical: 5.0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -77,7 +79,7 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                                         ?.copyWith(
                                             color: Color(0xff000000),
                                             fontWeight: FontWeight.w700)),
-                                SizedBox(
+                                const SizedBox(
                                   height: 6.0,
                                 ),
                                 TextFormField(
@@ -325,25 +327,27 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    OutlineBtn(
-                      text: "Bỏ qua",
-                      size: 150,
-                      color: Colors.black,
-                      bgColor: Colors.white,
-                      onPress: () => {},
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 2.5,
+                      child: AppIconButton(
+                        title: "Bỏ qua",
+                        color: Colors.black,
+                        bgColor: Colors.white,
+                        onPressed: () {
+                          context.push('/login');
+                        },
+                      ),
                     ),
-                    OutlineBtn(
-                      text: "Tiếp tục",
-                      size: 150,
-                      color: Colors.white,
-                      bgColor: Color(0xFF439A97),
-                      onPress: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const FLowFourScreen()),
-                        );
-                      },
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 2.5,
+                      child: AppIconButton(
+                        title: "Tiếp tục",
+                        color: Colors.white,
+                        bgColor: const Color(0xFF439A97),
+                        onPressed: () {
+                          context.push('/login');
+                        },
+                      ),
                     )
                   ],
                 )),

@@ -11,12 +11,13 @@ class Chapter {
   final bool? is_paywalled;
   final int? author_earning;
   final int? read_count;
+  final int? position;
   final int? vote_count;
   final int? comment_count;
   final String? created_date;
   final String? updated_date;
   final bool? is_enabled;
-  final String?
+  final dynamic?
       chapter_version; // It could be null or a String, depending on your API response
   final List<Paragraph>? paragraphs;
 
@@ -29,6 +30,7 @@ class Chapter {
     this.is_draft,
     this.is_paywalled,
     this.author_earning,
+    this.position,
     this.read_count,
     this.vote_count,
     this.comment_count,
@@ -54,6 +56,7 @@ class Chapter {
       is_draft: json["is_draft"],
       is_paywalled: json["is_paywalled"],
       author_earning: json["author_earning"],
+      position: json["position"],
       read_count: json["read_count"],
       vote_count: json["vote_count"],
       comment_count: json["comment_count"],
@@ -74,6 +77,7 @@ class Chapter {
         "is_draft": is_draft,
         "is_paywalled": is_paywalled,
         "author_earning": author_earning,
+        "position": position,
         "read_count": read_count,
         "vote_count": vote_count,
         "comment_count": comment_count,

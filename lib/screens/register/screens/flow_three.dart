@@ -1,6 +1,8 @@
 import 'package:audiory_v0/screens/register/screens/flow_four.dart';
+import 'package:audiory_v0/widgets/buttons/icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/outlined_button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class FlowThreeScreen extends StatefulWidget {
   const FlowThreeScreen({super.key});
@@ -262,24 +264,20 @@ class _FlowThreeScreenState extends State<FlowThreeScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    OutlineBtn(
-                      text: "Bỏ qua",
-                      size: 150,
+                    AppIconButton(
+                      title: "Bỏ qua",
                       color: Colors.black,
                       bgColor: Colors.white,
-                      onPress: () => {},
+                      onPressed: () {
+                        context.push('/flowFour');
+                      },
                     ),
-                    OutlineBtn(
-                      text: "Tiếp tục",
-                      size: 150,
+                    AppIconButton(
+                      title: "Tiếp tục",
                       color: Colors.white,
-                      bgColor: Color(0xFF439A97),
-                      onPress: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const FLowFourScreen()),
-                        );
+                      bgColor: const Color(0xFF439A97),
+                      onPressed: () {
+                        context.push('/flowFour');
                       },
                     )
                   ],

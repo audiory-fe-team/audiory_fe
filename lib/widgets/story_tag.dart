@@ -5,7 +5,7 @@ class StoryTag extends StatelessWidget {
   final String label;
   final bool selected;
 
-  const StoryTag({required this.label, this.selected = false});
+  const StoryTag({super.key, required this.label, this.selected = false});
 
   @override
   Widget build(BuildContext context) {

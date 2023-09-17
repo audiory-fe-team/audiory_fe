@@ -34,7 +34,7 @@ class ReadingScreen extends HookWidget {
       required TextTheme textTheme}) {
     return (paragraphs ?? [])
         .map((para) => Column(children: [
-              Text(para.content,
+              Text(para.content as String,
                   style: textTheme.bodyLarge!
                       .copyWith(fontSize: fontSize.toDouble())),
               const SizedBox(height: 24)

@@ -20,12 +20,14 @@ class AppTextInputField extends StatefulWidget {
   //label
   final String? label;
   final TextStyle? labelTextStyle;
+  final bool? isRequired;
 
   //textinput field
   final String name; //form field name, must have
   final TextInputType? textInputType; //form field name, must have
   final String? initialValue;
   final String? hintText;
+  final TextAlign? textAlign;
   final TextStyle? hintTextStyle;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
@@ -47,7 +49,9 @@ class AppTextInputField extends StatefulWidget {
       this.hintTextStyle,
       this.prefixIcon,
       this.suffixIcon,
-      this.textInputType = TextInputType.text});
+      this.textInputType = TextInputType.text,
+      this.isRequired = false,
+      this.textAlign});
 
   @override
   State<AppTextInputField> createState() => _AppTextInputFieldState();
@@ -56,6 +60,15 @@ class AppTextInputField extends StatefulWidget {
 class _AppTextInputFieldState extends State<AppTextInputField> {
   late String _enteredText =
       widget.initialValue != '' ? widget.initialValue as String : '';
+  Widget _requiredAsterisk() {
+    return Text(
+      ' *',
+      style: Theme.of(context)
+          .textTheme
+          .headlineMedium
+          ?.copyWith(color: Colors.red),
+    );
+  }
 
   Widget _inputTextFormField(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -67,6 +80,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
           _enteredText = value as String;
         })
       },
+      textAlign: widget.textAlign ?? TextAlign.left,
       keyboardType: widget.textInputType,
       name: widget.name,
       initialValue: widget.initialValue!,
@@ -113,7 +127,6 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
         counterText: widget.isTextArea != null && widget.isTextArea == true
             ? '${_enteredText.length.toString()} từ'
             : null,
-
         counterStyle: Theme.of(context).textTheme.bodyMedium,
         fillColor: appColors.skyLightest,
         contentPadding:
@@ -142,12 +155,21 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                    Text(
-                      widget.label as String,
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleLarge
-                          ?.copyWith(fontWeight: FontWeight.bold),
+                    Row(
+                      children: [
+                        Text(
+                          widget.label as String,
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleLarge
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        widget.isRequired as bool
+                            ? _requiredAsterisk()
+                            : const SizedBox(
+                                height: 0,
+                              )
+                      ],
                     ),
                     SizedBox(
                       height: widget.sizeBoxHeight!,
