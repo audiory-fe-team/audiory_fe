@@ -18,13 +18,13 @@ class Library {
 
   factory Library.fromJson(Map<String, dynamic> json) {
     List<dynamic> libStoryJsonList = json['library_story'] ?? [];
-    List<LibraryStory> libStories = (libStoryJsonList ?? [])
+    List<LibraryStory> libStories = libStoryJsonList
         .map((libStoryJson) => LibraryStory.fromJson(libStoryJson))
         .toList();
 
     List<dynamic> storiesJsonList = json['stories'] ?? [];
     List<Story> stories =
-        (storiesJsonList ?? []).map((story) => Story.fromJson(story)).toList();
+        storiesJsonList.map((story) => Story.fromJson(story)).toList();
 
     return Library(
       id: json['id'],

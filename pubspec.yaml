@@ -79,6 +79,7 @@ dependencies:
   firebase_messaging: ^14.6.7
   flutter_native_splash: ^2.2.0+1
   flutter_launcher_icons: ^0.11.0
+  scroll_to_index: ^3.0.1
 
 flutter_launcher_icons:
   image_path: "assets/images/logo.png"

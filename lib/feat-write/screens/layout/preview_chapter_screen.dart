@@ -108,7 +108,7 @@ class _PreviewChapterScreenState extends ConsumerState<PreviewChapterScreen> {
                                       (index) => DropdownMenuItem(
                                             value: data?[index].id,
                                             child: text.Text(
-                                              'Chương ${data?[index].is_draft == true ? '${data?[index].position} (bản thảo)' : data?[index].position}',
+                                              'Chương ${data?[index].isDraft == true ? '${data?[index].position} (bản thảo)' : data?[index].position}',
                                               style: TextStyle(
                                                   color: appColors.inkBase),
                                             ),
@@ -120,7 +120,7 @@ class _PreviewChapterScreenState extends ConsumerState<PreviewChapterScreen> {
                     ),
                   ),
                 ),
-                body: contentWidget(data?[0].current_version_id as String)),
+                body: contentWidget(data?[0].currentVersionId as String)),
             error: (err, stack) => Scaffold(
                   body: Center(
                     child: text.Text(

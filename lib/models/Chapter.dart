@@ -2,42 +2,42 @@ import 'package:audiory_v0/models/Paragraph.dart';
 
 class Chapter {
   final String id;
-  final String story_id;
-  final String? current_version_id;
+  final String storyId;
+  final String? currentVersionId;
   final String?
-      product_id; // It could be null or a String, depending on your API response
+      productId; // It could be null or a String, depending on your API response
   final String title;
-  final bool? is_draft;
-  final bool? is_paywalled;
-  final int? author_earning;
-  final int? read_count;
+  final bool? isDraft;
+  final bool? isPaywalled;
+  final int? authorEarning;
+  final int? readCount;
   final int? position;
-  final int? vote_count;
-  final int? comment_count;
-  final String? created_date;
-  final String? updated_date;
-  final bool? is_enabled;
-  final dynamic?
-      chapter_version; // It could be null or a String, depending on your API response
+  final int? voteCount;
+  final int? commentCount;
+  final String? createdDate;
+  final String? updatedDate;
+  final bool? isEnabled;
+  final dynamic
+      chapterVersion; // It could be null or a String, depending on your API response
   final List<Paragraph>? paragraphs;
 
   Chapter({
     required this.id,
-    required this.story_id,
-    this.current_version_id,
-    this.product_id,
+    required this.storyId,
+    this.currentVersionId,
+    this.productId,
     required this.title,
-    this.is_draft,
-    this.is_paywalled,
-    this.author_earning,
+    this.isDraft,
+    this.isPaywalled,
+    this.authorEarning,
     this.position,
-    this.read_count,
-    this.vote_count,
-    this.comment_count,
-    this.created_date,
-    this.updated_date,
-    this.is_enabled,
-    this.chapter_version,
+    this.readCount,
+    this.voteCount,
+    this.commentCount,
+    this.createdDate,
+    this.updatedDate,
+    this.isEnabled,
+    this.chapterVersion,
     this.paragraphs,
   });
 
@@ -49,42 +49,42 @@ class Chapter {
 
     return Chapter(
       id: json["id"],
-      story_id: json["story_id"],
-      current_version_id: json["current_version_id"] ?? 'null',
-      product_id: json["product_id"] ?? 'null',
+      storyId: json["story_id"],
+      currentVersionId: json["current_version_id"] ?? 'null',
+      productId: json["product_id"] ?? 'null',
       title: json["title"],
-      is_draft: json["is_draft"],
-      is_paywalled: json["is_paywalled"],
-      author_earning: json["author_earning"],
+      isDraft: json["is_draft"],
+      isPaywalled: json["is_paywalled"],
+      authorEarning: json["author_earning"],
       position: json["position"],
-      read_count: json["read_count"],
-      vote_count: json["vote_count"],
-      comment_count: json["comment_count"],
-      created_date: json["created_date"],
-      updated_date: json["updated_date"],
-      is_enabled: json["is_enabled"],
-      chapter_version: json["chapter_version"] ?? 'null',
-      paragraphs: null,
+      readCount: json["read_count"],
+      voteCount: json["vote_count"],
+      commentCount: json["comment_count"],
+      createdDate: json["created_date"],
+      updatedDate: json["updated_date"],
+      isEnabled: json["is_enabled"],
+      chapterVersion: json["chapter_version"] ?? 'null',
+      paragraphs: paragraphs,
     );
   }
 
   Map<String, dynamic> toJson() => {
         "id": id,
-        "story_id": story_id,
-        "current_version_id": current_version_id,
-        "product_id": product_id,
+        "story_id": storyId,
+        "current_version_id": currentVersionId,
+        "product_id": productId,
         "title": title,
-        "is_draft": is_draft,
-        "is_paywalled": is_paywalled,
-        "author_earning": author_earning,
+        "is_draft": isDraft,
+        "is_paywalled": isPaywalled,
+        "author_earning": authorEarning,
         "position": position,
-        "read_count": read_count,
-        "vote_count": vote_count,
-        "comment_count": comment_count,
-        "created_date": created_date,
-        "updated_date": updated_date,
-        "is_enabled": is_enabled,
-        "chapter_version": chapter_version,
+        "read_count": readCount,
+        "vote_count": voteCount,
+        "comment_count": commentCount,
+        "created_date": createdDate,
+        "updated_date": updatedDate,
+        "is_enabled": isEnabled,
+        "chapter_version": chapterVersion,
         "paragraphs":
             paragraphs?.map((paragraph) => paragraph.toJson()).toList(),
       };

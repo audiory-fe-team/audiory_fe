@@ -20,6 +20,8 @@ import 'package:hidable/hidable.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ReadingScreen extends HookWidget {
@@ -27,20 +29,33 @@ class ReadingScreen extends HookWidget {
 
   ReadingScreen({super.key, this.chapterId});
 
-  List<Widget> chapterContent(
-      {List<Paragraph>? paragraphs,
-      int fontSize = 16,
-      required AppColors appColors,
-      required TextTheme textTheme}) {
-    return (paragraphs ?? [])
-        .map((para) => Column(children: [
-              Text(para.content as String,
-                  style: textTheme.bodyLarge!
-                      .copyWith(fontSize: fontSize.toDouble())),
-              const SizedBox(height: 24)
-            ]))
-        .toList();
-  }
+  // List<Widget> chapterContent(
+  //     {List<Paragraph>? paragraphs,
+  //     int fontSize = 16,
+  //     int? currentIndex,
+  //     required AutoScrollController controller,
+  //     required AppColors appColors,
+  //     required TextTheme textTheme}) {
+  //   return (paragraphs ?? []).asMap().entries.map((entry) {
+  //     final para = entry.value;
+  //     final index = entry.key;
+
+  //     return AutoScrollTag(
+  //         key: ValueKey(index),
+  //         controller: controller,
+  //         index: index,
+  //         highlightColor: Colors.green,
+  //         child: Column(children: [
+  //           Text(para.content ?? '',
+  //               style: textTheme.bodyLarge?.copyWith(
+  //                   fontSize: fontSize.toDouble(),
+  //                   color: (currentIndex == index)
+  //                       ? appColors.primaryBase
+  //                       : appColors.inkBase)),
+  //           const SizedBox(height: 24)
+  //         ]));
+  //   }).toList();
+  // }
 
   final player = AudioPlayer();
 
@@ -50,16 +65,18 @@ class ReadingScreen extends HookWidget {
     final fontSize = useState(16);
     final showCommentByParagraph = useState(true);
 
-    final scrollController = useScrollController();
+    final curParaIndex = useState<int?>(null);
+    // final scrollController = useScrollController();
 
     final chapterQuery = useQuery(['chapter', chapterId],
         () => ChapterRepository().fetchChapterDetail(chapterId),
         enabled: chapterId != null);
+
     final storyQuery = useQuery(
-        ['story', chapterQuery.data?.story_id],
-        () => StoryRepostitory()
-            .fetchStoryById(chapterQuery.data?.story_id ?? ''),
-        enabled: chapterQuery.data?.story_id != null);
+        ['story', chapterQuery.data?.storyId],
+        () =>
+            StoryRepostitory().fetchStoryById(chapterQuery.data?.storyId ?? ''),
+        enabled: chapterQuery.data?.storyId != null);
 
     void changeStyle(
         [Color? newBgColor, int? newFontSize, bool? isShowCommentByParagraph]) {
@@ -71,6 +88,13 @@ class ReadingScreen extends HookWidget {
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
+    final scrollController = AutoScrollController(
+      // viewportBoundaryGetter: () =>
+      //     Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
+      axis: Axis.vertical,
+    );
+
+    // print(chapterQuery.data?.paragraphs.toString());
 
     useEffect(() {
       final playlist = ConcatenatingAudioSource(
@@ -81,7 +105,7 @@ class ReadingScreen extends HookWidget {
         int idx = entry.key;
         Paragraph p = entry.value;
         return AudioSource.uri(
-            Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audio_url}'),
+            Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audioUrl}'),
             tag: MediaItem(
                 id: p.id,
                 title: storyQuery.data?.title ?? '',
@@ -95,19 +119,30 @@ class ReadingScreen extends HookWidget {
       }
     }, [player, chapterQuery.data]);
 
+    final sequenceState = useStream(player.sequenceStateStream);
+
     useEffect(() {
-      print(player.sequence?.map((e) => e.duration).toList().toString());
-    }, [player]);
+      final curIndex = sequenceState.data?.currentIndex;
+      if (curIndex == null) return;
+      curParaIndex.value = curIndex;
+    }, [sequenceState.data?.currentIndex]);
+
+    useEffect(() {
+      final currentIndex = curParaIndex.value;
+      if (currentIndex == null) return;
+      // scrollController.scrollToIndex(currentIndex + 1,
+      //     preferPosition: AutoScrollPosition.begin);
+      // scrollController.highlight(currentIndex);
+    }, [curParaIndex.value]);
 
     useEffect(() {
       return () => player.dispose();
     }, []);
-
     return Scaffold(
       backgroundColor: bgColor.value,
       appBar: ReadingTopBar(
         storyName: storyQuery.data?.title,
-        storyId: chapterQuery.data?.story_id,
+        storyId: chapterQuery.data?.storyId,
       ),
       body: Skeletonizer(
         enabled: chapterQuery.isFetching,
@@ -118,57 +153,86 @@ class ReadingScreen extends HookWidget {
             child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: ListView(
+                  scrollDirection: Axis.vertical,
                   controller: scrollController,
                   children: [
-                    const SizedBox(height: 24),
-                    ReadingScreenHeader(
-                      num: (storyQuery.data?.chapters ?? [])
-                          .indexWhere((element) => element.id == chapterId),
-                      chapter: chapterQuery.isFetching
-                          ? skeletonChapter
-                          : chapterQuery.data ?? skeletonChapter,
-                    ),
-                    const SizedBox(height: 24),
-                    ChapterAudioPlayer(
-                      chapter: chapterQuery.data,
-                      player: player,
-                    ),
-                    const SizedBox(height: 24),
-                    ...chapterContent(
-                        paragraphs: (chapterQuery.isFetching
-                                ? skeletonChapter
-                                : chapterQuery.data)
-                            ?.paragraphs,
-                        fontSize: fontSize.value,
-                        appColors: appColors,
-                        textTheme: textTheme),
+                    // const SizedBox(height: 24),
+                    // ReadingScreenHeader(
+                    //   num: (storyQuery.data?.chapters ?? [])
+                    //       .indexWhere((element) => element.id == chapterId),
+                    //   chapter: chapterQuery.isFetching
+                    //       ? skeletonChapter
+                    //       : chapterQuery.data ?? skeletonChapter,
+                    // ),
+                    // const SizedBox(height: 24),
+                    // if (player.duration != Duration.zero)
+                    //   ChapterAudioPlayer(
+                    //     chapter: chapterQuery.data,
+                    //     player: player,
+                    //   ),
+                    // const SizedBox(height: 24),
+                    // ...chapterContent(
+                    //   paragraphs: (chapterQuery.isFetching
+                    //           ? skeletonChapter
+                    //           : chapterQuery.data)
+                    //       ?.paragraphs,
+                    //   currentIndex: curParaIndex.value,
+                    //   controller: scrollController,
+                    //   fontSize: fontSize.value,
+                    //   appColors: appColors,
+                    //   textTheme: textTheme,
+                    // ),
+
+                    ...((chapterQuery.isFetching
+                                    ? skeletonChapter
+                                    : chapterQuery.data)
+                                ?.paragraphs ??
+                            [])
+                        .asMap()
+                        .entries
+                        .map((entry) {
+                      final para = entry.value;
+                      final index = entry.key;
+
+                      return AutoScrollTag(
+                        key: ValueKey(index),
+                        controller: scrollController,
+                        index: index,
+                        highlightColor: Colors.green,
+                        child: Text(para.content ?? '',
+                            style: textTheme.bodyLarge?.copyWith(
+                                fontSize: fontSize.value.toDouble(),
+                                color: (curParaIndex.value == index)
+                                    ? appColors.primaryBase
+                                    : appColors.inkBase)),
+                      );
+                    }).toList(),
+                    // Skeleton.keep(
+                    //     child: SizedBox(
+                    //   height: 32,
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       ActionButton(
+                    //           title: 'Bình chọn',
+                    //           iconName: 'heart',
+                    //           onPressed: () {}),
+                    //       const SizedBox(width: 12),
+                    //       ActionButton(
+                    //           title: 'Tặng quà',
+                    //           iconName: 'gift',
+                    //           onPressed: () {}),
+                    //       const SizedBox(width: 12),
+                    //       ActionButton(
+                    //           title: 'Chia sẻ',
+                    //           iconName: 'share',
+                    //           onPressed: () {}),
+                    //     ],
+                    //   ),
+                    // )),
+                    // const SizedBox(height: 24),
                     Skeleton.keep(
                         child: SizedBox(
-                      height: 32,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ActionButton(
-                              title: 'Bình chọn',
-                              iconName: 'heart',
-                              onPressed: () {}),
-                          const SizedBox(width: 12),
-                          ActionButton(
-                              title: 'Tặng quà',
-                              iconName: 'gift',
-                              onPressed: () {}),
-                          const SizedBox(width: 12),
-                          ActionButton(
-                              title: 'Chia sẻ',
-                              iconName: 'share',
-                              onPressed: () {}),
-                        ],
-                      ),
-                    )),
-                    const SizedBox(height: 24),
-                    Skeleton.keep(
-                        child: SizedBox(
-                      height: 38,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -179,11 +243,20 @@ class ReadingScreen extends HookWidget {
                           const SizedBox(width: 12),
                           ChapterNavigateButton(
                             next: true,
-                            onPressed: () => {},
+                            onPressed: () {
+                              // await scrollController.scrollToIndex(
+                              //   0,
+                              //   // duration: const Duration(seconds: 1),
+                              //   preferPosition: AutoScrollPosition.begin,
+                              // );
+                              print(scrollController.offset);
+                              scrollController.highlight(1);
+                            },
                           ),
                         ],
                       ),
                     )),
+                    const SizedBox(height: 24),
                   ],
                 ))),
       ),
@@ -203,6 +276,7 @@ class ReadingScreen extends HookWidget {
                     PositionAudio(position, bufferedPosition, duration)));
         final playing = playingStream.data ?? false;
         final position = positionAudioStream.data;
+        return const SizedBox();
         if (playing == false && position?.position == Duration.zero)
           return const SizedBox();
         return Container(
@@ -778,13 +852,13 @@ class ChapterNavigateButton extends StatelessWidget {
     return Expanded(
         child: FilledButton(
       onPressed: () {
-        if (!disabled) onPressed();
+        onPressed();
       },
       style: FilledButton.styleFrom(
           backgroundColor:
               disabled ? appColors.skyLighter : appColors.primaryBase,
           minimumSize: Size.zero, // Set this
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           alignment: Alignment.center // and this
           ),
       child: Row(
@@ -905,7 +979,7 @@ class ReadingScreenHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                chapter.read_count.toString(),
+                chapter.readCount.toString(),
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!
@@ -924,7 +998,7 @@ class ReadingScreenHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                chapter.vote_count.toString(),
+                chapter.voteCount.toString(),
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!
@@ -943,7 +1017,7 @@ class ReadingScreenHeader extends StatelessWidget {
               ),
               const SizedBox(width: 4),
               Text(
-                chapter.comment_count.toString(),
+                chapter.commentCount.toString(),
                 style: Theme.of(context)
                     .textTheme
                     .titleSmall!

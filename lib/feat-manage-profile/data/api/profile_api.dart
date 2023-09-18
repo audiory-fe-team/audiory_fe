@@ -12,7 +12,7 @@ class ProfileApi {
   Future<Map<String, dynamic>> fetchUserProfileById(String userId) async {
     try {
       const storage = FlutterSecureStorage();
-      // String? value = await storage.read(key: 'jwt');
+      String? value = await storage.read(key: 'jwt');
 
       var headers = <String, String>{
         // 'Authorization': 'Bearer $value',

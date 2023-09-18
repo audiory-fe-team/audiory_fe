@@ -12,7 +12,7 @@ class ActivitiesRepository {
       required String actionType,
       required String entityId,
       required String userId}) async {
-    final url = Uri.parse("$activitiesEndpoint");
+    final url = Uri.parse(activitiesEndpoint);
 
     final response = await http.post(url, body: {
       'action_entity': actionEntity,
