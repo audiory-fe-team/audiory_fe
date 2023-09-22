@@ -7,6 +7,7 @@ import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
+import 'package:audiory_v0/feat-read/screens/library_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
@@ -86,7 +87,13 @@ class AppRoutes {
                     },
                   ),
                   GoRoute(
-                      parentNavigatorKey: _rootNavigatorKey,
+                    name: 'library',
+                    path: 'library',
+                    builder: (_, GoRouterState state) {
+                      return const LibraryScreen();
+                    },
+                  ),
+                  GoRoute(
                       path: 'story/:storyId',
                       name: 'story_detail',
                       builder: (BuildContext context, GoRouterState state) {
@@ -97,7 +104,6 @@ class AppRoutes {
                       },
                       routes: [
                         GoRoute(
-                          parentNavigatorKey: _rootNavigatorKey,
                           path: 'chapter/:chapterId',
                           name: 'chapter_detail',
                           builder: (BuildContext context, GoRouterState state) {

@@ -10,9 +10,9 @@ class AppBottomNavigationBar extends HookWidget {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final selectedIndex = useState(0);
-    final router = useListenable(GoRouter.of(context).routeInformationProvider);
+    // final router = useListenable(GoRouter.of(context).routeInformationProvider);
 
-    void _onItemTapped(int index, BuildContext context) {
+    void onItemTapped(int index, BuildContext context) {
       switch (index) {
         case 0:
           {
@@ -69,8 +69,7 @@ class AppBottomNavigationBar extends HookWidget {
       ],
       currentIndex: selectedIndex.value,
       selectedItemColor: appColors.primaryBase,
-      onTap: (index) => _onItemTapped(index, context),
-      // selectedLabelStyle: Theme.of(context).textTheme.labelLarge,
+      onTap: (index) => onItemTapped(index, context),
       unselectedLabelStyle: const TextStyle(),
       unselectedItemColor: appColors.skyBase,
     );

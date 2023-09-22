@@ -50,9 +50,10 @@ class ReadingScreen extends HookWidget {
     final sequenceState = useStream(player.sequenceStateStream);
     final playingState = useStream(player.playingStream);
 
-    final chapterQuery = useQuery(['chapter', chapterId],
-        () => ChapterRepository().fetchChapterDetail(chapterId),
-        enabled: chapterId != null);
+    final chapterQuery = useQuery(
+      ['chapter', chapterId],
+      () => ChapterRepository().fetchChapterDetail(chapterId),
+    );
 
     final storyQuery = useQuery(
         ['story', chapterQuery.data?.storyId],
@@ -151,8 +152,9 @@ class ReadingScreen extends HookWidget {
                             stream: player.sequenceStream,
                             builder: ((context, snapshot) {
                               final a = snapshot.data;
-                              if (a == null || a.isEmpty)
+                              if (a == null || a.isEmpty) {
                                 return const SizedBox();
+                              }
                               return ChapterAudioPlayer(
                                 chapter: chapterQuery.data,
                                 player: player,
