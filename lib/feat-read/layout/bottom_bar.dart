@@ -42,40 +42,6 @@ class ReadingBottomBar extends HookWidget {
       });
     }
 
-    // void _onItemTapped(int index) {
-    //   switch (index) {
-    //     case 0:
-    //       {
-    //         break;
-    //       }
-    //     case 1:
-    //       {
-    //         //NOTE: Call api like the chapter
-    //         _liked.value = !_liked.value;
-    //         break;
-    //       }
-    //     case 2:
-    //       {
-    //         break;
-    //       }
-    //     case 3:
-    //       {
-    //         showModalBottomSheet(
-    //             context: context,
-    //             builder: (BuildContext context) {
-    //               return SettingModelUseHooks(
-    //                 changeStyle: changeStyle,
-    //               );
-    //             });
-    //         break;
-    //       }
-    //     case 4:
-    //       {
-    //         break;
-    //       }
-    //   }
-    // }
-
     final sharedTextStyle = Theme.of(context).textTheme.labelLarge;
     return Material(
         elevation: 10,
@@ -94,7 +60,9 @@ class ReadingBottomBar extends HookWidget {
                               overlayColor: MaterialStatePropertyAll(
                                   appColors.primaryLightest),
                               customBorder: CircleBorder(),
-                              onTap: () {},
+                              onTap: () {
+                                Scaffold.of(context).openDrawer();
+                              },
                               child: Column(
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.center,

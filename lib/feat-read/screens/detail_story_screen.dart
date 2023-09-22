@@ -241,10 +241,15 @@ class DetailStoryScreen extends HookConsumerWidget {
               int index = entry.key;
               return Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: ChapterItem(
-                    title: 'Chương ${index + 1}: ${chapter.title}',
-                    time: '20',
-                  ));
+                  child: GestureDetector(
+                      onTap: () {
+                        GoRouter.of(context)
+                            .push('/story/$id/chapter/${chapter.id}');
+                      },
+                      child: ChapterItem(
+                        title: 'Chương ${index + 1}: ${chapter.title}',
+                        time: '',
+                      )));
             }).toList(),
           ),
           NumberPaginator(
@@ -453,10 +458,15 @@ class DetailStoryScreen extends HookConsumerWidget {
                                             ? skeletonStory.tags
                                             : storyQuery.data?.tags) ??
                                         [])
-                                    .map((tag) => StoryTag(
+                                    .map((tag) => GestureDetector(
+                                        onTap: () {
+                                          GoRouter.of(context).go(
+                                              '/tag/${tag.id}?tagName=${tag.name}');
+                                        },
+                                        child: StoryTag(
                                           label: tag.name,
                                           selected: false,
-                                        ))
+                                        )))
                                     .toList(),
                               ))),
                       Container(
@@ -553,7 +563,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                           onPressed: () {
                             GoRouter.of(context)
                                 .pushNamed("chapter_detail", pathParameters: {
-                              "storyId": storyQuery.data?.id ?? '',
+                              "storyId": id,
                               "chapterId":
                                   // storyQuery.data?.chapters?[0].id ?? ''
                                   '41ccaddf-3b96-11ee-8842-e0d4e8a18075'

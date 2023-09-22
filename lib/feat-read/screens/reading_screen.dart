@@ -2,71 +2,53 @@
 import 'dart:math';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-read/layout/bottom_bar.dart';
-import 'package:audiory_v0/feat-read/layout/reading_top_bar.dart';
+import 'package:audiory_v0/feat-read/models/position_audio.dart';
+import 'package:audiory_v0/feat-read/widgets/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
+import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
-import 'package:hidable/hidable.dart';
+import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:scroll_to_index/scroll_to_index.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class ReadingScreen extends HookWidget {
-  final String? chapterId;
+  final String chapterId;
 
-  ReadingScreen({super.key, this.chapterId});
-
-  // List<Widget> chapterContent(
-  //     {List<Paragraph>? paragraphs,
-  //     int fontSize = 16,
-  //     int? currentIndex,
-  //     required AutoScrollController controller,
-  //     required AppColors appColors,
-  //     required TextTheme textTheme}) {
-  //   return (paragraphs ?? []).asMap().entries.map((entry) {
-  //     final para = entry.value;
-  //     final index = entry.key;
-
-  //     return AutoScrollTag(
-  //         key: ValueKey(index),
-  //         controller: controller,
-  //         index: index,
-  //         highlightColor: Colors.green,
-  //         child: Column(children: [
-  //           Text(para.content ?? '',
-  //               style: textTheme.bodyLarge?.copyWith(
-  //                   fontSize: fontSize.toDouble(),
-  //                   color: (currentIndex == index)
-  //                       ? appColors.primaryBase
-  //                       : appColors.inkBase)),
-  //           const SizedBox(height: 24)
-  //         ]));
-  //   }).toList();
-  // }
+  ReadingScreen({super.key, required this.chapterId});
 
   final player = AudioPlayer();
 
   @override
   Widget build(BuildContext context) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final TextTheme textTheme = Theme.of(context).textTheme;
     final bgColor = useState(Colors.white);
-    final fontSize = useState(16);
+    final fontSize = useState(18);
     final showCommentByParagraph = useState(true);
+    final hideBars = useState(false);
 
     final curParaIndex = useState<int?>(null);
-    // final scrollController = useScrollController();
+    final keyList = useState<List<GlobalKey>>([]);
+    final scrollController = useScrollController();
+
+    final sequenceState = useStream(player.sequenceStateStream);
+    final playingState = useStream(player.playingStream);
 
     final chapterQuery = useQuery(['chapter', chapterId],
         () => ChapterRepository().fetchChapterDetail(chapterId),
@@ -86,16 +68,6 @@ class ReadingScreen extends HookWidget {
           isShowCommentByParagraph ?? showCommentByParagraph.value;
     }
 
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final TextTheme textTheme = Theme.of(context).textTheme;
-    final scrollController = AutoScrollController(
-      // viewportBoundaryGetter: () =>
-      //     Rect.fromLTRB(0, 0, 0, MediaQuery.of(context).padding.bottom),
-      axis: Axis.vertical,
-    );
-
-    // print(chapterQuery.data?.paragraphs.toString());
-
     useEffect(() {
       final playlist = ConcatenatingAudioSource(
           children: (chapterQuery.data?.paragraphs ?? [])
@@ -112,286 +84,317 @@ class ReadingScreen extends HookWidget {
                 artist: 'Chương ${1} - Đoạn ${idx + 1}'));
       }).toList());
       try {
-        // player.setLoopMode(LoopMode.off);
         player.setAudioSource(playlist);
       } catch (error) {
         print(error.toString());
       }
     }, [player, chapterQuery.data]);
 
-    final sequenceState = useStream(player.sequenceStateStream);
-
     useEffect(() {
       final curIndex = sequenceState.data?.currentIndex;
-      if (curIndex == null) return;
+      if (curIndex == null || playingState.data != true) return;
       curParaIndex.value = curIndex;
-    }, [sequenceState.data?.currentIndex]);
+    }, [sequenceState.data?.currentIndex, playingState.data]);
 
     useEffect(() {
       final currentIndex = curParaIndex.value;
       if (currentIndex == null) return;
-      // scrollController.scrollToIndex(currentIndex + 1,
-      //     preferPosition: AutoScrollPosition.begin);
-      // scrollController.highlight(currentIndex);
+      final keyContext = keyList.value[currentIndex].currentContext;
+      if (keyContext == null) return;
+      Scrollable.ensureVisible(keyContext,
+          duration: const Duration(seconds: 1), alignment: 0.5);
     }, [curParaIndex.value]);
+
+    useEffect(() {
+      scrollController.addListener(() {
+        if (scrollController.position.userScrollDirection ==
+            ScrollDirection.forward) {
+          if (hideBars.value) hideBars.value = false;
+        }
+        if (scrollController.position.userScrollDirection ==
+            ScrollDirection.reverse) {
+          if (!hideBars.value) hideBars.value = true;
+        }
+      });
+    }, []);
 
     useEffect(() {
       return () => player.dispose();
     }, []);
+
     return Scaffold(
       backgroundColor: bgColor.value,
-      appBar: ReadingTopBar(
-        storyName: storyQuery.data?.title,
-        storyId: chapterQuery.data?.storyId,
-      ),
+      appBar: null,
       body: Skeletonizer(
-        enabled: chapterQuery.isFetching,
-        child: RefreshIndicator(
+          enabled: chapterQuery.isFetching,
+          child: RefreshIndicator(
             onRefresh: () async {
               chapterQuery.refetch();
             },
-            child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: ListView(
-                  scrollDirection: Axis.vertical,
-                  controller: scrollController,
-                  children: [
-                    // const SizedBox(height: 24),
-                    // ReadingScreenHeader(
-                    //   num: (storyQuery.data?.chapters ?? [])
-                    //       .indexWhere((element) => element.id == chapterId),
-                    //   chapter: chapterQuery.isFetching
-                    //       ? skeletonChapter
-                    //       : chapterQuery.data ?? skeletonChapter,
-                    // ),
-                    // const SizedBox(height: 24),
-                    // if (player.duration != Duration.zero)
-                    //   ChapterAudioPlayer(
-                    //     chapter: chapterQuery.data,
-                    //     player: player,
-                    //   ),
-                    // const SizedBox(height: 24),
-                    // ...chapterContent(
-                    //   paragraphs: (chapterQuery.isFetching
-                    //           ? skeletonChapter
-                    //           : chapterQuery.data)
-                    //       ?.paragraphs,
-                    //   currentIndex: curParaIndex.value,
-                    //   controller: scrollController,
-                    //   fontSize: fontSize.value,
-                    //   appColors: appColors,
-                    //   textTheme: textTheme,
-                    // ),
-
-                    ...((chapterQuery.isFetching
-                                    ? skeletonChapter
-                                    : chapterQuery.data)
-                                ?.paragraphs ??
-                            [])
-                        .asMap()
-                        .entries
-                        .map((entry) {
-                      final para = entry.value;
-                      final index = entry.key;
-
-                      return AutoScrollTag(
-                        key: ValueKey(index),
-                        controller: scrollController,
-                        index: index,
-                        highlightColor: Colors.green,
-                        child: Text(para.content ?? '',
-                            style: textTheme.bodyLarge?.copyWith(
-                                fontSize: fontSize.value.toDouble(),
-                                color: (curParaIndex.value == index)
-                                    ? appColors.primaryBase
-                                    : appColors.inkBase)),
-                      );
-                    }).toList(),
-                    // Skeleton.keep(
-                    //     child: SizedBox(
-                    //   height: 32,
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: [
-                    //       ActionButton(
-                    //           title: 'Bình chọn',
-                    //           iconName: 'heart',
-                    //           onPressed: () {}),
-                    //       const SizedBox(width: 12),
-                    //       ActionButton(
-                    //           title: 'Tặng quà',
-                    //           iconName: 'gift',
-                    //           onPressed: () {}),
-                    //       const SizedBox(width: 12),
-                    //       ActionButton(
-                    //           title: 'Chia sẻ',
-                    //           iconName: 'share',
-                    //           onPressed: () {}),
-                    //     ],
-                    //   ),
-                    // )),
-                    // const SizedBox(height: 24),
-                    Skeleton.keep(
-                        child: SizedBox(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ChapterNavigateButton(
-                            onPressed: () => {},
-                            disabled: true,
-                          ),
-                          const SizedBox(width: 12),
-                          ChapterNavigateButton(
-                            next: true,
-                            onPressed: () {
-                              // await scrollController.scrollToIndex(
-                              //   0,
-                              //   // duration: const Duration(seconds: 1),
-                              //   preferPosition: AutoScrollPosition.begin,
-                              // );
-                              print(scrollController.offset);
-                              scrollController.highlight(1);
-                            },
-                          ),
-                        ],
-                      ),
-                    )),
-                    const SizedBox(height: 24),
-                  ],
-                ))),
-      ),
-      bottomNavigationBar: Hidable(
-          controller: scrollController,
-          child: ReadingBottomBar(
-            changeStyle: changeStyle,
-          )),
-      floatingActionButton: HookBuilder(builder: (_) {
-        final playingStream = useStream(player.playingStream);
-        final positionAudioStream = useStream(
-            Rx.combineLatest3<Duration, Duration, Duration?, PositionAudio>(
-                player.positionStream,
-                player.bufferedPositionStream,
-                player.durationStream,
-                (position, bufferedPosition, duration) =>
-                    PositionAudio(position, bufferedPosition, duration)));
-        final playing = playingStream.data ?? false;
-        final position = positionAudioStream.data;
-        return const SizedBox();
-        if (playing == false && position?.position == Duration.zero)
-          return const SizedBox();
-        return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 6),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            decoration: BoxDecoration(
-              color: appColors.skyLighter,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            height: 50,
-            child: Stack(
-              children: [
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(mainAxisSize: MainAxisSize.min, children: [
-                      Container(
-                        width: 20,
-                        height: 35,
-                        decoration: ShapeDecoration(
-                          image: DecorationImage(
-                            image:
-                                NetworkImage(storyQuery.data?.coverUrl ?? ''),
-                            fit: BoxFit.fill,
-                          ),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4)),
+            child: SafeArea(
+                child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      controller: scrollController,
+                      child: Column(children: [
+                        const SizedBox(height: 24),
+                        ReadingScreenHeader(
+                          num: (storyQuery.data?.chapters ?? [])
+                              .indexWhere((element) => element.id == chapterId),
+                          chapter: chapterQuery.isFetching
+                              ? skeletonChapter
+                              : chapterQuery.data ?? skeletonChapter,
                         ),
-                      ),
-                      const SizedBox(width: 4),
-                      Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(storyQuery.data?.title ?? '',
-                              style: textTheme.titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 4),
-                          StreamBuilder(
-                              stream: player.sequenceStateStream,
-                              builder: (_, snapshot) {
-                                final playerState = snapshot.data;
-                                final currentParaIndex =
-                                    playerState?.currentIndex ?? 0;
-                                return Text(
-                                    'Chương 1 - Đoạn ${currentParaIndex + 1}',
-                                    style: textTheme.labelLarge?.copyWith(
-                                      fontStyle: FontStyle.italic,
-                                    ));
-                              }),
-                        ],
-                      )
-                    ]),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        Builder(builder: (context) {
-                          if (!(playing)) {
-                            return GestureDetector(
-                              onTap: () {
-                                player.play();
-                              },
-                              child: Icon(Icons.play_arrow_rounded,
-                                  size: 30, color: appColors.inkLight),
-                            );
+                        const SizedBox(height: 24),
+                        StreamBuilder(
+                            stream: player.sequenceStream,
+                            builder: ((context, snapshot) {
+                              final a = snapshot.data;
+                              if (a == null || a.isEmpty)
+                                return const SizedBox();
+                              return ChapterAudioPlayer(
+                                chapter: chapterQuery.data,
+                                player: player,
+                              );
+                            })),
+                        const SizedBox(height: 24),
+                        ...((chapterQuery.isFetching
+                                        ? skeletonChapter
+                                        : chapterQuery.data)
+                                    ?.paragraphs ??
+                                [])
+                            .asMap()
+                            .entries
+                            .map((entry) {
+                          final para = entry.value;
+                          final index = entry.key;
+                          final key = GlobalKey();
+                          if (index == 0) {
+                            keyList.value = [key];
                           } else {
-                            return GestureDetector(
-                              onTap: () {
-                                player.pause();
-                              },
-                              child: Icon(Icons.pause_rounded,
-                                  size: 30, color: appColors.inkLight),
-                            );
+                            keyList.value.add(key);
                           }
-                        })
-                      ],
-                    )
-                  ],
-                ),
-                Positioned(
-                    bottom: 1,
-                    width: MediaQuery.of(context).size.width,
-                    child: Container(
-                        height: 2,
-                        child: ProgressBar(
-                          barHeight: 2,
-                          baseBarColor: Colors.white,
-                          bufferedBarColor: appColors.primaryLightest,
-                          progressBarColor: appColors.primaryBase,
-                          thumbColor: appColors.primaryBase,
-                          thumbRadius: 0,
-                          timeLabelTextStyle:
-                              Theme.of(context).textTheme.labelLarge,
-                          progress: position?.position ?? Duration.zero,
-                          buffered: position?.bufferedPosition ?? Duration.zero,
-                          total: position?.duration ?? Duration.zero,
-                          onSeek: player.seek,
+                          return GestureDetector(
+                              onTap: () {
+                                if (playingState.data == true) {
+                                  player.seek(null, index: index);
+                                }
+                              },
+                              child: Container(
+                                key: key,
+                                margin: const EdgeInsets.only(bottom: 24),
+                                padding: const EdgeInsets.all(8),
+                                decoration: (curParaIndex.value == index)
+                                    ? BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: appColors.primaryLightest)
+                                    : const BoxDecoration(),
+                                child: Text(para.content ?? '',
+                                    style: textTheme.bodyLarge?.copyWith(
+                                      fontSize: fontSize.value.toDouble(),
+                                      fontFamily:
+                                          GoogleFonts.gelasio().fontFamily,
+                                    )),
+                              ));
+                        }).toList(),
+                        Skeleton.keep(
+                            child: SizedBox(
+                          height: 32,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ActionButton(
+                                  title: 'Bình chọn',
+                                  iconName: 'heart',
+                                  onPressed: () {}),
+                              const SizedBox(width: 12),
+                              ActionButton(
+                                  title: 'Tặng quà',
+                                  iconName: 'gift',
+                                  onPressed: () {}),
+                              const SizedBox(width: 12),
+                              ActionButton(
+                                  title: 'Chia sẻ',
+                                  iconName: 'share',
+                                  onPressed: () {}),
+                            ],
+                          ),
+                        )),
+                        const SizedBox(height: 24),
+                        Skeleton.keep(child: SizedBox(child: Builder(
+                          builder: (context) {
+                            final chapters = storyQuery.data?.chapters;
+                            final currentIndex = chapters?.indexWhere(
+                                (element) => element.id == chapterId);
+                            if (currentIndex == null) return const SizedBox();
+
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ChapterNavigateButton(
+                                  onPressed: () {
+                                    if (chapters == null) return;
+                                    if (currentIndex <= 0) return;
+                                    final prevChapterId =
+                                        chapters[currentIndex - 1].id;
+                                    GoRouter.of(context).go(
+                                        '/story/${storyQuery.data?.id}/chapter/$prevChapterId');
+                                  },
+                                  disabled:
+                                      currentIndex <= 0 || chapters == null,
+                                ),
+                                const SizedBox(width: 12),
+                                ChapterNavigateButton(
+                                  next: true,
+                                  onPressed: () {
+                                    if (chapters == null) return;
+                                    if (currentIndex + 1 >= chapters.length)
+                                      return;
+                                    final nextChapterId =
+                                        chapters[currentIndex + 1].id;
+                                    GoRouter.of(context).go(
+                                        '/story/${storyQuery.data?.id}/chapter/$nextChapterId');
+                                  },
+                                  disabled: chapters == null ||
+                                      currentIndex + 1 >= chapters.length,
+                                ),
+                              ],
+                            );
+                          },
                         ))),
-              ],
-            ));
-      }),
+                        const SizedBox(height: 24),
+                      ]),
+                    ))),
+          )),
+      bottomNavigationBar: hideBars.value
+          ? null
+          : ReadingBottomBar(
+              changeStyle: changeStyle,
+            ),
+      floatingActionButton: AudioBottomBar(
+        player: player,
+        storyId: chapterQuery.data?.storyId,
+      ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
+      drawer: ChapterDrawer(
+        currentChapterId: chapterId,
+        story: storyQuery.data,
+      ),
     );
   }
 }
 
-class PositionAudio {
-  final Duration position;
-  final Duration bufferedPosition;
-  final Duration? duration;
-  const PositionAudio(this.position, this.bufferedPosition, this.duration);
+class ChapterDrawer extends HookWidget {
+  final Story? story;
+  final String currentChapterId;
+  const ChapterDrawer(
+      {super.key, required this.story, required this.currentChapterId});
+
+  @override
+  Widget build(BuildContext context) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    return SafeArea(
+        child: Drawer(
+            child: ListView(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                children: [
+          const SizedBox(height: 12),
+          Expanded(
+              child:
+                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  GoRouter.of(context).push('/story/${story?.id ?? ''}');
+                },
+                child: Container(
+                  width: 70,
+                  height: 97,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    image: DecorationImage(
+                      image: NetworkImage(story?.coverUrl ?? FALLBACK_IMG_URL),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                )),
+            const SizedBox(width: 8),
+            Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    story?.title ?? '',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    softWrap: true,
+                    maxLines: 2,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    story?.author?.fullName ?? '',
+                    style: Theme.of(context).textTheme.titleSmall,
+                    softWrap: true,
+                    maxLines: 2,
+                  ),
+                ]),
+          ])),
+          Divider(),
+          const SizedBox(height: 24),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Icon(
+              Icons.format_list_bulleted_rounded,
+              size: 24,
+              color: appColors.secondaryBase,
+            ),
+            Text(
+              'Danh sách chương',
+              style: Theme.of(context).textTheme.titleLarge,
+              softWrap: true,
+              maxLines: 2,
+            ),
+          ]),
+          const SizedBox(height: 16),
+          ...(story?.chapters ?? []).map((chapter) {
+            return Container(
+                margin: EdgeInsets.only(bottom: 6),
+                decoration: BoxDecoration(
+                    color: chapter.id == currentChapterId
+                        ? appColors.primaryLight
+                        : appColors.skyLightest,
+                    borderRadius: BorderRadius.circular(8)),
+                width: double.infinity,
+                child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                        onTap: () {
+                          Navigator.pop(context);
+                          GoRouter.of(context).go(
+                              '/story/${story?.id ?? ''}/chapter/${chapter.id}');
+                        },
+                        borderRadius: BorderRadius.circular(8),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 12),
+                          child: Text(chapter.title,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(
+                                      color: chapter.id == currentChapterId
+                                          ? Colors.white
+                                          : appColors.inkBase,
+                                      fontSize: 16,
+                                      fontFamily: GoogleFonts.sourceSansPro()
+                                          .fontFamily,
+                                      fontWeight: FontWeight.w400)),
+                        ))));
+          }).toList()
+        ])));
+  }
 }
 
 class AudioControl extends StatelessWidget {
@@ -961,7 +964,7 @@ class ReadingScreenHeader extends StatelessWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return Column(children: [
-      Text('Chương ' + num.toString() + ":",
+      Text('Chương ' + (num + 1).toString() + ":",
           style: Theme.of(context).textTheme.bodyLarge),
       Text(chapter.title,
           style: Theme.of(context).textTheme.bodyLarge, softWrap: true),

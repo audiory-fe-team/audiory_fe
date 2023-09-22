@@ -1,5 +1,6 @@
 import 'package:audiory_v0/feat-explore/screens/category_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/tag_screen.dart';
 import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
@@ -59,120 +60,155 @@ class AppRoutes {
           },
           routes: [
             GoRoute(
-              name: 'home',
-              path: '/',
-              builder: (BuildContext context, GoRouterState state) {
-                // return AnimatedSplashScreen(
-                //     duration: 3000,
-                //     splash: SplashScreen(),
-                //     nextScreen: AppMainLayout(),
-                //     splashTransition: SplashTransition.fadeTransition,
-                //     pageTransitionType: PageTransitionType.scale,
-                //     backgroundColor: Colors.white);
-                return const HomeScreen();
-              },
-            ),
-            GoRoute(
-              path: '/ranking',
-              name: 'ranking',
-              builder: (BuildContext context, GoRouterState state) {
-                final typeString = state.queryParameters["type"];
-                RankingType type = mapStringToRankingType(typeString);
-                final metricString = state.queryParameters["metric"];
-                RankingMetric metric = mapStringToRankingMetric(metricString);
-                final timeString = state.queryParameters["time"];
-                RankingTimeRange time = mapStringToRankingTimeRange(timeString);
-                final category = state.queryParameters["category"];
-                return RankingScreen(
-                  key: state.pageKey,
-                  type: type,
-                  metric: metric,
-                  time: time,
-                  category: category,
-                );
-              },
-            ),
-            GoRoute(
-                path: '/explore',
-                name: 'explore',
+                name: 'home',
+                path: '/',
                 builder: (BuildContext context, GoRouterState state) {
-                  return const ExploreScreen();
+                  // return AnimatedSplashScreen(
+                  //     duration: 3000,
+                  //     splash: SplashScreen(),
+                  //     nextScreen: AppMainLayout(),
+                  //     splashTransition: SplashTransition.fadeTransition,
+                  //     pageTransitionType: PageTransitionType.scale,
+                  //     backgroundColor: Colors.white);
+                  return const HomeScreen();
                 },
                 routes: [
                   GoRoute(
-                    path: 'search',
-                    name: 'explore_search',
-                    pageBuilder: (context, state) => CustomTransitionPage<void>(
-                        key: state.pageKey,
-                        child: const SearchScreen(),
-                        transitionDuration: const Duration(milliseconds: 400),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(
-                              1, 0.0); // Start from right side of the screen
-                          const end =
-                              Offset.zero; // End at the center of the screen
-                          final tween = Tween(begin: begin, end: end);
-                          final offsetAnimation = animation.drive(
-                              tween.chain(CurveTween(curve: Curves.easeIn)));
-
-                          return SlideTransition(
-                              position: offsetAnimation, child: child);
-                        }),
-                  ),
-                  GoRoute(
-                    name: 'explore_category',
-                    path: 'category/:categoryName',
+                    name: 'tag',
+                    path: 'tag/:tagId',
                     builder: (_, GoRouterState state) {
-                      final categoryName = state.pathParameters["categoryName"];
-                      if (categoryName != null && categoryName != "") {
-                        return CategoryScreen(categoryName: categoryName);
+                      final tagId = state.pathParameters["tagId"];
+                      final tagName = state.queryParameters["tagName"];
+                      if (tagId != null && tagName != null) {
+                        return SearchTagScreen(tagId: tagId, tagName: tagName);
                       }
                       return const NotFoundScreen();
                     },
                   ),
+                  GoRoute(
+                      parentNavigatorKey: _rootNavigatorKey,
+                      path: 'story/:storyId',
+                      name: 'story_detail',
+                      builder: (BuildContext context, GoRouterState state) {
+                        final storyId = state.pathParameters['storyId'];
+                        return DetailStoryScreen(
+                          id: storyId ?? '',
+                        );
+                      },
+                      routes: [
+                        GoRoute(
+                          parentNavigatorKey: _rootNavigatorKey,
+                          path: 'chapter/:chapterId',
+                          name: 'chapter_detail',
+                          builder: (BuildContext context, GoRouterState state) {
+                            String? chapterId =
+                                state.pathParameters["chapterId"];
+                            if (chapterId == null || chapterId == '') {
+                              return const NotFoundScreen();
+                            }
+                            return ReadingScreen(
+                              chapterId: chapterId,
+                            );
+                          },
+                        )
+                      ]),
+                  GoRoute(
+                    path: 'ranking',
+                    name: 'ranking',
+                    builder: (BuildContext context, GoRouterState state) {
+                      final typeString = state.queryParameters["type"];
+                      RankingType type = mapStringToRankingType(typeString);
+                      final metricString = state.queryParameters["metric"];
+                      RankingMetric metric =
+                          mapStringToRankingMetric(metricString);
+                      final timeString = state.queryParameters["time"];
+                      RankingTimeRange time =
+                          mapStringToRankingTimeRange(timeString);
+                      final category = state.queryParameters["category"];
+                      return RankingScreen(
+                        key: state.pageKey,
+                        type: type,
+                        metric: metric,
+                        time: time,
+                        category: category,
+                      );
+                    },
+                  ),
+                  GoRoute(
+                      path: 'explore',
+                      name: 'explore',
+                      builder: (BuildContext context, GoRouterState state) {
+                        return const ExploreScreen();
+                      },
+                      routes: [
+                        GoRoute(
+                          path: 'search',
+                          name: 'explore_search',
+                          pageBuilder: (context, state) =>
+                              CustomTransitionPage<void>(
+                                  key: state.pageKey,
+                                  child: const SearchScreen(),
+                                  transitionDuration:
+                                      const Duration(milliseconds: 400),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1,
+                                        0.0); // Start from right side of the screen
+                                    const end = Offset
+                                        .zero; // End at the center of the screen
+                                    final tween = Tween(begin: begin, end: end);
+                                    final offsetAnimation = animation.drive(
+                                        tween.chain(
+                                            CurveTween(curve: Curves.easeIn)));
+
+                                    return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child);
+                                  }),
+                        ),
+                        GoRoute(
+                          name: 'explore_category',
+                          path: 'category/:categoryName',
+                          builder: (_, GoRouterState state) {
+                            final categoryName =
+                                state.pathParameters["categoryName"];
+
+                            if (categoryName != null && categoryName != "") {
+                              return CategoryScreen(categoryName: categoryName);
+                            }
+                            return const NotFoundScreen();
+                          },
+                        ),
+                        // GoRoute(
+                        //   name: 'explore_tag',
+                        //   path: 'tag',
+                        //   builder: (_, GoRouterState state) {
+                        //     final tagId = state.queryParameters["tagId"];
+                        //     final tagName = state.queryParameters["tagName"];
+                        //     if (tagId != null && tagName != null) {
+                        //       return SearchTagScreen(
+                        //           tagId: tagId, tagName: tagName);
+                        //     }
+                        //     return const NotFoundScreen();
+                        //   },
+                        // ),
+                      ]),
+                  GoRoute(
+                    name: 'profile',
+                    path: 'profile',
+                    builder: (_, GoRouterState state) {
+                      return const UserProfileScreen();
+                    },
+                    redirect: _redirect,
+                  ),
+                  GoRoute(
+                    name: 'writer',
+                    path: 'writer',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const WriterScreen();
+                    },
+                  ),
                 ]),
-            GoRoute(
-              name: 'profile',
-              path: '/profile',
-              builder: (_, GoRouterState state) {
-                return const UserProfileScreen();
-              },
-              redirect: _redirect,
-            ),
-            GoRoute(
-              name: 'writer',
-              path: '/writer',
-              builder: (BuildContext context, GoRouterState state) {
-                return const WriterScreen();
-              },
-            ),
-          ]),
-      GoRoute(
-          parentNavigatorKey: _rootNavigatorKey,
-          path: '/story/:storyId',
-          name: 'story_detail',
-          builder: (BuildContext context, GoRouterState state) {
-            final storyId = state.pathParameters['storyId'];
-            return DetailStoryScreen(
-              id: storyId ?? '',
-            );
-          },
-          routes: [
-            GoRoute(
-              parentNavigatorKey: _rootNavigatorKey,
-              path: 'chapter/:chapterId',
-              name: 'chapter_detail',
-              builder: (BuildContext context, GoRouterState state) {
-                String? chapterId = state.pathParameters["chapterId"];
-                if (chapterId == null || chapterId == '') {
-                  return const NotFoundScreen();
-                }
-                return ReadingScreen(
-                  chapterId: chapterId,
-                );
-              },
-            )
           ]),
       GoRoute(
         name: 'login',
@@ -264,7 +300,7 @@ class AppRoutes {
           //extra
 
           final extraMap = state.extra as Map<String, dynamic>;
-          print('extra map ${extraMap}');
+          print('extra map $extraMap');
           final story =
               extraMap['story'] == '' ? null : extraMap['story'] as Story?;
           final chapterId = extraMap['chapterId']! as String?;
