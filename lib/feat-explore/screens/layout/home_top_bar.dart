@@ -100,7 +100,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
               color: Colors.white,
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.amber,
+                  color: Color.fromARGB(255, 172, 136, 28),
                   width: 1.0,
                   style: BorderStyle.solid,
                 ),

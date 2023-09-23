@@ -163,7 +163,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: <Widget>[
               Container(
                   margin: const EdgeInsets.symmetric(vertical: 2.0),
-                  height: size * 0.35,
+                  height: size * 0.30,
                   child: const Image(
                       height: double.maxFinite,
                       image:

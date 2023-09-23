@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/SearchStory.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -18,7 +19,8 @@ class StoryCardDetail extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final coverUrl = story?.coverUrl ?? searchStory?.coverUrl ?? '';
+    final coverUrl =
+        story?.coverUrl ?? searchStory?.coverUrl ?? FALLBACK_IMG_URL;
     final storyId = story?.id ?? searchStory?.id ?? 'not-found';
     final title = story?.title ?? searchStory?.title ?? 'Tiêu đề truyện';
     final description =
