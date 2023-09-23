@@ -2,7 +2,7 @@
 
 import 'dart:convert';
 
-import 'package:audiory_v0/widgets/buttons/icon_button.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_quill/flutter_quill.dart';

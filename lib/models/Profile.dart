@@ -14,7 +14,7 @@ class Profile {
   final String? facebookUrl;
   final String? firstName;
   final String? fullName;
-  final String id;
+  final String? id;
   final bool? isEnabled;
   final bool? isOnline;
   final String? lastName;

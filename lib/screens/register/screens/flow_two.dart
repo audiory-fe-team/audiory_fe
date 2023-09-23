@@ -1,5 +1,8 @@
-import 'package:audiory_v0/widgets/buttons/icon_button.dart';
+import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
@@ -19,19 +22,10 @@ class FlowTwoScreen extends StatefulWidget {
 class _FlowTwoScreenState extends State<FlowTwoScreen> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController codeController = TextEditingController();
-  void _displaySnackBar(String? content) {
+  void _displaySnackBar(String content) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      backgroundColor: appColors.primaryBase,
-      duration: const Duration(seconds: 3),
-      content: Text(content as String),
-      action: SnackBarAction(
-        textColor: appColors.skyBase,
-        label: 'Undo',
-        onPressed: () {},
-      ),
-    ));
+    AppSnackBar.buildSnackbar(context, content, null, SnackBarType.error);
   }
 
   @override
@@ -88,8 +82,8 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                   flex: 9,
                   child: Container(
                     width: size.width,
-                    margin:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 24),
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 24),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,
@@ -145,9 +139,10 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                               color: Colors.white,
                               bgColor: const Color(0xFF439A97),
                               onPressed: () async {
-                                print('eMAIL ${widget.signUpBody?['email']}');
-
-                                print('body ${widget.signUpBody}');
+                                if (kDebugMode) {
+                                  print('eMAIL ${widget.signUpBody?['email']}');
+                                  print('body ${widget.signUpBody}');
+                                }
 
                                 final response = await AuthRepository().signUp(
                                     email:
@@ -160,19 +155,22 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                                         as String,
                                     code: codeController.text);
 
-                                print(response);
+                                if (kDebugMode) {
+                                  print(response);
+                                }
                                 FocusManager.instance.primaryFocus?.unfocus();
 
-                                if (response == 200) {
-                                  _displaySnackBar('Tạo acc thành công');
-                                  // ignore: use_build_context_synchronously
-                                  context.go('/login');
-                                } else {
-                                  _displaySnackBar('Sai mã xác nhận');
-                                  codeController.text = '';
-                                }
+                                // if (response == 200) {
+                                //   _displaySnackBar('Tạo acc thành công');
+                                //   // ignore: use_build_context_synchronously
+                                //   context.go('/login');
+                                // } else {
+                                //   _displaySnackBar('Sai mã xác nhận');
+                                //   codeController.text = '';
+                                // }
 
-                                // context.push('/flowFour');
+                                // ignore: use_build_context_synchronously
+                                context.push('/flowThree');
                               },
                             ),
                           ),

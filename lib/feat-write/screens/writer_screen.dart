@@ -3,7 +3,7 @@ import 'dart:math';
 
 import 'package:audiory_v0/feat-write/widgets/story_card_detail_writer.dart';
 import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/widgets/buttons/icon_button.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';

@@ -210,7 +210,7 @@ ThemeData lightTheme = ThemeData(
     ),
     bodyMedium: GoogleFonts.sourceSansPro(
       color: ColorPalette.inkBase,
-      fontSize: 14.0,
+      fontSize: 16.0,
       fontWeight: FontWeight.w400,
     ),
   ),

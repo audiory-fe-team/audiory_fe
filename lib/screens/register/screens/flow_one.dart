@@ -1,6 +1,5 @@
 import 'package:audiory_v0/screens/register/screens/flow_two.dart';
-import 'package:audiory_v0/widgets/buttons/icon_button.dart';
-import 'package:audiory_v0/widgets/buttons/outlined_button.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -98,31 +97,9 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                             .titleMedium
                             ?.copyWith(color: const Color(0xFF72777A))),
                     const Padding(padding: EdgeInsets.symmetric(vertical: 3.0)),
-                    Row(
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        OutlineBtn(
-                          text: '<17',
-                          size: 100,
-                          color: Colors.black,
-                          bgColor: Colors.white,
-                          onPress: () => {},
-                        ),
-                        OutlineBtn(
-                          text: '18-21',
-                          size: 100,
-                          color: Colors.black,
-                          bgColor: Colors.white,
-                          onPress: () => {},
-                        ),
-                        OutlineBtn(
-                          text: '21+',
-                          size: 100,
-                          color: Colors.black,
-                          bgColor: Colors.white,
-                          onPress: () => {},
-                        )
-                      ],
+                      children: [Text('DOB')],
                     ),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 100),
