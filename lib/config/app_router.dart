@@ -5,6 +5,10 @@ import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/edit_account_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/layout/edit_email_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
@@ -13,6 +17,7 @@ import 'package:audiory_v0/feat-write/screens/layout/preview_chapter_screen.dart
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
+import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 import 'package:audiory_v0/screens/register/screens/flow_four.dart';
@@ -30,6 +35,7 @@ import 'package:go_router/go_router.dart';
 import "package:firebase_auth/firebase_auth.dart";
 
 import '../feat-read/screens/detail_story_screen.dart';
+import '../models/Profile.dart';
 
 class AppRoutes {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -174,6 +180,7 @@ class AppRoutes {
         name: 'login',
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
+          // return const FlowThreeScreen();
           return const LoginScreen();
         },
       ),
@@ -196,9 +203,6 @@ class AppRoutes {
         path: '/flowTwo',
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
-          if (kDebugMode) {
-            print(extraMap['signUpBody'] == '' ? 'empty' : 'no');
-          }
           final body = extraMap['signUpBody'] as Map<String, String>;
           return FlowTwoScreen(signUpBody: body);
         },
@@ -217,6 +221,56 @@ class AppRoutes {
           return const FLowFourScreen();
         },
       ),
+      GoRoute(
+          name: 'profileSettings',
+          path: '/profileSettings',
+          builder: (BuildContext context, GoRouterState state) {
+            final extraMap = state.extra as Map<String, dynamic>;
+            final currentUser = extraMap["currentUser"] as UserServer;
+            final userProfile = extraMap["userProfile"] as Profile;
+            return ProfileSettingsScreen(
+                currentUser: currentUser, userProfile: userProfile);
+          }),
+      GoRoute(
+          name: 'editProfile',
+          path: '/editProfile',
+          builder: (BuildContext context, GoRouterState state) {
+            final extraMap = state.extra as Map<String, dynamic>;
+
+            final currentUser = extraMap["currentUser"] as UserServer;
+            final userProfile = extraMap["userProfile"] as Profile;
+
+            return EditProfileScreen(
+                currentUser: currentUser, userProfile: userProfile);
+          }),
+      GoRoute(
+          name: 'editAccount',
+          path: '/editAccount',
+          builder: (BuildContext context, GoRouterState state) {
+            final extraMap = state.extra as Map<String, dynamic>;
+
+            final currentUser = extraMap["currentUser"] as UserServer;
+            final userProfile = extraMap["userProfile"] as Profile;
+
+            return EditAccountScreen(
+                currentUser: currentUser, userProfile: userProfile);
+          },
+          routes: [
+            GoRoute(
+              path: 'editEmail',
+              name: 'editEmail',
+              builder: (BuildContext context, GoRouterState state) {
+                final extraMap = state.extra as Map<String, dynamic>;
+
+                final currentUser = extraMap["currentUser"] as UserServer;
+                final userProfile = extraMap["userProfile"] as Profile;
+
+                return EditEmailScreen(
+                  currentUser: currentUser,
+                );
+              },
+            )
+          ]),
       GoRoute(
         name: 'composeStory',
         path: '/composeStory',
@@ -238,9 +292,7 @@ class AppRoutes {
         path: '/previewChapter',
         builder: (BuildContext context, GoRouterState state) {
           //extra
-
           final extraMap = state.extra as Map<String, dynamic>;
-          print('extra map ${extraMap}');
           final chapterId = extraMap['chapterId'] == ''
               ? null
               : extraMap['chapterId'] as String?;

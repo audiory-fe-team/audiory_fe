@@ -21,7 +21,6 @@ class ProfileNotifier extends StateNotifier<AsyncValue<ProfileScreenData>> {
   final _storyRepository = StoryRepository(StoryApi(DioClient(Dio())));
   final _readingRepository = StoryRepository(StoryApi(DioClient(Dio())));
   void init(String userId) async {
-    state = const AsyncValue.loading();
     try {
       final Profile? user =
           await _profileRepository.fecthProfileByUserId(userId);

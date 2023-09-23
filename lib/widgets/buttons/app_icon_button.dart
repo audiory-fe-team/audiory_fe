@@ -5,7 +5,7 @@ class AppIconButton extends StatelessWidget {
   //if there is no param , there is a default button with no icon, white title, primary color bgColor
 
   //content
-  //thêm outline, animation ( hover, tap)
+  //thêm outline
   //button width , height depends on container cover it
 
   final String? title;
@@ -15,6 +15,9 @@ class AppIconButton extends StatelessWidget {
   final Color? color;
   final Color? bgColor;
   final VoidCallback onPressed;
+
+  //outline button
+  final bool? isOutlined;
   const AppIconButton(
       {super.key,
       this.title = 'Default',
@@ -23,7 +26,8 @@ class AppIconButton extends StatelessWidget {
       this.iconPosition,
       this.color,
       this.bgColor,
-      required this.onPressed});
+      required this.onPressed,
+      this.isOutlined = false});
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +48,7 @@ class AppIconButton extends StatelessWidget {
             ),
             label: Text(title == null ? 'Default' : title as String,
                 style: textStyle ??
-                    Theme.of(context).textTheme.titleLarge?.copyWith(
+                    Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: color ?? appColors.skyLightest,
                           fontWeight: FontWeight.bold,
                         )),
@@ -65,7 +69,7 @@ class AppIconButton extends StatelessWidget {
               children: [
                 Text(title == null ? 'Default' : title as String,
                     style: textStyle ??
-                        Theme.of(context).textTheme.titleLarge?.copyWith(
+                        Theme.of(context).textTheme.headlineSmall?.copyWith(
                               color: color ?? appColors.skyLightest,
                               fontWeight: FontWeight.bold,
                             )),
@@ -80,16 +84,24 @@ class AppIconButton extends StatelessWidget {
       } else {
         return ElevatedButton(
           onPressed: onPressed,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: bgColor ?? appColors.primaryBase,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(25),
-            ),
-            minimumSize: const Size(double.minPositive, 48),
-          ),
+          style: isOutlined != false
+              ? OutlinedButton.styleFrom(
+                  shape: const StadiumBorder(),
+                  backgroundColor: bgColor ?? appColors.inkLighter,
+                  side: BorderSide(
+                      width: 2, color: color ?? appColors.primaryBase),
+                  minimumSize: const Size(double.minPositive, 48),
+                )
+              : ElevatedButton.styleFrom(
+                  backgroundColor: bgColor ?? appColors.primaryBase,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  minimumSize: const Size(double.minPositive, 48),
+                ),
           child: Text(title == null ? 'Default' : title as String,
               style: textStyle ??
-                  Theme.of(context).textTheme.titleLarge?.copyWith(
+                  Theme.of(context).textTheme.headlineSmall?.copyWith(
                         color: color ?? appColors.skyLightest,
                         fontWeight: FontWeight.bold,
                       )),

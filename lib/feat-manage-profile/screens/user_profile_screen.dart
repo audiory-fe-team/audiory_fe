@@ -2,35 +2,34 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:audiory_v0/feat-manage-profile/models/profile_screen_data.dart';
+import 'package:audiory_v0/repositories/profile_repository.dart';
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../constants/skeletons.dart';
 import '../../models/AuthUser.dart';
 import '../../models/Profile.dart';
 import '../../models/Story.dart';
-import '../../state/state_manager.dart';
 import '../../theme/theme_constants.dart';
-import '../../widgets/buttons/icon_button.dart';
+import '../../widgets/buttons/app_icon_button.dart';
 import '../../widgets/custom_app_bar.dart';
-import '../provider/profile_data_provider.dart';
-import 'layout/story_card_detail.dart';
 import 'layout/story_scroll_list.dart';
+import 'package:fquery/fquery.dart';
 
-class UserProfileScreen extends ConsumerStatefulWidget {
+class UserProfileScreen extends StatefulHookWidget {
   const UserProfileScreen({super.key});
 
   @override
-  ConsumerState<UserProfileScreen> createState() => _UserProfileScreenState();
+  State<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
+class _UserProfileScreenState extends State<UserProfileScreen>
     with TickerProviderStateMixin {
   final storage = const FlutterSecureStorage();
   UserServer? currentUser;
@@ -41,7 +40,6 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
   @override
   void initState() {
     super.initState();
-    ref.read(storyOfUserProvider(''));
 
     tabController = TabController(
       initialIndex: 0,
@@ -51,7 +49,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
   }
 
   Widget introView(List<Story>? story, List<Story>? readingList,
-      List<Profile> followersList) {
+      List<Profile> followingList) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
@@ -187,14 +185,14 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                     '${readingList?.length ?? '0'} danh sách', () {
                   context.go('/');
                 }, 12),
-                // StoryScrollList(storyList: readingList),
+                StoryScrollList(storyList: readingList),
                 const SizedBox(
                   height: 16,
                 ),
               ],
-              if (followersList?.isEmpty as bool) ...[
+              if (followingList.isEmpty) ...[
                 titleWithLink(
-                    'Đang theo dõi', 'Thêm', '${followersList?.length} hồ sơ',
+                    'Đang theo dõi', 'Thêm', '${followingList.length} hồ sơ',
                     () {
                   context.go('/');
                 }, 12),
@@ -203,8 +201,8 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: followersList
-                          .take(min(followersList.length, 10))
+                      children: followingList
+                          .take(min(followingList.length, 10))
                           .map((story) => Padding(
                                 padding: const EdgeInsets.only(right: 12),
                                 child: followerCard(),
@@ -227,201 +225,199 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     );
   }
 
-  Widget userProfileInfo(UserServer? user, AsyncValue<List<Story>> storyList,
-      AsyncValue<ProfileScreenData?> userProfileAllData) {
+  Widget userProfileInfo(
+      UserServer? user,
+      UseQueryResult<Profile?, dynamic> profileQuery,
+      UseQueryResult<List<Story>?, dynamic> publishedStoriesQuery,
+      UseQueryResult<List<Story>?, dynamic> readingStoriesQuery) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
-    //function
-    ref.read(userProfileAllDataProvider.notifier).init(user?.id as String);
-    return SingleChildScrollView(
-      child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-        child: user == null
-            ? AppIconButton(onPressed: () {
-                context.go('/push');
-              })
-            : Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // currentUser != null
-                  //     ? SizedBox(
-                  //         width: double.infinity,
-                  //         child: AppIconButton(
-                  //             title: 'Đăng xuất',
-                  //             onPressed: () async {
-                  //               signOut();
-                  //             }),
-                  //       )
-                  //     : SizedBox(
-                  //         width: double.infinity,
-                  //         child: AppIconButton(
-                  //             title: 'Đăng nhập',
-                  //             onPressed: () async {
-                  //               context.go('/login');
-                  //             }),
-                  //       ),
 
-                  userProfileAllData.when(
-                      data: (data) => Column(
-                            children: [
-                              Material(
-                                child: InkWell(
-                                  onTap: () async {
-                                    context.push('/profile');
-                                  },
-                                  customBorder: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                  ),
-                                  child: ClipRRect(
-                                    borderRadius: BorderRadius.circular(100.0),
-                                    child: data?.profile?.avatarUrl == ''
-                                        ? Image.network(
-                                            'https://img.freepik.com/premium-vector/people-saving-money_24908-51569.jpg?w=2000',
-                                            width: size.width / 3.5,
-                                            height: size.width / 3.5,
-                                          )
-                                        : Image.network(
-                                            data?.profile?.avatarUrl as String,
-                                            width: size.width / 3.5,
-                                            height: size.width / 3.5,
-                                          ),
-                                  ),
-                                ),
+    return RefreshIndicator(
+      onRefresh: () async {
+        profileQuery.refetch();
+      },
+      child: SingleChildScrollView(
+        child: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          child: user == null
+              ? AppIconButton(onPressed: () {
+                  context.go('/push');
+                })
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Column(
+                      children: [
+                        Skeletonizer(
+                          enabled: profileQuery.isFetching,
+                          child: Material(
+                            child: InkWell(
+                              onTap: () async {
+                                context.push('/profile', extra: {});
+                              },
+                              customBorder: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(100.0),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                currentUser?.email ?? 'email@gmail.com',
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100.0),
+                                child: profileQuery.data?.avatarUrl == ''
+                                    ? Image.network(
+                                        'https://img.freepik.com/premium-vector/people-saving-money_24908-51569.jpg?w=2000',
+                                        width: size.width / 3.5,
+                                        height: size.width / 3.5,
+                                      )
+                                    : Image.network(
+                                        profileQuery.data?.avatarUrl as String,
+                                        width: size.width / 3.5,
+                                        height: size.width / 3.5,
+                                      ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Skeletonizer(
+                          enabled: profileQuery.isFetching,
+                          child: Text(
+                            profileQuery.data?.fullName ?? 'email@gmail.com',
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context).textTheme.headlineMedium,
+                          ),
+                        ),
+                        Text(
+                          '@${currentUser?.username ?? '_blank'}',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            GestureDetector(
+                              child: SvgPicture.asset(
+                                'assets/icons/coin.svg',
+                                width: 24,
+                                height: 24,
+                                color: Colors.amber,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                '0',
                                 textAlign: TextAlign.center,
-                                style:
-                                    Theme.of(context).textTheme.headlineMedium,
+                                style: Theme.of(context).textTheme.titleLarge,
                               ),
-                              Text(
-                                '@${currentUser?.username ?? '_blank'}',
-                                textAlign: TextAlign.center,
-                                style: Theme.of(context).textTheme.titleSmall,
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
-                                    child: SvgPicture.asset(
-                                      'assets/icons/coin.svg',
-                                      width: 24,
-                                      height: 24,
-                                      color: Colors.amber,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      '0',
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              SizedBox(
-                                width: size.width / 2.5,
-                                child: AppIconButton(
-                                    title: 'Nạp xu',
-                                    icon: const Icon(Icons.add),
-                                    onPressed: () {}),
-                              ),
-                              const SizedBox(height: 16),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0),
-                                child: interactionInfo(
-                                    data?.stories?.length,
-                                    data?.readingList?.length,
-                                    data?.followersList?.length),
-                              ),
-                              //descrition
-                              const SizedBox(height: 16),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: size.width / 9),
-                                    child: Divider(
-                                      thickness: 1.2,
-                                      color: appColors.inkLighter,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(12.0),
-                                    child: Text(
-                                      data?.profile?.description == null ||
-                                              data?.profile?.description == ''
-                                          ? 'Nhập gì đó về bạn'
-                                          : data?.profile?.description
-                                              as String,
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: size.width / 4),
-                                    child: Divider(
-                                      thickness: 1.2,
-                                      color: appColors.inkLighter,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              //tab
-                              Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                                child: TabBar(
-                                  onTap: (value) {
-                                    // if (tabState.value != value) tabState.value = value;
-                                  },
-                                  controller: tabController,
-                                  labelColor: appColors.primaryBase,
-                                  unselectedLabelColor: appColors.inkLight,
-                                  labelPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
-                                  indicatorColor: appColors.primaryBase,
-                                  labelStyle: textTheme.titleLarge,
-                                  tabs: const [
-                                    Tab(
-                                      text: 'Giới thiệu',
-                                    ),
-                                    Tab(
-                                      text: 'Thông báo',
-                                    )
-                                  ],
-                                ),
-                              ),
-                              Builder(builder: (context) {
-                                if (tabState == 0) {
-                                  return introView(
-                                      data?.stories, data?.readingList, []);
-                                }
-                                return Skeletonizer(
-                                    enabled: false,
-                                    child: introView(
-                                        data?.stories, data?.readingList, []));
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: size.width / 2.5,
+                          child: AppIconButton(
+                              title: 'Đăng xuất',
+                              // icon: const Icon(Icons.add),
+                              onPressed: () {
+                                signOut();
+                                context.go('/login');
                               }),
+                        ),
+                        const SizedBox(height: 16),
+                        Skeletonizer(
+                          enabled: publishedStoriesQuery.isFetching ||
+                              readingStoriesQuery.isFetching,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 24.0),
+                            child: interactionInfo(
+                              publishedStoriesQuery.data?.length,
+                              readingStoriesQuery.data?.length,
+                              profileQuery.data?.numberOfFollowers,
+                            ),
+                          ),
+                        ),
+                        // descrition
+                        const SizedBox(height: 16),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Skeletonizer(
+                              enabled: profileQuery.isFetching,
+                              child: Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: size.width / 9),
+                                child: Divider(
+                                  thickness: 1.2,
+                                  color: appColors.inkLighter,
+                                ),
+                              ),
+                            ),
+                            Skeletonizer(
+                              enabled: profileQuery.isFetching,
+                              child: Padding(
+                                padding: const EdgeInsets.all(12.0),
+                                child: Text(
+                                  profileQuery.data?.description == null ||
+                                          profileQuery.data?.description == ''
+                                      ? 'Nhập gì đó về bạn'
+                                      : profileQuery.data?.description
+                                          as String,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: size.width / 4),
+                              child: Divider(
+                                thickness: 1.2,
+                                color: appColors.inkLighter,
+                              ),
+                            ),
+                          ],
+                        ),
+                        //tab
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 12),
+                          child: TabBar(
+                            onTap: (value) {
+                              // if (tabState.value != value) tabState.value = value;
+                            },
+                            controller: tabController,
+                            labelColor: appColors.primaryBase,
+                            unselectedLabelColor: appColors.inkLight,
+                            labelPadding:
+                                const EdgeInsets.symmetric(horizontal: 16),
+                            indicatorColor: appColors.primaryBase,
+                            labelStyle: textTheme.titleLarge,
+                            tabs: const [
+                              Tab(
+                                text: 'Giới thiệu',
+                              ),
+                              Tab(
+                                text: 'Thông báo',
+                              )
                             ],
                           ),
-                      error: (err, stack) => Text(err.toString()),
-                      loading: () => const Center(
-                            child: CircularProgressIndicator(),
-                          )),
-                ],
-              ),
+                        ),
+                        Builder(builder: (context) {
+                          if (tabState == 0) {
+                            return introView(publishedStoriesQuery.data,
+                                readingStoriesQuery.data, []);
+                          }
+                          return Skeletonizer(
+                              enabled: false, child: introView([], [], []));
+                        }),
+                      ],
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }
@@ -429,6 +425,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
   Widget interactionInfo(
       int? numOfStories, int? numOfReadingList, int? numOfFollowers) {
     final textTheme = Theme.of(context).textTheme;
+    final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final sharedNumberStyle =
@@ -437,24 +434,28 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     final sharedTitleStyle = textTheme.titleMedium;
 
     Widget interactionItem(String title, data) {
-      return Column(
-        children: [
-          Skeleton.keep(
-            child: Text(
-              data,
-              style: sharedHeaderStyle,
+      return SizedBox(
+        width: (size.width - 32) / 4,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Skeleton.keep(
+              child: Text(
+                data,
+                style: sharedHeaderStyle,
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text((title).toString(), style: sharedTitleStyle)
-        ],
+            const SizedBox(height: 4),
+            Text((title).toString(), style: sharedTitleStyle)
+          ],
+        ),
       );
     }
 
     return IntrinsicHeight(
         child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            // mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
           interactionItem('Tác phẩm', '${numOfStories ?? '0'}'),
           const VerticalDivider(),
@@ -503,16 +504,24 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     currentUser =
         value != null ? UserServer.fromJson(jsonDecode(value)['data']) : null;
 
-    if (kDebugMode) {
-      print('currentuser ${currentUser?.email}');
-    }
     return currentUser;
   }
 
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final userProfile = ref.watch(userProfileAllDataProvider);
+    final profileQuery = useQuery(
+        ['profile'],
+        () => ProfileRepository()
+            .fetchUserProfileByUserId(currentUser?.id as String));
+    final publishedStoriesQuery = useQuery(
+        ['publishedStories'],
+        () => StoryRepostitory()
+            .fetchPublishedStoriesByUserId(currentUser?.id as String));
+    final readingStoriesQuery = useQuery(
+        ['readingStories'],
+        () => StoryRepostitory()
+            .fetchReadingStoriesByUserId(currentUser?.id as String));
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -525,43 +534,46 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
               ?.copyWith(color: appColors.inkBase),
         ),
         actions: [
-          IconButton(
-              onPressed: () async {
-                signOut();
-
-                Future.delayed(const Duration(milliseconds: 100), () {
-                  context.go('/login');
-                });
-              },
-              icon: const Icon(
-                Icons.settings_outlined,
-                size: 25,
-              ))
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: IconButton(
+                onPressed: () {
+                  context.pushNamed('profileSettings', extra: {
+                    'currentUser': currentUser,
+                    'userProfile': profileQuery.data
+                  });
+                },
+                icon: const Icon(
+                  Icons.settings_outlined,
+                  size: 25,
+                )),
+          )
         ],
       ),
-      body: FutureBuilder<UserServer?>(
-        future: getUserDetails(), // async work
-        builder: (BuildContext context, AsyncSnapshot<UserServer?> snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            default:
-              if (snapshot.hasError) {
-                // return userProfileInfo(null, const AsyncData([]),
-                //     AsyncData(ProfileScreenData(null, null, null, null)));
-
-                return AppIconButton(onPressed: () {
-                  context.go('/login');
-                });
-              } else {
-                return userProfileInfo(
-                    snapshot.data, const AsyncValue.data([]), userProfile);
-                // return defaultUserProfileInfo();
-              }
-          }
+      body: RefreshIndicator(
+        onRefresh: () async {
+          profileQuery.refetch();
         },
+        child: FutureBuilder<UserServer?>(
+          future: getUserDetails(), // async work
+          builder: (BuildContext context, AsyncSnapshot<UserServer?> snapshot) {
+            switch (snapshot.connectionState) {
+              case ConnectionState.waiting:
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              default:
+                if (snapshot.hasError) {
+                  return AppIconButton(onPressed: () {
+                    context.go('/login');
+                  });
+                } else {
+                  return userProfileInfo(snapshot.data, profileQuery,
+                      publishedStoriesQuery, readingStoriesQuery);
+                }
+            }
+          },
+        ),
       ),
     );
   }
