@@ -56,7 +56,7 @@ class AuthRepository extends ChangeNotifier {
     Map<String, String> body = {
       'username_or_email': email,
       'password': password,
-      'registration_token ': fcmToken.toString()
+      'registration_token': fcmToken as String
     };
     Map<String, String> header = {
       "Content-type": "application/json",
@@ -205,8 +205,12 @@ class AuthRepository extends ChangeNotifier {
             "Accept": "application/json",
             "Authorization": idToken
           };
-
-          final response = await http.post(url, headers: header);
+          final fcmToken = await FirebaseMessaging.instance.getToken();
+          Map<String, String> body = {'registration_token': fcmToken as String};
+          print('token ${fcmToken}');
+          print('token ${fcmToken.toString()}');
+          final response =
+              await http.post(url, headers: header, body: jsonEncode(body));
 
           print('res');
           print(response.body);

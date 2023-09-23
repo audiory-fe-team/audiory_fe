@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:audiory_v0/widgets/buttons/icon_button.dart';
+import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -41,15 +43,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> signInGoogle() async {
     try {
       await AuthRepository().signInWithGoogle();
-      // if (provider.isBack) {
-      //   context.go('/');
-      // }
+
       // ignore: use_build_context_synchronously
       context.go('/');
     } on FirebaseAuthException catch (e) {
-      if (kDebugMode) {
-        print(e);
-      }
+      if (kDebugMode) {}
     }
   }
 
@@ -111,16 +109,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       passwordController.clear();
                       // ignore: use_build_context_synchronously
                       context.go('/');
-                      _displaySnackBar('Đăng nhập thành công');
+                      // ignore: use_build_context_synchronously
+                      AppSnackBar.buildSnackbar(context, 'Đăng nhập thành công',
+                          null, SnackBarType.success);
                     } else {
                       FocusManager.instance.primaryFocus!.unfocus();
                       passwordController.clear();
                       final message = jsonDecode(res.body)['message'];
-                      _displaySnackBar(message);
+                      // ignore: use_build_context_synchronously
+                      AppSnackBar.buildSnackbar(
+                          context, message, null, SnackBarType.success);
                     }
-                  } on Exception catch (e) {
-                    print(e);
-                  }
+                  } on Exception catch (e) {}
                 }),
     );
   }
@@ -248,7 +248,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             child: TextFormField(
                               onSaved: (event) {
                                 emailController.text.isEmpty
-                                    ? _displaySnackBar('Không được để trống')
+                                    ? AppSnackBar.buildSnackbar(
+                                        context,
+                                        'Không được để trống',
+                                        null,
+                                        SnackBarType.error)
                                     : null;
                               },
                               controller: passwordController,
@@ -262,7 +266,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     borderRadius: const BorderRadius.all(
                                         Radius.circular(80)),
                                   ),
-                                  border: OutlineInputBorder(
+                                  border: const OutlineInputBorder(
                                     borderRadius:
                                         BorderRadius.all(Radius.circular(80)),
                                   ),
@@ -275,7 +279,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                         BorderRadius.all(Radius.circular(80)),
                                   ),
                                   filled: true,
-                                  hintStyle: TextStyle(
+                                  hintStyle: const TextStyle(
                                     color: Color.fromARGB(255, 228, 212, 212),
                                     fontSize: 24,
                                     fontFamily: 'Source San Pro',
@@ -283,8 +287,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     letterSpacing: 0.06,
                                   ),
                                   fillColor: Colors.white70,
-                                  contentPadding:
-                                      EdgeInsets.symmetric(horizontal: 24.0),
+                                  contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 24.0),
                                   labelText: "Mật khẩu"),
                               // validator: (value) {
                               //   if (value == null || value.isEmpty) {

@@ -9,12 +9,15 @@ class AppTextInputField extends StatefulWidget {
   //position
   final double? marginVertical;
   final double? marginHorizontal;
+  final double? marginBottom;
   final double? paddingVertical;
   final double? paddingHorizontal;
   final double? sizeBoxHeight;
 
   //type
   final bool? isTextArea;
+  final bool? isDisabled;
+  final int? maxLengthCharacters;
   final int? minLines;
 
   //label
@@ -51,7 +54,10 @@ class AppTextInputField extends StatefulWidget {
       this.suffixIcon,
       this.textInputType = TextInputType.text,
       this.isRequired = false,
-      this.textAlign});
+      this.textAlign,
+      this.maxLengthCharacters,
+      this.marginBottom = 16,
+      this.isDisabled = true});
 
   @override
   State<AppTextInputField> createState() => _AppTextInputFieldState();
@@ -75,22 +81,26 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
 
     var required = FormBuilderValidators.required(errorText: 'Nội dung trống');
     return FormBuilderTextField(
+      enabled: widget.isDisabled as bool,
       onChanged: (value) => {
         setState(() {
           _enteredText = value as String;
         })
       },
+
       textAlign: widget.textAlign ?? TextAlign.left,
       keyboardType: widget.textInputType,
       name: widget.name,
       initialValue: widget.initialValue!,
       minLines: widget.minLines!,
       maxLines: widget.minLines!, //dynamic height
+      maxLength: widget.maxLengthCharacters,
+      cursorColor: appColors.primaryBase,
       decoration: InputDecoration(
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             style: BorderStyle.solid,
-            color: appColors.skyDark,
+            color: appColors.skyBase,
           ),
           borderRadius: widget.isTextArea != null && widget.isTextArea! == true
               ? const BorderRadius.all(Radius.circular(10))
@@ -108,6 +118,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(
+            width: 2,
             style: BorderStyle.solid,
             color: Color(0xFF439A97),
           ),
@@ -125,16 +136,19 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
               color: appColors.skyDark,
             ),
         counterText: widget.isTextArea != null && widget.isTextArea == true
-            ? '${_enteredText.length.toString()} từ'
+            ? '${_enteredText.length.toString()}/${widget.maxLengthCharacters} ký tự'
             : null,
-        counterStyle: Theme.of(context).textTheme.bodyMedium,
-        fillColor: appColors.skyLightest,
+        counterStyle: Theme.of(context)
+            .textTheme
+            .bodyMedium
+            ?.copyWith(color: appColors.inkLighter),
+        fillColor: Colors.transparent,
         contentPadding:
-            const EdgeInsets.symmetric(vertical: 2.0, horizontal: 12),
+            const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12),
         // labelText: "Email",
         focusColor: Colors.black12,
       ),
-      validator: required,
+      validator: widget.isRequired == true ? required : null,
     );
   }
 
@@ -176,7 +190,10 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
                     ),
                     widget.isTextArea != null
                         ? _inputTextFormField(context)
-                        : _inputTextFormField(context)
+                        : _inputTextFormField(context),
+                    SizedBox(
+                      height: widget.marginBottom,
+                    )
                   ])
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

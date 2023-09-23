@@ -22,7 +22,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return hasAppBar!
         ? AppBar(
-            elevation: 3.5,
+            elevation: 2,
             leading: leading,
             title: title ??
                 Container(
