@@ -1,24 +1,29 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/LibraryStory.dart';
+import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class CurrentReadCard extends StatelessWidget {
-  final Story? story;
-  const CurrentReadCard({super.key, required this.story});
+  final LibraryStory story;
+  final Function(String) onDeleteStory;
+  const CurrentReadCard(
+      {super.key, required this.story, required this.onDeleteStory});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final coverUrl = story?.coverUrl ?? FALLBACK_IMG_URL;
-    final storyId = story?.id ?? 'not-found';
-    final title = story?.title ?? 'Tiêu đề truyện';
+    final coverUrl = story.story.coverUrl ?? FALLBACK_IMG_URL;
+    final storyId = story.storyId ?? 'not-found';
+    final title = story.story.title ?? 'Tiêu đề truyện';
 
-    final authorName = story?.author?.fullName ?? 'Tác giả';
+    final authorName = story.story.author?.fullName ?? 'Tác giả';
 
     return GestureDetector(
         onTap: () {
@@ -153,7 +158,9 @@ class CurrentReadCard extends StatelessWidget {
                                 size: 18, color: appColors.skyDark)),
                         onSelected: (value) {
                           if (value == "notification") {}
-                          if (value == "delete") {}
+                          if (value == "delete") {
+                            onDeleteStory(storyId);
+                          }
                         },
                         itemBuilder: (context) => [
                               PopupMenuItem(

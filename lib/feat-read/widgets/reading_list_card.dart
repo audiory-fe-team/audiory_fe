@@ -1,27 +1,27 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/ReadingList.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ReadingListCard extends StatelessWidget {
-  final Story? story;
-  const ReadingListCard({super.key, required this.story});
+  final ReadingList readingList;
+  const ReadingListCard({super.key, required this.readingList});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final coverUrl = story?.coverUrl ?? FALLBACK_IMG_URL;
-    final storyId = story?.id ?? 'not-found';
-    final title = story?.title ?? 'Tiêu đề truyện';
+    final coverUrl = FALLBACK_IMG_URL;
+    final readingListId = readingList.id ?? 'not-found';
+    final title = readingList.name ?? 'Tiêu đề truyện';
 
-    final authorName = story?.author?.fullName ?? 'Tác giả';
+    final isPrivate = readingList.isPrivate ?? false;
 
     return GestureDetector(
         onTap: () {
-          GoRouter.of(context).push("/story/$storyId");
+          GoRouter.of(context).go("/library/reading-list/$readingListId");
         },
         child: Container(
           width: double.infinity,
@@ -92,12 +92,17 @@ class ReadingListCard extends StatelessWidget {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.menu_book_rounded,
-                                      size: 14, color: appColors.inkBase),
-                                  const SizedBox(width: 4),
+                                  Icon(
+                                      isPrivate
+                                          ? Icons.lock_rounded
+                                          : Icons.public_rounded,
+                                      size: 14,
+                                      color: appColors.inkBase),
+                                  const SizedBox(width: 2),
                                   SizedBox(
                                       width: 140,
-                                      child: Text(authorName,
+                                      child: Text(
+                                          isPrivate ? 'Riêng tư' : 'Công khai',
                                           style: textTheme.titleSmall?.copyWith(
                                               fontStyle: FontStyle.italic,
                                               overflow:

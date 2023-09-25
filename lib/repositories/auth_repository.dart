@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:audiory_v0/models/Profile.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
@@ -287,6 +288,30 @@ class AuthRepository extends ChangeNotifier {
       }
 
       rethrow;
+    }
+  }
+
+  Future<Profile> getMyInfo() async {
+    final url = Uri.parse('${Endpoints().user}/me');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.get(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+    if (response.statusCode == 200) {
+      final result = jsonDecode(responseBody)['data'];
+      return Profile.fromJson(result);
+    } else {
+      throw Exception('Failed to load user info');
     }
   }
 }

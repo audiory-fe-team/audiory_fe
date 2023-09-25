@@ -1,13 +1,7 @@
-import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading/setting_modal.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-
-// class ReadingBottomBar extends StatefulWidget {
-
-//   @override
-//   State<ReadingBottomBar> createState() => _ReadingBottomBarState();
-// }
 
 class ReadingBottomBar extends HookWidget {
   final Function([Color? bgColor, int? fontSize, bool? showCommentByParagraph])
@@ -42,11 +36,11 @@ class ReadingBottomBar extends HookWidget {
       });
     }
 
-    final sharedTextStyle = Theme.of(context).textTheme.labelLarge;
+    final sharedTextStyle = Theme.of(context).textTheme.titleSmall;
     return Material(
         elevation: 10,
         child: SizedBox(
-            height: 65,
+            height: 58,
             width: double.infinity,
             child: Material(
                 color: appColors.skyLightest,

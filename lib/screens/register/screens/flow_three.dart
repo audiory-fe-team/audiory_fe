@@ -149,7 +149,6 @@ class _FlowThreeScreenState extends State<FlowThreeScreen>
                                             selectedStoriesList.add(storyId);
                                           }
                                         });
-                                        print('selected');
                                       },
                                     ),
                                   );

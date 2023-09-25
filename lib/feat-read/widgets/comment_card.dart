@@ -17,10 +17,10 @@ class CommentCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    return Expanded(
-      // margin: EdgeInsets.symmetric(vertical: 2),
-      // width: double.maxFinite,
-      // height: 120,
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 2),
+      width: double.maxFinite,
+      height: 120,
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -31,7 +31,7 @@ class CommentCard extends StatelessWidget {
                     // borderRadius: BorderRadius.circular(50.0),
                     child: Image.asset('assets/images/user-avatar.jpg',
                         width: 30.0, height: 30.0)),
-                SizedBox(
+                const SizedBox(
                   width: 10,
                 ),
                 Column(

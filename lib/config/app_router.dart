@@ -11,8 +11,9 @@ import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart'
 import 'package:audiory_v0/feat-manage-profile/screens/layout/edit_email_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
-import 'package:audiory_v0/feat-read/screens/library_screen.dart';
-import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
+import 'package:audiory_v0/feat-read/screens/library/library_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading-list/reading_list_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/preview_chapter_screen.dart';
@@ -36,7 +37,7 @@ import 'package:go_router/go_router.dart';
 //auth
 import "package:firebase_auth/firebase_auth.dart";
 
-import '../feat-read/screens/detail_story_screen.dart';
+import '../feat-read/screens/detail-story/detail_story_screen.dart';
 import '../models/Profile.dart';
 
 class AppRoutes {
@@ -93,19 +94,37 @@ class AppRoutes {
                     },
                   ),
                   GoRoute(
-                    name: 'library',
-                    path: 'library',
-                    builder: (_, GoRouterState state) {
-                      return const LibraryScreen();
-                    },
-                  ),
+                      name: 'library',
+                      path: 'library',
+                      builder: (_, GoRouterState state) {
+                        return const LibraryScreen();
+                      },
+                      routes: [
+                        GoRoute(
+                          name: 'reading_list',
+                          path: 'reading-list/:id',
+                          builder: (_, GoRouterState state) {
+                            final id = state.pathParameters['id'];
+                            print(id);
+                            if (id == null || id == '' || id == 'not-found') {
+                              return const NotFoundScreen();
+                            }
+                            return ReadingListScreen(id: id);
+                          },
+                        )
+                      ]),
                   GoRoute(
                       path: 'story/:storyId',
                       name: 'story_detail',
                       builder: (BuildContext context, GoRouterState state) {
                         final storyId = state.pathParameters['storyId'];
+                        if (storyId == null ||
+                            storyId == '' ||
+                            storyId == 'not-found') {
+                          return const NotFoundScreen();
+                        }
                         return DetailStoryScreen(
-                          id: storyId ?? '',
+                          id: storyId,
                         );
                       },
                       routes: [

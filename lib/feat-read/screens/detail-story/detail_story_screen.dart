@@ -1,9 +1,13 @@
+import 'dart:math';
+
 import 'package:audiory_v0/constants/gifts.dart';
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Gift.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
+import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -11,6 +15,7 @@ import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -38,6 +43,8 @@ class DetailStoryScreen extends HookConsumerWidget {
     final paginatorController = NumberPaginatorController();
     final storyQuery =
         useQuery(['story', id], () => StoryRepostitory().fetchStoryById(id));
+    final libraryQuery =
+        useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
 
     final authorQuery = useQuery(['profile', storyQuery.data?.authorId],
         () => ProfileRepository().fetchProfileById(storyQuery.data?.authorId),
@@ -355,6 +362,18 @@ class DetailStoryScreen extends HookConsumerWidget {
       );
     }
 
+    Future<void> handleAddToLibrary() async {
+      try {
+        await LibraryRepository.addStoryMyLibrary(id);
+        AppSnackBar.buildTopSnackBar(context,
+            'Thêm truyện vào thư viện thành công', null, SnackBarType.success);
+        libraryQuery.refetch();
+      } catch (error) {
+        AppSnackBar.buildTopSnackBar(
+            context, error.toString(), null, SnackBarType.warning);
+      }
+    }
+
     return Scaffold(
         appBar: AppBar(
           elevation: 2,
@@ -522,42 +541,64 @@ class DetailStoryScreen extends HookConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  TapEffectWrapper(
-                      onTap: () {},
-                      child: SizedBox(
-                          width: 50,
-                          child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.favorite,
-                                  size: 24,
-                                  color: appColors.primaryBase,
-                                ),
-                                Text('Yêu thích',
-                                    style: textTheme.labelLarge!.copyWith(
-                                      color: appColors.primaryBase,
-                                    ))
-                              ]))),
-                  TapEffectWrapper(
-                      onTap: () {},
-                      child: SizedBox(
-                          width: 50,
-                          child: Column(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.bookmark,
-                                  size: 24,
-                                  color: appColors.primaryBase,
-                                ),
-                                Text('Lưu trữ',
-                                    style: textTheme.labelLarge!.copyWith(
-                                      color: appColors.primaryBase,
-                                    ))
-                              ]))),
+                  Builder(builder: (context) {
+                    final isAdded = libraryQuery.data?.libraryStory
+                        ?.any((element) => element.storyId == id);
+                    return TapEffectWrapper(
+                        onTap: () {
+                          if (isAdded == true) {
+                            AppSnackBar.buildTopSnackBar(context,
+                                'Đã lưu truyện', null, SnackBarType.info);
+                            return;
+                          }
+                          handleAddToLibrary();
+                        },
+                        child: SizedBox(
+                            width: 50,
+                            child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.bookmark_rounded,
+                                    size: 24,
+                                    color: isAdded == true
+                                        ? appColors.primaryBase
+                                        : appColors.skyBase,
+                                  ),
+                                  Text('Lưu trữ',
+                                      style: textTheme.labelLarge!.copyWith(
+                                        color: isAdded == true
+                                            ? appColors.primaryBase
+                                            : appColors.skyBase,
+                                      ))
+                                ])));
+                  }),
+                  Builder(builder: (context) {
+                    final isDownloaded = false;
+                    return TapEffectWrapper(
+                        onTap: () {},
+                        child: SizedBox(
+                            width: 50,
+                            child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.download_rounded,
+                                    size: 24,
+                                    color: isDownloaded == true
+                                        ? appColors.primaryBase
+                                        : appColors.skyBase,
+                                  ),
+                                  Text('Tải xuống',
+                                      style: textTheme.labelLarge!.copyWith(
+                                        color: isDownloaded == true
+                                            ? appColors.primaryBase
+                                            : appColors.skyBase,
+                                      ))
+                                ])));
+                  }),
                   Expanded(
                       child: FilledButton(
                           onPressed: () {

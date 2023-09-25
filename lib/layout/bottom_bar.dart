@@ -2,6 +2,7 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class AppBottomNavigationBar extends HookWidget {
   const AppBottomNavigationBar({super.key});
@@ -45,32 +46,57 @@ class AppBottomNavigationBar extends HookWidget {
 
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      items: const <BottomNavigationBarItem>[
+      items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
+          icon: Icon(
+            selectedIndex.value == 0 ? Icons.home_rounded : Icons.home_outlined,
+          ),
           label: 'Trang chủ',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.explore),
+          icon: Icon(
+            selectedIndex.value == 1
+                ? Icons.explore_rounded
+                : Icons.explore_outlined,
+          ),
           label: 'Tìm kiếm',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.bookmark),
+          icon: Icon(
+            selectedIndex.value == 2
+                ? Icons.bookmark_rounded
+                : Icons.bookmark_outline_rounded,
+          ),
           label: 'Thư viện',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.edit),
+          icon: Icon(selectedIndex.value == 3
+              ? Icons.edit_rounded
+              : Icons.edit_outlined),
           label: 'Viết',
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
+          icon: Icon(
+            selectedIndex.value == 4
+                ? Icons.person_rounded
+                : Icons.person_outlined,
+          ),
           label: 'Hồ sơ',
         ),
       ],
       currentIndex: selectedIndex.value,
       selectedItemColor: appColors.primaryBase,
       onTap: (index) => onItemTapped(index, context),
-      unselectedLabelStyle: const TextStyle(),
+      unselectedLabelStyle: TextStyle(
+        fontFamily: GoogleFonts.sourceSansPro().fontFamily,
+        fontSize: 12,
+        fontWeight: FontWeight.w400,
+      ),
+      selectedLabelStyle: TextStyle(
+        fontFamily: GoogleFonts.sourceSansPro().fontFamily,
+        fontSize: 12,
+        fontWeight: FontWeight.w600,
+      ),
       unselectedItemColor: appColors.skyBase,
     );
   }
