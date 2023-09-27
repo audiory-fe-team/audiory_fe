@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:audiory_v0/models/enum/SnackbarType.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
@@ -164,7 +163,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: <Widget>[
               Container(
                   margin: const EdgeInsets.symmetric(vertical: 2.0),
-                  height: size * 0.35,
+                  height: size * 0.30,
                   child: const Image(
                       height: double.maxFinite,
                       image:

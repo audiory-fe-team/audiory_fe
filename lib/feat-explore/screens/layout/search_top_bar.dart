@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class SearchTopBar extends HookWidget implements PreferredSizeWidget {
   final Function(String) onSearchValueChange;
@@ -52,6 +51,7 @@ class SearchTopBar extends HookWidget implements PreferredSizeWidget {
                       },
                       onSubmitted: (value) {
                         onSubmit();
+                        FocusScope.of(context).unfocus();
                       },
                       style: Theme.of(context).textTheme.bodyMedium,
                       decoration: InputDecoration(
@@ -73,7 +73,7 @@ class SearchTopBar extends HookWidget implements PreferredSizeWidget {
                     const SizedBox(width: 12),
                     IconButton(
                         padding: EdgeInsets.zero,
-                        constraints: BoxConstraints(),
+                        constraints: const BoxConstraints(),
                         onPressed: () {
                           onSubmit();
                         },

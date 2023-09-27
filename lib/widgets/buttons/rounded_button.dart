@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class CircularButton extends StatelessWidget {
   final IconData icon;
@@ -23,12 +22,13 @@ class CircularButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: onPressed,
       style: ButtonStyle(
-        shape: MaterialStateProperty.all(CircleBorder()),
-        padding: MaterialStateProperty.all(EdgeInsets.all(16)),
+        shape: MaterialStateProperty.all(const CircleBorder()),
+        padding: MaterialStateProperty.all(const EdgeInsets.all(16)),
         backgroundColor: MaterialStateProperty.all(bgColor), // <-- Button color
         overlayColor: MaterialStateProperty.resolveWith<Color?>((states) {
-          if (states.contains(MaterialState.pressed))
+          if (states.contains(MaterialState.pressed)) {
             return Colors.red; // <-- Splash color
+          }
         }),
       ),
       child: Icon(icon, color: color, size: size),

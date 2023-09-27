@@ -25,7 +25,6 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
 
     Future<UserServer?> getUserDetails() async {
       String? value = await storage.read(key: 'currentUser');
-      print('val : $value');
       currentUser =
           value != null ? UserServer.fromJson(jsonDecode(value)['data']) : null;
 
@@ -100,7 +99,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
               color: Colors.white,
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.amber,
+                  color: Color.fromARGB(255, 172, 136, 28),
                   width: 1.0,
                   style: BorderStyle.solid,
                 ),
@@ -126,7 +125,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                           if (snapshot.hasError) {
                             return _userInfo(null);
                           } else {
-                            return _userInfo(snapshot.data as UserServer);
+                            return _userInfo(snapshot.data ?? null);
                           }
                       }
                     },

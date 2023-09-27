@@ -37,17 +37,17 @@ final skeletonProfiles = [
 
 final skeletonChapter = Chapter(
     id: '1',
-    story_id: '1',
+    storyId: '1',
     title: generateFakeString(30),
-    read_count: 1000,
-    vote_count: 1000,
-    comment_count: 1000,
+    readCount: 1000,
+    voteCount: 1000,
+    commentCount: 1000,
     paragraphs: [
       Paragraph(
           id: '1',
-          chapter_id: '1',
+          chapterId: '1',
           order: 1,
           content: generateFakeString(2000),
-          comment_count: 100,
-          audio_url: generateFakeString(50))
+          commentCount: 100,
+          audioUrl: generateFakeString(50))
     ]);

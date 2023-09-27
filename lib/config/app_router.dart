@@ -1,16 +1,19 @@
+import 'package:audiory_v0/feat-explore/screens/category_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/tag_screen.dart';
 import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
-import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_account_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/layout/edit_email_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
-import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
+import 'package:audiory_v0/feat-read/screens/library/library_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading-list/reading_list_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/preview_chapter_screen.dart';
@@ -34,7 +37,7 @@ import 'package:go_router/go_router.dart';
 //auth
 import "package:firebase_auth/firebase_auth.dart";
 
-import '../feat-read/screens/detail_story_screen.dart';
+import '../feat-read/screens/detail-story/detail_story_screen.dart';
 import '../models/Profile.dart';
 
 class AppRoutes {
@@ -65,90 +68,141 @@ class AppRoutes {
           },
           routes: [
             GoRoute(
-              name: 'home',
-              path: '/',
-              builder: (BuildContext context, GoRouterState state) {
-                // return AnimatedSplashScreen(
-                //     duration: 3000,
-                //     splash: SplashScreen(),
-                //     nextScreen: AppMainLayout(),
-                //     splashTransition: SplashTransition.fadeTransition,
-                //     pageTransitionType: PageTransitionType.scale,
-                //     backgroundColor: Colors.white);
-                return const HomeScreen();
-              },
-            ),
-            GoRoute(
-              path: '/ranking',
-              name: 'ranking',
-              builder: (BuildContext context, GoRouterState state) {
-                final typeString = state.queryParameters["type"];
-                RankingType type = mapStringToRankingType(typeString);
-                final metricString = state.queryParameters["metric"];
-                RankingMetric metric = mapStringToRankingMetric(metricString);
-                final timeString = state.queryParameters["time"];
-                RankingTimeRange time = mapStringToRankingTimeRange(timeString);
-                final category = state.queryParameters["category"];
-                return RankingScreen(
-                  key: state.pageKey,
-                  type: type,
-                  metric: metric,
-                  time: time,
-                  category: category,
-                );
-              },
-            ),
-            GoRoute(
-                path: '/explore',
-                name: 'explore',
+                name: 'home',
+                path: '/',
                 builder: (BuildContext context, GoRouterState state) {
-                  return const ExploreScreen();
+                  // return AnimatedSplashScreen(
+                  //     duration: 3000,
+                  //     splash: SplashScreen(),
+                  //     nextScreen: AppMainLayout(),
+                  //     splashTransition: SplashTransition.fadeTransition,
+                  //     pageTransitionType: PageTransitionType.scale,
+                  //     backgroundColor: Colors.white);
+                  return const HomeScreen();
                 },
                 routes: [
                   GoRoute(
-                    path: 'search',
-                    name: 'explore_search',
-                    pageBuilder: (context, state) => CustomTransitionPage<void>(
-                        key: state.pageKey,
-                        child: const SearchScreen(),
-                        transitionDuration: const Duration(milliseconds: 400),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(
-                              1, 0.0); // Start from right side of the screen
-                          const end =
-                              Offset.zero; // End at the center of the screen
-                          final tween = Tween(begin: begin, end: end);
-                          final offsetAnimation = animation.drive(
-                              tween.chain(CurveTween(curve: Curves.easeIn)));
-
-                          return SlideTransition(
-                              position: offsetAnimation, child: child);
-                        }),
+                    parentNavigatorKey: _shellNavigatorKey,
+                    name: 'tag',
+                    path: 'tag/:tagId',
+                    builder: (_, GoRouterState state) {
+                      final tagId = state.pathParameters["tagId"];
+                      final tagName = state.queryParameters["tagName"];
+                      if (tagId != null && tagName != null) {
+                        return SearchTagScreen(tagId: tagId, tagName: tagName);
+                      }
+                      return const NotFoundScreen();
+                    },
                   ),
                   GoRoute(
-                      path: 'result',
-                      name: 'explore_result',
+                      parentNavigatorKey: _shellNavigatorKey,
+                      name: 'library',
+                      path: 'library',
+                      builder: (_, GoRouterState state) {
+                        return const LibraryScreen();
+                      },
+                      routes: [
+                        GoRoute(
+                          name: 'reading_list',
+                          path: 'reading-list/:id',
+                          builder: (_, GoRouterState state) {
+                            final id = state.pathParameters['id'];
+                            print(id);
+                            if (id == null || id == '' || id == 'not-found') {
+                              return const NotFoundScreen();
+                            }
+                            return ReadingListScreen(id: id);
+                          },
+                        )
+                      ]),
+                  GoRoute(
+                    parentNavigatorKey: _shellNavigatorKey,
+                    path: 'ranking',
+                    name: 'ranking',
+                    builder: (BuildContext context, GoRouterState state) {
+                      final typeString = state.queryParameters["type"];
+                      RankingType type = mapStringToRankingType(typeString);
+                      final metricString = state.queryParameters["metric"];
+                      RankingMetric metric =
+                          mapStringToRankingMetric(metricString);
+                      final timeString = state.queryParameters["time"];
+                      RankingTimeRange time =
+                          mapStringToRankingTimeRange(timeString);
+                      final category = state.queryParameters["category"];
+                      return RankingScreen(
+                        key: state.pageKey,
+                        type: type,
+                        metric: metric,
+                        time: time,
+                        category: category,
+                      );
+                    },
+                  ),
+                  GoRoute(
+                      parentNavigatorKey: _shellNavigatorKey,
+                      path: 'explore',
+                      name: 'explore',
                       builder: (BuildContext context, GoRouterState state) {
-                        final keyword = state.queryParameters["keyword"];
-                        return ResultScreen(keyword: keyword ?? '');
-                      })
+                        return const ExploreScreen();
+                      },
+                      routes: [
+                        GoRoute(
+                          path: 'search',
+                          name: 'explore_search',
+                          pageBuilder: (context, state) =>
+                              CustomTransitionPage<void>(
+                                  key: state.pageKey,
+                                  child: const SearchScreen(),
+                                  transitionDuration:
+                                      const Duration(milliseconds: 400),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1,
+                                        0.0); // Start from right side of the screen
+                                    const end = Offset
+                                        .zero; // End at the center of the screen
+                                    final tween = Tween(begin: begin, end: end);
+                                    final offsetAnimation = animation.drive(
+                                        tween.chain(
+                                            CurveTween(curve: Curves.easeIn)));
+
+                                    return SlideTransition(
+                                        position: offsetAnimation,
+                                        child: child);
+                                  }),
+                        ),
+                        GoRoute(
+                          name: 'explore_category',
+                          path: 'category/:categoryName',
+                          builder: (_, GoRouterState state) {
+                            final categoryName =
+                                state.pathParameters["categoryName"];
+
+                            if (categoryName != null && categoryName != "") {
+                              return CategoryScreen(categoryName: categoryName);
+                            }
+                            return const NotFoundScreen();
+                          },
+                        ),
+                      ]),
+                  GoRoute(
+                    parentNavigatorKey: _shellNavigatorKey,
+                    name: 'profile',
+                    path: 'profile',
+                    builder: (_, GoRouterState state) {
+                      return const UserProfileScreen();
+                    },
+                    redirect: _redirect,
+                  ),
+                  GoRoute(
+                    parentNavigatorKey: _shellNavigatorKey,
+                    name: 'writer',
+                    path: 'writer',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const WriterScreen();
+                    },
+                  ),
                 ]),
-            GoRoute(
-              name: 'profile',
-              path: '/profile',
-              builder: (_, GoRouterState state) {
-                return const UserProfileScreen();
-              },
-              redirect: _redirect,
-            ),
-            GoRoute(
-              name: 'writer',
-              path: '/writer',
-              builder: (BuildContext context, GoRouterState state) {
-                return const WriterScreen();
-              },
-            ),
           ]),
       GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
@@ -156,27 +210,44 @@ class AppRoutes {
           name: 'story_detail',
           builder: (BuildContext context, GoRouterState state) {
             final storyId = state.pathParameters['storyId'];
+            if (storyId == null || storyId == '' || storyId == 'not-found') {
+              return const NotFoundScreen();
+            }
             return DetailStoryScreen(
-              id: storyId ?? '',
+              id: storyId,
             );
           },
           routes: [
             GoRoute(
-              parentNavigatorKey: _rootNavigatorKey,
-              path: 'chapter/:chapterId',
-              name: 'chapter_detail',
-              builder: (BuildContext context, GoRouterState state) {
-                String? chapterId = state.pathParameters["chapterId"];
-                if (chapterId == null || chapterId == '') {
-                  return const NotFoundScreen();
-                }
-                return ReadingScreen(
-                  chapterId: chapterId,
-                );
-              },
-            )
+                parentNavigatorKey: _rootNavigatorKey,
+                path: 'chapter/:chapterId',
+                name: 'chapter_detail',
+                builder: (BuildContext context, GoRouterState state) {
+                  String? chapterId = state.pathParameters["chapterId"];
+                  if (chapterId == null || chapterId == '') {
+                    return const NotFoundScreen();
+                  }
+                  return ReadingScreen(
+                    chapterId: chapterId,
+                  );
+                },
+                routes: [
+                  GoRoute(
+                    path: 'comment/:commentId',
+                    name: 'comment_detail',
+                    builder: (BuildContext context, GoRouterState state) {
+                      String? commentId = state.pathParameters["commentId"];
+                      if (commentId == null || commentId == '') {
+                        return const NotFoundScreen();
+                      }
+                      return const Center(child: Text('comemnt'));
+                      // return CommentScreen(commentId: commentId);
+                    },
+                  )
+                ])
           ]),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'login',
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
@@ -185,6 +256,7 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'register',
         path: '/register',
         builder: (BuildContext context, GoRouterState state) {
@@ -312,7 +384,7 @@ class AppRoutes {
           //extra
 
           final extraMap = state.extra as Map<String, dynamic>;
-          print('extra map ${extraMap}');
+          print('extra map $extraMap');
           final story =
               extraMap['story'] == '' ? null : extraMap['story'] as Story?;
           final chapterId = extraMap['chapterId']! as String?;

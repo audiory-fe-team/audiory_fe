@@ -8,6 +8,7 @@ import 'package:audiory_v0/repositories/category_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_outlined_button.dart';
+import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +18,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class ExploreScreen extends StatelessWidget {
@@ -199,10 +201,18 @@ class CategoryCarousel extends HookConsumerWidget {
                               .entries
                               .map((entry) {
                             Category category = entry.value;
-                            return CategoryBadge(
-                              imgUrl: category.imageUrl ?? '',
-                              title: category.name ?? '',
-                            );
+                            return TapEffectWrapper(
+                                child: CategoryBadge(
+                                  imgUrl: category.imageUrl ?? '',
+                                  title: category.name ?? '',
+                                ),
+                                onTap: () {
+                                  GoRouter.of(context).pushNamed(
+                                      "explore_category",
+                                      pathParameters: {
+                                        "categoryName": category.name ?? ''
+                                      });
+                                });
                           }).toList()));
                 },
               );

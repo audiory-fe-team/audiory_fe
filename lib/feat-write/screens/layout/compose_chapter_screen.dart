@@ -218,7 +218,7 @@ class _ComposeChapterScreenState extends ConsumerState<ComposeChapterScreen> {
                                 return const text.Text('model');
                               });
                         },
-                        child: chapter?.is_draft as bool
+                        child: chapter?.isDraft as bool
                             ? Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Center(

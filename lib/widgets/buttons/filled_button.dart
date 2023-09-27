@@ -1,4 +1,3 @@
-import "package:audiory_v0/theme/theme_constants.dart";
 import "package:flutter/material.dart";
 
 class AppFilledButton extends StatelessWidget {
@@ -22,7 +21,7 @@ class AppFilledButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(25),
         ),
-        minimumSize: Size(double.maxFinite, 48),
+        minimumSize: const Size(double.maxFinite, 48),
         elevation: 2.0,
       ),
       child: Text(title,
