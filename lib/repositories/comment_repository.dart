@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:audiory_v0/models/Comment.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -39,33 +40,6 @@ class CommentRepository {
 
     if (response.statusCode == 200) {
       return true;
-    } else {
-      throw Exception('Failed to create comment');
-    }
-  }
-
-  static Future<dynamic> getCommentByChapterId({
-    required String chapterId,
-  }) async {
-    const storage = FlutterSecureStorage();
-    String? jwtToken = await storage.read(key: 'jwt');
-    final url = Uri.parse(commentsEndpoint);
-
-    // Create headers with the JWT token if it's available
-    Map<String, String> headers = {
-      "Content-type": "application/json",
-      "Accept": "application/json",
-    };
-
-    if (jwtToken != null) {
-      headers['Authorization'] = 'Bearer $jwtToken';
-    }
-
-    final response = await http.get(url, headers: headers);
-
-    if (response.statusCode == 200) {
-      //  final List<Comment> result = jsonDecode(responseBody)['data'];
-      // return result.map((i) => Comment.(i)).toList();
     } else {
       throw Exception('Failed to create comment');
     }

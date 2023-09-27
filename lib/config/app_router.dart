@@ -82,6 +82,7 @@ class AppRoutes {
                 },
                 routes: [
                   GoRoute(
+                    parentNavigatorKey: _shellNavigatorKey,
                     name: 'tag',
                     path: 'tag/:tagId',
                     builder: (_, GoRouterState state) {
@@ -94,6 +95,7 @@ class AppRoutes {
                     },
                   ),
                   GoRoute(
+                      parentNavigatorKey: _shellNavigatorKey,
                       name: 'library',
                       path: 'library',
                       builder: (_, GoRouterState state) {
@@ -114,36 +116,7 @@ class AppRoutes {
                         )
                       ]),
                   GoRoute(
-                      path: 'story/:storyId',
-                      name: 'story_detail',
-                      builder: (BuildContext context, GoRouterState state) {
-                        final storyId = state.pathParameters['storyId'];
-                        if (storyId == null ||
-                            storyId == '' ||
-                            storyId == 'not-found') {
-                          return const NotFoundScreen();
-                        }
-                        return DetailStoryScreen(
-                          id: storyId,
-                        );
-                      },
-                      routes: [
-                        GoRoute(
-                          path: 'chapter/:chapterId',
-                          name: 'chapter_detail',
-                          builder: (BuildContext context, GoRouterState state) {
-                            String? chapterId =
-                                state.pathParameters["chapterId"];
-                            if (chapterId == null || chapterId == '') {
-                              return const NotFoundScreen();
-                            }
-                            return ReadingScreen(
-                              chapterId: chapterId,
-                            );
-                          },
-                        )
-                      ]),
-                  GoRoute(
+                    parentNavigatorKey: _shellNavigatorKey,
                     path: 'ranking',
                     name: 'ranking',
                     builder: (BuildContext context, GoRouterState state) {
@@ -166,6 +139,7 @@ class AppRoutes {
                     },
                   ),
                   GoRoute(
+                      parentNavigatorKey: _shellNavigatorKey,
                       path: 'explore',
                       name: 'explore',
                       builder: (BuildContext context, GoRouterState state) {
@@ -210,21 +184,9 @@ class AppRoutes {
                             return const NotFoundScreen();
                           },
                         ),
-                        // GoRoute(
-                        //   name: 'explore_tag',
-                        //   path: 'tag',
-                        //   builder: (_, GoRouterState state) {
-                        //     final tagId = state.queryParameters["tagId"];
-                        //     final tagName = state.queryParameters["tagName"];
-                        //     if (tagId != null && tagName != null) {
-                        //       return SearchTagScreen(
-                        //           tagId: tagId, tagName: tagName);
-                        //     }
-                        //     return const NotFoundScreen();
-                        //   },
-                        // ),
                       ]),
                   GoRoute(
+                    parentNavigatorKey: _shellNavigatorKey,
                     name: 'profile',
                     path: 'profile',
                     builder: (_, GoRouterState state) {
@@ -233,6 +195,7 @@ class AppRoutes {
                     redirect: _redirect,
                   ),
                   GoRoute(
+                    parentNavigatorKey: _shellNavigatorKey,
                     name: 'writer',
                     path: 'writer',
                     builder: (BuildContext context, GoRouterState state) {
@@ -242,6 +205,49 @@ class AppRoutes {
                 ]),
           ]),
       GoRoute(
+          parentNavigatorKey: _rootNavigatorKey,
+          path: '/story/:storyId',
+          name: 'story_detail',
+          builder: (BuildContext context, GoRouterState state) {
+            final storyId = state.pathParameters['storyId'];
+            if (storyId == null || storyId == '' || storyId == 'not-found') {
+              return const NotFoundScreen();
+            }
+            return DetailStoryScreen(
+              id: storyId,
+            );
+          },
+          routes: [
+            GoRoute(
+                parentNavigatorKey: _rootNavigatorKey,
+                path: 'chapter/:chapterId',
+                name: 'chapter_detail',
+                builder: (BuildContext context, GoRouterState state) {
+                  String? chapterId = state.pathParameters["chapterId"];
+                  if (chapterId == null || chapterId == '') {
+                    return const NotFoundScreen();
+                  }
+                  return ReadingScreen(
+                    chapterId: chapterId,
+                  );
+                },
+                routes: [
+                  GoRoute(
+                    path: 'comment/:commentId',
+                    name: 'comment_detail',
+                    builder: (BuildContext context, GoRouterState state) {
+                      String? commentId = state.pathParameters["commentId"];
+                      if (commentId == null || commentId == '') {
+                        return const NotFoundScreen();
+                      }
+                      return const Center(child: Text('comemnt'));
+                      // return CommentScreen(commentId: commentId);
+                    },
+                  )
+                ])
+          ]),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'login',
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
@@ -250,6 +256,7 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'register',
         path: '/register',
         builder: (BuildContext context, GoRouterState state) {

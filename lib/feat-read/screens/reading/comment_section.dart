@@ -2,8 +2,8 @@ import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-read/widgets/comment_card.dart';
 import 'package:audiory_v0/models/enum/SnackbarType.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
+import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/comment_repository.dart';
-import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +21,10 @@ class CommentSection extends HookWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
     final controller = useTextEditingController();
-    final userInfo = useQuery(['userInfo'], () => AuthRepository().getMyInfo());
+    final infoQuery =
+        useQuery(['userInfo'], () => AuthRepository().getMyInfo());
+    final commentsQuery = useQuery(['comments', 'chapter', chapterId],
+        () => ChapterRepository.fetchCommentsByChapterId(chapterId: chapterId));
 
     handleSubmitComment() async {
       //CALL API
@@ -29,6 +32,8 @@ class CommentSection extends HookWidget {
           chapterId: chapterId, paraId: paraId, text: controller.text);
       AppSnackBar.buildTopSnackBar(
           context, 'Bình luận thành công', null, SnackBarType.success);
+      controller.text = "";
+      commentsQuery.refetch();
     }
 
     return Column(
@@ -38,7 +43,7 @@ class CommentSection extends HookWidget {
           '100 Bình luận',
           style: textTheme.titleLarge,
         ),
-        const SizedBox(height: 15),
+        const SizedBox(height: 16),
         SizedBox(
           width: double.infinity,
           child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -48,7 +53,7 @@ class CommentSection extends HookWidget {
               decoration: ShapeDecoration(
                 image: DecorationImage(
                   image: NetworkImage(
-                      userInfo.data?.avatarUrl ?? FALLBACK_IMG_URL),
+                      infoQuery.data?.avatarUrl ?? FALLBACK_IMG_URL),
                   fit: BoxFit.fill,
                 ),
                 shape: const CircleBorder(),
@@ -102,26 +107,18 @@ class CommentSection extends HookWidget {
           ]),
         ),
         const SizedBox(height: 16),
-        // const CommentCard(
-        //   name: 'hahaha',
-        //   time: '13:14',
-        //   content: 'chương này hay vl anh em',
-        //   image: FALLBACK_IMG_URL,
-        // ),
-        // const SizedBox(height: 12),
-        // const CommentCard(
-        //   name: 'hahaha',
-        //   time: '13:14',
-        //   content: 'chương này hay vl anh em',
-        //   image: FALLBACK_IMG_URL,
-        // ),
-        // const SizedBox(height: 12),
-        // const CommentCard(
-        //   name: 'hahaha',
-        //   time: '13:14',
-        //   content: 'chương này hay vl anh em',
-        //   image: FALLBACK_IMG_URL,
-        // ),
+        ...(commentsQuery.data ?? []).map((e) => Container(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                  border: Border(
+                bottom: BorderSide(
+                  color: appColors.skyLighter,
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+              )),
+              child: CommentCard(comment: e),
+            ))
       ],
     );
   }

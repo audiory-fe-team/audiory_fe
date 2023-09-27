@@ -130,161 +130,157 @@ class ReadingScreen extends HookWidget {
       backgroundColor: bgColor.value,
       appBar: null,
       body: Skeletonizer(
-          enabled: chapterQuery.isFetching,
-          child: RefreshIndicator(
+        enabled: chapterQuery.isFetching,
+        child: RefreshIndicator(
             onRefresh: () async {
               chapterQuery.refetch();
             },
-            child: SafeArea(
-                child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      controller: scrollController,
-                      child: Column(children: [
-                        const SizedBox(height: 24),
-                        ReadingScreenHeader(
-                          num: (storyQuery.data?.chapters ?? [])
-                              .indexWhere((element) => element.id == chapterId),
-                          chapter: chapterQuery.isFetching
-                              ? skeletonChapter
-                              : chapterQuery.data ?? skeletonChapter,
-                        ),
-                        const SizedBox(height: 24),
-                        StreamBuilder(
-                            stream: player.sequenceStream,
-                            builder: ((context, snapshot) {
-                              final a = snapshot.data;
-                              if (a == null || a.isEmpty) {
-                                return const SizedBox();
-                              }
-                              return ChapterAudioPlayer(
-                                chapter: chapterQuery.data,
-                                player: player,
-                              );
-                            })),
-                        const SizedBox(height: 24),
-                        ...((chapterQuery.isFetching
-                                        ? skeletonChapter
-                                        : chapterQuery.data)
-                                    ?.paragraphs ??
-                                [])
-                            .asMap()
-                            .entries
-                            .map((entry) {
-                          final para = entry.value;
-                          final index = entry.key;
-                          final key = GlobalKey();
-                          if (index == 0) {
-                            keyList.value = [key];
-                          } else {
-                            keyList.value.add(key);
-                          }
-                          return GestureDetector(
-                              onTap: () {
-                                if (playingState.data == true) {
-                                  player.seek(null, index: index);
-                                }
-                              },
-                              child: Container(
-                                key: key,
-                                margin: const EdgeInsets.only(bottom: 24),
-                                padding: const EdgeInsets.all(8),
-                                decoration: (curParaIndex.value == index)
-                                    ? BoxDecoration(
-                                        borderRadius: BorderRadius.circular(12),
-                                        color: appColors.primaryLightest)
-                                    : const BoxDecoration(),
-                                child: Text(para.content ?? '',
-                                    style: textTheme.bodyLarge?.copyWith(
-                                      fontSize: fontSize.value.toDouble(),
-                                      fontFamily:
-                                          GoogleFonts.gelasio().fontFamily,
-                                    )),
-                              ));
-                        }).toList(),
-                        Skeleton.keep(
-                            child: SizedBox(
-                          height: 32,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ActionButton(
-                                  title: 'Bình chọn',
-                                  iconName: 'heart',
-                                  onPressed: () {}),
-                              const SizedBox(width: 12),
-                              ActionButton(
-                                  title: 'Tặng quà',
-                                  iconName: 'gift',
-                                  onPressed: () {}),
-                              const SizedBox(width: 12),
-                              ActionButton(
-                                  title: 'Chia sẻ',
-                                  iconName: 'share',
-                                  onPressed: () {}),
-                            ],
-                          ),
-                        )),
-                        const SizedBox(height: 24),
-                        Skeleton.keep(child: SizedBox(child: Builder(
-                          builder: (context) {
-                            final chapters = storyQuery.data?.chapters;
-                            final currentIndex = chapters?.indexWhere(
-                                (element) => element.id == chapterId);
-                            if (currentIndex == null) return const SizedBox();
-
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ChapterNavigateButton(
-                                  onPressed: () {
-                                    if (chapters == null) return;
-                                    if (currentIndex <= 0) return;
-                                    final prevChapterId =
-                                        chapters[currentIndex - 1].id;
-                                    GoRouter.of(context).go(
-                                        '/story/${storyQuery.data?.id}/chapter/$prevChapterId');
-                                  },
-                                  disabled:
-                                      currentIndex <= 0 || chapters == null,
-                                ),
-                                const SizedBox(width: 12),
-                                ChapterNavigateButton(
-                                  next: true,
-                                  onPressed: () {
-                                    if (chapters == null) return;
-                                    if (currentIndex + 1 >= chapters.length)
-                                      return;
-                                    final nextChapterId =
-                                        chapters[currentIndex + 1].id;
-                                    GoRouter.of(context).go(
-                                        '/story/${storyQuery.data?.id}/chapter/$nextChapterId');
-                                  },
-                                  disabled: chapters == null ||
-                                      currentIndex + 1 >= chapters.length,
-                                ),
-                              ],
-                            );
-                          },
-                        ))),
-                        const SizedBox(height: 24),
-                        Builder(builder: (context) {
-                          final paragraphs = chapterQuery.data?.paragraphs;
-                          if (paragraphs == null || paragraphs.isEmpty) {
+            child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  controller: scrollController,
+                  child: Column(children: [
+                    const SizedBox(height: 24),
+                    ReadingScreenHeader(
+                      num: (storyQuery.data?.chapters ?? [])
+                          .indexWhere((element) => element.id == chapterId),
+                      chapter: chapterQuery.isFetching
+                          ? skeletonChapter
+                          : chapterQuery.data ?? skeletonChapter,
+                    ),
+                    const SizedBox(height: 24),
+                    StreamBuilder(
+                        stream: player.sequenceStream,
+                        builder: ((context, snapshot) {
+                          final a = snapshot.data;
+                          if (a == null || a.isEmpty) {
                             return const SizedBox();
                           }
+                          return ChapterAudioPlayer(
+                            chapter: chapterQuery.data,
+                            player: player,
+                          );
+                        })),
+                    const SizedBox(height: 24),
+                    ...((chapterQuery.isFetching
+                                    ? skeletonChapter
+                                    : chapterQuery.data)
+                                ?.paragraphs ??
+                            [])
+                        .asMap()
+                        .entries
+                        .map((entry) {
+                      final para = entry.value;
+                      final index = entry.key;
+                      final key = GlobalKey();
+                      if (index == 0) {
+                        keyList.value = [key];
+                      } else {
+                        keyList.value.add(key);
+                      }
+                      return GestureDetector(
+                          onTap: () {
+                            if (playingState.data == true) {
+                              player.seek(null, index: index);
+                            }
+                          },
+                          child: Container(
+                            key: key,
+                            margin: const EdgeInsets.only(bottom: 24),
+                            padding: const EdgeInsets.all(8),
+                            decoration: (curParaIndex.value == index)
+                                ? BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    color: appColors.primaryLightest)
+                                : const BoxDecoration(),
+                            child: Text(para.content ?? '',
+                                style: textTheme.bodyLarge?.copyWith(
+                                  fontSize: fontSize.value.toDouble(),
+                                  fontFamily: GoogleFonts.gelasio().fontFamily,
+                                )),
+                          ));
+                    }).toList(),
+                    Skeleton.keep(
+                        child: SizedBox(
+                      height: 32,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ActionButton(
+                              title: 'Bình chọn',
+                              iconName: 'heart',
+                              onPressed: () {}),
+                          const SizedBox(width: 12),
+                          ActionButton(
+                              title: 'Tặng quà',
+                              iconName: 'gift',
+                              onPressed: () {}),
+                          const SizedBox(width: 12),
+                          ActionButton(
+                              title: 'Chia sẻ',
+                              iconName: 'share',
+                              onPressed: () {}),
+                        ],
+                      ),
+                    )),
+                    const SizedBox(height: 24),
+                    Skeleton.keep(child: SizedBox(child: Builder(
+                      builder: (context) {
+                        final chapters = storyQuery.data?.chapters;
+                        final currentIndex = chapters
+                            ?.indexWhere((element) => element.id == chapterId);
+                        if (currentIndex == null) return const SizedBox();
 
-                          return CommentSection(
-                              chapterId: chapterId,
-                              paraId: paragraphs[paragraphs.length - 1].id);
-                        }),
-                        const SizedBox(
-                          height: 56,
-                        )
-                      ]),
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            ChapterNavigateButton(
+                              onPressed: () {
+                                if (chapters == null) return;
+                                if (currentIndex <= 0) return;
+                                final prevChapterId =
+                                    chapters[currentIndex - 1].id;
+                                GoRouter.of(context).go(
+                                    '/story/${storyQuery.data?.id}/chapter/$prevChapterId');
+                              },
+                              disabled: currentIndex <= 0 || chapters == null,
+                            ),
+                            const SizedBox(width: 12),
+                            ChapterNavigateButton(
+                              next: true,
+                              onPressed: () {
+                                if (chapters == null) return;
+                                if (currentIndex + 1 >= chapters.length) return;
+                                final nextChapterId =
+                                    chapters[currentIndex + 1].id;
+                                GoRouter.of(context).go(
+                                    '/story/${storyQuery.data?.id}/chapter/$nextChapterId');
+                              },
+                              disabled: chapters == null ||
+                                  currentIndex + 1 >= chapters.length,
+                            ),
+                          ],
+                        );
+                      },
                     ))),
-          )),
+                    const SizedBox(height: 24),
+                    Builder(builder: (context) {
+                      final paragraphs = chapterQuery.data?.paragraphs;
+                      if (paragraphs == null || paragraphs.isEmpty) {
+                        return const SizedBox();
+                      }
+
+                      return CommentSection(
+                          chapterId: chapterId,
+                          paraId: paragraphs[paragraphs.length - 1].id);
+                    }),
+                    const SizedBox(
+                      height: 56,
+                    )
+                  ]),
+                ))),
+      ),
       bottomNavigationBar: hideBars.value
           ? null
           : ReadingBottomBar(

@@ -25,7 +25,6 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
 
     Future<UserServer?> getUserDetails() async {
       String? value = await storage.read(key: 'currentUser');
-      print('val : $value');
       currentUser =
           value != null ? UserServer.fromJson(jsonDecode(value)['data']) : null;
 

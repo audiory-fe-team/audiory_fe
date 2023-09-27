@@ -15,7 +15,7 @@ class StoryCardOverView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        GoRouter.of(context).push("/story/$id");
+        context.push("/story/$id");
       },
       child: SizedBox(
         width: 95,

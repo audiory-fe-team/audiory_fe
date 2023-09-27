@@ -602,13 +602,13 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Expanded(
                       child: FilledButton(
                           onPressed: () {
-                            GoRouter.of(context)
-                                .pushNamed("chapter_detail", pathParameters: {
-                              "storyId": id,
-                              "chapterId":
-                                  // storyQuery.data?.chapters?[0].id ?? ''
-                                  '41ccaddf-3b96-11ee-8842-e0d4e8a18075'
-                            });
+                            context.push(
+                                '/story/${id}/chapter/41ccaddf-3b96-11ee-8842-e0d4e8a18075');
+                            //   .pushNamed("chapter_detail", pathParameters: {
+                            // "storyId": id,
+                            // "chapterId":
+                            //     // storyQuery.data?.chapters?[0].id ?? ''
+                            //     '41ccaddf-3b96-11ee-8842-e0d4e8a18075'
                           },
                           style: ButtonStyle(
                               backgroundColor: MaterialStatePropertyAll(
