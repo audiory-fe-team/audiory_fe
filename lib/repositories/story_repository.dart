@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:audiory_v0/core/network/constant/endpoints.dart';
 import 'package:audiory_v0/models/Chapter.dart';
+import 'package:audiory_v0/models/ReadingList.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -97,15 +98,18 @@ class StoryRepostitory {
     }
   }
 
-  Future<List<Story>?> fetchReadingStoriesByUserId(String userId) async {
+  Future<List<ReadingList>?> fetchReadingStoriesByUserId(String userId) async {
     final url = Uri.parse('${Endpoints().user}/$userId/reading-lists');
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
-      // print('RES FOR READING  ${response.body}');
+      print('RES FOR READING  ${response.body}');
       final List<dynamic> result = jsonDecode(responseBody)['data'];
-      return result.map((i) => Story.fromJson(i)).toList();
+      print(result);
+      print(result.map((i) => ReadingList.fromJson(i)).toList());
+      return result.map((i) => ReadingList.fromJson(i)).toList();
     } else {
+      return null;
       throw Exception('Failed to load stories');
     }
   }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:audiory_v0/models/Profile.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
@@ -73,9 +74,11 @@ class AuthRepository extends ChangeNotifier {
       }
       final token = jsonDecode(response.body)['data'];
       var decodedToken = JwtDecoder.decode(token)['user_id'];
-      print('decodedToek : $decodedToken');
-      print('decodedToek : ${JwtDecoder.decode(token)}');
+
       storage.write(key: 'jwt', value: token);
+
+      print('JWT  $token');
+      print('DECODED  ${JwtDecoder.decode(token)}');
       Map<String, String> header2 = {
         "Content-type": "application/json",
         "Accept": "application/json",
@@ -84,10 +87,10 @@ class AuthRepository extends ChangeNotifier {
 
       var uri = Uri.parse('${Endpoints().user}/$decodedToken');
       var res = await http.get(uri, headers: header2);
-
+      print('res2 ${res.body}');
       if (res.statusCode == 200) {
         storage.write(key: 'currentUser', value: res.body.toString());
-        return response;
+        return res;
       }
     } on Exception catch (err) {
       if (kDebugMode) {
@@ -97,7 +100,7 @@ class AuthRepository extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> signUp({
+  Future<Profile?> signUp({
     required String email,
     required String username,
     required String password,
@@ -123,11 +126,13 @@ class AuthRepository extends ChangeNotifier {
         print('res');
         print(response.body);
       }
-      return response.statusCode;
+      return Profile.fromJson(
+          jsonDecode(response.body)['data'] ?? jsonDecode(''));
     } on Exception catch (err) {
       if (kDebugMode) {
         print(err);
       }
+      return null;
     }
   }
 
@@ -137,7 +142,7 @@ class AuthRepository extends ChangeNotifier {
     String? fullname,
   }) async {
     Map<String, String> body = {'email': email};
-    var url = Uri.parse(Endpoints().auth + '/send-verification-email');
+    var url = Uri.parse('${Endpoints().auth}/send-verification-email');
     Map<String, String> header = {
       "Content-type": "application/json",
       "Accept": "application/json",
@@ -145,10 +150,12 @@ class AuthRepository extends ChangeNotifier {
     try {
       final response =
           await http.post(url, headers: header, body: jsonEncode(body));
-      print('res');
-      print(response.body);
+      if (kDebugMode) {
+        print('res');
+        print(response.body);
+      }
 
-      return response;
+      return response.statusCode;
     } on Exception catch (err) {}
   }
 
@@ -220,7 +227,8 @@ class AuthRepository extends ChangeNotifier {
 
             //save token
             const storage = FlutterSecureStorage();
-            storage.write(key: 'jwt', value: token);
+
+            print('jwt ${token}');
 
             //Set the user to auth provider
             AuthProvider authProvider = AuthProvider();

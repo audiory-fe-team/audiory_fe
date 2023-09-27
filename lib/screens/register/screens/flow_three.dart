@@ -1,18 +1,23 @@
-import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/repositories/feedbacks_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/random_story_card.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
+import '../../../models/Feedback.dart';
+import '../../../models/enums/SnackbarType.dart';
 import '../../../theme/theme_constants.dart';
 
 class FlowThreeScreen extends StatefulHookWidget {
-  const FlowThreeScreen({super.key});
+  final String userId;
+  const FlowThreeScreen({super.key, required this.userId});
 
   @override
   State<FlowThreeScreen> createState() => _FlowThreeScreenState();
@@ -76,72 +81,62 @@ class _FlowThreeScreenState extends State<FlowThreeScreen>
 
     final storiesQuery = useQuery(
         ['topStories'], () => StoryRepostitory().fetchTopStoriesForNewUser());
-    return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 85,
-          title: Align(
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Text("Có thể bạn yêu thích",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineMedium
-                        ?.copyWith(color: appColors.inkDarkest)),
-                Text("Chọn ít nhất 5 truyện để tối ưu hóa gợi ý cho bạn",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: appColors.inkDarkest,
-                        fontWeight: FontWeight.normal)),
-                // Text("${selectedStoriesList.length} đã chọn",
-                //     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                //         color: appColors.inkDarkest,
-                //         fontWeight: FontWeight.normal)),
-              ],
-            ),
+    return SafeArea(
+      child: Scaffold(
+          appBar: AppBar(
+            elevation: 0,
           ),
-          elevation: 0,
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: ListView(
-            //scrollcontroller
-            controller: _scrollController,
-            children: [
-              SizedBox(
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ListView(
+              //scrollcontroller
+              controller: _scrollController,
+              children: [
+                Align(
+                  alignment: Alignment.center,
                   child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                    SizedBox(
-                      width: size.width,
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.start,
-                        alignment: WrapAlignment.spaceBetween,
-
-                        // spacing: ((size.width - size.width * 3 / 4) - 32) / 4,
-                        // runSpacing: 20,
-                        children: storiesQuery.isFetching
-                            ? List.generate(
-                                9,
-                                (index) => Skeletonizer(
-                                      child: RandomStoryCard(
-                                        onStorySelected: () {},
-                                        story: storiesQuery.data![index],
-                                      ),
-                                    ))
-                            : List.generate(
-                                storiesQuery.data!.length,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      Text("Có thể bạn yêu thích",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(color: appColors.inkDarkest)),
+                      Text("Chọn ít nhất 5 truyện để tối ưu hóa gợi ý cho bạn",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                  color: appColors.inkDarkest,
+                                  fontWeight: FontWeight.normal)),
+                    ],
+                  ),
+                ),
+                Container(
+                    margin: const EdgeInsets.symmetric(vertical: 16),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            width: size.width,
+                            child: Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.start,
+                              alignment: WrapAlignment.spaceBetween,
+                              children: List.generate(
+                                storiesQuery.data != null
+                                    ? storiesQuery.data?.length as int
+                                    : 0,
                                 (index) {
                                   return Skeletonizer(
                                     enabled: storiesQuery.isFetching,
                                     child: RandomStoryCard(
-                                      story: storiesQuery.data![index],
+                                      story: storiesQuery.data?[index] as Story,
                                       onStorySelected: () {
                                         setState(() {
-                                          String storyId =
-                                              storiesQuery.data![index].id;
+                                          String storyId = storiesQuery
+                                              .data?[index].id as String;
                                           if (selectedStoriesList
                                               .contains(storyId)) {
                                             selectedStoriesList.remove(storyId);
@@ -149,58 +144,69 @@ class _FlowThreeScreenState extends State<FlowThreeScreen>
                                             selectedStoriesList.add(storyId);
                                           }
                                         });
-                                        print('selected');
                                       },
                                     ),
                                   );
                                 },
                               ).toList(),
+                            ),
+                          ),
+                        ])),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: size.width - 32,
+                      child: AppIconButton(
+                        title: "Tiếp tục",
+                        color: Colors.white,
+                        bgColor: const Color(0xFF439A97),
+                        onPressed: () async {
+                          print('USERID FLOW 3 ${widget.userId}');
+                          if (selectedStoriesList.length < 5) {
+                            AppSnackBar.buildTopSnackBar(
+                                context,
+                                'Chọn ít nhất 5 truyện',
+                                null,
+                                SnackBarType.warning);
+                          } else {
+                            Map<String, String?> body = {};
+
+                            body['user_id'] = widget.userId;
+                            body['story_id'] = selectedStoriesList[0];
+                            body['event_type'] = 'FEEDBACK';
+
+                            for (var ele in selectedStoriesList) {
+                              body['story_id'] = ele;
+                              await FeedbackRepository().createFeedback(body);
+                            }
+                            // ignore: use_build_context_synchronously
+                            context.push('/flowFour',
+                                extra: {'userId': widget.userId});
+                          }
+                        },
                       ),
-                    ),
-                  ])),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: size.width - 32,
-                    child: AppIconButton(
-                      title: "Tiếp tục",
-                      color: Colors.white,
-                      bgColor: const Color(0xFF439A97),
-                      onPressed: () {
-                        if (selectedStoriesList.length < 5) {
-                          AppSnackBar.buildTopSnackBar(
-                              context,
-                              'Chọn ít nhất 5 truyện',
-                              null,
-                              SnackBarType.warning);
-                        } else {
-                          AppSnackBar.buildTopSnackBar(context, 'Lưu vào kho',
-                              null, SnackBarType.success);
-                          context.push('/flowFour');
-                        }
-                      },
-                    ),
-                  )
-                ],
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: _showBackToTopButton
-            ? Container(
-                margin: const EdgeInsets.only(bottom: 60),
-                child: FloatingActionButton(
-                  highlightElevation: 10,
-                  backgroundColor: appColors.inkDark.withOpacity(0.7),
-                  onPressed: _scrollToTop,
-                  child: const Icon(
-                    Icons.arrow_upward,
-                    // size: 24 + (_animationController.value * 10),
-                  ),
+                    )
+                  ],
                 ),
-              )
-            : null);
+              ],
+            ),
+          ),
+          floatingActionButton: _showBackToTopButton
+              ? Container(
+                  margin: const EdgeInsets.only(bottom: 60),
+                  child: FloatingActionButton(
+                    highlightElevation: 10,
+                    backgroundColor: appColors.inkDark.withOpacity(0.7),
+                    onPressed: _scrollToTop,
+                    child: const Icon(
+                      Icons.arrow_upward,
+                      // size: 24 + (_animationController.value * 10),
+                    ),
+                  ),
+                )
+              : null),
+    );
   }
 }

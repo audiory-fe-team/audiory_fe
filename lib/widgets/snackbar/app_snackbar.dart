@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/enum/SnackbarType.dart';
+import '../../models/enums/SnackbarType.dart';
 
 class AppSnackBar {
   AppSnackBar._();

@@ -624,7 +624,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                         : '0',
                   ),
                   // this can be null ??? why
-                  AppTextInputField(
+                  const AppTextInputField(
                       name: 'numFreeChapters',
                       textInputType: TextInputType.number,
                       label: "Số chương miễn phí",

@@ -5,11 +5,13 @@ import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/result_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
+import 'package:audiory_v0/feat-manage-library/screens/library_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_account_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/layout/edit_email_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/wallet_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
@@ -21,9 +23,9 @@ import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 import 'package:audiory_v0/screens/register/screens/flow_four.dart';
-import 'package:audiory_v0/screens/register/screens/flow_one.dart';
-import 'package:audiory_v0/screens/register/screens/flow_three.dart';
 import 'package:audiory_v0/screens/register/screens/flow_two.dart';
+import 'package:audiory_v0/screens/register/screens/flow_three.dart';
+import 'package:audiory_v0/screens/register/screens/flow_one.dart';
 
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
@@ -149,6 +151,13 @@ class AppRoutes {
                 return const WriterScreen();
               },
             ),
+            GoRoute(
+              name: 'library',
+              path: '/library',
+              builder: (BuildContext context, GoRouterState state) {
+                return const LibraryScreen();
+              },
+            ),
           ]),
       GoRoute(
           parentNavigatorKey: _rootNavigatorKey,
@@ -180,7 +189,7 @@ class AppRoutes {
         name: 'login',
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
-          // return const FlowThreeScreen();
+          // return const LibraryScreen();
           return const LoginScreen();
         },
       ),
@@ -195,7 +204,9 @@ class AppRoutes {
         name: 'flowOne',
         path: '/flowOne',
         builder: (BuildContext context, GoRouterState state) {
-          return const FlowOneScreen();
+          final extraMap = state.extra as Map<String, dynamic>;
+          final body = extraMap['signUpBody'] as Map<String, String>;
+          return FlowOneScreen(signUpBody: body);
         },
       ),
       GoRoute(
@@ -203,33 +214,48 @@ class AppRoutes {
         path: '/flowTwo',
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
-          final body = extraMap['signUpBody'] as Map<String, String>;
-          return FlowTwoScreen(signUpBody: body);
+          final userId = extraMap['userId'] as String;
+          return FlowTwoScreen(userId: userId);
         },
       ),
       GoRoute(
         name: 'flowThree',
         path: '/flowThree',
         builder: (BuildContext context, GoRouterState state) {
-          return const FlowThreeScreen();
+          final extraMap = state.extra as Map<String, dynamic>;
+          final userId = extraMap['userId'] as String;
+          return FlowThreeScreen(userId: userId);
         },
       ),
       GoRoute(
         name: 'flowFour',
         path: '/flowFour',
         builder: (BuildContext context, GoRouterState state) {
-          return const FLowFourScreen();
+          final extraMap = state.extra as Map<String, dynamic>;
+          final userId = extraMap['userId'] as String;
+          return FLowFourScreen(userId: userId);
         },
       ),
       GoRoute(
-          name: 'profileSettings',
-          path: '/profileSettings',
+        name: 'profileSettings',
+        path: '/profileSettings',
+        builder: (BuildContext context, GoRouterState state) {
+          final extraMap = state.extra as Map<String, dynamic>;
+          final currentUser = extraMap["currentUser"] as UserServer;
+          final userProfile = extraMap["userProfile"] as Profile;
+          return ProfileSettingsScreen(
+              currentUser: currentUser, userProfile: userProfile);
+        },
+      ),
+      GoRoute(
+          name: 'wallet',
+          path: '/wallet',
           builder: (BuildContext context, GoRouterState state) {
             final extraMap = state.extra as Map<String, dynamic>;
+
             final currentUser = extraMap["currentUser"] as UserServer;
-            final userProfile = extraMap["userProfile"] as Profile;
-            return ProfileSettingsScreen(
-                currentUser: currentUser, userProfile: userProfile);
+
+            return WalletScreen(currentUser: currentUser);
           }),
       GoRoute(
           name: 'editProfile',

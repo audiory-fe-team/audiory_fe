@@ -138,4 +138,52 @@ class ProfileRepository {
       return null;
     }
   }
+
+  Future<Profile?> updateNewUserProfile(
+      formFile, Map<String, String> reqBody, String userId) async {
+    //call api
+    Map<String, String> header = {
+      "Content-type": "multipart/form-data",
+      "Accept": "application/json",
+    };
+
+    //sending form data
+    final Map<String, String> firstMap = reqBody;
+    final Map<String, MultipartFile> secondeMap;
+    //if the img does not change, do not have form_file field
+    if (formFile is String) {
+      secondeMap = {};
+    } else {
+      File file = File(formFile[0].path); //import dart:io
+      secondeMap = {'form_file': await MultipartFile.fromFile(file.path)};
+    }
+
+    //merge 2 map
+    final Map<String, dynamic> finalMap = {};
+    finalMap.addAll(firstMap);
+    finalMap.addAll(secondeMap);
+
+    final FormData formData = FormData.fromMap(finalMap);
+    if (kDebugMode) {
+      print('FORM DATA');
+      print(formData.fields);
+    }
+    try {
+      final response = await dio.put('${Endpoints().user}/$userId/profile',
+          data: formData, options: Options(headers: header));
+      if (kDebugMode) {
+        print('res for update');
+        print(response);
+      }
+
+      final result = response.data['data']; //do not have to json decode
+      return Profile.fromJson(result);
+    } on DioException catch (e) {
+      if (kDebugMode) {
+        print('err');
+        print(e.response);
+      }
+      return null;
+    }
+  }
 }

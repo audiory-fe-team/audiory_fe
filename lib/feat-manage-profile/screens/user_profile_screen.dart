@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:audiory_v0/feat-manage-profile/models/profile_screen_data.dart';
+import 'package:audiory_v0/models/ReadingList.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -48,7 +49,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget introView(List<Story>? story, List<Story>? readingList,
+  Widget introView(List<Story>? story, List<ReadingList>? readingList,
       List<Profile> followingList) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
@@ -180,12 +181,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               const SizedBox(
                 height: 16,
               ),
-              if (readingList?.isEmpty as bool) ...[
+              if (readingList?.isEmpty ?? true) ...[
                 titleWithLink('Danh sách đọc', 'Thêm',
                     '${readingList?.length ?? '0'} danh sách', () {
                   context.go('/');
                 }, 12),
-                StoryScrollList(storyList: readingList),
+                // StoryScrollList(storyList: readingList),
                 const SizedBox(
                   height: 16,
                 ),
@@ -229,7 +230,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       UserServer? user,
       UseQueryResult<Profile?, dynamic> profileQuery,
       UseQueryResult<List<Story>?, dynamic> publishedStoriesQuery,
-      UseQueryResult<List<Story>?, dynamic> readingStoriesQuery) {
+      UseQueryResult<List<ReadingList>?, dynamic> readingStoriesQuery) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
@@ -243,9 +244,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           width: double.infinity,
           margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           child: user == null
-              ? AppIconButton(onPressed: () {
-                  context.go('/push');
-                })
+              ? AppIconButton(
+                  title: 'Đăng nhập',
+                  onPressed: () {
+                    signOut();
+                    context.go('/push');
+                  })
               : Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -320,13 +324,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         SizedBox(
                           width: size.width / 2.5,
                           child: AppIconButton(
-                              title: 'Đăng xuất',
+                              title: 'Đăng xuất ',
                               // icon: const Icon(Icons.add),
                               onPressed: () {
                                 signOut();
                                 context.go('/login');
                               }),
                         ),
+
                         const SizedBox(height: 16),
                         Skeletonizer(
                           enabled: publishedStoriesQuery.isFetching ||
@@ -527,7 +532,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       appBar: CustomAppBar(
         height: 60,
         title: Text(
-          'Hồ sơ',
+          'Hồ sơ ',
           style: Theme.of(context)
               .textTheme
               .titleLarge

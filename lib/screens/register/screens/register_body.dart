@@ -1,4 +1,6 @@
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -35,15 +37,32 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
           try {
             final result =
                 await AuthRepository().verifyEmail(email: emailController.text);
+            if (result == 200) {
+              Map<String, String> body = {
+                'email': emailController.text,
+                'password': passwordController.text,
+                'username': usernameController.text,
+              };
+              // ignore: use_build_context_synchronously
+              context.push('/flowOne',
+                  extra: {'signUpBody': body}); //allow back button
+              // ignore: use_build_context_synchronously
+              AppSnackBar.buildSnackbar(context,
+                  'Đã gửi thành công mã xác nhận', null, SnackBarType.success);
+            } else {
+              // ignore: use_build_context_synchronously
+              AppSnackBar.buildSnackbar(
+                  context, 'Email đã được sử dụng', null, SnackBarType.error);
+            }
 
-            Map<String, String> body = {
-              'email': emailController.text,
-              'password': passwordController.text,
-              'username': usernameController.text,
-            };
-            // ignore: use_build_context_synchronously
-            context.push('/flowTwo',
-                extra: {'signUpBody': body}); //allow back button
+            // Map<String, String> body = {
+            //   'email': emailController.text,
+            //   'password': passwordController.text,
+            //   'username': usernameController.text,
+            // };
+            // // ignore: use_build_context_synchronously
+            // context.push('/flowOne',
+            //     extra: {'signUpBody': body}); //allow back button
           } on Exception catch (e) {
             if (kDebugMode) {
               print(e);

@@ -97,7 +97,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           item('Cài đặt tài khoản', 'editAccount'),
           sliderItem(),
           item('Bảo mật và an toàn', 'editProfile'),
-          item('Ví', 'editProfile'),
+          item('Ví', 'wallet'),
           item('Về Audiory', 'editProfile'),
           item('Hỗ trợ và tư vấn', 'editProfile'),
         ],
@@ -141,11 +141,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
     return Scaffold(
       appBar: CustomAppBar(
-        title: Center(
-          child: Text(
-            'Cài đặt',
-            style: textTheme.headlineMedium,
-          ),
+        title: Text(
+          'Cài đặt',
+          style: textTheme.headlineMedium,
         ),
         actions: [
           Container(
