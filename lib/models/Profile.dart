@@ -22,7 +22,7 @@ class Profile {
   final int? numberOfFollowing;
   final int? reportCount;
   final String? updatedDate;
-  final String username;
+  final String? username;
   final List<Story>? stories;
   final Library? library;
 

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/constants/gifts.dart';
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/models/Chapter.dart';
@@ -199,7 +200,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                 height: 165,
                 decoration: ShapeDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(story?.coverUrl ?? ''),
+                    image: NetworkImage(story?.coverUrl ?? FALLBACK_IMG_URL),
                     fit: BoxFit.fill,
                   ),
                   shape: RoundedRectangleBorder(
@@ -385,7 +386,7 @@ class DetailStoryScreen extends HookConsumerWidget {
           ),
           title: Text(
             storyQuery.data?.title ?? 'Loading...',
-            style: const TextStyle(color: Colors.black),
+            style: textTheme.titleLarge,
           ),
           actions: [
             GestureDetector(
@@ -440,7 +441,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                                                   image: NetworkImage(
                                                       authorQuery.data
                                                               ?.avatarUrl ??
-                                                          ''),
+                                                          FALLBACK_IMG_URL),
                                                   fit: BoxFit.fill,
                                                 ),
                                                 shape: const CircleBorder(),

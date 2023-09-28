@@ -1,14 +1,14 @@
 // import 'package:audioplayers/audioplayers.dart';
 
 import 'package:audiory_v0/constants/skeletons.dart';
-import 'package:audiory_v0/feat-read/layout/reading_bottom_bar.dart';
+import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_drawer.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_navigate_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/comment_section.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen_header.dart';
-import 'package:audiory_v0/feat-read/widgets/audio_bottom_bar.dart';
+import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
@@ -27,8 +27,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class ReadingScreen extends HookWidget {
   final String chapterId;
+  final bool? showComment;
 
-  ReadingScreen({super.key, required this.chapterId});
+  ReadingScreen({super.key, required this.chapterId, this.showComment = false});
 
   final player = AudioPlayer();
 
@@ -122,14 +123,24 @@ class ReadingScreen extends HookWidget {
       });
     }, []);
 
+    // useEffect(() {
+    //   if (showComment == true) {
+    //     showModalBottomSheet(
+    //         isScrollControlled: true,
+    //         context: context,
+    //         builder: (context) {
+    //           return CommentChapterScreen(chapterId: chapterId);
+    //         });
+    //   }
+    // }, []);
     useEffect(() {
       return () => player.dispose();
     }, []);
 
     return Scaffold(
       backgroundColor: bgColor.value,
-      appBar: null,
-      body: Skeletonizer(
+      body: SafeArea(
+          child: Skeletonizer(
         enabled: chapterQuery.isFetching,
         child: RefreshIndicator(
             onRefresh: () async {
@@ -280,12 +291,11 @@ class ReadingScreen extends HookWidget {
                     )
                   ]),
                 ))),
+      )),
+      bottomNavigationBar: ReadingBottomBar(
+        changeStyle: changeStyle,
+        chapterId: chapterId,
       ),
-      bottomNavigationBar: hideBars.value
-          ? null
-          : ReadingBottomBar(
-              changeStyle: changeStyle,
-            ),
       floatingActionButton: AudioBottomBar(
         player: player,
         storyId: chapterQuery.data?.storyId,
@@ -296,6 +306,7 @@ class ReadingScreen extends HookWidget {
         currentChapterId: chapterId,
         story: storyQuery.data,
       ),
+      resizeToAvoidBottomInset: true,
     );
   }
 }

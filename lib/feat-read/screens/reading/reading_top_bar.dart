@@ -6,10 +6,14 @@ import 'package:go_router/go_router.dart';
 class ReadingTopBar extends StatelessWidget implements PreferredSizeWidget {
   final String? storyName;
   final String? storyId;
-  const ReadingTopBar({super.key, this.storyName = '', this.storyId = ''});
+  const ReadingTopBar({
+    super.key,
+    this.storyName = '',
+    this.storyId = '',
+  });
 
   @override
-  Size get preferredSize => const Size.fromHeight(64);
+  Size get preferredSize => const Size.fromHeight(56);
 
   @override
   Widget build(BuildContext context) {

@@ -95,12 +95,19 @@ class ChapterRepository {
     return null;
   }
 
-  static Future<List<Comment>> fetchCommentsByChapterId({
-    required String chapterId,
-  }) async {
+  static Future<List<Comment>> fetchCommentsByChapterId(
+      {required String chapterId,
+      int offset = 1,
+      int limit = 10,
+      String sortBy = 'like_count'}) async {
     const storage = FlutterSecureStorage();
     String? jwtToken = await storage.read(key: 'jwt');
-    final url = Uri.parse('$chapterEndpoint/$chapterId/comments');
+    final url = Uri.parse('$chapterEndpoint/$chapterId/comments').replace(
+        queryParameters: {
+          'offset': '$offset',
+          'limit': '$limit',
+          'sort_by': sortBy
+        });
 
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {
@@ -118,6 +125,7 @@ class ChapterRepository {
     if (response.statusCode == 200) {
       try {
         final List<dynamic> result = jsonDecode(responseBody)['data'];
+        print(result.toString());
         return result.map((i) => Comment.fromJson(i)).toList();
       } catch (error) {
         print(error);

@@ -1,12 +1,19 @@
+import 'package:audiory_v0/feat-read/screens/comment/comment_chapter_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/setting_modal.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 
 class ReadingBottomBar extends HookWidget {
+  final String chapterId;
   final Function([Color? bgColor, int? fontSize, bool? showCommentByParagraph])
       changeStyle;
-  const ReadingBottomBar({super.key, required this.changeStyle});
+  const ReadingBottomBar({
+    super.key,
+    required this.changeStyle,
+    required this.chapterId,
+  });
   static const iconSize = 20.0;
   @override
   Widget build(BuildContext context) {
@@ -21,11 +28,32 @@ class ReadingBottomBar extends HookWidget {
 
     void handleOpenComment() {
       //NOTE: Navigate to comment of chapter page
+      showModalBottomSheet(
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(8.0),
+            topRight: Radius.circular(8.0),
+          )),
+          useSafeArea: true,
+          backgroundColor: Colors.white,
+          context: context,
+          builder: (context) {
+            return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: CommentChapterScreen(chapterId: chapterId));
+          });
     }
 
     void handleOpenSetting() {
       settingOpen.value = true;
       showModalBottomSheet(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(8.0),
+            topRight: Radius.circular(8.0),
+          )),
           context: context,
           builder: (BuildContext context) {
             return SettingModel(
@@ -103,7 +131,7 @@ class ReadingBottomBar extends HookWidget {
                           overlayColor: MaterialStatePropertyAll(
                               appColors.primaryLightest),
                           customBorder: const CircleBorder(),
-                          onTap: () {},
+                          onTap: handleOpenComment,
                           child: Column(
                             mainAxisSize: MainAxisSize.max,
                             mainAxisAlignment: MainAxisAlignment.center,

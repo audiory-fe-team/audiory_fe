@@ -25,7 +25,6 @@ class CommentSection extends HookWidget {
         useQuery(['userInfo'], () => AuthRepository().getMyInfo());
     final commentsQuery = useQuery(['comments', 'chapter', chapterId],
         () => ChapterRepository.fetchCommentsByChapterId(chapterId: chapterId));
-
     handleSubmitComment() async {
       //CALL API
       await CommentRepository.createComment(
@@ -107,16 +106,8 @@ class CommentSection extends HookWidget {
           ]),
         ),
         const SizedBox(height: 16),
-        ...(commentsQuery.data ?? []).map((e) => Container(
+        ...(commentsQuery.data ?? []).map((e) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
-              decoration: BoxDecoration(
-                  border: Border(
-                bottom: BorderSide(
-                  color: appColors.skyLighter,
-                  width: 1.0,
-                  style: BorderStyle.solid,
-                ),
-              )),
               child: CommentCard(comment: e),
             ))
       ],

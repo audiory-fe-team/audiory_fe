@@ -1,5 +1,5 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:audiory_v0/feat-read/models/position_audio.dart';
+import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';

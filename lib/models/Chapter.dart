@@ -4,8 +4,6 @@ class Chapter {
   final String id;
   final String storyId;
   final String? currentVersionId;
-  final String?
-      productId; // It could be null or a String, depending on your API response
   final String title;
   final bool? isDraft;
   final bool? isPaywalled;
@@ -25,7 +23,6 @@ class Chapter {
     required this.id,
     required this.storyId,
     this.currentVersionId,
-    this.productId,
     required this.title,
     this.isDraft,
     this.isPaywalled,
@@ -50,8 +47,7 @@ class Chapter {
     return Chapter(
       id: json["id"],
       storyId: json["story_id"],
-      currentVersionId: json["current_version_id"] ?? 'null',
-      productId: json["product_id"] ?? 'null',
+      currentVersionId: json["current_version_id"],
       title: json["title"],
       isDraft: json["is_draft"],
       isPaywalled: json["is_paywalled"],
@@ -63,7 +59,7 @@ class Chapter {
       createdDate: json["created_date"],
       updatedDate: json["updated_date"],
       isEnabled: json["is_enabled"],
-      chapterVersion: json["chapter_version"] ?? 'null',
+      chapterVersion: json["chapter_version"],
       paragraphs: paragraphs,
     );
   }
@@ -72,7 +68,6 @@ class Chapter {
         "id": id,
         "story_id": storyId,
         "current_version_id": currentVersionId,
-        "product_id": productId,
         "title": title,
         "is_draft": isDraft,
         "is_paywalled": isPaywalled,
