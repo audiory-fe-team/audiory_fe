@@ -44,4 +44,29 @@ class CommentRepository {
       throw Exception('Failed to create comment');
     }
   }
+
+  static Future<Comment> fetchCommentById({required String commentId}) async {
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    final url = Uri.parse('$commentsEndpoint/$commentId');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.get(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return Comment.fromJson(jsonDecode(responseBody)['data']);
+    } else {
+      throw Exception('Failed to create comment');
+    }
+  }
 }

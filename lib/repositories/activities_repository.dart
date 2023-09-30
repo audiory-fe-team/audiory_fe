@@ -8,11 +8,11 @@ import 'package:http/http.dart' as http;
 class ActivitiesRepository {
   static final activitiesEndpoint = "${dotenv.get('API_BASE_URL')}/activities";
 
-  Future<dynamic> sendActivity(
-      {required String actionEntity,
-      required String actionType,
-      required String entityId,
-      required String userId}) async {
+  static Future<dynamic> sendActivity({
+    required String actionEntity,
+    required String actionType,
+    required String entityId,
+  }) async {
     final url = Uri.parse(activitiesEndpoint);
     const storage = FlutterSecureStorage();
     String? jwtToken = await storage.read(key: 'jwt_token');
@@ -32,7 +32,6 @@ class ActivitiesRepository {
           'action_entity': actionEntity,
           'action_type': actionType,
           'entity_id': entityId,
-          'user_id': userId
         },
         headers: headers);
 

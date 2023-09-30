@@ -1,10 +1,7 @@
-import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
-import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
 import 'package:audiory_v0/feat-write/screens/layout/writer_app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 import '../repositories/auth_repository.dart';
 import '../theme/theme_constants.dart';

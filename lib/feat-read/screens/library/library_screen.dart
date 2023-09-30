@@ -1,4 +1,4 @@
-import 'package:audiory_v0/feat-read/layout/library_top_bar.dart';
+import 'package:audiory_v0/feat-read/screens/library/library_top_bar.dart';
 import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
 import 'package:audiory_v0/feat-read/widgets/reading_list_card.dart';
 import 'package:audiory_v0/models/enum/SnackbarType.dart';
