@@ -85,7 +85,7 @@ class CommentDetailScreen extends HookWidget {
                   child: RefreshIndicator(onRefresh: () async {
                     commentQuery.refetch();
                   }, child: Builder(builder: (context) {
-                    if (commentQuery.isLoading) {
+                    if (commentQuery.isFetching) {
                       return Skeletonizer(
                           child: ListView(children: [
                         const SizedBox(height: 24),
@@ -113,7 +113,8 @@ class CommentDetailScreen extends HookWidget {
                                 mainAxisSize: MainAxisSize.min,
                                 children: (comment.children ?? [])
                                     .map((e) => Padding(
-                                        padding: EdgeInsets.only(bottom: 8),
+                                        padding:
+                                            const EdgeInsets.only(bottom: 8),
                                         child: CommentCard(
                                             comment: e, isDetail: true)))
                                     .toList())),

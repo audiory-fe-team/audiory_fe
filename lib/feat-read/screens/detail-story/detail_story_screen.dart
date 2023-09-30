@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/constants/gifts.dart';
 import 'package:audiory_v0/constants/skeletons.dart';
@@ -9,7 +7,6 @@ import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
 import 'package:audiory_v0/models/enum/SnackbarType.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
-import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
@@ -46,10 +43,6 @@ class DetailStoryScreen extends HookConsumerWidget {
         useQuery(['story', id], () => StoryRepostitory().fetchStoryById(id));
     final libraryQuery =
         useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
-
-    final authorQuery = useQuery(['profile', storyQuery.data?.authorId],
-        () => ProfileRepository().fetchProfileById(storyQuery.data?.authorId),
-        enabled: storyQuery.isSuccess);
 
     final tabState = useState(0);
     final selectedItem = useState<Gift>(GIFT_LIST[0]);
@@ -400,7 +393,6 @@ class DetailStoryScreen extends HookConsumerWidget {
             child: RefreshIndicator(
                 onRefresh: () async {
                   storyQuery.refetch();
-                  authorQuery.refetch();
                 },
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
@@ -419,46 +411,46 @@ class DetailStoryScreen extends HookConsumerWidget {
                       const SizedBox(height: 12),
                       //NOTE: Profile image
                       Skeletonizer(
-                          enabled: authorQuery.isFetching,
-                          child: Material(
-                              child: InkWell(
-                                  onTap: () async {
-                                    // context.go('/profile');
-                                  },
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Skeleton.replace(
+                        enabled: storyQuery.isFetching,
+                        child: Material(
+                            child: InkWell(
+                                onTap: () async {
+                                  // context.go('/profile');
+                                },
+                                child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Skeleton.replace(
+                                          width: 32,
+                                          height: 32,
+                                          child: Container(
                                             width: 32,
                                             height: 32,
-                                            child: Container(
-                                              width: 32,
-                                              height: 32,
-                                              decoration: ShapeDecoration(
-                                                image: DecorationImage(
-                                                  image: NetworkImage(
-                                                      authorQuery.data
-                                                              ?.avatarUrl ??
-                                                          FALLBACK_IMG_URL),
-                                                  fit: BoxFit.fill,
-                                                ),
-                                                shape: const CircleBorder(),
+                                            decoration: ShapeDecoration(
+                                              image: DecorationImage(
+                                                image: NetworkImage(storyQuery
+                                                        .data
+                                                        ?.author
+                                                        ?.avatarUrl ??
+                                                    FALLBACK_IMG_URL),
+                                                fit: BoxFit.fill,
                                               ),
-                                            )),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          authorQuery.isFetching
-                                              ? generateFakeString(16)
-                                              : authorQuery.data?.fullName ??
-                                                  '',
-                                          style: textTheme.titleMedium!
-                                              .copyWith(
-                                                  fontWeight: FontWeight.w400),
-                                        )
-                                      ])))),
-
+                                              shape: const CircleBorder(),
+                                            ),
+                                          )),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        storyQuery.isFetching
+                                            ? generateFakeString(16)
+                                            : storyQuery
+                                                    .data?.author?.fullName ??
+                                                'Tác giả',
+                                        style: textTheme.titleMedium!.copyWith(
+                                            fontWeight: FontWeight.w400),
+                                      )
+                                    ]))),
+                      ),
                       const SizedBox(height: 24),
                       Skeletonizer(
                           enabled: storyQuery.isFetching,
@@ -604,7 +596,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                       child: FilledButton(
                           onPressed: () {
                             context.push(
-                                '/story/${id}/chapter/41ccaddf-3b96-11ee-8842-e0d4e8a18075');
+                                '/story/$id/chapter/41ccaddf-3b96-11ee-8842-e0d4e8a18075');
                             //   .pushNamed("chapter_detail", pathParameters: {
                             // "storyId": id,
                             // "chapterId":

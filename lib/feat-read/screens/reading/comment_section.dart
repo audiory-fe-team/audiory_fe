@@ -1,4 +1,5 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
+import 'package:audiory_v0/feat-read/screens/comment/comment_chapter_screen.dart';
 import 'package:audiory_v0/feat-read/widgets/comment_card.dart';
 import 'package:audiory_v0/models/enum/SnackbarType.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
@@ -23,8 +24,11 @@ class CommentSection extends HookWidget {
     final controller = useTextEditingController();
     final infoQuery =
         useQuery(['userInfo'], () => AuthRepository().getMyInfo());
-    final commentsQuery = useQuery(['comments', 'chapter', chapterId],
-        () => ChapterRepository.fetchCommentsByChapterId(chapterId: chapterId));
+    final commentsQuery = useQuery(
+        ['comments', 'chapter', chapterId],
+        () => ChapterRepository.fetchCommentsByChapterId(
+            chapterId: chapterId, offset: 0, limit: 3, sortBy: 'like_count'));
+
     handleSubmitComment() async {
       //CALL API
       await CommentRepository.createComment(
@@ -33,6 +37,25 @@ class CommentSection extends HookWidget {
           context, 'Bình luận thành công', null, SnackBarType.success);
       controller.text = "";
       commentsQuery.refetch();
+    }
+
+    handleOpenCommentChapter() {
+      showModalBottomSheet(
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12.0),
+            topRight: Radius.circular(12.0),
+          )),
+          useSafeArea: true,
+          backgroundColor: Colors.white,
+          context: context,
+          builder: (context) {
+            return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: CommentScreen(chapterId: chapterId));
+          });
     }
 
     return Column(
@@ -51,8 +74,9 @@ class CommentSection extends HookWidget {
               width: 40,
               decoration: ShapeDecoration(
                 image: DecorationImage(
-                  image: NetworkImage(
-                      infoQuery.data?.avatarUrl ?? FALLBACK_IMG_URL),
+                  image: NetworkImage(((infoQuery.data?.avatarUrl ?? '') == '')
+                      ? FALLBACK_IMG_URL
+                      : infoQuery.data?.avatarUrl ?? ''),
                   fit: BoxFit.fill,
                 ),
                 shape: const CircleBorder(),
@@ -109,7 +133,31 @@ class CommentSection extends HookWidget {
         ...(commentsQuery.data ?? []).map((e) => Padding(
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: CommentCard(comment: e),
-            ))
+            )),
+        Row(
+            mainAxisSize: MainAxisSize.max,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              FilledButton(
+                  onPressed: () {
+                    handleOpenCommentChapter();
+                  },
+                  style: FilledButton.styleFrom(
+                    backgroundColor: appColors.skyLighter,
+                    minimumSize: Size.zero, // Set this
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    alignment: Alignment.center,
+                    // and this
+                  ),
+                  child: Text(
+                    'Xem thêm bình luận',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: appColors.inkLight),
+                  ))
+            ])
       ],
     );
   }

@@ -1,6 +1,7 @@
 // import 'package:audioplayers/audioplayers.dart';
 
 import 'package:audiory_v0/constants/skeletons.dart';
+import 'package:audiory_v0/feat-read/screens/comment/comment_chapter_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
@@ -68,6 +69,28 @@ class ReadingScreen extends HookWidget {
           isShowCommentByParagraph ?? showCommentByParagraph.value;
     }
 
+    void handleOpenCommentPara(String paraId) {
+      showModalBottomSheet(
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12.0),
+            topRight: Radius.circular(12.0),
+          )),
+          useSafeArea: true,
+          backgroundColor: Colors.white,
+          context: context,
+          builder: (context) {
+            return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: CommentScreen(
+                  chapterId: chapterId,
+                  paraId: paraId,
+                ));
+          });
+    }
+
     useEffect(() {
       final playlist = ConcatenatingAudioSource(
           children: (chapterQuery.data?.paragraphs ?? [])
@@ -133,6 +156,7 @@ class ReadingScreen extends HookWidget {
     //         });
     //   }
     // }, []);
+
     useEffect(() {
       return () => player.dispose();
     }, []);
@@ -196,20 +220,37 @@ class ReadingScreen extends HookWidget {
                               player.seek(null, index: index);
                             }
                           },
-                          child: Container(
+                          child: SizedBox(
                             key: key,
-                            margin: const EdgeInsets.only(bottom: 24),
-                            padding: const EdgeInsets.all(8),
-                            decoration: (curParaIndex.value == index)
-                                ? BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: appColors.primaryLightest)
-                                : const BoxDecoration(),
-                            child: Text(para.content ?? '',
-                                style: textTheme.bodyLarge?.copyWith(
-                                  fontSize: fontSize.value.toDouble(),
-                                  fontFamily: GoogleFonts.gelasio().fontFamily,
-                                )),
+                            width: double.infinity,
+                            child: Stack(children: [
+                              Container(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 24, left: 4, right: 4, top: 4),
+                                  decoration: (curParaIndex.value == index)
+                                      ? BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          color: appColors.primaryLightest)
+                                      : const BoxDecoration(),
+                                  child: Text(para.content ?? '',
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        fontSize: fontSize.value.toDouble(),
+                                        fontFamily:
+                                            GoogleFonts.gelasio().fontFamily,
+                                      ))),
+                              Positioned(
+                                  bottom: 10,
+                                  right: 0,
+                                  child: IconButton(
+                                      visualDensity: const VisualDensity(
+                                          horizontal: -4, vertical: -4),
+                                      onPressed: () =>
+                                          handleOpenCommentPara(para.id),
+                                      icon: Icon(Icons.mode_comment_outlined,
+                                          size: 16,
+                                          color: appColors.primaryDark)))
+                            ]),
                           ));
                     }).toList(),
                     Skeleton.keep(

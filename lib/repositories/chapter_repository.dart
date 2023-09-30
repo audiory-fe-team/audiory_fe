@@ -125,10 +125,8 @@ class ChapterRepository {
     if (response.statusCode == 200) {
       try {
         final List<dynamic> result = jsonDecode(responseBody)['data'];
-        print(result.toString());
         return result.map((i) => Comment.fromJson(i)).toList();
       } catch (error) {
-        print(error);
         throw (error);
       }
     } else {

@@ -3,7 +3,6 @@ import 'package:audiory_v0/feat-read/screens/reading/setting_modal.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 
 class ReadingBottomBar extends HookWidget {
   final String chapterId;
@@ -32,8 +31,8 @@ class ReadingBottomBar extends HookWidget {
           isScrollControlled: true,
           shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(8.0),
-            topRight: Radius.circular(8.0),
+            topLeft: Radius.circular(12.0),
+            topRight: Radius.circular(12.0),
           )),
           useSafeArea: true,
           backgroundColor: Colors.white,
@@ -42,7 +41,7 @@ class ReadingBottomBar extends HookWidget {
             return Padding(
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: CommentChapterScreen(chapterId: chapterId));
+                child: CommentScreen(chapterId: chapterId));
           });
     }
 
@@ -51,8 +50,8 @@ class ReadingBottomBar extends HookWidget {
       showModalBottomSheet(
           shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(8.0),
-            topRight: Radius.circular(8.0),
+            topLeft: Radius.circular(12.0),
+            topRight: Radius.circular(12.0),
           )),
           context: context,
           builder: (BuildContext context) {

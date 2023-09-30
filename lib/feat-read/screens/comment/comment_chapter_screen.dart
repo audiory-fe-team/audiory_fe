@@ -2,17 +2,20 @@ import 'package:audiory_v0/feat-read/widgets/comment_card.dart';
 import 'package:audiory_v0/models/Comment.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/comment_repository.dart';
+import 'package:audiory_v0/repositories/para_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/use_paging_controller.dart';
+import 'package:audiory_v0/widgets/paginators/infinite_scroll_paginator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-class CommentChapterScreen extends HookWidget {
+class CommentScreen extends HookWidget {
   final String chapterId;
-  const CommentChapterScreen({super.key, required this.chapterId});
+  final String? paraId;
+  const CommentScreen({super.key, required this.chapterId, this.paraId});
 
   static const pageSize = 10;
 
@@ -35,12 +38,21 @@ class CommentChapterScreen extends HookWidget {
             onPageRequest: (int pageKey,
                 PagingController<int, Comment> pagingController) async {
               try {
-                final newItems =
-                    await ChapterRepository.fetchCommentsByChapterId(
-                        chapterId: chapterId,
-                        offset: pageKey,
-                        limit: pageSize,
-                        sortBy: sortBy.value);
+                List<Comment> newItems = [];
+                if (paraId != null) {
+                  newItems = await ParaRepository.fetchCommentsByParaId(
+                      paraId: paraId!,
+                      offset: pageKey,
+                      limit: pageSize,
+                      sortBy: sortBy.value);
+                } else {
+                  newItems = await ChapterRepository.fetchCommentsByChapterId(
+                      chapterId: chapterId!,
+                      offset: pageKey,
+                      limit: pageSize,
+                      sortBy: sortBy.value);
+                }
+
                 final isLastPage = newItems.length < pageSize;
                 if (isLastPage) {
                   pagingController.appendLastPage(newItems);
@@ -62,9 +74,9 @@ class CommentChapterScreen extends HookWidget {
       isCommenting.value = true;
       await CommentRepository.createComment(
           chapterId: chapterId,
-          paraId: paragraphs[paragraphs.length - 1].id,
+          paraId: paraId ?? paragraphs[paragraphs.length - 1].id,
           text: controller.text);
-      isCommenting.value = true;
+      isCommenting.value = false;
 
       controller.text = "";
       commentsPagingController.refresh();
@@ -87,7 +99,7 @@ class CommentChapterScreen extends HookWidget {
             children: [
               const SizedBox(width: 20),
               Text(
-                'Bình luận chương',
+                'Bình luận ${paraId == null ? 'chương' : 'đoạn'}',
                 style: textTheme.titleLarge,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -107,77 +119,76 @@ class CommentChapterScreen extends HookWidget {
                   onRefresh: () async {
                     commentsPagingController.refresh();
                   },
-                  child: CustomScrollView(slivers: <Widget>[
-                    const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                    SliverToBoxAdapter(
-                        child: IntrinsicHeight(
-                            child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Text('Xếp theo:',
-                            style:
-                                textTheme.titleSmall?.copyWith(fontSize: 14)),
-                        const SizedBox(width: 6),
-                        GestureDetector(
-                          onTap: () {
-                            if (sortBy.value != 'like_count') {
-                              sortBy.value = 'like_count';
-                              commentsPagingController.refresh();
-                            }
-                          },
-                          child: Text(
-                            'Hot',
-                            style: textTheme.titleSmall?.copyWith(
-                                fontFamily:
-                                    GoogleFonts.sourceSansPro().fontFamily,
-                                fontWeight: sortBy.value == "like_count"
-                                    ? FontWeight.w600
-                                    : FontWeight.w400,
-                                fontSize: 14,
-                                color: sortBy.value == "like_count"
-                                    ? appColors.primaryBase
-                                    : appColors.inkBase),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        VerticalDivider(
-                          width: 2,
-                          color: appColors.inkBase,
-                        ),
-                        const SizedBox(width: 6),
-                        GestureDetector(
+                  child: AppInfiniteScrollList(
+                    controller: commentsPagingController,
+                    itemBuilder: (context, item, index) => Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: CommentCard(
+                          comment: item,
+                        )),
+                    topItems: <Widget>[
+                      const SizedBox(height: 12),
+                      IntrinsicHeight(
+                          child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text('Xếp theo:',
+                              style:
+                                  textTheme.titleSmall?.copyWith(fontSize: 14)),
+                          const SizedBox(width: 6),
+                          GestureDetector(
                             onTap: () {
-                              if (sortBy.value == 'like_count') {
-                                sortBy.value = 'created_date';
+                              if (sortBy.value != 'like_count') {
+                                sortBy.value = 'like_count';
                                 commentsPagingController.refresh();
                               }
                             },
                             child: Text(
-                              'Mới',
+                              'Hot',
                               style: textTheme.titleSmall?.copyWith(
                                   fontFamily:
                                       GoogleFonts.sourceSansPro().fontFamily,
-                                  fontWeight: !(sortBy.value == "like_count")
+                                  fontWeight: sortBy.value == "like_count"
                                       ? FontWeight.w600
                                       : FontWeight.w400,
                                   fontSize: 14,
-                                  color: !(sortBy.value == "like_count")
+                                  color: sortBy.value == "like_count"
                                       ? appColors.primaryBase
                                       : appColors.inkBase),
-                            ))
-                      ],
-                    ))),
-                    const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                    PagedSliverList<int, Comment>(
-                        pagingController: commentsPagingController,
-                        builderDelegate: PagedChildBuilderDelegate<Comment>(
-                            itemBuilder: (context, item, index) => Padding(
-                                padding: const EdgeInsets.only(top: 12),
-                                child: CommentCard(
-                                  comment: item,
-                                ))))
-                  ])))),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          VerticalDivider(
+                            width: 2,
+                            color: appColors.inkBase,
+                          ),
+                          const SizedBox(width: 6),
+                          GestureDetector(
+                              onTap: () {
+                                if (sortBy.value == 'like_count') {
+                                  sortBy.value = 'created_date';
+                                  commentsPagingController.refresh();
+                                }
+                              },
+                              child: Text(
+                                'Mới',
+                                style: textTheme.titleSmall?.copyWith(
+                                    fontFamily:
+                                        GoogleFonts.sourceSansPro().fontFamily,
+                                    fontWeight: !(sortBy.value == "like_count")
+                                        ? FontWeight.w600
+                                        : FontWeight.w400,
+                                    fontSize: 14,
+                                    color: !(sortBy.value == "like_count")
+                                        ? appColors.primaryBase
+                                        : appColors.inkBase),
+                              ))
+                        ],
+                      )),
+                      const SizedBox(height: 12)
+                    ],
+                  )))),
       Container(
           padding: const EdgeInsets.all(6),
           child: Row(

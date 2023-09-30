@@ -1,4 +1,5 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -59,7 +60,8 @@ class AudioBottomBar extends HookWidget {
                       height: 42,
                       decoration: ShapeDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(storyQuery.data?.coverUrl ?? ''),
+                          image: NetworkImage(
+                              storyQuery.data?.coverUrl ?? FALLBACK_IMG_URL),
                           fit: BoxFit.fill,
                         ),
                         shape: RoundedRectangleBorder(

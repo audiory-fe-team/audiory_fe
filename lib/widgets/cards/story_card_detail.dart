@@ -30,7 +30,7 @@ class StoryCardDetail extends StatelessWidget {
     final voteCount = story?.voteCount ?? searchStory?.voteCount ?? 0;
     final readCount = story?.readCount ?? searchStory?.readCount ?? 0;
     final chapterNum =
-        story?.numFreeChapters ?? searchStory?.numFreeChapters ?? 0;
+        story?.publishedCount ?? searchStory?.publishedCount ?? 0;
     final List<String> tags = story?.tags?.map((tag) => tag.name).toList() ??
         searchStory?.tags?.split(",") ??
         [];

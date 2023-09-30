@@ -60,182 +60,173 @@ class CommentCard extends StatelessWidget {
     }
 
     return Container(
-        width: double.infinity,
-        child: Expanded(
-          child: Row(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                GestureDetector(
-                    onTap: goToUserProfile,
-                    child: ClipRRect(
-                        // borderRadius: BorderRadius.circular(50.0),
-                        child: Image.network(FALLBACK_IMG_URL,
-                            width: 40.0, height: 40.0))),
-                const SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                    child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.only(bottom: 4),
-                        decoration: BoxDecoration(
-                            border: Border(
-                                bottom: BorderSide(
-                                    color: appColors.skyLighter, width: 0.5))),
-                        child: Column(
+      width: double.infinity,
+      child: Row(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            GestureDetector(
+                onTap: goToUserProfile,
+                child: ClipRRect(
+                    // borderRadius: BorderRadius.circular(50.0),
+                    child: Image.network(FALLBACK_IMG_URL,
+                        width: 40.0, height: 40.0))),
+            const SizedBox(
+              width: 10,
+            ),
+            Expanded(
+                child: Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.only(bottom: 4),
+                    decoration: BoxDecoration(
+                        border: Border(
+                            bottom: BorderSide(
+                                color: appColors.skyLighter, width: 0.5))),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
                             children: [
-                              Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              GestureDetector(
+                                  onTap: goToUserProfile,
+                                  child: Text(
+                                    userName,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(fontSize: 15),
+                                  )),
+                              Text(
+                                formatRelativeTime(createdTime),
+                                style: Theme.of(context).textTheme.titleSmall,
+                              )
+                            ],
+                          ),
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 4),
+                            child: Text(
+                              content,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(fontSize: 16),
+                              textAlign: TextAlign.justify,
+                            ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
                                 children: [
-                                  GestureDetector(
-                                      onTap: goToUserProfile,
+                                  Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                          onTap: () {
+                                            handleLikeComment(
+                                                comment.isLiked == true);
+                                          },
+                                          child: Container(
+                                            padding: const EdgeInsets.all(4),
+                                            child: Text('Thích',
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .titleMedium
+                                                    ?.copyWith(
+                                                        fontSize: 14,
+                                                        color: comment
+                                                                    .isLiked ==
+                                                                true
+                                                            ? appColors
+                                                                .primaryBase
+                                                            : appColors
+                                                                .inkLighter)),
+                                          ))),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  if (!isDetail)
+                                    Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                            onTap: () {
+                                              handleOpenCommentDetail(
+                                                  comment.id);
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              child: Text('Trả lời',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium
+                                                      ?.copyWith(
+                                                          fontSize: 14,
+                                                          color: appColors
+                                                              .inkLighter)),
+                                            ))),
+                                  const SizedBox(
+                                    width: 4,
+                                  ),
+                                  Builder(builder: (context) {
+                                    if (isDetail) return SizedBox();
+                                    final replyCount = comment.children?.length;
+                                    if (replyCount == null) return SizedBox();
+                                    if (replyCount == 0) return SizedBox();
+                                    return Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                            onTap: () {
+                                              handleOpenCommentDetail(
+                                                  comment.id);
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(4),
+                                              child: Text(
+                                                  'Xem ${replyCount} trả lời',
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .titleMedium
+                                                      ?.copyWith(
+                                                          fontSize: 14,
+                                                          color: appColors
+                                                              .inkLighter)),
+                                            )));
+                                  }),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 2.0),
                                       child: Text(
-                                        userName,
+                                        '${comment.likeCount ?? 0}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium
-                                            ?.copyWith(fontSize: 15),
+                                            ?.copyWith(
+                                                color: comment.isLiked == true
+                                                    ? appColors.primaryBase
+                                                    : appColors.inkLighter,
+                                                fontSize: 14),
                                       )),
-                                  Text(
-                                    formatRelativeTime(createdTime),
-                                    style:
-                                        Theme.of(context).textTheme.titleSmall,
-                                  )
-                                ],
-                              ),
-                              Container(
-                                margin: const EdgeInsets.symmetric(vertical: 4),
-                                child: Text(
-                                  content,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(fontSize: 16),
-                                  textAlign: TextAlign.justify,
-                                ),
-                              ),
-                              Row(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Material(
-                                          color: Colors.transparent,
-                                          child: InkWell(
-                                              onTap: () {
-                                                handleLikeComment(
-                                                    comment.isLiked == true);
-                                              },
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(4),
-                                                child: Text('Thích',
-                                                    style: Theme.of(context)
-                                                        .textTheme
-                                                        .titleMedium
-                                                        ?.copyWith(
-                                                            fontSize: 14,
-                                                            color: comment
-                                                                        .isLiked ==
-                                                                    true
-                                                                ? appColors
-                                                                    .primaryBase
-                                                                : appColors
-                                                                    .inkLighter)),
-                                              ))),
-                                      const SizedBox(
-                                        width: 4,
-                                      ),
-                                      if (!isDetail)
-                                        Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                                onTap: () {
-                                                  handleOpenCommentDetail(
-                                                      comment.id);
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(4),
-                                                  child: Text('Trả lời',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleMedium
-                                                          ?.copyWith(
-                                                              fontSize: 14,
-                                                              color: appColors
-                                                                  .inkLighter)),
-                                                ))),
-                                      const SizedBox(
-                                        width: 4,
-                                      ),
-                                      Builder(builder: (context) {
-                                        if (isDetail) return SizedBox();
-                                        final replyCount = comment.replyCount;
-                                        if (replyCount == null)
-                                          return SizedBox();
-                                        if (replyCount == 0) return SizedBox();
-                                        return Material(
-                                            color: Colors.transparent,
-                                            child: InkWell(
-                                                onTap: () {
-                                                  handleOpenCommentDetail(
-                                                      comment.id);
-                                                },
-                                                child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(4),
-                                                  child: Text(
-                                                      'Xem ${replyCount} trả lời',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleMedium
-                                                          ?.copyWith(
-                                                              fontSize: 14,
-                                                              color: appColors
-                                                                  .inkLighter)),
-                                                )));
-                                      }),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 2.0),
-                                          child: Text(
-                                            '${comment.likeCount ?? 0}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .titleMedium
-                                                ?.copyWith(
-                                                    color: comment.isLiked ==
-                                                            true
-                                                        ? appColors.primaryBase
-                                                        : appColors.inkLighter,
-                                                    fontSize: 14),
-                                          )),
-                                      Icon(
-                                          comment.isLiked == true
-                                              ? Icons.thumb_up_rounded
-                                              : Icons.thumb_up_outlined,
-                                          size: 16,
-                                          color: comment.isLiked == true
-                                              ? appColors.primaryBase
-                                              : appColors.inkLighter),
-                                    ],
-                                  )
+                                  Icon(
+                                      comment.isLiked == true
+                                          ? Icons.thumb_up_rounded
+                                          : Icons.thumb_up_outlined,
+                                      size: 16,
+                                      color: comment.isLiked == true
+                                          ? appColors.primaryBase
+                                          : appColors.inkLighter),
                                 ],
                               )
-                            ])))
-              ]),
-        ));
+                            ],
+                          )
+                        ])))
+          ]),
+    );
   }
 }

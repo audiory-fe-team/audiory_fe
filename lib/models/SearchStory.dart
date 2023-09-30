@@ -19,6 +19,7 @@ class SearchStory {
   final int? reportCount;
   final int? voteCount;
   final int? readCount;
+  final int? publishedCount;
   final String? createdDate;
   final String? updatedDate;
   final bool? isEnabled;
@@ -35,6 +36,7 @@ class SearchStory {
       this.description,
       this.coverUrl,
       this.isDraft,
+      this.publishedCount,
       this.isMature,
       this.isCompleted,
       this.isCopyright,
@@ -78,6 +80,7 @@ class SearchStory {
       avatarUrl: json["avatar_url"],
       fullName: json["full_name"],
       tags: json['tags'],
+      publishedCount: json['published_count'],
     );
   }
 
@@ -106,5 +109,6 @@ class SearchStory {
         "updated_date": updatedDate,
         "is_enabled": isEnabled,
         "tags": tags,
+        "published_count": publishedCount
       };
 }
