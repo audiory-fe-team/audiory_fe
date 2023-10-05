@@ -11,7 +11,6 @@ import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart'
 import 'package:audiory_v0/feat-manage-profile/screens/layout/edit_email_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
-import 'package:audiory_v0/feat-read/screens/comment/comment_chapter_screen.dart';
 import 'package:audiory_v0/feat-read/screens/library/library_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading-list/reading_list_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen.dart';

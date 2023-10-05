@@ -1,7 +1,7 @@
 // import 'package:audioplayers/audioplayers.dart';
 
 import 'package:audiory_v0/constants/skeletons.dart';
-import 'package:audiory_v0/feat-read/screens/comment/comment_chapter_screen.dart';
+import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
@@ -249,7 +249,17 @@ class ReadingScreen extends HookWidget {
                                           handleOpenCommentPara(para.id),
                                       icon: Icon(Icons.mode_comment_outlined,
                                           size: 16,
-                                          color: appColors.primaryDark)))
+                                          color: appColors.primaryBase))),
+                              Positioned(
+                                  bottom: 27,
+                                  right: 18,
+                                  child: Text('${para.commentCount}',
+                                      style: textTheme.labelMedium?.copyWith(
+                                          color: appColors.primaryBase,
+                                          fontFamily:
+                                              GoogleFonts.sourceSansPro()
+                                                  .fontFamily,
+                                          fontWeight: FontWeight.w600))),
                             ]),
                           ));
                     }).toList(),

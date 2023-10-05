@@ -1,4 +1,4 @@
-import 'package:audiory_v0/feat-read/screens/comment/comment_chapter_screen.dart';
+import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/setting_modal.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
@@ -48,6 +48,9 @@ class ReadingBottomBar extends HookWidget {
     void handleOpenSetting() {
       settingOpen.value = true;
       showModalBottomSheet(
+          isScrollControlled: true,
+          useSafeArea: true,
+          useRootNavigator: true,
           shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.only(
             topLeft: Radius.circular(12.0),
@@ -55,9 +58,12 @@ class ReadingBottomBar extends HookWidget {
           )),
           context: context,
           builder: (BuildContext context) {
-            return SettingModel(
-              changeStyle: changeStyle,
-            );
+            return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: SettingModel(
+                  changeStyle: changeStyle,
+                ));
           }).whenComplete(() {
         settingOpen.value = false;
       });

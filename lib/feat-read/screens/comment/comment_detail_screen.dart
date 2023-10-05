@@ -1,9 +1,7 @@
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-read/widgets/comment_card.dart';
-import 'package:audiory_v0/models/enum/SnackbarType.dart';
 import 'package:audiory_v0/repositories/comment_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
@@ -130,9 +128,7 @@ class CommentDetailScreen extends HookWidget {
                       onTap: () {},
                       controller: controller,
                       onChanged: (value) {},
-                      onSubmitted: (value) {
-                        FocusScope.of(context).unfocus();
-                      },
+                      onSubmitted: (value) {},
                       style: Theme.of(context).textTheme.bodyMedium,
                       maxLines: 1,
                       decoration: InputDecoration(

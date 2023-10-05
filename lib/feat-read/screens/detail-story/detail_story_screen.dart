@@ -6,6 +6,7 @@ import 'package:audiory_v0/models/Gift.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
 import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/providers/db_provider.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -368,22 +369,49 @@ class DetailStoryScreen extends HookConsumerWidget {
       }
     }
 
+    Future<void> handleDownloadStory() async {
+      try {
+        final wholeStory = await LibraryRepository.downloadStory(id);
+
+        // Save to offline database
+        final offlineDb = OfflineDatabase();
+        // final noContentStory = wholeStory.copyWith(
+        //     chapters: wholeStory.chapters
+        //         ?.map((e) => e.copyWith(paragraphs: []))
+        //         .toList());
+        // await offlineDb.saveStory(noContentStory);
+
+        AppSnackBar.buildTopSnackBar(context,
+            'Thêm truyện vào thư viện thành công', null, SnackBarType.success);
+        libraryQuery.refetch();
+      } catch (error) {
+        AppSnackBar.buildTopSnackBar(
+            context, error.toString(), null, SnackBarType.warning);
+      }
+    }
+
     return Scaffold(
         appBar: AppBar(
           elevation: 2,
-          leading: GestureDetector(
-            onTap: () {
+          leading: IconButton(
+            onPressed: () {
               GoRouter.of(context).pop();
             },
-            child: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back, size: 24, color: appColors.inkBase),
           ),
-          title: Text(
-            storyQuery.data?.title ?? 'Loading...',
-            style: textTheme.titleLarge,
-          ),
+          leadingWidth: 40,
+          title: Expanded(
+              child: Container(
+                  color: Colors.amber,
+                  child: Text(
+                    storyQuery.data?.title ?? 'Loading...',
+                    style: textTheme.titleLarge,
+                  ))),
           actions: [
-            GestureDetector(
-              child: const Icon(Icons.more_vert_sharp),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.more_vert_rounded,
+                  size: 24, color: appColors.inkBase),
             )
           ],
         ),
@@ -567,31 +595,40 @@ class DetailStoryScreen extends HookConsumerWidget {
                                       ))
                                 ])));
                   }),
-                  Builder(builder: (context) {
-                    final isDownloaded = false;
-                    return TapEffectWrapper(
-                        onTap: () {},
-                        child: SizedBox(
-                            width: 50,
-                            child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.download_rounded,
-                                    size: 24,
-                                    color: isDownloaded == true
-                                        ? appColors.primaryBase
-                                        : appColors.skyBase,
-                                  ),
-                                  Text('Tải xuống',
-                                      style: textTheme.labelLarge!.copyWith(
+                  FutureBuilder(
+                      future: OfflineDatabase().getStory(id),
+                      builder: (context, snapshot) {
+                        final isDownloaded = snapshot.data != null;
+                        return TapEffectWrapper(
+                            onTap: () {
+                              if (isDownloaded == true) {
+                                AppSnackBar.buildTopSnackBar(context,
+                                    'Đã tải truyện', null, SnackBarType.info);
+                                return;
+                              }
+                              handleDownloadStory();
+                            },
+                            child: SizedBox(
+                                width: 50,
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.download_rounded,
+                                        size: 24,
                                         color: isDownloaded == true
                                             ? appColors.primaryBase
                                             : appColors.skyBase,
-                                      ))
-                                ])));
-                  }),
+                                      ),
+                                      Text('Tải xuống',
+                                          style: textTheme.labelLarge!.copyWith(
+                                            color: isDownloaded == true
+                                                ? appColors.primaryBase
+                                                : appColors.skyBase,
+                                          ))
+                                    ])));
+                      }),
                   Expanded(
                       child: FilledButton(
                           onPressed: () {

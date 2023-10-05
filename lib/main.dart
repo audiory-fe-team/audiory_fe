@@ -1,7 +1,9 @@
 import 'package:audiory_v0/config/app_router.dart';
+import 'package:audiory_v0/providers/db_provider.dart';
 
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:flutter/material.dart';
 //auth
@@ -17,6 +19,9 @@ final queryClient = QueryClient(
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
+
+  // final dbHelper = DatabaseHelper();
+  // await dbHelper.initDatabase();
 
   await JustAudioBackground.init(
       androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
