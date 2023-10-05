@@ -1,9 +1,9 @@
-import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Comment.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/models/Tag.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
 
 final skeletonStory = Story(

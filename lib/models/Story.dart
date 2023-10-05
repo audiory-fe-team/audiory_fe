@@ -1,13 +1,12 @@
 import 'package:audiory_v0/models/AuthorStory.dart';
 
-import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Tag.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 
 class Story {
   final String id;
   final String? authorId;
   final List<Tag>? tags;
-  // final List<int>? category_ranking;
   final String? categoryId;
   final String title;
   final String? description;

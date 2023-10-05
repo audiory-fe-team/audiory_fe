@@ -1,5 +1,5 @@
-import 'package:audiory_v0/feat-write/data/models/chapter_model/chapter_model.dart';
 import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:sembast/sembast.dart';
 import 'package:sembast/sembast_io.dart';
 

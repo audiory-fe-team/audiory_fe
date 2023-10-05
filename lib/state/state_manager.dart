@@ -1,11 +1,11 @@
 import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/category_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/Chapter.dart';
 import '../models/Story.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 

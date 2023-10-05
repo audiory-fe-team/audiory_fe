@@ -1,10 +1,10 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/constants/gifts.dart';
 import 'package:audiory_v0/constants/skeletons.dart';
-import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Gift.dart';
 import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enum/SnackbarType.dart';
 import 'package:audiory_v0/providers/db_provider.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';

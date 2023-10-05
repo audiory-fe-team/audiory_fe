@@ -1,8 +1,8 @@
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-import '../../models/Chapter.dart';
 import '../../theme/theme_constants.dart';
 
 class EditChapterCard extends StatelessWidget {

@@ -1,11 +1,11 @@
 import 'package:audiory_v0/feat-write/data/models/chapter_version_model/chapter_version_model.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 
 import '../../../core/network/dio_exceptions.dart';
 import '../../../models/Story.dart';
 import '../api/chapter_api.dart';
-import '../models/chapter_model/chapter_model.dart';
 
 class ChapterRepository {
   final ChapterApi _chapterApi;

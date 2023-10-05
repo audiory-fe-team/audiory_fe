@@ -1,3 +1,4 @@
+import 'package:audiory_v0/models/AuthorStory.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import "package:flutter/foundation.dart";
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -14,8 +15,9 @@ class Story with _$Story {
     //json key : snack_case
     //field key : camelCase
 
-    @Default('') @JsonKey(name: 'id') String id,
+    @JsonKey(name: 'id') required String id,
     @JsonKey(name: 'author_id') String? authorId,
+    @JsonKey(name: 'author') AuthorStory? author,
     @JsonKey(name: 'category_id') String? categoryId, // Story position
     @Default('') @JsonKey(name: 'title') String title,
     @JsonKey(name: 'description') String? description,

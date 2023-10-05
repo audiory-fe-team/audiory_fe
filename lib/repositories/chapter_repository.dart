@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Comment.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
