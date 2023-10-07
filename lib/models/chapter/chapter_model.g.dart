@@ -46,5 +46,5 @@ Map<String, dynamic> _$$_ChapterToJson(_$_Chapter instance) =>
       'updated_date': instance.updatedDate,
       'is_enabled': instance.isEnabled,
       'chapter_version': instance.chapterVersion,
-      'paragraphs': instance.paragraphs,
+      'paragraphs': instance.paragraphs?.map((e) => e.toJson()).toList(),
     };

@@ -5,7 +5,7 @@ import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -28,28 +28,26 @@ class HomeScreen extends HookConsumerWidget {
         enabled: connectivityState.status == ConnectivityStatus.online);
 
     if (connectivityState.status == ConnectivityStatus.offline) {
-      
       return Scaffold(
           appBar: const HomeTopBar(),
           body: RefreshIndicator(
-              onRefresh: () async {
-              },
+              onRefresh: () async {},
               child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: ListView(children: [
                     const SizedBox(height: 24),
-                  HeaderWithLink(
-                            icon: Image.asset(
-                              "assets/images/home_for_you.png",
-                              width: 24,
-                            ),
-                            title: 'Truyện đã tải'),
+                    HeaderWithLink(
+                        icon: Image.asset(
+                          "assets/images/home_for_you.png",
+                          width: 24,
+                        ),
+                        title: 'Truyện đã tải'),
                     const SizedBox(height: 16),
-                  StoryScrollList(
-                          storyList: storiesQuery.isFetching
-                              ? skeletonStories
-                              : storiesQuery.data,
-                        )
+                    StoryScrollList(
+                      storyList: storiesQuery.isFetching
+                          ? skeletonStories
+                          : storiesQuery.data,
+                    )
                   ]))));
     }
 

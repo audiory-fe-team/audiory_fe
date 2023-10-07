@@ -5,11 +5,10 @@ import 'package:audiory_v0/feat-manage-profile/models/profile_screen_data.dart';
 import 'package:audiory_v0/feat-write/data/api/story_api.dart';
 import 'package:audiory_v0/feat-write/data/repositories/story_repository.dart';
 import 'package:audiory_v0/models/Profile.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../models/Story.dart';
 
 final userProfileAllDataProvider = StateNotifierProvider.autoDispose<
     ProfileNotifier, AsyncValue<ProfileScreenData>>((ref) => ProfileNotifier());

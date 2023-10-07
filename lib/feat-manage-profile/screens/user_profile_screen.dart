@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:audiory_v0/feat-manage-profile/models/profile_screen_data.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -10,12 +10,10 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../models/AuthUser.dart';
 import '../../models/Profile.dart';
-import '../../models/Story.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/buttons/app_icon_button.dart';
 import '../../widgets/custom_app_bar.dart';

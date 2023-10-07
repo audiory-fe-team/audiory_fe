@@ -1,6 +1,6 @@
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:flutter/material.dart';
 
-import '../../models/Story.dart';
 import '../../theme/theme_constants.dart';
 
 class RandomStoryCard extends StatefulWidget {

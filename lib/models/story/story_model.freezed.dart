@@ -117,6 +117,8 @@ abstract class $StoryCopyWith<$Res> {
       @JsonKey(name: 'is_enabled') bool? isEnabled,
       @JsonKey(name: 'chapters') List<Chapter>? chapters,
       @JsonKey(name: 'tags') List<Tag>? tags});
+
+  $AuthorStoryCopyWith<$Res>? get author;
 }
 
 /// @nodoc
@@ -271,6 +273,18 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
               as List<Tag>?,
     ) as $Val);
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $AuthorStoryCopyWith<$Res>? get author {
+    if (_value.author == null) {
+      return null;
+    }
+
+    return $AuthorStoryCopyWith<$Res>(_value.author!, (value) {
+      return _then(_value.copyWith(author: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -307,6 +321,9 @@ abstract class _$$_StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
       @JsonKey(name: 'is_enabled') bool? isEnabled,
       @JsonKey(name: 'chapters') List<Chapter>? chapters,
       @JsonKey(name: 'tags') List<Tag>? tags});
+
+  @override
+  $AuthorStoryCopyWith<$Res>? get author;
 }
 
 /// @nodoc

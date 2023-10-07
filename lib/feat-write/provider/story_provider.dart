@@ -1,7 +1,6 @@
 import 'package:audiory_v0/core/network/dio_client.dart';
 import 'package:audiory_v0/core/shared_provider/shared_provider.dart';
 import 'package:audiory_v0/feat-write/data/api/story_api.dart';
-import 'package:audiory_v0/feat-write/data/models/story_model/story_model.dart';
 import 'package:audiory_v0/feat-write/data/repositories/story_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

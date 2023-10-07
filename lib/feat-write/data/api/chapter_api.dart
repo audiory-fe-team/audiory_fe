@@ -3,8 +3,7 @@
 
 import 'package:audiory_v0/core/network/constant/endpoints.dart';
 import 'package:audiory_v0/core/network/dio_client.dart';
-
-import '../../../models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 
 class ChapterApi {
   final DioClient _dioClient;

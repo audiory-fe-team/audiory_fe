@@ -1,9 +1,8 @@
-import 'package:audiory_v0/models/AuthorStory.dart';
+import 'package:audiory_v0/models/author-story/author_story_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/tag/tag_model.dart';
 import "package:flutter/foundation.dart";
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../../../../models/Tag.dart';
 
 part 'story_model.freezed.dart'; //get the file name same as the class file name
 part 'story_model.g.dart';

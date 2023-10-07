@@ -1,4 +1,6 @@
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/models/tag/tag_model.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'dart:convert';
 
@@ -17,8 +19,6 @@ import 'package:motion_toast/motion_toast.dart';
 import 'package:motion_toast/resources/arrays.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
-import '../../../models/Story.dart';
-import '../../../models/Tag.dart';
 import '../../../theme/theme_constants.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
@@ -124,7 +124,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
         TextFieldTags(
           textfieldTagsController: _controller!,
           initialTags: tags != null
-              ? List.generate(tags.length, (index) => tags[index].name)
+              ? List.generate(tags.length, (index) => tags[index].name ?? '')
               : [],
           textSeparators: const [','], //add enter keyup
           letterCase: LetterCase.normal,

@@ -47,7 +47,7 @@ _$_Story _$$_StoryFromJson(Map<String, dynamic> json) => _$_Story(
 Map<String, dynamic> _$$_StoryToJson(_$_Story instance) => <String, dynamic>{
       'id': instance.id,
       'author_id': instance.authorId,
-      'author': instance.author,
+      'author': instance.author?.toJson(),
       'category_id': instance.categoryId,
       'title': instance.title,
       'description': instance.description,
@@ -70,6 +70,6 @@ Map<String, dynamic> _$$_StoryToJson(_$_Story instance) => <String, dynamic>{
       'created_date': instance.createdDate,
       'updated_date': instance.updatedDate,
       'is_enabled': instance.isEnabled,
-      'chapters': instance.chapters,
-      'tags': instance.tags,
+      'chapters': instance.chapters?.map((e) => e.toJson()).toList(),
+      'tags': instance.tags?.map((e) => e.toJson()).toList(),
     };
