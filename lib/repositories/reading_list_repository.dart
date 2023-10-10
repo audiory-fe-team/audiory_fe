@@ -1,13 +1,13 @@
 import 'dart:convert';
 
 import 'package:audiory_v0/models/ReadingList.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class ReadingListRepository {
-  static final readingListEndpoint = "${dotenv.get('API_BASE_URL')}";
+  static final readingListEndpoint = dotenv.get('API_BASE_URL');
 
   static Future<List<ReadingList>> fetchMyReadingList() async {
     const storage = FlutterSecureStorage();

@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:audiory_v0/feat-write/data/models/story_model/story_model.dart';
 import 'package:audiory_v0/feat-write/provider/story_provider.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

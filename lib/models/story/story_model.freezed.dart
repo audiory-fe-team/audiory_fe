@@ -27,6 +27,8 @@ mixin _$Story {
   String get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'author_id')
   String? get authorId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'author')
+  AuthorStory? get author => throw _privateConstructorUsedError;
   @JsonKey(name: 'category_id')
   String? get categoryId =>
       throw _privateConstructorUsedError; // Story position
@@ -90,6 +92,7 @@ abstract class $StoryCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'id') String id,
       @JsonKey(name: 'author_id') String? authorId,
+      @JsonKey(name: 'author') AuthorStory? author,
       @JsonKey(name: 'category_id') String? categoryId,
       @JsonKey(name: 'title') String title,
       @JsonKey(name: 'description') String? description,
@@ -114,6 +117,8 @@ abstract class $StoryCopyWith<$Res> {
       @JsonKey(name: 'is_enabled') bool? isEnabled,
       @JsonKey(name: 'chapters') List<Chapter>? chapters,
       @JsonKey(name: 'tags') List<Tag>? tags});
+
+  $AuthorStoryCopyWith<$Res>? get author;
 }
 
 /// @nodoc
@@ -131,6 +136,7 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
   $Res call({
     Object? id = null,
     Object? authorId = freezed,
+    Object? author = freezed,
     Object? categoryId = freezed,
     Object? title = null,
     Object? description = freezed,
@@ -165,6 +171,10 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
           ? _value.authorId
           : authorId // ignore: cast_nullable_to_non_nullable
               as String?,
+      author: freezed == author
+          ? _value.author
+          : author // ignore: cast_nullable_to_non_nullable
+              as AuthorStory?,
       categoryId: freezed == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
@@ -263,6 +273,18 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
               as List<Tag>?,
     ) as $Val);
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $AuthorStoryCopyWith<$Res>? get author {
+    if (_value.author == null) {
+      return null;
+    }
+
+    return $AuthorStoryCopyWith<$Res>(_value.author!, (value) {
+      return _then(_value.copyWith(author: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -274,6 +296,7 @@ abstract class _$$_StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'id') String id,
       @JsonKey(name: 'author_id') String? authorId,
+      @JsonKey(name: 'author') AuthorStory? author,
       @JsonKey(name: 'category_id') String? categoryId,
       @JsonKey(name: 'title') String title,
       @JsonKey(name: 'description') String? description,
@@ -298,6 +321,9 @@ abstract class _$$_StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
       @JsonKey(name: 'is_enabled') bool? isEnabled,
       @JsonKey(name: 'chapters') List<Chapter>? chapters,
       @JsonKey(name: 'tags') List<Tag>? tags});
+
+  @override
+  $AuthorStoryCopyWith<$Res>? get author;
 }
 
 /// @nodoc
@@ -311,6 +337,7 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
   $Res call({
     Object? id = null,
     Object? authorId = freezed,
+    Object? author = freezed,
     Object? categoryId = freezed,
     Object? title = null,
     Object? description = freezed,
@@ -345,6 +372,10 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
           ? _value.authorId
           : authorId // ignore: cast_nullable_to_non_nullable
               as String?,
+      author: freezed == author
+          ? _value.author
+          : author // ignore: cast_nullable_to_non_nullable
+              as AuthorStory?,
       categoryId: freezed == categoryId
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
@@ -449,8 +480,9 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
 @JsonSerializable()
 class _$_Story with DiagnosticableTreeMixin implements _Story {
   const _$_Story(
-      {@JsonKey(name: 'id') this.id = '',
+      {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'author_id') this.authorId,
+      @JsonKey(name: 'author') this.author,
       @JsonKey(name: 'category_id') this.categoryId,
       @JsonKey(name: 'title') this.title = '',
       @JsonKey(name: 'description') this.description,
@@ -490,6 +522,9 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
   @override
   @JsonKey(name: 'author_id')
   final String? authorId;
+  @override
+  @JsonKey(name: 'author')
+  final AuthorStory? author;
   @override
   @JsonKey(name: 'category_id')
   final String? categoryId;
@@ -581,7 +616,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Story(id: $id, authorId: $authorId, categoryId: $categoryId, title: $title, description: $description, coverUrl: $coverUrl, isDraft: $isDraft, isMature: $isMature, isCompleted: $isCompleted, isCopyright: $isCopyright, isPaywalled: $isPaywalled, coinCost: $coinCost, authorEarningPercentage: $authorEarningPercentage, paywallEffectiveDate: $paywallEffectiveDate, numFreeChapters: $numFreeChapters, publishedCount: $publishedCount, draftCount: $draftCount, reportCount: $reportCount, voteCount: $voteCount, readCount: $readCount, explicitPercentage: $explicitPercentage, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapters: $chapters, tags: $tags)';
+    return 'Story(id: $id, authorId: $authorId, author: $author, categoryId: $categoryId, title: $title, description: $description, coverUrl: $coverUrl, isDraft: $isDraft, isMature: $isMature, isCompleted: $isCompleted, isCopyright: $isCopyright, isPaywalled: $isPaywalled, coinCost: $coinCost, authorEarningPercentage: $authorEarningPercentage, paywallEffectiveDate: $paywallEffectiveDate, numFreeChapters: $numFreeChapters, publishedCount: $publishedCount, draftCount: $draftCount, reportCount: $reportCount, voteCount: $voteCount, readCount: $readCount, explicitPercentage: $explicitPercentage, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapters: $chapters, tags: $tags)';
   }
 
   @override
@@ -591,6 +626,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
       ..add(DiagnosticsProperty('type', 'Story'))
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('authorId', authorId))
+      ..add(DiagnosticsProperty('author', author))
       ..add(DiagnosticsProperty('categoryId', categoryId))
       ..add(DiagnosticsProperty('title', title))
       ..add(DiagnosticsProperty('description', description))
@@ -626,6 +662,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.authorId, authorId) ||
                 other.authorId == authorId) &&
+            (identical(other.author, author) || other.author == author) &&
             (identical(other.categoryId, categoryId) ||
                 other.categoryId == categoryId) &&
             (identical(other.title, title) || other.title == title) &&
@@ -679,6 +716,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
         runtimeType,
         id,
         authorId,
+        author,
         categoryId,
         title,
         description,
@@ -721,8 +759,9 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
 
 abstract class _Story implements Story {
   const factory _Story(
-      {@JsonKey(name: 'id') final String id,
+      {@JsonKey(name: 'id') required final String id,
       @JsonKey(name: 'author_id') final String? authorId,
+      @JsonKey(name: 'author') final AuthorStory? author,
       @JsonKey(name: 'category_id') final String? categoryId,
       @JsonKey(name: 'title') final String title,
       @JsonKey(name: 'description') final String? description,
@@ -760,6 +799,9 @@ abstract class _Story implements Story {
   @override
   @JsonKey(name: 'author_id')
   String? get authorId;
+  @override
+  @JsonKey(name: 'author')
+  AuthorStory? get author;
   @override
   @JsonKey(name: 'category_id')
   String? get categoryId;

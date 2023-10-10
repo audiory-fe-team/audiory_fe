@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:audiory_v0/feat-write/provider/chapter_version_provider.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/foundation.dart';
@@ -12,7 +13,6 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import '../../../models/Chapter.dart';
 import '../../../repositories/chapter_repository.dart';
 import '../../../theme/theme_constants.dart';
 import '../../../widgets/input/text_input.dart';

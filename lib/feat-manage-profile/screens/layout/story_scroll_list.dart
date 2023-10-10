@@ -1,5 +1,5 @@
 import 'dart:math';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:flutter/material.dart';
 

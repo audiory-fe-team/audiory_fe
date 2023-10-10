@@ -1,8 +1,8 @@
-import 'package:audiory_v0/feat-write/data/models/chapter_model/chapter_model.dart';
+import 'package:audiory_v0/models/author-story/author_story_model.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/tag/tag_model.dart';
 import "package:flutter/foundation.dart";
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../../../../models/Tag.dart';
 
 part 'story_model.freezed.dart'; //get the file name same as the class file name
 part 'story_model.g.dart';
@@ -14,8 +14,9 @@ class Story with _$Story {
     //json key : snack_case
     //field key : camelCase
 
-    @Default('') @JsonKey(name: 'id') String id,
+    @JsonKey(name: 'id') required String id,
     @JsonKey(name: 'author_id') String? authorId,
+    @JsonKey(name: 'author') AuthorStory? author,
     @JsonKey(name: 'category_id') String? categoryId, // Story position
     @Default('') @JsonKey(name: 'title') String title,
     @JsonKey(name: 'description') String? description,

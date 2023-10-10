@@ -4,16 +4,14 @@ class Paragraph {
   final int? order;
   final String? content;
   final int? commentCount;
-  final String? comments;
   final String? audioUrl;
 
-  Paragraph({
+  const Paragraph({
     required this.id,
     required this.chapterId,
     required this.order,
-    required this.content,
-    required this.commentCount,
-    this.comments,
+    this.content,
+    this.commentCount,
     required this.audioUrl,
   });
 
@@ -24,7 +22,6 @@ class Paragraph {
       order: json["order"],
       content: json["content"],
       commentCount: json["comment_count"],
-      comments: json["comments"],
       audioUrl: json["audio_url"],
     );
   }
@@ -35,7 +32,6 @@ class Paragraph {
         "order": order,
         "content": content,
         "comment_count": commentCount,
-        "comments": comments,
         "audio_url": audioUrl,
       };
 }

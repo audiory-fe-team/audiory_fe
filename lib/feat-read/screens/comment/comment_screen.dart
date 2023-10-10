@@ -47,7 +47,7 @@ class CommentScreen extends HookWidget {
                       sortBy: sortBy.value);
                 } else {
                   newItems = await ChapterRepository.fetchCommentsByChapterId(
-                      chapterId: chapterId!,
+                      chapterId: chapterId,
                       offset: pageKey,
                       limit: pageSize,
                       sortBy: sortBy.value);

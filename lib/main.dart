@@ -1,4 +1,5 @@
 import 'package:audiory_v0/config/app_router.dart';
+import 'package:audiory_v0/providers/offline_database.dart';
 
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';

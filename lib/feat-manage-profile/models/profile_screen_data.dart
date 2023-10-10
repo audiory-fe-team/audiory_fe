@@ -1,5 +1,6 @@
+import 'package:audiory_v0/models/story/story_model.dart';
+
 import '../../models/Profile.dart';
-import '../../models/Story.dart';
 
 class ProfileScreenData {
   final Profile? profile;

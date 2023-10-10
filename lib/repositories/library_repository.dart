@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audiory_v0/models/Library.dart';
 import 'package:audiory_v0/models/LibraryStory.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -79,6 +80,32 @@ class LibraryRepository {
     if (response.statusCode == 200) {
     } else {
       throw Exception('Failed to delete story');
+    }
+  }
+
+  static Future<Story> downloadStory(String storyId) async {
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    final url = Uri.parse('$libraryEndpoint/me/stories/$storyId');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.get(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      final result = jsonDecode(responseBody)['data'];
+      return Story.fromJson(result);
+    } else {
+      throw Exception('Failed to download story');
     }
   }
 }

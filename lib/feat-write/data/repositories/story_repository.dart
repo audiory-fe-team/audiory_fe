@@ -1,5 +1,5 @@
 import 'package:audiory_v0/feat-write/data/api/story_api.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 

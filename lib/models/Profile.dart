@@ -1,5 +1,5 @@
 import 'package:audiory_v0/models/Library.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 
 class Profile {
   final String? avatarUrl;

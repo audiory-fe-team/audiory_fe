@@ -1,29 +1,32 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/LibraryStory.dart';
-import 'package:audiory_v0/models/enum/SnackbarType.dart';
-import 'package:audiory_v0/repositories/library_repository.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 class CurrentReadCard extends StatelessWidget {
-  final LibraryStory story;
+  final LibraryStory? libStory;
+  final Story? story;
   final Function(String) onDeleteStory;
   const CurrentReadCard(
-      {super.key, required this.story, required this.onDeleteStory});
+      {super.key, this.story, required this.onDeleteStory, this.libStory});
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final coverUrl = story.story.coverUrl ?? FALLBACK_IMG_URL;
-    final storyId = story.storyId ?? 'not-found';
-    final title = story.story.title ?? 'Tiêu đề truyện';
+    final coverUrl =
+        libStory?.story.coverUrl ?? story?.coverUrl ?? FALLBACK_IMG_URL;
+    final storyId = libStory?.storyId ?? story?.id ?? 'not-fount';
 
-    final authorName = story.story.author?.fullName ?? 'Tác giả';
+    final title = libStory?.story.title ?? story?.title ?? 'Tiêu đề truyện';
+
+    final authorName = libStory?.story.author?.fullName ??
+        story?.author?.fullName ??
+        'Tiêu đề truyện';
 
     return GestureDetector(
         onTap: () {
@@ -113,35 +116,36 @@ class CurrentReadCard extends StatelessWidget {
                             ],
                           ),
                         ),
-                        SizedBox(
-                          width: double.infinity,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: double.infinity,
-                                child: Text(
-                                  'Đã đọc: 34/56 chương',
-                                  style: textTheme.labelLarge
-                                      ?.copyWith(fontStyle: FontStyle.italic),
+                        if (libStory != null)
+                          SizedBox(
+                            width: double.infinity,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Text(
+                                    'Đã đọc: 34/56 chương',
+                                    style: textTheme.labelLarge
+                                        ?.copyWith(fontStyle: FontStyle.italic),
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(height: 4),
-                              ClipRRect(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                child: LinearProgressIndicator(
-                                  value: 0.6,
-                                  color: appColors.primaryBase,
-                                  backgroundColor: appColors.skyLightest,
-                                  semanticsLabel: 'Current reading progress',
+                                const SizedBox(height: 4),
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
+                                  child: LinearProgressIndicator(
+                                    value: 0.6,
+                                    color: appColors.primaryBase,
+                                    backgroundColor: appColors.skyLightest,
+                                    semanticsLabel: 'Current reading progress',
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     )),
               ),

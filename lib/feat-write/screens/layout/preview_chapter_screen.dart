@@ -1,17 +1,13 @@
-import 'package:audiory_v0/feat-write/data/models/chapter_version_model/chapter_version_model.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/text.dart' as text;
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../models/Chapter.dart';
 import '../../../state/state_manager.dart';
 import '../../../theme/theme_constants.dart';
-import '../../provider/chapter_version_provider.dart';
 
 class PreviewChapterScreen extends ConsumerStatefulWidget {
   final String? storyId;
