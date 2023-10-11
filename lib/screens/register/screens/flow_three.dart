@@ -175,7 +175,7 @@ class _FlowThreeScreenState extends State<FlowThreeScreen>
 
                             body['user_id'] = widget.userId;
                             body['story_id'] = selectedStoriesList[0];
-                            body['event_type'] = 'FEEDBACK';
+                            body['event_type'] = 'VIEW';
 
                             for (var ele in selectedStoriesList) {
                               body['story_id'] = ele;

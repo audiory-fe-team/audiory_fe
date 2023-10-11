@@ -28,11 +28,12 @@ class ReadingTopBar extends StatelessWidget implements PreferredSizeWidget {
                     children: [
                       TapEffectWrapper(
                           onTap: () {
-                            if (storyId != null)
+                            if (storyId != null) {
                               GoRouter.of(context).go('/story/${storyId}');
+                            }
                           },
                           child: SvgPicture.asset('assets/icons/left-arrow.svg',
-                              width: 24, height: 24)),
+                              width: 20, height: 20)),
                       const SizedBox(width: 4),
                       Expanded(
                           child: Text(storyName ?? '',
@@ -42,7 +43,7 @@ class ReadingTopBar extends StatelessWidget implements PreferredSizeWidget {
                                   Theme.of(context).textTheme.headlineSmall)),
                       const SizedBox(width: 4),
                       SvgPicture.asset('assets/icons/more-vertical.svg',
-                          width: 24, height: 24),
+                          width: 20, height: 20),
                     ]))));
   }
 }

@@ -1,7 +1,3 @@
-import 'package:audiory_v0/models/AuthorStory.dart';
-import 'package:audiory_v0/models/Chapter.dart';
-import 'package:audiory_v0/models/Tag.dart';
-
 class SearchStory {
   final String id;
   final String? authorId;

@@ -1,3 +1,4 @@
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -14,7 +15,7 @@ class StoryCardOverView extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        GoRouter.of(context).push("/story/" + id);
+        context.push("/story/$id");
       },
       child: SizedBox(
         width: 95,
@@ -31,7 +32,7 @@ class StoryCardOverView extends StatelessWidget {
                   height: 135,
                   decoration: ShapeDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(coverUrl ?? ''),
+                      image: NetworkImage(coverUrl ?? FALLBACK_IMG_URL),
                       fit: BoxFit.fill,
                     ),
                     shape: RoundedRectangleBorder(

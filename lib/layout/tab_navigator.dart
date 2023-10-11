@@ -1,7 +1,7 @@
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
-import 'package:audiory_v0/feat-manage-library/screens/library_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:audiory_v0/feat-read/screens/library/library_screen.dart';
 
 import '../feat-manage-profile/screens/user_profile_screen.dart';
 

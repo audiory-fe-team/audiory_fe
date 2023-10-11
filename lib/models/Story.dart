@@ -1,5 +1,4 @@
 import 'package:audiory_v0/models/AuthorStory.dart';
-import 'dart:convert';
 
 import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Tag.dart';
@@ -18,6 +17,7 @@ class Story {
   final bool? isCompleted;
   final bool? isCopyright;
   final bool? isPaywalled;
+  final int? chapterPrice;
   final int? coinCost;
   final int? authorEarningPercentage;
   final String? paywallEffectiveDate;
@@ -50,6 +50,7 @@ class Story {
       this.isCompleted,
       this.isCopyright,
       this.isPaywalled,
+      this.chapterPrice,
       this.coinCost,
       this.authorEarningPercentage,
       this.paywallEffectiveDate,
@@ -90,6 +91,7 @@ class Story {
         isCompleted: json["is_completed"],
         isCopyright: json["is_copyright"],
         isPaywalled: json["is_paywalled"],
+        chapterPrice: json["chapter_price"],
         coinCost: json["coin_cost"],
         authorEarningPercentage: json["author_earning_percentage"],
         paywallEffectiveDate: json["paywall_effective_date"] ?? 'null',
@@ -122,6 +124,7 @@ class Story {
         "is_completed": isCompleted,
         "is_copyright": isCopyright,
         "is_paywalled": isPaywalled,
+        "chapter_price": chapterPrice,
         "coin_cost": coinCost,
         "author_earning_percentage": authorEarningPercentage,
         "paywall_effective_date": paywallEffectiveDate,

@@ -27,7 +27,8 @@ class AppSnackBar {
           const SizedBox(
             width: 8,
           ),
-          Flexible(
+          SizedBox(
+            width: size.width * 0.8,
             child: Text(
               message,
               style: Theme.of(context)
@@ -55,7 +56,7 @@ class AppSnackBar {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
       elevation: 10,
-      margin: EdgeInsets.only(left: 8, right: 8, bottom: size.height - 300),
+      margin: EdgeInsets.only(left: 8, right: 8, bottom: size.height - 200),
       dismissDirection: DismissDirection.up,
 
       backgroundColor: typeOfSnackbar.displayBgColor,
@@ -63,6 +64,7 @@ class AppSnackBar {
       content: Align(
         alignment: Alignment.topCenter,
         child: Row(
+          mainAxisSize: MainAxisSize.max,
           children: [
             Flexible(
                 child: Icon(
@@ -72,7 +74,8 @@ class AppSnackBar {
             const SizedBox(
               width: 8,
             ),
-            Flexible(
+            SizedBox(
+              width: size.width * 0.8,
               child: Text(
                 message,
                 style: Theme.of(context)

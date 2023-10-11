@@ -36,7 +36,7 @@ class ProfileRepository {
     if (profileId == null || profileId == '') {
       return null;
     }
-    final url = Uri.parse(profileEndpoint + "/$profileId" + "/profile");
+    final url = Uri.parse("$profileEndpoint/$profileId/profile");
     Map<String, String> header = {
       "Content-type": "application/json",
       "Accept": "application/json"
@@ -44,8 +44,7 @@ class ProfileRepository {
 
     final response = await http.get(url, headers: header);
     final responseBody = utf8.decode(response.bodyBytes);
-    print('RES');
-    print(responseBody);
+
     if (response.statusCode == 200) {
       try {
         final Profile profile =
@@ -60,10 +59,10 @@ class ProfileRepository {
   }
 
   Future<Profile?> fetchUserProfileByUserId(String profileId) async {
-    if (profileId == null || profileId == '') {
+    if (profileId == '') {
       return null;
     }
-    final url = Uri.parse(profileEndpoint + "/$profileId" + "/profile");
+    final url = Uri.parse("$profileEndpoint/$profileId/profile");
     Map<String, String> header = {
       "Content-type": "application/json,charset=UTF-8",
       "Accept": "application/json"
@@ -71,8 +70,7 @@ class ProfileRepository {
 
     final response = await http.get(url, headers: header);
     final responseBody = utf8.decode(response.bodyBytes);
-    print('RES');
-    print(responseBody);
+
     if (response.statusCode == 200) {
       try {
         final Profile profile =

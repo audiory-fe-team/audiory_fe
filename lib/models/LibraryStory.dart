@@ -1,4 +1,5 @@
 import 'package:audiory_v0/models/ReadingProgress.dart';
+import 'package:audiory_v0/models/Story.dart';
 
 class LibraryStory {
   final bool? isAvailableOffline;
@@ -8,6 +9,7 @@ class LibraryStory {
   final String? libraryId;
   final ReadingProgress? readingProgress;
   final String storyId;
+  final Story story;
 
   LibraryStory({
     this.isAvailableOffline,
@@ -17,6 +19,7 @@ class LibraryStory {
     this.libraryId,
     this.readingProgress,
     required this.storyId,
+    required this.story,
   });
 
   factory LibraryStory.fromJson(Map<String, dynamic> json) {
@@ -30,6 +33,7 @@ class LibraryStory {
           ? null
           : ReadingProgress.fromJson(json['reading_progress']),
       storyId: json['story_id'],
+      story: Story.fromJson(json['story']),
     );
   }
 
@@ -42,6 +46,7 @@ class LibraryStory {
       'library_id': libraryId,
       'reading_progress': readingProgress?.toJson(),
       'story_id': storyId,
+      'story': story.toJson(),
     };
   }
 }

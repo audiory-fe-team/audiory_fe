@@ -173,12 +173,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: Image.network(
                           widget.userProfile?.avatarUrl?.trim() != ''
                               ? profileQuery.data?.avatarUrl as String
-                              : 'https://img.freepik.com/premium-vector/people-saving-money_24908-51569.jpg?w=2000',
+                              : 'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
                           width: size.width / 3.5,
                           height: size.width / 3.5,
                           errorBuilder: (context, error, stackTrace) =>
                               Image.network(
-                            'https://img.freepik.com/premium-vector/people-saving-money_24908-51569.jpg?w=2000',
+                            'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
                             width: size.width / 3.5,
                             height: size.width / 3.5,
                           ),

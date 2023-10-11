@@ -25,7 +25,6 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
 
     Future<UserServer?> getUserDetails() async {
       String? value = await storage.read(key: 'currentUser');
-      print('val : $value');
       currentUser =
           value != null ? UserServer.fromJson(jsonDecode(value)['data']) : null;
 
@@ -49,15 +48,21 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50.0),
                 child: authUser?.photoURL == null
-                    ? Image.asset(
-                        'assets/images/user-avatar.jpg',
+                    ? Image.network(
+                        'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
                         width: 40,
                         height: 40,
                       )
                     : Image.network(
-                        '${authUser?.photoURL}',
+                        '${currentUser?.avatarUrl}',
                         width: 40,
                         height: 40,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.network(
+                          'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
+                          width: 40,
+                          height: 40,
+                        ),
                       ),
                 // child: Image.asset(
                 //   'assets/images/user-avatar.jpg',
@@ -76,11 +81,11 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const Text(
-                'Xin chào ',
+                'Xin chào',
                 style: TextStyle(fontSize: 14),
               ),
               Text(
-                user?.email ?? 'Người dùng',
+                currentUser?.username ?? 'Người dùng',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -100,7 +105,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
               color: Colors.white,
               border: Border(
                 bottom: BorderSide(
-                  color: Colors.amber,
+                  color: Color.fromARGB(255, 172, 136, 28),
                   width: 1.0,
                   style: BorderStyle.solid,
                 ),
@@ -126,7 +131,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                           if (snapshot.hasError) {
                             return _userInfo(null);
                           } else {
-                            return _userInfo(snapshot.data as UserServer);
+                            return _userInfo(snapshot.data ?? null);
                           }
                       }
                     },

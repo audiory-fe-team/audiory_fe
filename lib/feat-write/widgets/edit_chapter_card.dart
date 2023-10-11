@@ -17,13 +17,13 @@ class EditChapterCard extends StatelessWidget {
       'status': 'Đã lưu bản thảo',
       'color': Colors.deepOrange,
     };
-    if (chapter?.is_draft as bool) {
+    if (chapter?.isDraft as bool) {
       map.update('status', (value) => 'Đã lưu bản thảo');
       map.update('color', (value) => Colors.deepOrange[400]);
-    } else if (chapter?.is_paywalled as bool) {
+    } else if (chapter?.isPaywalled as bool) {
       map.update('status', (value) => 'Tính phí');
       map.update('color', (value) => Colors.orangeAccent);
-    } else if (chapter?.is_enabled as bool) {
+    } else if (chapter?.isEnabled as bool) {
       map.update('status', (value) => 'Đã đăng tải');
       map.update('color', (value) => Colors.orangeAccent);
     }
@@ -83,7 +83,7 @@ class EditChapterCard extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  formatDate(chapter?.updated_date),
+                  formatDate(chapter?.updatedDate),
                   style: Theme.of(context)
                       .textTheme
                       .bodyMedium

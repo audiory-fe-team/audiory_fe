@@ -118,7 +118,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(100.0),
                   child: Image.network(
-                    'https://img.freepik.com/premium-vector/people-saving-money_24908-51569.jpg?w=2000',
+                    'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
                     width: size.width / 3.5,
                     height: size.width / 3.5,
                   )),

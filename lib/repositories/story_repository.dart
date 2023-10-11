@@ -12,8 +12,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 final storyRepositoryProvider =
     Provider<StoryRepostitory>((_) => StoryRepostitory());
@@ -37,6 +39,42 @@ class StoryRepostitory {
     }
   }
 
+  Future<List<Story>> fetchMyPaywalledStories() async {
+    final storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
+    final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
+    final url = Uri.parse(
+        '${dotenv.get('API_BASE_URL')}/users/$userId/recommendations/paywalled');
+
+    final response = await http.get(url);
+    final responseBody = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(responseBody)['data'];
+      return result.map((i) => Story.fromJson(i)).toList();
+    } else {
+      throw Exception('Failed to load recommend stories');
+    }
+  }
+
+  Future<List<Story>> fetchMyRecommendStories() async {
+    final storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
+    final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
+    final url = Uri.parse(
+        '${dotenv.get('API_BASE_URL')}/users/$userId/recommendations');
+
+    final response = await http.get(url);
+    final responseBody = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(responseBody)['data'];
+      return result.map((i) => Story.fromJson(i)).toList();
+    } else {
+      throw Exception('Failed to load recommend stories');
+    }
+  }
+
   Future<Story> fetchStoryById(String storyId) async {
     final url = Uri.parse('$storiesEndpoint/$storyId');
     final response = await http.get(url);
@@ -44,6 +82,7 @@ class StoryRepostitory {
 
     if (response.statusCode == 200) {
       final result = jsonDecode(responseBody)['data'];
+      print('story ${Story.fromJson(result).chapters}');
       return Story.fromJson(result);
     } else {
       throw Exception('Failed to load stories');
@@ -86,11 +125,25 @@ class StoryRepostitory {
   }
 
   Future<List<Story>?> fetchPublishedStoriesByUserId(String userId) async {
-    final url = Uri.parse('${Endpoints().user}/$userId/stories/published');
-    final response = await http.get(url);
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+
+    String? jwtToken = await storage.read(key: 'jwt');
+    print('jwt $jwtToken');
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    final url = Uri.parse('${Endpoints().user}/$userId/stories');
+    final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
+    if (kDebugMode) {
+      print('RES FOR PUBLISHED stories ');
+      print(' ${responseBody}');
+    }
     if (response.statusCode == 200) {
-      print('RES FOR PUBLISHED  ${response.body}');
       final List<dynamic> result = jsonDecode(responseBody)['data'];
       return result.map((i) => Story.fromJson(i)).toList();
     } else {
@@ -99,18 +152,26 @@ class StoryRepostitory {
   }
 
   Future<List<ReadingList>?> fetchReadingStoriesByUserId(String userId) async {
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+
+    String? jwtToken = await storage.read(key: 'jwt');
+    print('jwt $jwtToken');
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
     final url = Uri.parse('${Endpoints().user}/$userId/reading-lists');
-    final response = await http.get(url);
+    final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
-      print('RES FOR READING  ${response.body}');
       final List<dynamic> result = jsonDecode(responseBody)['data'];
-      print(result);
-      print(result.map((i) => ReadingList.fromJson(i)).toList());
+
       return result.map((i) => ReadingList.fromJson(i)).toList();
     } else {
       return null;
-      throw Exception('Failed to load stories');
     }
   }
 

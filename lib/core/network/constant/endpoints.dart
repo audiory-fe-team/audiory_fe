@@ -7,6 +7,7 @@ class Endpoints {
   late String story;
   late String chapter;
   late String chapterVersion;
+  late String transaction;
 
   Endpoints() {
     // base url
@@ -19,6 +20,7 @@ class Endpoints {
     story = "$baseUrl/stories";
     chapter = "$baseUrl/chapters";
     chapterVersion = "$baseUrl/chapter-version";
+    transaction = "$baseUrl/transactions";
   }
 
   // receiveTimeout
