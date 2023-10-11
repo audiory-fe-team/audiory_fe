@@ -39,10 +39,14 @@ mixin _$Chapter {
   bool? get isDraft => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_paywalled')
   bool? get isPaywalled => throw _privateConstructorUsedError;
-  @JsonKey(name: 'author_earning')
-  int? get authorEarning => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_paid')
+  bool? get isPaid => throw _privateConstructorUsedError;
+  @JsonKey(name: 'price')
+  int? get price => throw _privateConstructorUsedError;
   @JsonKey(name: 'read_count')
   int? get readCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_voted')
+  bool? get isVoted => throw _privateConstructorUsedError;
   @JsonKey(name: 'vote_count')
   int? get voteCount => throw _privateConstructorUsedError;
   @JsonKey(name: 'comment_count')
@@ -77,8 +81,10 @@ abstract class $ChapterCopyWith<$Res> {
       @JsonKey(name: 'title') String title,
       @JsonKey(name: 'is_draft') bool? isDraft,
       @JsonKey(name: 'is_paywalled') bool? isPaywalled,
-      @JsonKey(name: 'author_earning') int? authorEarning,
+      @JsonKey(name: 'is_paid') bool? isPaid,
+      @JsonKey(name: 'price') int? price,
       @JsonKey(name: 'read_count') int? readCount,
+      @JsonKey(name: 'is_voted') bool? isVoted,
       @JsonKey(name: 'vote_count') int? voteCount,
       @JsonKey(name: 'comment_count') int? commentCount,
       @JsonKey(name: 'created_date') String? createdDate,
@@ -109,8 +115,10 @@ class _$ChapterCopyWithImpl<$Res, $Val extends Chapter>
     Object? title = null,
     Object? isDraft = freezed,
     Object? isPaywalled = freezed,
-    Object? authorEarning = freezed,
+    Object? isPaid = freezed,
+    Object? price = freezed,
     Object? readCount = freezed,
+    Object? isVoted = freezed,
     Object? voteCount = freezed,
     Object? commentCount = freezed,
     Object? createdDate = freezed,
@@ -152,14 +160,22 @@ class _$ChapterCopyWithImpl<$Res, $Val extends Chapter>
           ? _value.isPaywalled
           : isPaywalled // ignore: cast_nullable_to_non_nullable
               as bool?,
-      authorEarning: freezed == authorEarning
-          ? _value.authorEarning
-          : authorEarning // ignore: cast_nullable_to_non_nullable
+      isPaid: freezed == isPaid
+          ? _value.isPaid
+          : isPaid // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      price: freezed == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
               as int?,
       readCount: freezed == readCount
           ? _value.readCount
           : readCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      isVoted: freezed == isVoted
+          ? _value.isVoted
+          : isVoted // ignore: cast_nullable_to_non_nullable
+              as bool?,
       voteCount: freezed == voteCount
           ? _value.voteCount
           : voteCount // ignore: cast_nullable_to_non_nullable
@@ -208,8 +224,10 @@ abstract class _$$_ChapterCopyWith<$Res> implements $ChapterCopyWith<$Res> {
       @JsonKey(name: 'title') String title,
       @JsonKey(name: 'is_draft') bool? isDraft,
       @JsonKey(name: 'is_paywalled') bool? isPaywalled,
-      @JsonKey(name: 'author_earning') int? authorEarning,
+      @JsonKey(name: 'is_paid') bool? isPaid,
+      @JsonKey(name: 'price') int? price,
       @JsonKey(name: 'read_count') int? readCount,
+      @JsonKey(name: 'is_voted') bool? isVoted,
       @JsonKey(name: 'vote_count') int? voteCount,
       @JsonKey(name: 'comment_count') int? commentCount,
       @JsonKey(name: 'created_date') String? createdDate,
@@ -237,8 +255,10 @@ class __$$_ChapterCopyWithImpl<$Res>
     Object? title = null,
     Object? isDraft = freezed,
     Object? isPaywalled = freezed,
-    Object? authorEarning = freezed,
+    Object? isPaid = freezed,
+    Object? price = freezed,
     Object? readCount = freezed,
+    Object? isVoted = freezed,
     Object? voteCount = freezed,
     Object? commentCount = freezed,
     Object? createdDate = freezed,
@@ -280,14 +300,22 @@ class __$$_ChapterCopyWithImpl<$Res>
           ? _value.isPaywalled
           : isPaywalled // ignore: cast_nullable_to_non_nullable
               as bool?,
-      authorEarning: freezed == authorEarning
-          ? _value.authorEarning
-          : authorEarning // ignore: cast_nullable_to_non_nullable
+      isPaid: freezed == isPaid
+          ? _value.isPaid
+          : isPaid // ignore: cast_nullable_to_non_nullable
+              as bool?,
+      price: freezed == price
+          ? _value.price
+          : price // ignore: cast_nullable_to_non_nullable
               as int?,
       readCount: freezed == readCount
           ? _value.readCount
           : readCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      isVoted: freezed == isVoted
+          ? _value.isVoted
+          : isVoted // ignore: cast_nullable_to_non_nullable
+              as bool?,
       voteCount: freezed == voteCount
           ? _value.voteCount
           : voteCount // ignore: cast_nullable_to_non_nullable
@@ -332,8 +360,10 @@ class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
       @JsonKey(name: 'title') this.title = '',
       @JsonKey(name: 'is_draft') this.isDraft,
       @JsonKey(name: 'is_paywalled') this.isPaywalled,
-      @JsonKey(name: 'author_earning') this.authorEarning,
+      @JsonKey(name: 'is_paid') this.isPaid,
+      @JsonKey(name: 'price') this.price,
       @JsonKey(name: 'read_count') this.readCount,
+      @JsonKey(name: 'is_voted') this.isVoted,
       @JsonKey(name: 'vote_count') this.voteCount,
       @JsonKey(name: 'comment_count') this.commentCount,
       @JsonKey(name: 'created_date') this.createdDate,
@@ -375,11 +405,17 @@ class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
   @JsonKey(name: 'is_paywalled')
   final bool? isPaywalled;
   @override
-  @JsonKey(name: 'author_earning')
-  final int? authorEarning;
+  @JsonKey(name: 'is_paid')
+  final bool? isPaid;
+  @override
+  @JsonKey(name: 'price')
+  final int? price;
   @override
   @JsonKey(name: 'read_count')
   final int? readCount;
+  @override
+  @JsonKey(name: 'is_voted')
+  final bool? isVoted;
   @override
   @JsonKey(name: 'vote_count')
   final int? voteCount;
@@ -411,7 +447,7 @@ class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Chapter(id: $id, storyId: $storyId, currentVersionId: $currentVersionId, position: $position, productId: $productId, title: $title, isDraft: $isDraft, isPaywalled: $isPaywalled, authorEarning: $authorEarning, readCount: $readCount, voteCount: $voteCount, commentCount: $commentCount, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapterVersion: $chapterVersion, paragraphs: $paragraphs)';
+    return 'Chapter(id: $id, storyId: $storyId, currentVersionId: $currentVersionId, position: $position, productId: $productId, title: $title, isDraft: $isDraft, isPaywalled: $isPaywalled, isPaid: $isPaid, price: $price, readCount: $readCount, isVoted: $isVoted, voteCount: $voteCount, commentCount: $commentCount, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapterVersion: $chapterVersion, paragraphs: $paragraphs)';
   }
 
   @override
@@ -427,8 +463,10 @@ class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
       ..add(DiagnosticsProperty('title', title))
       ..add(DiagnosticsProperty('isDraft', isDraft))
       ..add(DiagnosticsProperty('isPaywalled', isPaywalled))
-      ..add(DiagnosticsProperty('authorEarning', authorEarning))
+      ..add(DiagnosticsProperty('isPaid', isPaid))
+      ..add(DiagnosticsProperty('price', price))
       ..add(DiagnosticsProperty('readCount', readCount))
+      ..add(DiagnosticsProperty('isVoted', isVoted))
       ..add(DiagnosticsProperty('voteCount', voteCount))
       ..add(DiagnosticsProperty('commentCount', commentCount))
       ..add(DiagnosticsProperty('createdDate', createdDate))
@@ -455,10 +493,11 @@ class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
             (identical(other.isDraft, isDraft) || other.isDraft == isDraft) &&
             (identical(other.isPaywalled, isPaywalled) ||
                 other.isPaywalled == isPaywalled) &&
-            (identical(other.authorEarning, authorEarning) ||
-                other.authorEarning == authorEarning) &&
+            (identical(other.isPaid, isPaid) || other.isPaid == isPaid) &&
+            (identical(other.price, price) || other.price == price) &&
             (identical(other.readCount, readCount) ||
                 other.readCount == readCount) &&
+            (identical(other.isVoted, isVoted) || other.isVoted == isVoted) &&
             (identical(other.voteCount, voteCount) ||
                 other.voteCount == voteCount) &&
             (identical(other.commentCount, commentCount) ||
@@ -477,25 +516,28 @@ class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      id,
-      storyId,
-      currentVersionId,
-      position,
-      productId,
-      title,
-      isDraft,
-      isPaywalled,
-      authorEarning,
-      readCount,
-      voteCount,
-      commentCount,
-      createdDate,
-      updatedDate,
-      isEnabled,
-      chapterVersion,
-      const DeepCollectionEquality().hash(_paragraphs));
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        id,
+        storyId,
+        currentVersionId,
+        position,
+        productId,
+        title,
+        isDraft,
+        isPaywalled,
+        isPaid,
+        price,
+        readCount,
+        isVoted,
+        voteCount,
+        commentCount,
+        createdDate,
+        updatedDate,
+        isEnabled,
+        chapterVersion,
+        const DeepCollectionEquality().hash(_paragraphs)
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -521,8 +563,10 @@ abstract class _Chapter implements Chapter {
           @JsonKey(name: 'title') final String title,
           @JsonKey(name: 'is_draft') final bool? isDraft,
           @JsonKey(name: 'is_paywalled') final bool? isPaywalled,
-          @JsonKey(name: 'author_earning') final int? authorEarning,
+          @JsonKey(name: 'is_paid') final bool? isPaid,
+          @JsonKey(name: 'price') final int? price,
           @JsonKey(name: 'read_count') final int? readCount,
+          @JsonKey(name: 'is_voted') final bool? isVoted,
           @JsonKey(name: 'vote_count') final int? voteCount,
           @JsonKey(name: 'comment_count') final int? commentCount,
           @JsonKey(name: 'created_date') final String? createdDate,
@@ -561,11 +605,17 @@ abstract class _Chapter implements Chapter {
   @JsonKey(name: 'is_paywalled')
   bool? get isPaywalled;
   @override
-  @JsonKey(name: 'author_earning')
-  int? get authorEarning;
+  @JsonKey(name: 'is_paid')
+  bool? get isPaid;
+  @override
+  @JsonKey(name: 'price')
+  int? get price;
   @override
   @JsonKey(name: 'read_count')
   int? get readCount;
+  @override
+  @JsonKey(name: 'is_voted')
+  bool? get isVoted;
   @override
   @JsonKey(name: 'vote_count')
   int? get voteCount;

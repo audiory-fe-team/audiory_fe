@@ -24,6 +24,7 @@ class AppTextInputField extends StatefulWidget {
   final String? label;
   final TextStyle? labelTextStyle;
   final bool? isRequired;
+  final String? Function(String?)? validator;
 
   //textinput field
   final String name; //form field name, must have
@@ -54,6 +55,7 @@ class AppTextInputField extends StatefulWidget {
       this.suffixIcon,
       this.textInputType = TextInputType.text,
       this.isRequired = false,
+      this.validator,
       this.textAlign,
       this.maxLengthCharacters,
       this.marginBottom = 16,
@@ -80,6 +82,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     var required = FormBuilderValidators.required(errorText: 'Nội dung trống');
+
     return FormBuilderTextField(
       enabled: widget.isDisabled as bool,
       onChanged: (value) => {
@@ -148,7 +151,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
         // labelText: "Email",
         focusColor: Colors.black12,
       ),
-      validator: widget.isRequired == true ? required : null,
+      validator: widget.validator,
     );
   }
 

@@ -4,8 +4,8 @@ import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../models/AuthUser.dart';
-import '../../../theme/theme_constants.dart';
+import '../../models/AuthUser.dart';
+import '../../theme/theme_constants.dart';
 
 class EditEmailScreen extends StatefulWidget {
   final UserServer? currentUser;

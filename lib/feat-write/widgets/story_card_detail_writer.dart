@@ -9,7 +9,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class StoryCardDetailWriter extends ConsumerWidget {
-  final Story story;
+  final Story? story;
   void _displaySnackBar(String? content, BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
@@ -73,7 +73,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
         // ignore: use_build_context_synchronously
         // context.pop();
 
-        _displaySnackBar('Xóa thành công ${story.title}', context);
+        _displaySnackBar('Xóa thành công ${story?.title}', context);
 
         // if (200 == '') {
         //   // ignore: use_build_context_synchronously
@@ -87,7 +87,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
 
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
-      title: Text("Xác nhận xóa truyện ${story.title}"),
+      title: Text("Xác nhận xóa truyện ${story?.title}"),
       content: const Text("Tất cả nội dung sẽ bị xóa?"),
       actions: [cancelButton, continueButton, unPublishButton],
     );
@@ -109,10 +109,10 @@ class StoryCardDetailWriter extends ConsumerWidget {
       'status': 'Đang tiến hành',
       'color': appColors.primaryBase,
     };
-    if (story.isCompleted as bool) {
+    if (story?.isCompleted as bool) {
       map.update('status', (value) => 'Hoàn thành');
       map.update('color', (value) => Colors.blue);
-    } else if (story.isDraft as bool) {
+    } else if (story?.isDraft as bool) {
       map.update('status', (value) => 'Bản thảo');
       map.update('color', (value) => const Color.fromRGBO(255, 171, 64, 1));
     }
@@ -161,7 +161,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
                   height: 135,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(story.coverUrl ?? ''),
+                      image: NetworkImage(story?.coverUrl ?? ''),
                       fit: BoxFit.fill,
                     ),
                   ),
@@ -196,7 +196,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
                       SizedBox(
                         width: double.infinity,
                         child: Text(
-                          story.title,
+                          story?.title ?? '',
                           style: textTheme.titleLarge!.merge(
                               const TextStyle(overflow: TextOverflow.ellipsis)),
                         ),
@@ -231,7 +231,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
                                 SizedBox(
                                     width: 140,
                                     child: Text(
-                                        'Cập nhật ${formatDate(story.updatedDate)}',
+                                        'Cập nhật ${formatDate(story?.updatedDate)}',
                                         style: textTheme.titleSmall!.copyWith(
                                             fontStyle: FontStyle.italic,
                                             overflow: TextOverflow.ellipsis))),
@@ -258,7 +258,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
                                     width: 14, height: 14),
                                 const SizedBox(width: 8),
                                 Text(
-                                    '${story.chapters?.length ?? 'error'} chương + ${story.draftCount} bản thảo',
+                                    '${story?.chapters?.length ?? 'error'} chương + ${story?.draftCount} bản thảo',
                                     style: textTheme.titleSmall!
                                         .copyWith(fontStyle: FontStyle.italic)),
                               ],
@@ -308,7 +308,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
                               ],
                             )),
                         PopupMenuItem(
-                            enabled: story.isDraft == false,
+                            enabled: story?.isDraft == false,
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             value: 2,
                             child: const Row(
@@ -349,11 +349,11 @@ class StoryCardDetailWriter extends ConsumerWidget {
 
     switch (value) {
       case 0:
-        context.pushNamed('composeStory', extra: {'storyId': story.id});
+        context.pushNamed('composeStory', extra: {'storyId': story?.id});
         break;
       case 1:
         context.pushNamed('previewChapter',
-            extra: {'storyId': story.id, 'chapterId': null});
+            extra: {'storyId': story?.id, 'chapterId': null});
         break;
       case 3:
         showAlertDialog(context, ref);

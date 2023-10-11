@@ -7,12 +7,13 @@ import '../../../../models/Paragraph.dart';
 
 part 'chapter_model.freezed.dart'; //get the file name same as the class file name
 part 'chapter_model.g.dart';
-
 //run line before to generate
 //flutter pub run build_runner build --delete-conflicting-outputs
 
 //generate model classes by cmd
 //flutter pub run build_runner build
+
+//when update the field, remove freezed.dart and g.dart part before use cmd
 
 @freezed
 class Chapter with _$Chapter {
@@ -28,8 +29,10 @@ class Chapter with _$Chapter {
     @Default('') @JsonKey(name: 'title') String title,
     @JsonKey(name: 'is_draft') bool? isDraft,
     @JsonKey(name: 'is_paywalled') bool? isPaywalled,
-    @JsonKey(name: 'author_earning') int? authorEarning,
+    @JsonKey(name: 'is_paid') bool? isPaid,
+    @JsonKey(name: 'price') int? price,
     @JsonKey(name: 'read_count') int? readCount,
+    @JsonKey(name: 'is_voted') bool? isVoted,
     @JsonKey(name: 'vote_count') int? voteCount,
     @JsonKey(name: 'comment_count') int? commentCount,
     @JsonKey(name: 'created_date') String? createdDate,

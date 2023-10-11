@@ -1,6 +1,6 @@
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
-import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';

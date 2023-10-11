@@ -10,8 +10,13 @@ class CurrentReadCard extends StatelessWidget {
   final LibraryStory? libStory;
   final Story? story;
   final Function(String) onDeleteStory;
+  final bool? isEditable;
   const CurrentReadCard(
-      {super.key, this.story, required this.onDeleteStory, this.libStory});
+      {super.key,
+      this.story,
+      required this.onDeleteStory,
+      this.libStory,
+      this.isEditable = true});
 
   @override
   Widget build(BuildContext context) {
@@ -150,57 +155,63 @@ class CurrentReadCard extends StatelessWidget {
                     )),
               ),
               Column(mainAxisSize: MainAxisSize.max, children: [
-                Container(
-                    padding: const EdgeInsets.only(top: 20),
-                    child: PopupMenuButton(
-                        shape: const RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(8.0))),
-                        child: Container(
-                            padding: const EdgeInsets.all(8),
-                            child: Icon(Icons.more_vert_rounded,
-                                size: 18, color: appColors.skyDark)),
-                        onSelected: (value) {
-                          if (value == "notification") {}
-                          if (value == "delete") {
-                            onDeleteStory(storyId);
-                          }
-                        },
-                        itemBuilder: (context) => [
-                              PopupMenuItem(
-                                  height: 36,
-                                  value: 'notification',
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.notifications_active_rounded,
-                                            size: 18,
-                                            color: appColors.inkLighter),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Bật thông báo',
-                                          style: textTheme.titleMedium,
-                                        )
-                                      ])),
-                              PopupMenuItem(
-                                  height: 36,
-                                  value: 'delete',
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.delete_outline_rounded,
-                                            size: 18,
-                                            color: appColors.secondaryBase),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Xóa truyện',
-                                          style: textTheme.titleMedium
-                                              ?.copyWith(
-                                                  color:
-                                                      appColors.secondaryBase),
-                                        )
-                                      ])),
-                            ])),
+                isEditable == true
+                    ? Container(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: PopupMenuButton(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.0))),
+                            child: Container(
+                                padding: const EdgeInsets.all(8),
+                                child: Icon(Icons.more_vert_rounded,
+                                    size: 18, color: appColors.skyDark)),
+                            onSelected: (value) {
+                              if (value == "notification") {}
+                              if (value == "delete") {
+                                onDeleteStory(storyId);
+                              }
+                            },
+                            itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                      height: 36,
+                                      value: 'notification',
+                                      child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                                Icons
+                                                    .notifications_active_rounded,
+                                                size: 18,
+                                                color: appColors.inkLighter),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Bật thông báo',
+                                              style: textTheme.titleMedium,
+                                            )
+                                          ])),
+                                  PopupMenuItem(
+                                      height: 36,
+                                      value: 'delete',
+                                      child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.delete_outline_rounded,
+                                                size: 18,
+                                                color: appColors.secondaryBase),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Xóa truyện',
+                                              style: textTheme.titleMedium
+                                                  ?.copyWith(
+                                                      color: appColors
+                                                          .secondaryBase),
+                                            )
+                                          ])),
+                                ]))
+                    : const SizedBox(
+                        height: 0,
+                      ),
               ]),
             ],
           ),

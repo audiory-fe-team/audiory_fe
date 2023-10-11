@@ -42,7 +42,7 @@ class StoryCardDetail extends StatelessWidget {
         },
         child: Container(
           width: double.infinity,
-          height: 135,
+          height: 145, //fix here because causing overflow
           decoration: ShapeDecoration(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -79,7 +79,7 @@ class StoryCardDetail extends StatelessWidget {
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -87,7 +87,8 @@ class StoryCardDetail extends StatelessWidget {
                       width: double.infinity,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment
+                            .spaceBetween, //fixed here because overflow on android
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
@@ -126,7 +127,7 @@ class StoryCardDetail extends StatelessWidget {
                           SizedBox(
                             width: double.infinity,
                             child: Row(
-                              mainAxisSize: MainAxisSize.min,
+                              mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

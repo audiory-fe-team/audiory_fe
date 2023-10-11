@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:audiory_v0/core/network/constant/endpoints.dart';
 import 'package:audiory_v0/models/Comment.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -45,6 +46,27 @@ class ChapterRepository {
     } else {
       return false;
       throw Exception('Failed to create chapter version');
+    }
+  }
+
+  Future<void> buyChapter(storyId, chapterId, body) async {
+    final url = Uri.parse(
+        '${Endpoints().user}/66b8f778-5506-11ee-8fba-0242ac180002/stories/$storyId/chapters/$chapterId/access');
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    if (jwtToken != null) {
+      header['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response =
+        await http.post(url, headers: header, body: jsonEncode(body));
+    if (response.statusCode == 200) {
+    } else {
+      throw Exception('Failed to buy chapter');
     }
   }
 

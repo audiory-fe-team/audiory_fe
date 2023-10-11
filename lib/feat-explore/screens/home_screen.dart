@@ -5,11 +5,12 @@ import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
+import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
+import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
@@ -51,11 +52,20 @@ class HomeScreen extends HookConsumerWidget {
                   ]))));
     }
 
+    final paywalledStoriesQuery = useQuery(['paywalledStories'],
+        () => StoryRepostitory().fetchMyPaywalledStories());
+    final recommendStoriesQuery = useQuery(['recommendStories'],
+        () => StoryRepostitory().fetchMyRecommendStories());
+    final libraryQuery =
+        useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
+
     return Scaffold(
       appBar: const HomeTopBar(),
       body: RefreshIndicator(
           onRefresh: () async {
             storiesQuery.refetch();
+            recommendStoriesQuery.refetch();
+            libraryQuery.refetch();
           },
           child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -76,11 +86,11 @@ class HomeScreen extends HookConsumerWidget {
                           title: 'Có thể bạn sẽ thích')),
                   const SizedBox(height: 12),
                   Skeletonizer(
-                      enabled: storiesQuery.isFetching,
+                      enabled: recommendStoriesQuery.isFetching,
                       child: StoryScrollList(
-                        storyList: storiesQuery.isFetching
+                        storyList: recommendStoriesQuery.isFetching
                             ? skeletonStories
-                            : storiesQuery.data,
+                            : recommendStoriesQuery.data,
                       )),
                   const SizedBox(height: 32),
                   //NOTE: Ranking section
@@ -130,12 +140,11 @@ class HomeScreen extends HookConsumerWidget {
                       title: 'Truyện trả phí'),
                   const SizedBox(height: 12),
                   Skeletonizer(
-                      enabled: storiesQuery.isFetching,
+                      enabled: paywalledStoriesQuery.isFetching,
                       child: StoryScrollList(
-                        storyList: storiesQuery.isFetching
-                            ? skeletonStories
-                            : storiesQuery.data,
-                      )),
+                          storyList: paywalledStoriesQuery.isFetching
+                              ? skeletonStories
+                              : paywalledStoriesQuery.data)),
                   const SizedBox(height: 32),
 
                   //NOTE: Continue reading section
@@ -146,20 +155,34 @@ class HomeScreen extends HookConsumerWidget {
                       ),
                       title: 'Tiếp tục đọc'),
                   const SizedBox(height: 12),
+
                   Skeletonizer(
-                      enabled: storiesQuery.isFetching,
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: ((storiesQuery.isFetching
-                                      ? skeletonStories
-                                      : storiesQuery.data) ??
-                                  [])
-                              .map((story) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: StoryCardDetail(
-                                    story: story,
-                                  )))
-                              .toList())),
+                    enabled: libraryQuery.isFetching,
+                    child: Column(
+                        children: (libraryQuery.data?.libraryStory ?? [])
+                            .map((e) => Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                child: CurrentReadCard(
+                                  story: e.story,
+                                  onDeleteStory: (id) => {},
+                                  isEditable: false,
+                                )))
+                            .toList()),
+                  ),
+                  // Skeletonizer(
+                  //     enabled: libraryQuery.isFetching,
+                  //     child: Column(
+                  //         mainAxisSize: MainAxisSize.min,
+                  //         children: ((libraryQuery.isFetching
+                  //                     ? skeletonStories
+                  //                     : libraryQuery.data?.libraryStory) ??
+                  //                 [])
+                  //             .map((story) => Padding(
+                  //                 padding: const EdgeInsets.only(bottom: 12),
+                  //                 child: StoryCardDetail(
+                  //                   story: story,
+                  //                 )))
+                  //             .toList())),
 
                   const SizedBox(height: 32),
                 ],

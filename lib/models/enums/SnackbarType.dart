@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../theme/theme_constants.dart';
-
 enum SnackBarType { success, error, warning, info }
 
 extension SnackBarTypeExtension on SnackBarType {

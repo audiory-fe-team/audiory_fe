@@ -12,10 +12,10 @@ class Tag with _$Tag {
 
     @JsonKey(name: 'id') required String id,
     @Default('') @JsonKey(name: 'created_date') String? createdDate,
-    @Default('') @JsonKey(name: 'is_enabled') String? isEnabled,
+    @JsonKey(name: 'is_enabled') bool? isEnabled,
     @Default('') @JsonKey(name: 'name') String? name,
     @Default('') @JsonKey(name: 'updated_date') String? updatedDate,
-    @Default('') @JsonKey(name: 'works_total') String? worksTotal,
+    @Default(0) @JsonKey(name: 'works_total') int? worksTotal,
   }) = _Tag;
 
   factory Tag.fromJson(Map<String, dynamic> json) => _$TagFromJson(json);

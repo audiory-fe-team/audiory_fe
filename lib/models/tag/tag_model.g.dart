@@ -9,10 +9,10 @@ part of 'tag_model.dart';
 _$_Tag _$$_TagFromJson(Map<String, dynamic> json) => _$_Tag(
       id: json['id'] as String,
       createdDate: json['created_date'] as String? ?? '',
-      isEnabled: json['is_enabled'] as String? ?? '',
+      isEnabled: json['is_enabled'] as bool?,
       name: json['name'] as String? ?? '',
       updatedDate: json['updated_date'] as String? ?? '',
-      worksTotal: json['works_total'] as String? ?? '',
+      worksTotal: json['works_total'] as int? ?? 0,
     );
 
 Map<String, dynamic> _$$_TagToJson(_$_Tag instance) => <String, dynamic>{

@@ -8,9 +8,11 @@ import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_account_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart';
-import 'package:audiory_v0/feat-manage-profile/screens/layout/edit_email_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/edit_email_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/wallet/wallet_screen.dart';
 import 'package:audiory_v0/feat-read/screens/library/library_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading-list/reading_list_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen.dart';
@@ -24,9 +26,9 @@ import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 import 'package:audiory_v0/screens/register/screens/flow_four.dart';
-import 'package:audiory_v0/screens/register/screens/flow_one.dart';
-import 'package:audiory_v0/screens/register/screens/flow_three.dart';
 import 'package:audiory_v0/screens/register/screens/flow_two.dart';
+import 'package:audiory_v0/screens/register/screens/flow_three.dart';
+import 'package:audiory_v0/screens/register/screens/flow_one.dart';
 
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/screens/login/login_screen.dart';
@@ -94,11 +96,17 @@ class AppRoutes {
                           path: 'reading-list/:id',
                           builder: (_, GoRouterState state) {
                             final id = state.pathParameters['id'];
-                            print(id);
+                            final extraMap =
+                                state.extra as Map<String, dynamic>;
+                            final name = extraMap['name'] as String;
+
                             if (id == null || id == '' || id == 'not-found') {
                               return const NotFoundScreen();
                             }
-                            return ReadingListScreen(id: id);
+                            return ReadingListScreen(
+                              id: id,
+                              name: name,
+                            );
                           },
                         )
                       ]),
@@ -179,7 +187,6 @@ class AppRoutes {
                     builder: (_, GoRouterState state) {
                       return const UserProfileScreen();
                     },
-                    redirect: _redirect,
                   ),
                   GoRoute(
                     parentNavigatorKey: _shellNavigatorKey,
@@ -238,7 +245,7 @@ class AppRoutes {
         name: 'login',
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
-          // return const FlowThreeScreen();
+          // return const LibraryScreen();
           return const LoginScreen();
         },
       ),
@@ -254,7 +261,9 @@ class AppRoutes {
         name: 'flowOne',
         path: '/flowOne',
         builder: (BuildContext context, GoRouterState state) {
-          return const FlowOneScreen();
+          final extraMap = state.extra as Map<String, dynamic>;
+          final body = extraMap['signUpBody'] as Map<String, String>;
+          return FlowOneScreen(signUpBody: body);
         },
       ),
       GoRoute(
@@ -262,34 +271,61 @@ class AppRoutes {
         path: '/flowTwo',
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
-          final body = extraMap['signUpBody'] as Map<String, String>;
-          return FlowTwoScreen(signUpBody: body);
+          final userId = extraMap['userId'] as String;
+          return FlowTwoScreen(userId: userId);
         },
       ),
       GoRoute(
         name: 'flowThree',
         path: '/flowThree',
         builder: (BuildContext context, GoRouterState state) {
-          return const FlowThreeScreen();
+          final extraMap = state.extra as Map<String, dynamic>;
+          final userId = extraMap['userId'] as String;
+          return FlowThreeScreen(userId: userId);
         },
       ),
       GoRoute(
         name: 'flowFour',
         path: '/flowFour',
         builder: (BuildContext context, GoRouterState state) {
-          return const FLowFourScreen();
+          final extraMap = state.extra as Map<String, dynamic>;
+          final userId = extraMap['userId'] as String;
+          return FLowFourScreen(userId: userId);
         },
       ),
       GoRoute(
-          name: 'profileSettings',
-          path: '/profileSettings',
-          builder: (BuildContext context, GoRouterState state) {
-            final extraMap = state.extra as Map<String, dynamic>;
-            final currentUser = extraMap["currentUser"] as UserServer;
-            final userProfile = extraMap["userProfile"] as Profile;
-            return ProfileSettingsScreen(
-                currentUser: currentUser, userProfile: userProfile);
-          }),
+        name: 'profileSettings',
+        path: '/profileSettings',
+        builder: (BuildContext context, GoRouterState state) {
+          final extraMap = state.extra as Map<String, dynamic>;
+          final currentUser = extraMap["currentUser"] as UserServer;
+          final userProfile = extraMap["userProfile"] as Profile;
+          return ProfileSettingsScreen(
+              currentUser: currentUser, userProfile: userProfile);
+        },
+      ),
+      GoRoute(
+        name: 'wallet',
+        path: '/wallet',
+        builder: (BuildContext context, GoRouterState state) {
+          final extraMap = state.extra as Map<String, dynamic>;
+          final currentUser = extraMap["currentUser"] as UserServer;
+          return WalletScreen(currentUser: currentUser);
+        },
+        routes: [
+          GoRoute(
+            name: 'newPurchase',
+            path: 'newPurchase',
+            builder: (BuildContext context, GoRouterState state) {
+              final extraMap = state.extra as Map<String, dynamic>;
+              final currentUser = extraMap["currentUser"] as UserServer;
+              return NewPurchaseScreen(
+                currentUser: currentUser,
+              );
+            },
+          )
+        ],
+      ),
       GoRoute(
           name: 'editProfile',
           path: '/editProfile',
@@ -303,33 +339,34 @@ class AppRoutes {
                 currentUser: currentUser, userProfile: userProfile);
           }),
       GoRoute(
-          name: 'editAccount',
-          path: '/editAccount',
-          builder: (BuildContext context, GoRouterState state) {
-            final extraMap = state.extra as Map<String, dynamic>;
+        name: 'editAccount',
+        path: '/editAccount',
+        builder: (BuildContext context, GoRouterState state) {
+          final extraMap = state.extra as Map<String, dynamic>;
 
-            final currentUser = extraMap["currentUser"] as UserServer;
-            final userProfile = extraMap["userProfile"] as Profile;
+          final currentUser = extraMap["currentUser"] as UserServer;
+          final userProfile = extraMap["userProfile"] as Profile;
 
-            return EditAccountScreen(
-                currentUser: currentUser, userProfile: userProfile);
-          },
-          routes: [
-            GoRoute(
-              path: 'editEmail',
-              name: 'editEmail',
-              builder: (BuildContext context, GoRouterState state) {
-                final extraMap = state.extra as Map<String, dynamic>;
+          return EditAccountScreen(
+              currentUser: currentUser, userProfile: userProfile);
+        },
+        routes: [
+          GoRoute(
+            path: 'editEmail',
+            name: 'editEmail',
+            builder: (BuildContext context, GoRouterState state) {
+              final extraMap = state.extra as Map<String, dynamic>;
 
-                final currentUser = extraMap["currentUser"] as UserServer;
-                final userProfile = extraMap["userProfile"] as Profile;
+              final currentUser = extraMap["currentUser"] as UserServer;
+              final userProfile = extraMap["userProfile"] as Profile;
 
-                return EditEmailScreen(
-                  currentUser: currentUser,
-                );
-              },
-            )
-          ]),
+              return EditEmailScreen(
+                currentUser: currentUser,
+              );
+            },
+          )
+        ],
+      ),
       GoRoute(
         name: 'composeStory',
         path: '/composeStory',

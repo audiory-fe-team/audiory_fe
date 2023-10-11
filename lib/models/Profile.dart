@@ -19,7 +19,9 @@ class Profile {
   final bool? isOnline;
   final String? lastName;
   final int? numberOfFollowers;
+  final List<Profile>? followings;
   final int? numberOfFollowing;
+  final List<Profile>? followers;
   final int? reportCount;
   final String? updatedDate;
   final String? username;
@@ -45,6 +47,8 @@ class Profile {
     this.lastName,
     this.numberOfFollowers,
     this.numberOfFollowing,
+    this.followings,
+    this.followers,
     this.reportCount,
     this.updatedDate,
     required this.username,
@@ -55,6 +59,16 @@ class Profile {
   factory Profile.fromJson(Map<String, dynamic> json) {
     List<dynamic> storiesJson = json["stories"] ?? [];
     List<Story> stories = storiesJson.map((p) => Story.fromJson(p)).toList();
+
+    List<dynamic> followersJsonList = json['followers'] ?? [];
+    List<Profile> followers = followersJsonList
+        .map((follower) => Profile.fromJson(follower))
+        .toList();
+
+    List<dynamic> followingsJsonList = json['followings'] ?? [];
+    List<Profile> followings = followingsJsonList
+        .map((following) => Profile.fromJson(following))
+        .toList();
 
     return Profile(
       avatarUrl: json['avatar_url'],
@@ -75,6 +89,8 @@ class Profile {
       lastName: json['last_name'],
       numberOfFollowers: json['number_of_followers'],
       numberOfFollowing: json['number_of_following'],
+      followings: followings,
+      followers: followers,
       reportCount: json['report_count'],
       updatedDate: json['updated_date'],
       username: json['username'],
@@ -104,6 +120,8 @@ class Profile {
       'last_name': lastName,
       'number_of_followers': numberOfFollowers,
       'number_of_following': numberOfFollowing,
+      'followers': followers,
+      'followings': followings,
       'report_count': reportCount,
       'updated_date': updatedDate,
       'username': username,

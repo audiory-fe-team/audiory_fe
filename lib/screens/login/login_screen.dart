@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
@@ -44,7 +44,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await AuthRepository().signInWithGoogle();
 
       // ignore: use_build_context_synchronously
-      context.go('/');
+      // context.go('/');
     } on FirebaseAuthException catch (e) {
       if (kDebugMode) {}
     }
@@ -136,7 +136,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         GestureDetector(
           onTap: () => {context.go('/register')},
           child: Text(
-            'Đăng ký',
+            ' Đăng ký',
             textAlign: TextAlign.right,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold, color: Color(0xFF439A97)),

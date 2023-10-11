@@ -47,15 +47,21 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50.0),
                 child: authUser?.photoURL == null
-                    ? Image.asset(
-                        'assets/images/user-avatar.jpg',
+                    ? Image.network(
+                        'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
                         width: 40,
                         height: 40,
                       )
                     : Image.network(
-                        '${authUser?.photoURL}',
+                        '${currentUser?.avatarUrl}',
                         width: 40,
                         height: 40,
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.network(
+                          'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
+                          width: 40,
+                          height: 40,
+                        ),
                       ),
                 // child: Image.asset(
                 //   'assets/images/user-avatar.jpg',
@@ -74,11 +80,11 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const Text(
-                'Xin chào ',
+                'Xin chào',
                 style: TextStyle(fontSize: 14),
               ),
               Text(
-                user?.email ?? 'Người dùng',
+                currentUser?.username ?? 'Người dùng',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

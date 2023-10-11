@@ -1,4 +1,5 @@
 import 'package:audiory_v0/models/author-story/author_story_model.dart';
+import 'package:audiory_v0/models/category/app_category_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/tag/tag_model.dart';
 import "package:flutter/foundation.dart";
@@ -18,6 +19,7 @@ class Story with _$Story {
     @JsonKey(name: 'author_id') String? authorId,
     @JsonKey(name: 'author') AuthorStory? author,
     @JsonKey(name: 'category_id') String? categoryId, // Story position
+    @JsonKey(name: 'category') AppCategory? category, // Story position
     @Default('') @JsonKey(name: 'title') String title,
     @JsonKey(name: 'description') String? description,
     @JsonKey(name: 'cover_url') String? coverUrl,
@@ -26,6 +28,7 @@ class Story with _$Story {
     @JsonKey(name: 'is_completed') bool? isCompleted,
     @JsonKey(name: 'is_copyright') bool? isCopyright,
     @JsonKey(name: 'is_paywalled') bool? isPaywalled,
+    @JsonKey(name: 'chapter_price') int? chapterPrice,
     @JsonKey(name: 'coin_cost') int? coinCost,
     @JsonKey(name: 'author_earning_percentage') int? authorEarningPercentage,
     @JsonKey(name: 'paywall_effective_date') String? paywallEffectiveDate,
