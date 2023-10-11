@@ -1,7 +1,9 @@
 import 'package:audiory_v0/models/Comment.dart';
-import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/models/Profile.dart';
+import 'package:audiory_v0/models/activity/activity_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/notification/noti_model.dart';
+import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/models/tag/tag_model.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
@@ -89,4 +91,88 @@ final skeletonComments = [
       createdDate: '2023-09-25T21:15:38+07:00',
       text: generateFakeString(20),
       userId: ''),
+];
+
+final skeletonNotis = [
+  Noti(
+      id: 'abc',
+      activity: const Activity(
+          id: 'abc',
+          actionEntity: 'haha',
+          entityId: '1',
+          userId: '1',
+          actionType: 'COMMENTED'),
+      content: generateFakeString(20)),
+  Noti(
+      id: 'abc',
+      activity: const Activity(
+          id: 'abc',
+          actionEntity: 'haha',
+          entityId: '1',
+          userId: '1',
+          actionType: 'COMMENTED'),
+      content: generateFakeString(20)),
+  Noti(
+      id: 'abc',
+      activity: const Activity(
+          id: 'abc',
+          actionEntity: 'haha',
+          entityId: '1',
+          userId: '1',
+          actionType: 'COMMENTED'),
+      content: generateFakeString(20)),
+  Noti(
+      id: 'abc',
+      activity: const Activity(
+          id: 'abc',
+          actionEntity: 'haha',
+          entityId: '1',
+          userId: '1',
+          actionType: 'COMMENTED'),
+      content: generateFakeString(20)),
+  Noti(
+      id: 'abc',
+      activity: const Activity(
+          id: 'abc',
+          actionEntity: 'haha',
+          entityId: '1',
+          userId: '1',
+          actionType: 'COMMENTED'),
+      content: generateFakeString(20)),
+  Noti(
+      id: 'abc',
+      activity: const Activity(
+          id: 'abc',
+          actionEntity: 'haha',
+          entityId: '1',
+          userId: '1',
+          actionType: 'COMMENTED'),
+      content: generateFakeString(20)),
+  Noti(
+      id: 'abc',
+      activity: const Activity(
+          id: 'abc',
+          actionEntity: 'haha',
+          entityId: '1',
+          userId: '1',
+          actionType: 'COMMENTED'),
+      content: generateFakeString(20)),
+  Noti(
+      id: 'abc',
+      activity: const Activity(
+          id: 'abc',
+          actionEntity: 'haha',
+          entityId: '1',
+          userId: '1',
+          actionType: 'COMMENTED'),
+      content: generateFakeString(20)),
+  Noti(
+      id: 'abc',
+      activity: const Activity(
+          id: 'abc',
+          actionEntity: 'haha',
+          entityId: '1',
+          userId: '1',
+          actionType: 'COMMENTED'),
+      content: generateFakeString(20)),
 ];

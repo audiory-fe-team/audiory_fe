@@ -1,5 +1,6 @@
 import 'package:audiory_v0/feat-explore/screens/category_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/notification_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/tag_screen.dart';
 import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
@@ -189,6 +190,14 @@ class AppRoutes {
                       return const WriterScreen();
                     },
                   ),
+                  GoRoute(
+                    parentNavigatorKey: _shellNavigatorKey,
+                    path: 'notification',
+                    name: 'notification',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const NotificationScreen();
+                    },
+                  ),
                 ]),
           ]),
       GoRoute(
@@ -224,6 +233,7 @@ class AppRoutes {
               name: 'chapter_detail',
               builder: (BuildContext context, GoRouterState state) {
                 String? chapterId = state.pathParameters["chapterId"];
+                
                 if (chapterId == null || chapterId == '') {
                   return const NotFoundScreen();
                 }

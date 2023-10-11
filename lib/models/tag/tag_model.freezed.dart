@@ -28,13 +28,13 @@ mixin _$Tag {
   @JsonKey(name: 'created_date')
   String? get createdDate => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_enabled')
-  String? get isEnabled => throw _privateConstructorUsedError;
+  bool? get isEnabled => throw _privateConstructorUsedError;
   @JsonKey(name: 'name')
   String? get name => throw _privateConstructorUsedError;
   @JsonKey(name: 'updated_date')
   String? get updatedDate => throw _privateConstructorUsedError;
   @JsonKey(name: 'works_total')
-  String? get worksTotal => throw _privateConstructorUsedError;
+  int? get worksTotal => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,10 +49,10 @@ abstract class $TagCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'id') String id,
       @JsonKey(name: 'created_date') String? createdDate,
-      @JsonKey(name: 'is_enabled') String? isEnabled,
+      @JsonKey(name: 'is_enabled') bool? isEnabled,
       @JsonKey(name: 'name') String? name,
       @JsonKey(name: 'updated_date') String? updatedDate,
-      @JsonKey(name: 'works_total') String? worksTotal});
+      @JsonKey(name: 'works_total') int? worksTotal});
 }
 
 /// @nodoc
@@ -86,7 +86,7 @@ class _$TagCopyWithImpl<$Res, $Val extends Tag> implements $TagCopyWith<$Res> {
       isEnabled: freezed == isEnabled
           ? _value.isEnabled
           : isEnabled // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as bool?,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -98,7 +98,7 @@ class _$TagCopyWithImpl<$Res, $Val extends Tag> implements $TagCopyWith<$Res> {
       worksTotal: freezed == worksTotal
           ? _value.worksTotal
           : worksTotal // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
     ) as $Val);
   }
 }
@@ -112,10 +112,10 @@ abstract class _$$_TagCopyWith<$Res> implements $TagCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'id') String id,
       @JsonKey(name: 'created_date') String? createdDate,
-      @JsonKey(name: 'is_enabled') String? isEnabled,
+      @JsonKey(name: 'is_enabled') bool? isEnabled,
       @JsonKey(name: 'name') String? name,
       @JsonKey(name: 'updated_date') String? updatedDate,
-      @JsonKey(name: 'works_total') String? worksTotal});
+      @JsonKey(name: 'works_total') int? worksTotal});
 }
 
 /// @nodoc
@@ -146,7 +146,7 @@ class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$_Tag>
       isEnabled: freezed == isEnabled
           ? _value.isEnabled
           : isEnabled // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as bool?,
       name: freezed == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -158,7 +158,7 @@ class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$_Tag>
       worksTotal: freezed == worksTotal
           ? _value.worksTotal
           : worksTotal // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as int?,
     ));
   }
 }
@@ -169,10 +169,10 @@ class _$_Tag implements _Tag {
   const _$_Tag(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'created_date') this.createdDate = '',
-      @JsonKey(name: 'is_enabled') this.isEnabled = '',
+      @JsonKey(name: 'is_enabled') this.isEnabled = true,
       @JsonKey(name: 'name') this.name = '',
       @JsonKey(name: 'updated_date') this.updatedDate = '',
-      @JsonKey(name: 'works_total') this.worksTotal = ''});
+      @JsonKey(name: 'works_total') this.worksTotal = 0});
 
   factory _$_Tag.fromJson(Map<String, dynamic> json) => _$$_TagFromJson(json);
 
@@ -187,7 +187,7 @@ class _$_Tag implements _Tag {
   final String? createdDate;
   @override
   @JsonKey(name: 'is_enabled')
-  final String? isEnabled;
+  final bool? isEnabled;
   @override
   @JsonKey(name: 'name')
   final String? name;
@@ -196,7 +196,7 @@ class _$_Tag implements _Tag {
   final String? updatedDate;
   @override
   @JsonKey(name: 'works_total')
-  final String? worksTotal;
+  final int? worksTotal;
 
   @override
   String toString() {
@@ -243,10 +243,10 @@ abstract class _Tag implements Tag {
   const factory _Tag(
       {@JsonKey(name: 'id') required final String id,
       @JsonKey(name: 'created_date') final String? createdDate,
-      @JsonKey(name: 'is_enabled') final String? isEnabled,
+      @JsonKey(name: 'is_enabled') final bool? isEnabled,
       @JsonKey(name: 'name') final String? name,
       @JsonKey(name: 'updated_date') final String? updatedDate,
-      @JsonKey(name: 'works_total') final String? worksTotal}) = _$_Tag;
+      @JsonKey(name: 'works_total') final int? worksTotal}) = _$_Tag;
 
   factory _Tag.fromJson(Map<String, dynamic> json) = _$_Tag.fromJson;
 
@@ -260,7 +260,7 @@ abstract class _Tag implements Tag {
   String? get createdDate;
   @override
   @JsonKey(name: 'is_enabled')
-  String? get isEnabled;
+  bool? get isEnabled;
   @override
   @JsonKey(name: 'name')
   String? get name;
@@ -269,7 +269,7 @@ abstract class _Tag implements Tag {
   String? get updatedDate;
   @override
   @JsonKey(name: 'works_total')
-  String? get worksTotal;
+  int? get worksTotal;
   @override
   @JsonKey(ignore: true)
   _$$_TagCopyWith<_$_Tag> get copyWith => throw _privateConstructorUsedError;

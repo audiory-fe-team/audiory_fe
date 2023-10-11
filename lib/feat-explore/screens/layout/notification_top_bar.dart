@@ -4,9 +4,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
-class CategoryTopBar extends HookWidget implements PreferredSizeWidget {
-  final String categoryName;
-  const CategoryTopBar({super.key, required this.categoryName});
+class NotificationTopBar extends HookWidget implements PreferredSizeWidget {
+  const NotificationTopBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(58);
@@ -17,7 +16,7 @@ class CategoryTopBar extends HookWidget implements PreferredSizeWidget {
         child: Container(
             height: 58,
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: const BoxDecoration(
               border: Border(
                 bottom: BorderSide(
@@ -42,7 +41,7 @@ class CategoryTopBar extends HookWidget implements PreferredSizeWidget {
                         width: 20, height: 20)),
                 const SizedBox(width: 4),
                 Expanded(
-                    child: Text('Thể loại $categoryName',
+                    child: Text('Thông báo',
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.headlineSmall))

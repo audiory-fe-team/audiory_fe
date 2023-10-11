@@ -125,6 +125,7 @@ class CommentScreen extends HookWidget {
                         padding: const EdgeInsets.only(top: 12),
                         child: CommentCard(
                           comment: item,
+                          onLike: () => commentsPagingController.refresh(),
                         )),
                     topItems: <Widget>[
                       const SizedBox(height: 12),

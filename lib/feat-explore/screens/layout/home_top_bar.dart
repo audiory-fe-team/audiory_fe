@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:audiory_v0/repositories/notification_repository.dart';
+import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
     const storage = FlutterSecureStorage();
     UserServer? currentUser;
     User? authUser = AuthRepository().currentUser;
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     Future<UserServer?> getUserDetails() async {
       String? value = await storage.read(key: 'currentUser');
@@ -95,7 +98,6 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
         child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: const BoxDecoration(
-              color: Colors.white,
               border: Border(
                 bottom: BorderSide(
                   color: Color.fromARGB(255, 172, 136, 28),
@@ -124,7 +126,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                           if (snapshot.hasError) {
                             return _userInfo(null);
                           } else {
-                            return _userInfo(snapshot.data ?? null);
+                            return _userInfo(snapshot.data);
                           }
                       }
                     },
@@ -139,13 +141,36 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                             GoRouter.of(context).push('/explore/search');
                           },
                           icon: const Icon(Icons.search_rounded, size: 24)),
-                      IconButton(
-                          padding: EdgeInsets.zero,
-                          visualDensity:
-                              const VisualDensity(horizontal: -4, vertical: -4),
-                          onPressed: () {},
-                          icon: const Icon(Icons.notifications_outlined,
-                              size: 24)),
+                      Stack(children: [
+                        IconButton(
+                            padding: EdgeInsets.zero,
+                            visualDensity: const VisualDensity(
+                                horizontal: -4, vertical: -4),
+                            onPressed: () {
+                              GoRouter.of(context).push('/notification');
+                            },
+                            icon: const Icon(Icons.notifications_outlined,
+                                size: 24)),
+                        FutureBuilder(
+                            future: NotificationRepostitory.fetchNoties(
+                                offset: 0, limit: 10000000),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData &&
+                                  snapshot.data?.isNotEmpty == true) {
+                                return Positioned(
+                                    top: 5,
+                                    right: 7,
+                                    child: Container(
+                                      width: 6,
+                                      height: 6,
+                                      decoration: ShapeDecoration(
+                                          color: appColors.secondaryBase,
+                                          shape: const CircleBorder()),
+                                    ));
+                              }
+                              return const SizedBox();
+                            })
+                      ]),
                     ],
                   ),
                 ])));

@@ -45,7 +45,6 @@ class AppBottomNavigationBar extends HookWidget {
     }
 
     return BottomNavigationBar(
-      backgroundColor: Colors.white,
       type: BottomNavigationBarType.fixed,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(

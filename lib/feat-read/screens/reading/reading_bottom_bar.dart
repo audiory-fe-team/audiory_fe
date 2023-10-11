@@ -35,7 +35,6 @@ class ReadingBottomBar extends HookWidget {
             topRight: Radius.circular(12.0),
           )),
           useSafeArea: true,
-          backgroundColor: Colors.white,
           context: context,
           builder: (context) {
             return Padding(
@@ -71,7 +70,6 @@ class ReadingBottomBar extends HookWidget {
 
     final sharedTextStyle = Theme.of(context).textTheme.titleSmall;
     return Material(
-        color: Colors.white,
         elevation: 2,
         child: SizedBox(
             height: 58,

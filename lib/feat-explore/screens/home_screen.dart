@@ -1,12 +1,15 @@
-import 'dart:math';
-
 import 'package:audiory_v0/constants/skeletons.dart';
+import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
+import 'package:audiory_v0/feat-read/screens/library/downloaded_stories.dart';
+import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
+import 'package:audiory_v0/repositories/category_repository.dart';
+import 'package:audiory_v0/repositories/ranking_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -30,25 +33,19 @@ class HomeScreen extends HookConsumerWidget {
     if (connectivityState.status == ConnectivityStatus.offline) {
       return Scaffold(
           appBar: const HomeTopBar(),
-          body: RefreshIndicator(
-              onRefresh: () async {},
-              child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: ListView(children: [
-                    const SizedBox(height: 24),
-                    HeaderWithLink(
-                        icon: Image.asset(
-                          "assets/images/home_for_you.png",
-                          width: 24,
-                        ),
-                        title: 'Truyện đã tải'),
-                    const SizedBox(height: 16),
-                    StoryScrollList(
-                      storyList: storiesQuery.isFetching
-                          ? skeletonStories
-                          : storiesQuery.data,
-                    )
-                  ]))));
+          body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(children: [
+                const SizedBox(height: 16),
+                HeaderWithLink(
+                    icon: Image.asset(
+                      "assets/images/home_for_you.png",
+                      width: 24,
+                    ),
+                    title: 'Truyện đã tải'),
+                const SizedBox(height: 16),
+                const DownloadedStories()
+              ])));
     }
 
     return Scaffold(
@@ -61,9 +58,9 @@ class HomeScreen extends HookConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: ListView(
                 children: [
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
                   const HomeBanners(),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
                   //NOTE: Recommendations section
                   Skeletonizer(
@@ -86,11 +83,7 @@ class HomeScreen extends HookConsumerWidget {
                   //NOTE: Ranking section
                   Skeletonizer(
                       enabled: storiesQuery.isFetching,
-                      child: HomeRankingList(
-                        storyList: storiesQuery.isFetching
-                            ? skeletonStories
-                            : storiesQuery.data,
-                      )),
+                      child: const HomeRankingList()),
 
                   const SizedBox(height: 32),
 
@@ -188,19 +181,17 @@ class HomeBanners extends StatelessWidget {
           itemBuilder: (BuildContext context, int index) {
             return Padding(
                 padding: const EdgeInsets.only(right: 16),
-                child: Container(
+                child: SizedBox(
                   width: 240,
-                  decoration: ShapeDecoration(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: Image.network(
-                      bannerList[index],
-                      fit: BoxFit.fill,
-                    ),
-                  ),
+                  child: Image.network(bannerList[index], fit: BoxFit.fill,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: const Skeleton.replace(
+                            width: 240, height: 122, child: SizedBox()));
+                  }),
                 ));
           }),
     );
@@ -218,10 +209,11 @@ class RankingListBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    return Skeleton.shade(
+        child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
       decoration: ShapeDecoration(
-        color: selected ? appColors.primaryBase : Colors.white,
+        color: selected ? appColors.primaryBase : appColors.skyLightest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -233,100 +225,200 @@ class RankingListBadge extends StatelessWidget {
         children: [
           Text(label,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                  color: selected ? Colors.white : appColors.inkBase,
-                  fontWeight: FontWeight.w400)),
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontSize: 13,
+                    color: selected ? Colors.white : appColors.inkBase,
+                  )),
         ],
       ),
-    );
+    ));
   }
 }
 
-class HomeRankingList extends StatelessWidget {
-  final List<Story>? storyList;
-  static const options = ['Truyện hot tháng', 'Truyện bình luận nhiều'];
+class HomeRankingList extends StatefulWidget {
+  const HomeRankingList({
+    Key? key,
+  }) : super(key: key);
 
-  const HomeRankingList({super.key, this.storyList = const []});
+  @override
+  _HomeRankingListState createState() => _HomeRankingListState();
+}
+
+class _HomeRankingListState extends State<HomeRankingList> {
+  String? selectedCategory;
+  Future<List<Category>> categoryFuture = CategoryRepository().fetchCategory();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final textTheme = Theme.of(context).textTheme;
 
     return SizedBox(
       width: double.infinity,
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        HeaderWithLink(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          HeaderWithLink(
             icon: Image.asset(
               "assets/images/home_ranking.png",
               width: 24,
             ),
             title: 'BXH Tháng này',
-            link: '/ranking'),
-        const SizedBox(height: 12),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: options
-                .map((option) => Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: RankingListBadge(
-                      label: option,
-                      selected: true,
-                    )))
-                .toList(),
           ),
-        ),
-        const SizedBox(height: 12),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: (storyList ?? [])
-              .toList()
-              .sublist(0, min(storyList?.length ?? 0, 5))
-              .asMap()
-              .entries
-              .map((entry) {
-            Story story = entry.value;
-            int index = entry.key;
-            return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: HomeRankingCard(
-                  order: index + 1,
-                  story: story,
-                  icon: InkWell(
-                    child: SvgPicture.asset(
-                      'assets/icons/heart.svg',
-                      width: 24,
-                      height: 24,
-                    ),
-                  ),
-                ));
-          }).toList(),
-        ),
-        const SizedBox(height: 6),
-        Material(
+          const SizedBox(height: 12),
+          FutureBuilder(
+              future: categoryFuture,
+              builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  return Text(snapshot.error.toString(),
+                      style: textTheme.titleMedium);
+                }
+                return Skeletonizer(
+                    enabled:
+                        snapshot.connectionState == ConnectionState.waiting,
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8),
+                            child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    selectedCategory = null;
+                                  });
+                                },
+                                child: RankingListBadge(
+                                  label: 'Tất cả',
+                                  selected: selectedCategory == null,
+                                )),
+                          ),
+                          ...(snapshot.data ?? []).map((category) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      selectedCategory = category.id;
+                                    });
+                                  },
+                                  child: RankingListBadge(
+                                    label: category.name ?? '',
+                                    selected: category.id == selectedCategory,
+                                  )),
+                            );
+                          }).toList()
+                        ],
+                      ),
+                    ));
+              }),
+          const SizedBox(height: 12),
+          FutureBuilder(
+              future: RankingRepository().fetchRankingStories(
+                page: 1,
+                page_size: 5,
+                time: RankingTimeRange.weekly,
+                metric: RankingMetric.total_read,
+                category: selectedCategory,
+              ),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Skeletonizer(
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children:
+                              skeletonStories.asMap().entries.map((entry) {
+                            final story = entry.value;
+                            final index = entry.key;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: HomeRankingCard(
+                                order: index + 1,
+                                story: story,
+                                icon: InkWell(
+                                  child: SvgPicture.asset(
+                                    'assets/icons/heart.svg',
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList()));
+                } else if (snapshot.hasError) {
+                  return Center(
+                      child: Text(snapshot.error.toString(),
+                          style: textTheme.titleLarge));
+                } else if (!snapshot.hasData ||
+                    snapshot.data?.isEmpty == true) {
+                  return Center(
+                      child: Text('Không có dữ liệu',
+                          style: textTheme.titleLarge));
+                }
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: (snapshot.data ?? [])
+                      .toList()
+                      .asMap()
+                      .entries
+                      .map((entry) {
+                    final story = entry.value;
+                    final index = entry.key;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: HomeRankingCard(
+                        order: index + 1,
+                        story: story,
+                        icon: InkWell(
+                          child: SvgPicture.asset(
+                            'assets/icons/heart.svg',
+                            width: 24,
+                            height: 24,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              }),
+          const SizedBox(height: 6),
+          Material(
             child: InkWell(
-          onTap: () {
-            GoRouter.of(context).push("/ranking");
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-                // gradient: LinearGradient(
-                //     colors: [appColors.primaryBase, appColors.primaryLighter]),
-                // color: appColors.primaryLightest,
-                borderRadius: BorderRadius.circular(6)),
-            child: Row(mainAxisSize: MainAxisSize.min, children: [
-              Text('Xem thêm',
-                  style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                        decoration: TextDecoration.underline,
-                        color: appColors.primaryBase,
-                      )),
-            ]),
+              onTap: () {
+                GoRouter.of(context).push("/ranking");
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration:
+                    BoxDecoration(borderRadius: BorderRadius.circular(6)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Xem thêm',
+                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
+                            decoration: TextDecoration.underline,
+                            color: appColors.primaryBase,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ))
-      ]),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class StoryTag extends StatelessWidget {
   final String label;
@@ -11,10 +12,11 @@ class StoryTag extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    return Container(
+    return Skeleton.shade(
+        child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: ShapeDecoration(
-        color: selected ? appColors.primaryBase : appColors.skyLighter,
+        color: selected ? appColors.primaryBase : appColors.skyLightest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -24,9 +26,9 @@ class StoryTag extends StatelessWidget {
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
             color: selected ? Colors.white : appColors.inkLight,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w400,
             overflow: TextOverflow.visible),
       ),
-    );
+    ));
   }
 }

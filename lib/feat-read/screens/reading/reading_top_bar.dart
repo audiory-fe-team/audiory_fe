@@ -24,7 +24,6 @@ class ReadingTopBar extends StatelessWidget implements PreferredSizeWidget {
                 height: 58,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 width: double.infinity,
-                color: Colors.white,
                 child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

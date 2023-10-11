@@ -1,8 +1,10 @@
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomeRankingCard extends StatelessWidget {
   final Story story;
@@ -66,26 +68,23 @@ class HomeRankingCard extends StatelessWidget {
             children: [
               getBadgeWidget(order),
               const SizedBox(width: 12),
-              Container(
-                width: 50,
-                height: 70,
-                decoration: ShapeDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(story.coverUrl ?? ''),
-                    fit: BoxFit.fill,
-                  ),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4)),
-                  shadows: const [
-                    BoxShadow(
-                      color: Color(0x0C06070D),
-                      blurRadius: 14,
-                      offset: Offset(0, 7),
-                      spreadRadius: 0,
-                    )
-                  ],
-                ),
-              ),
+              Skeleton.shade(
+                  child: ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Container(
+                        width: 50,
+                        height: 70,
+                        color: appColors.primaryLightest,
+                        child: (story.coverUrl == null || story.coverUrl == '')
+                            ? Image.asset(
+                                OFFLINE_IMG_URL,
+                                fit: BoxFit.fitWidth,
+                              )
+                            : Image.network(
+                                story.coverUrl!,
+                                fit: BoxFit.cover,
+                              ),
+                      ))),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -111,12 +110,13 @@ class HomeRankingCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        SvgPicture.asset(
+                        Skeleton.ignore(
+                            child: SvgPicture.asset(
                           'assets/icons/heart.svg',
                           width: 8,
                           height: 8,
                           color: appColors.skyDark,
-                        ),
+                        )),
                         const SizedBox(width: 2),
                         Text(
                           (story.voteCount ?? 0).toString(),

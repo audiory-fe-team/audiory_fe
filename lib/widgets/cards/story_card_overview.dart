@@ -24,21 +24,21 @@ class StoryCardOverView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Skeleton.replace(
-                width: 95,
-                height: 135,
-                child: Container(
-                  width: 95,
-                  height: 135,
-                  decoration: ShapeDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(coverUrl ?? FALLBACK_IMG_URL),
-                      fit: BoxFit.fill,
-                    ),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                  ),
-                )),
+            ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Skeleton.replace(
+                    width: 95,
+                    height: 135,
+                    child: Container(
+                      width: 95,
+                      height: 135,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(coverUrl ?? FALLBACK_IMG_URL),
+                          fit: BoxFit.fill,
+                        ),
+                      ),
+                    ))),
             const SizedBox(height: 8),
             Text(this.title,
                 maxLines: 2,
