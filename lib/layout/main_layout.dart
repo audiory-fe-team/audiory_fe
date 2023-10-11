@@ -1,9 +1,7 @@
 import 'package:audiory_v0/layout/app_bar_navigator.dart';
 import 'package:audiory_v0/layout/tab_navigator.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 class AppMainLayout extends StatefulWidget {
   const AppMainLayout({super.key});

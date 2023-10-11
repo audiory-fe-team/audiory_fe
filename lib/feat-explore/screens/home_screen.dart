@@ -6,25 +6,52 @@ import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
 import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/providers/connectivity_provider.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class HomeScreen extends HookWidget {
+class HomeScreen extends HookConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final storiesQuery =
-        useQuery(['stories'], () => StoryRepostitory().fetchStories());
+  Widget build(BuildContext context, WidgetRef ref) {
+    final connectivityState = ref.watch(connectivityProvider);
+    final storiesQuery = useQuery(
+        ['stories'], () => StoryRepostitory().fetchStories(),
+        enabled: connectivityState.status == ConnectivityStatus.online);
+
+    if (connectivityState.status == ConnectivityStatus.offline) {
+      return Scaffold(
+          appBar: const HomeTopBar(),
+          body: RefreshIndicator(
+              onRefresh: () async {},
+              child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: ListView(children: [
+                    const SizedBox(height: 24),
+                    HeaderWithLink(
+                        icon: Image.asset(
+                          "assets/images/home_for_you.png",
+                          width: 24,
+                        ),
+                        title: 'Truyện đã tải'),
+                    const SizedBox(height: 16),
+                    StoryScrollList(
+                      storyList: storiesQuery.isFetching
+                          ? skeletonStories
+                          : storiesQuery.data,
+                    )
+                  ]))));
+    }
+
     final paywalledStoriesQuery = useQuery(['paywalledStories'],
         () => StoryRepostitory().fetchMyPaywalledStories());
     final recommendStoriesQuery = useQuery(['recommendStories'],
@@ -136,7 +163,7 @@ class HomeScreen extends HookWidget {
                             .map((e) => Container(
                                 margin: const EdgeInsets.only(bottom: 16),
                                 child: CurrentReadCard(
-                                  story: e,
+                                  story: e.story,
                                   onDeleteStory: (id) => {},
                                   isEditable: false,
                                 )))

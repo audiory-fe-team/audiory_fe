@@ -1,14 +1,17 @@
-import 'dart:math';
+import 'dart:async';
 
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/constants/gifts.dart';
 import 'package:audiory_v0/constants/skeletons.dart';
-import 'package:audiory_v0/models/Chapter.dart';
-import 'package:audiory_v0/models/Coin.dart';
 import 'package:audiory_v0/models/Gift.dart';
-import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
-import 'package:audiory_v0/models/Wallet.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/models/wallet/wallet_model.dart';
+import 'package:audiory_v0/providers/chapter_database.dart';
+import 'package:audiory_v0/providers/connectivity_provider.dart';
+import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
@@ -38,11 +41,15 @@ class DetailStoryScreen extends HookConsumerWidget {
   final String id;
 
   @override
-  const DetailStoryScreen({this.id = '', super.key});
+  DetailStoryScreen({this.id = '', super.key});
+
+  final storyDb = StoryDatabase();
+  final chapterDb = ChapterDatabase();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final isOffline = ref.read(isOfflineProvider);
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     final tabController = useTabController(initialLength: 2);
@@ -64,6 +71,9 @@ class DetailStoryScreen extends HookConsumerWidget {
 
     final tabState = useState(0);
     final selectedItem = useState<Gift>(GIFT_LIST[0]);
+
+    final storyOffline = useFuture<Story?>(
+        Future<Story?>.value(isOffline ? storyDb.getStory(id) : null));
     String handleCoins() {
       List<Wallet>? wallets = userQuery.data?.wallets;
       String coin = wallets?[0].balance.toString() ?? '_';
@@ -71,7 +81,6 @@ class DetailStoryScreen extends HookConsumerWidget {
     }
 
     void handleBuyChapter(Chapter chapter, int price) {
-      print('chapter ${chapter.isPaid}');
       if (price != 0) {
         showModalBottomSheet(
           shape: const RoundedRectangleBorder(
@@ -351,7 +360,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                 height: 165,
                 decoration: ShapeDecoration(
                   image: DecorationImage(
-                    image: NetworkImage(story?.coverUrl ?? ''),
+                    image: NetworkImage(story?.coverUrl ?? FALLBACK_IMG_URL),
                     fit: BoxFit.fill,
                   ),
                   shape: RoundedRectangleBorder(
@@ -396,7 +405,7 @@ class DetailStoryScreen extends HookConsumerWidget {
           ),
           Column(
             children: (story?.chapters ?? []).asMap().entries.map((entry) {
-              print(' chapters : ${entry.value.isPaid}');
+              // print(' chapters : ${entry.value.isPaid}');
               Chapter chapter = entry.value;
               int index = entry.key;
 
@@ -521,22 +530,56 @@ class DetailStoryScreen extends HookConsumerWidget {
       );
     }
 
+    Future<void> handleDownloadStory() async {
+      try {
+        final wholeStory = await LibraryRepository.downloadStory(id);
+
+        // Save to offline database
+        final noContentStory = wholeStory.copyWith(
+            chapters: wholeStory.chapters
+                ?.map((e) => e.copyWith(paragraphs: []))
+                .toList());
+        await storyDb.saveStory(noContentStory);
+
+        await Future.forEach(wholeStory.chapters ?? [], (element) async {
+          await chapterDb.saveChapters(element);
+        });
+
+        AppSnackBar.buildTopSnackBar(
+            context, 'Tải truyện thành công', null, SnackBarType.success);
+      } catch (error) {
+        AppSnackBar.buildTopSnackBar(
+            context, error.toString(), null, SnackBarType.warning);
+      }
+    }
+
+    final isLoading = false;
+    // ? storyOffline.connectionState == ConnectionState.waiting
+    // : storyQuery.isFetching;
+    final story = storyQuery.data;
+
     return Scaffold(
         appBar: AppBar(
           elevation: 2,
-          leading: GestureDetector(
-            onTap: () {
+          leading: IconButton(
+            onPressed: () {
               GoRouter.of(context).pop();
             },
-            child: const Icon(Icons.arrow_back),
+            icon: Icon(Icons.arrow_back, size: 24, color: appColors.inkBase),
           ),
-          title: Text(
-            storyQuery.data?.title ?? 'Loading...',
-            style: const TextStyle(color: Colors.black),
-          ),
+          leadingWidth: 40,
+          title: Expanded(
+              child: Container(
+                  color: Colors.amber,
+                  child: Text(
+                    story?.title ?? 'Loading...',
+                    style: textTheme.titleLarge,
+                  ))),
           actions: [
-            GestureDetector(
-              child: const Icon(Icons.more_vert_sharp),
+            IconButton(
+              onPressed: () {},
+              icon: Icon(Icons.more_vert_rounded,
+                  size: 24, color: appColors.inkBase),
             )
           ],
         ),
@@ -546,7 +589,6 @@ class DetailStoryScreen extends HookConsumerWidget {
             child: RefreshIndicator(
                 onRefresh: () async {
                   storyQuery.refetch();
-                  authorQuery.refetch();
                 },
                 child: SingleChildScrollView(
                   scrollDirection: Axis.vertical,
@@ -557,72 +599,66 @@ class DetailStoryScreen extends HookConsumerWidget {
                     children: [
                       const SizedBox(height: 12),
                       Skeletonizer(
-                          enabled: storyQuery.isFetching,
-                          child: storyInfo(storyQuery.isFetching
-                              ? skeletonStory
-                              : storyQuery.data)),
+                          enabled: isLoading,
+                          child: storyInfo(isLoading ? skeletonStory : story)),
 
                       const SizedBox(height: 12),
                       //NOTE: Profile image
                       Skeletonizer(
-                          enabled: authorQuery.isFetching,
-                          child: Material(
-                              child: InkWell(
-                                  onTap: () async {
-                                    // context.go('/profile');
-                                  },
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Skeleton.replace(
+                        enabled: isLoading,
+                        child: Material(
+                            child: InkWell(
+                                onTap: () async {
+                                  // context.go('/profile');
+                                },
+                                child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Skeleton.replace(
+                                          width: 32,
+                                          height: 32,
+                                          child: Container(
                                             width: 32,
                                             height: 32,
-                                            child: Container(
-                                              width: 32,
-                                              height: 32,
-                                              decoration: ShapeDecoration(
-                                                image: DecorationImage(
-                                                  image: NetworkImage(
-                                                      authorQuery.data
-                                                              ?.avatarUrl ??
-                                                          ''),
-                                                  fit: BoxFit.fill,
-                                                ),
-                                                shape: const CircleBorder(),
+                                            decoration: ShapeDecoration(
+                                              image: DecorationImage(
+                                                image: NetworkImage(
+                                                    story?.author?.avatarUrl ??
+                                                        FALLBACK_IMG_URL),
+                                                fit: BoxFit.fill,
                                               ),
-                                            )),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          authorQuery.isFetching
-                                              ? generateFakeString(16)
-                                              : authorQuery.data?.fullName ??
-                                                  '',
-                                          style: textTheme.titleMedium!
-                                              .copyWith(
-                                                  fontWeight: FontWeight.w400),
-                                        )
-                                      ])))),
-
+                                              shape: const CircleBorder(),
+                                            ),
+                                          )),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        isLoading
+                                            ? generateFakeString(16)
+                                            : story?.author?.fullName ??
+                                                'Tác giả',
+                                        style: textTheme.titleMedium!.copyWith(
+                                            fontWeight: FontWeight.w400),
+                                      )
+                                    ]))),
+                      ),
                       const SizedBox(height: 24),
                       Skeletonizer(
-                          enabled: storyQuery.isFetching,
-                          child: interactionInfo(storyQuery.isFetching
-                              ? skeletonStory
-                              : storyQuery.data)),
+                          enabled: isLoading,
+                          child: interactionInfo(
+                              isLoading ? skeletonStory : story)),
                       const SizedBox(height: 24),
                       Skeletonizer(
-                          enabled: storyQuery.isFetching,
+                          enabled: isLoading,
                           child: SizedBox(
                               width: double.infinity,
                               child: Wrap(
                                 alignment: WrapAlignment.center,
                                 spacing: 6,
                                 runSpacing: 6,
-                                children: ((storyQuery.isFetching
+                                children: ((isLoading
                                             ? skeletonStory.tags
-                                            : storyQuery.data?.tags) ??
+                                            : story?.tags) ??
                                         [])
                                     .map((tag) => GestureDetector(
                                         onTap: () {
@@ -630,7 +666,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                                               '/tag/${tag.id}?tagName=${tag.name}');
                                         },
                                         child: StoryTag(
-                                          label: tag.name,
+                                          label: tag.name ?? '',
                                           selected: false,
                                         )))
                                     .toList(),
@@ -662,16 +698,14 @@ class DetailStoryScreen extends HookConsumerWidget {
                       Builder(builder: (context) {
                         if (tabState.value == 0) {
                           return Skeletonizer(
-                              enabled: storyQuery.isFetching,
-                              child: detailView(storyQuery.isFetching
-                                  ? skeletonStory
-                                  : storyQuery.data));
+                              enabled: isLoading,
+                              child: detailView(
+                                  isLoading ? skeletonStory : story));
                         }
                         return Skeletonizer(
-                            enabled: storyQuery.isFetching,
-                            child: chapterView(storyQuery.isFetching
-                                ? skeletonStory
-                                : storyQuery.data));
+                            enabled: isLoading,
+                            child:
+                                chapterView(isLoading ? skeletonStory : story));
                       }),
                     ],
                   ),
@@ -721,40 +755,49 @@ class DetailStoryScreen extends HookConsumerWidget {
                                       ))
                                 ])));
                   }),
-                  Builder(builder: (context) {
-                    final isDownloaded = false;
-                    return TapEffectWrapper(
-                        onTap: () {},
-                        child: SizedBox(
-                            width: 50,
-                            child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.download_rounded,
-                                    size: 24,
-                                    color: isDownloaded == true
-                                        ? appColors.primaryBase
-                                        : appColors.skyBase,
-                                  ),
-                                  Text('Tải xuống',
-                                      style: textTheme.labelLarge!.copyWith(
+                  FutureBuilder(
+                      future: storyDb.getStory(id),
+                      builder: (context, snapshot) {
+                        final isDownloaded = snapshot.data != null;
+                        return TapEffectWrapper(
+                            onTap: () {
+                              if (isDownloaded == true) {
+                                AppSnackBar.buildTopSnackBar(context,
+                                    'Đã tải truyện', null, SnackBarType.info);
+                                return;
+                              }
+                              handleDownloadStory();
+                            },
+                            child: SizedBox(
+                                width: 50,
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.download_rounded,
+                                        size: 24,
                                         color: isDownloaded == true
                                             ? appColors.primaryBase
                                             : appColors.skyBase,
-                                      ))
-                                ])));
-                  }),
+                                      ),
+                                      Text('Tải xuống',
+                                          style: textTheme.labelLarge!.copyWith(
+                                            color: isDownloaded == true
+                                                ? appColors.primaryBase
+                                                : appColors.skyBase,
+                                          ))
+                                    ])));
+                      }),
                   Expanded(
                       child: FilledButton(
                           onPressed: () {
                             context.push(
-                                '/story/${id}/chapter/41ccaddf-3b96-11ee-8842-e0d4e8a18075');
+                                '/story/$id/chapter/41ccaddf-3b96-11ee-8842-e0d4e8a18075');
                             //   .pushNamed("chapter_detail", pathParameters: {
                             // "storyId": id,
                             // "chapterId":
-                            //     // storyQuery.data?.chapters?[0].id ?? ''
+                            //     // story?.chapters?[0].id ?? ''
                             //     '41ccaddf-3b96-11ee-8842-e0d4e8a18075'
                           },
                           style: ButtonStyle(

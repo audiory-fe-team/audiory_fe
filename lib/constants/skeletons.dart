@@ -1,8 +1,9 @@
-import 'package:audiory_v0/models/Chapter.dart';
+import 'package:audiory_v0/models/Comment.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/models/Profile.dart';
-import 'package:audiory_v0/models/Story.dart';
-import 'package:audiory_v0/models/Tag.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/models/tag/tag_model.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
 
 final skeletonStory = Story(
@@ -51,3 +52,41 @@ final skeletonChapter = Chapter(
           commentCount: 100,
           audioUrl: generateFakeString(50))
     ]);
+
+final skeletonComments = [
+  Comment(
+      chapterId: '',
+      id: '',
+      paragraphId: '',
+      createdDate: '2023-09-25T21:15:38+07:00',
+      text: generateFakeString(60),
+      userId: ''),
+  Comment(
+      chapterId: '',
+      id: '',
+      paragraphId: '',
+      createdDate: '2023-09-25T21:15:38+07:00',
+      text: generateFakeString(50),
+      userId: ''),
+  Comment(
+      chapterId: '',
+      id: '',
+      paragraphId: '',
+      createdDate: '2023-09-25T21:15:38+07:00',
+      text: generateFakeString(60),
+      userId: ''),
+  Comment(
+      chapterId: '',
+      id: '',
+      paragraphId: '',
+      createdDate: '2023-09-25T21:15:38+07:00',
+      text: generateFakeString(100),
+      userId: ''),
+  Comment(
+      chapterId: '',
+      id: '',
+      paragraphId: '',
+      createdDate: '2023-09-25T21:15:38+07:00',
+      text: generateFakeString(20),
+      userId: ''),
+];

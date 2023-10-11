@@ -3,10 +3,10 @@ import 'dart:math';
 
 import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
-import 'package:audiory_v0/models/ReadingList.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
-import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
@@ -19,11 +19,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../models/AuthUser.dart';
 import '../../models/Profile.dart';
-import '../../models/Story.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/buttons/app_icon_button.dart';
 import '../../widgets/custom_app_bar.dart';
-import '../layout/story_scroll_list.dart';
 import 'package:fquery/fquery.dart';
 
 class UserProfileScreen extends StatefulHookWidget {
@@ -312,25 +310,65 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            GestureDetector(
-                              child: SvgPicture.asset(
-                                'assets/icons/coin.svg',
-                                width: 24,
-                                height: 24,
-                                color: Colors.amber,
+                            SizedBox(
+                              width: size.width / 3.5,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  GestureDetector(
+                                    child: Image.asset(
+                                      'assets/images/coin.png',
+                                      width: 24,
+                                      height: 24,
+                                    ),
+                                  ),
+                                  Skeletonizer(
+                                    enabled: userByIdQuery.isFetching,
+                                    child: SizedBox(
+                                      width: 50,
+                                      child: Text(
+                                        " ${userByIdQuery.data?.wallets?[0].balance ?? '_'}",
+                                        textAlign: TextAlign.center,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Skeletonizer(
-                                enabled: userByIdQuery.isFetching,
-                                child: Text(
-                                  " ${userByIdQuery.data?.wallets?[0].balance ?? '_'}",
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.titleLarge,
-                                ),
-                              ),
-                            ),
+                            userByIdQuery.data?.wallets?[1].balance != 0
+                                ? SizedBox(
+                                    width: size.width / 3.5,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        GestureDetector(
+                                          child: Image.asset(
+                                            'assets/images/diamond.png',
+                                            width: 24,
+                                            height: 24,
+                                          ),
+                                        ),
+                                        Skeletonizer(
+                                          enabled: userByIdQuery.isFetching,
+                                          child: SizedBox(
+                                            width: 50,
+                                            child: Text(
+                                              " ${userByIdQuery.data?.wallets?[1].balance ?? '_'}",
+                                              textAlign: TextAlign.center,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .headlineSmall,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                : const SizedBox(height: 0),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -571,26 +609,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         },
         child: userProfileInfo(userByIdQuery, profileQuery,
             publishedStoriesQuery, readingStoriesQuery),
-        // child: FutureBuilder<UserServer?>(
-        //   future: getUserDetails(), // async work
-        //   builder: (BuildContext context, AsyncSnapshot<UserServer?> snapshot) {
-        //     switch (snapshot.connectionState) {
-        //       case ConnectionState.waiting:
-        //         return const Center(
-        //           child: CircularProgressIndicator(),
-        //         );
-        //       default:
-        //         if (snapshot.hasError) {
-        //           return AppIconButton(onPressed: () {
-        //             context.go('/login');
-        //           });
-        //         } else {
-        //           print('SNAPSHOT DATA ${snapshot.data?.wallets?.length}');
-        //           return
-        //         }
-        //     }
-        //   },
-        // ),
       ),
     );
   }

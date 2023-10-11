@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:audiory_v0/models/ReadingList.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -85,7 +85,7 @@ class ReadingListRepository {
 
     final response = await http.post(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
-    print('res $response');
+
     if (response.statusCode == 200) {
     } else {
       throw Exception('Failed to load reading list');
@@ -113,8 +113,7 @@ class ReadingListRepository {
 
     final response = await request.send();
     final respStr = await response.stream.bytesToString();
-    print('res for create story');
-    print('$respStr');
+
     if (response.statusCode == 200) {
       final result = jsonDecode(respStr)['data'];
       return ReadingList.fromJson(result);

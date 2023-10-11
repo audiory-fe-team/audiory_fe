@@ -1,4 +1,4 @@
-import 'package:audiory_v0/models/Wallet.dart';
+import 'package:audiory_v0/models/wallet/wallet_model.dart';
 
 class UserServer {
   String? id;
@@ -38,8 +38,7 @@ class UserServer {
     List<dynamic> walletsJsonList = json['wallets'] ?? [];
     List<Wallet> wallets =
         walletsJsonList.map((wallet) => Wallet.fromJson(wallet)).toList();
-    print('JSON WALLET ${json['wallets']}');
-    print('WALLET ${wallets}');
+
     return UserServer(
       id: json['id'] ?? 0,
       isEnabled: json['is_enabled'],

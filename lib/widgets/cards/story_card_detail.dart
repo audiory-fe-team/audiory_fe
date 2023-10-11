@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/SearchStory.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -30,10 +30,11 @@ class StoryCardDetail extends StatelessWidget {
     final voteCount = story?.voteCount ?? searchStory?.voteCount ?? 0;
     final readCount = story?.readCount ?? searchStory?.readCount ?? 0;
     final chapterNum =
-        story?.numFreeChapters ?? searchStory?.numFreeChapters ?? 0;
-    final List<String> tags = story?.tags?.map((tag) => tag.name).toList() ??
-        searchStory?.tags?.split(",") ??
-        [];
+        story?.publishedCount ?? searchStory?.publishedCount ?? 0;
+    final List<String> tags =
+        story?.tags?.map((tag) => tag.name ?? '').toList() ??
+            searchStory?.tags?.split(",") ??
+            [];
 
     return GestureDetector(
         onTap: () {

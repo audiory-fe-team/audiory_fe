@@ -1,17 +1,15 @@
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/feedbacks_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/random_story_card.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../models/Feedback.dart';
 import '../../../models/enums/SnackbarType.dart';
 import '../../../theme/theme_constants.dart';
 

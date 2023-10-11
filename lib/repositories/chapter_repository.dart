@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:audiory_v0/core/network/constant/endpoints.dart';
-import 'package:audiory_v0/models/Chapter.dart';
 import 'package:audiory_v0/models/Comment.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -117,12 +117,19 @@ class ChapterRepository {
     return null;
   }
 
-  static Future<List<Comment>> fetchCommentsByChapterId({
-    required String chapterId,
-  }) async {
+  static Future<List<Comment>> fetchCommentsByChapterId(
+      {required String chapterId,
+      int offset = 1,
+      int limit = 10,
+      String sortBy = 'like_count'}) async {
     const storage = FlutterSecureStorage();
     String? jwtToken = await storage.read(key: 'jwt');
-    final url = Uri.parse('$chapterEndpoint/$chapterId/comments');
+    final url = Uri.parse('$chapterEndpoint/$chapterId/comments').replace(
+        queryParameters: {
+          'offset': '$offset',
+          'limit': '$limit',
+          'sort_by': sortBy
+        });
 
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {
@@ -142,7 +149,6 @@ class ChapterRepository {
         final List<dynamic> result = jsonDecode(responseBody)['data'];
         return result.map((i) => Comment.fromJson(i)).toList();
       } catch (error) {
-        print(error);
         throw (error);
       }
     } else {

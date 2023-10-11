@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:audiory_v0/constants/fallback_image.dart';
-import 'package:audiory_v0/models/ReadingList.dart';
+import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:flutter/material.dart';
 
@@ -24,7 +24,7 @@ class ReadingScrollList extends StatelessWidget {
               .map((story) => Padding(
                     padding: const EdgeInsets.only(right: 12),
                     child: StoryCardOverView(
-                      title: story.name,
+                      title: story.name ?? '',
                       coverUrl: story.coverUrl == ''
                           ? FALLBACK_IMG_URL
                           : story.coverUrl,

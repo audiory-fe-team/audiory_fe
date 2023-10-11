@@ -7,7 +7,7 @@ import 'package:audiory_v0/feat-explore/widgets/author_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/ranking_dropdown.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_rank_card.dart';
 import 'package:audiory_v0/models/Profile.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/category_repository.dart';
 import 'package:audiory_v0/repositories/ranking_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -193,7 +193,7 @@ class StoryRanking extends HookWidget {
                                 border: Border.all(
                                     color: appColors.primaryBase, width: 2))
                             : const BoxDecoration(),
-                        child: const CategoryBadge(
+                        child: const AppCategoryBadge(
                           imgUrl:
                               'https://www.thecreativepenn.com/wp-content/uploads/2019/02/The-Creative-Penn-website-banner.png',
                           title: 'Tất cả',
@@ -222,7 +222,7 @@ class StoryRanking extends HookWidget {
                             });
                           }
                         },
-                        child: CategoryBadge(
+                        child: AppCategoryBadge(
                           imgUrl: e.imageUrl ?? '',
                           title: e.name ?? '',
                         ))))

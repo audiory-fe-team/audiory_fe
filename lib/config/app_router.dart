@@ -23,7 +23,7 @@ import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/screens/register/register_screen.dart';
 import 'package:audiory_v0/screens/register/screens/flow_four.dart';
 import 'package:audiory_v0/screens/register/screens/flow_two.dart';
@@ -83,19 +83,6 @@ class AppRoutes {
                   return const HomeScreen();
                 },
                 routes: [
-                  GoRoute(
-                    parentNavigatorKey: _shellNavigatorKey,
-                    name: 'tag',
-                    path: 'tag/:tagId',
-                    builder: (_, GoRouterState state) {
-                      final tagId = state.pathParameters["tagId"];
-                      final tagName = state.queryParameters["tagName"];
-                      if (tagId != null && tagName != null) {
-                        return SearchTagScreen(tagId: tagId, tagName: tagName);
-                      }
-                      return const NotFoundScreen();
-                    },
-                  ),
                   GoRoute(
                       parentNavigatorKey: _shellNavigatorKey,
                       name: 'library',
@@ -226,32 +213,32 @@ class AppRoutes {
           },
           routes: [
             GoRoute(
-                parentNavigatorKey: _rootNavigatorKey,
-                path: 'chapter/:chapterId',
-                name: 'chapter_detail',
-                builder: (BuildContext context, GoRouterState state) {
-                  String? chapterId = state.pathParameters["chapterId"];
-                  if (chapterId == null || chapterId == '') {
-                    return const NotFoundScreen();
-                  }
-                  return ReadingScreen(
-                    chapterId: chapterId,
-                  );
-                },
-                routes: [
-                  GoRoute(
-                    path: 'comment/:commentId',
-                    name: 'comment_detail',
-                    builder: (BuildContext context, GoRouterState state) {
-                      String? commentId = state.pathParameters["commentId"];
-                      if (commentId == null || commentId == '') {
-                        return const NotFoundScreen();
-                      }
-                      return const Center(child: Text('comemnt'));
-                      // return CommentScreen(commentId: commentId);
-                    },
-                  )
-                ])
+              parentNavigatorKey: _rootNavigatorKey,
+              name: 'tag',
+              path: 'tag/:tagId',
+              builder: (_, GoRouterState state) {
+                final tagId = state.pathParameters["tagId"];
+                final tagName = state.queryParameters["tagName"];
+                if (tagId != null && tagName != null) {
+                  return SearchTagScreen(tagId: tagId, tagName: tagName);
+                }
+                return const NotFoundScreen();
+              },
+            ),
+            GoRoute(
+              parentNavigatorKey: _rootNavigatorKey,
+              path: 'chapter/:chapterId',
+              name: 'chapter_detail',
+              builder: (BuildContext context, GoRouterState state) {
+                String? chapterId = state.pathParameters["chapterId"];
+                if (chapterId == null || chapterId == '') {
+                  return const NotFoundScreen();
+                }
+                return ReadingScreen(
+                  chapterId: chapterId,
+                );
+              },
+            )
           ]),
       GoRoute(
         parentNavigatorKey: _rootNavigatorKey,

@@ -1,9 +1,9 @@
 import 'dart:math';
 
-import 'package:audiory_v0/models/Category.dart';
-import 'package:audiory_v0/models/Story.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/explore_top_bar.dart';
+import 'package:audiory_v0/models/category/app_category_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/category_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -33,7 +33,7 @@ class ExploreScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: ListView(children: [
             const SizedBox(height: 24),
-            CategoryCarousel(),
+            AppCategoryCarousel(),
             const SizedBox(height: 24),
             HeaderWithLink(
                 icon: Image.asset(
@@ -47,9 +47,9 @@ class ExploreScreen extends StatelessWidget {
             const SizedBox(height: 24),
             // const AuthorRecommendation(),
             const SizedBox(height: 24),
-            const CategoryStories(categoryId: 1),
+            const AppCategoryStories(categoryId: 1),
             const SizedBox(height: 24),
-            const CategoryStories(categoryId: 2),
+            const AppCategoryStories(categoryId: 2),
           ])),
     );
   }
@@ -84,10 +84,10 @@ class ExploreScreen extends StatelessWidget {
 //   }
 // }
 
-class CategoryStories extends HookWidget {
+class AppCategoryStories extends HookWidget {
   final int categoryId;
 
-  const CategoryStories({super.key, required this.categoryId});
+  const AppCategoryStories({super.key, required this.categoryId});
 
   @override
   Widget build(
@@ -142,10 +142,10 @@ class CategoryStories extends HookWidget {
   }
 }
 
-class CategoryCarousel extends HookConsumerWidget {
+class AppCategoryCarousel extends HookConsumerWidget {
   final CarouselController _controller = CarouselController();
 
-  CategoryCarousel({super.key});
+  AppCategoryCarousel({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final current = useState(0);
@@ -200,9 +200,9 @@ class CategoryCarousel extends HookConsumerWidget {
                               .asMap()
                               .entries
                               .map((entry) {
-                            Category category = entry.value;
+                            AppCategory category = entry.value;
                             return TapEffectWrapper(
-                                child: CategoryBadge(
+                                child: AppCategoryBadge(
                                   imgUrl: category.imageUrl ?? '',
                                   title: category.name ?? '',
                                 ),
@@ -242,11 +242,12 @@ class CategoryCarousel extends HookConsumerWidget {
   }
 }
 
-class CategoryBadge extends StatelessWidget {
+class AppCategoryBadge extends StatelessWidget {
   final String imgUrl;
   final String title;
 
-  const CategoryBadge({super.key, required this.imgUrl, required this.title});
+  const AppCategoryBadge(
+      {super.key, required this.imgUrl, required this.title});
 
   @override
   Widget build(BuildContext context) {

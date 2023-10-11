@@ -1,5 +1,5 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
-import 'package:audiory_v0/models/ReadingList.dart';
+import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/repositories/reading_list_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
@@ -35,8 +35,8 @@ class ReadingListCard extends StatelessWidget {
     String setDefaultCoverUrl() {
       String initCoverUrl = FALLBACK_IMG_URL;
 
-      if (readingList.coverUrl.trim() != '') {
-        initCoverUrl = readingList.coverUrl;
+      if (readingList.coverUrl?.trim() != '') {
+        initCoverUrl = readingList.coverUrl as String;
       } else if (readingList.stories!.isNotEmpty) {
         initCoverUrl = readingList.stories?[0].coverUrl ?? FALLBACK_IMG_URL;
       }
@@ -76,7 +76,7 @@ class ReadingListCard extends StatelessWidget {
                   SizedBox(
                     width: size.width / 4,
                     child: FormBuilderImagePicker(
-                        initialValue: readingList.coverUrl.trim() == ''
+                        initialValue: readingList.coverUrl?.trim() == ''
                             ? []
                             : [readingList.coverUrl],
                         previewAutoSizeWidth: true,

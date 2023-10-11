@@ -1,14 +1,13 @@
-import 'package:audiory_v0/feat-read/layout/library_top_bar.dart';
+import 'package:audiory_v0/feat-read/screens/library/downloaded_stories.dart';
+import 'package:audiory_v0/feat-read/screens/library/library_top_bar.dart';
 import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
 import 'package:audiory_v0/feat-read/widgets/reading_list_card.dart';
-import 'package:audiory_v0/models/ReadingList.dart';
+import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/repositories/reading_list_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -74,28 +73,16 @@ class LibraryScreen extends HookWidget {
                         child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 300),
                       reverseDuration: const Duration(milliseconds: 0),
-                      child: tabState.value == 0
-                          ? const CurrentReadings(
-                              key: ValueKey<String>("current_reading"))
-                          : ReadingLists(key: ValueKey<String>("reading_list")),
+                      child: Builder(
+                        builder: (context) {
+                          if (tabState.value == 1) return ReadingLists();
+                          if (tabState.value == 2) {
+                            return const DownloadedStories();
+                          }
+                          return const CurrentReadings();
+                        },
+                      ),
                     )),
-
-                    // AnimatedSwitcher(
-                    //   duration: const Duration(milliseconds: 500),
-                    //   transitionBuilder:
-                    //       (Widget child, Animation<double> animation) {
-                    //     return ScaleTransition(scale: animation, child: child);
-                    //   },
-                    //   child: const CurrentReadings(),
-                    // )
-                    // Builder(builder: (context) {
-                    //   final currentWidget = tabState.value == 0
-                    //       ? const CurrentReadings()
-                    //       : (tabState.value == 1
-                    //           ? const ReadingLists()
-                    //           : const SizedBox());
-                    //   return ;
-                    // })
                   ],
                 ))));
   }
@@ -361,7 +348,7 @@ class ReadingLists extends HookWidget {
                             },
                             onPublishHandler: (readingListId) {
                               handlePublishReadingList(
-                                  readingListId, e.isPrivate);
+                                  readingListId, e.isPrivate ?? true);
                             },
                             onEditHandler: (readingListId, name, formFile) {
                               handleEditReadingList(
@@ -416,7 +403,7 @@ class CurrentReadings extends HookWidget {
                   .map((e) => Container(
                       margin: const EdgeInsets.only(bottom: 16),
                       child: CurrentReadCard(
-                        story: e,
+                        story: e.story,
                         onDeleteStory: (id) => handleDeleteStory(id),
                       )))
                   .toList()),

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,14 +9,14 @@ import 'package:http/http.dart' as http;
 class ActivitiesRepository {
   static final activitiesEndpoint = "${dotenv.get('API_BASE_URL')}/activities";
 
-  Future<dynamic> sendActivity(
-      {required String actionEntity,
-      required String actionType,
-      required String entityId,
-      required String userId}) async {
+  static Future<dynamic> sendActivity({
+    required String actionEntity,
+    required String actionType,
+    required String entityId,
+  }) async {
     final url = Uri.parse(activitiesEndpoint);
     const storage = FlutterSecureStorage();
-    String? jwtToken = await storage.read(key: 'jwt_token');
+    String? jwtToken = await storage.read(key: 'jwt');
 
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {
@@ -28,12 +29,11 @@ class ActivitiesRepository {
     }
 
     final response = await http.post(url,
-        body: {
+        body: jsonEncode({
           'action_entity': actionEntity,
           'action_type': actionType,
           'entity_id': entityId,
-          'user_id': userId
-        },
+        }),
         headers: headers);
 
     if (response.statusCode == 200) {

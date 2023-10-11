@@ -1,5 +1,5 @@
 import 'package:audiory_v0/models/ReadingProgress.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 
 class LibraryStory {
   final bool? isAvailableOffline;

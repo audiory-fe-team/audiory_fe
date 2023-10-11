@@ -1,8 +1,9 @@
 import 'dart:ffi';
 
 import 'package:audiory_v0/models/AuthUser.dart';
-import 'package:audiory_v0/models/Transaction.dart';
 import 'package:audiory_v0/models/enums/TransactionType.dart';
+import 'package:audiory_v0/models/transaction/transaction_model.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/repositories/transaction_repository.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
@@ -26,7 +27,7 @@ class WalletScreen extends StatefulHookWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
-  convertThousands(double num) {
+  convertThousands(num) {
     var formatter = NumberFormat('#,##,000');
     return formatter.format(num);
   }
@@ -39,6 +40,8 @@ class _WalletScreenState extends State<WalletScreen> {
 
     final transactionsQuery = useQuery(
         ['transactions'], () => TransactionRepository.fetchMyTransactions());
+    final userByIdQuery =
+        useQuery(['user'], () => AuthRepository().getMyUserById());
     String formatDate(String? date) {
       DateTime dateTime = DateTime.parse(date as String);
       return DateFormat('dd/MM/yyyy').format(dateTime);
@@ -236,7 +239,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               ?.copyWith(color: appColors.primaryLightest),
                         ),
                         Text(
-                          '${convertThousands(2000)}',
+                          '${convertThousands(userByIdQuery.data?.wallets?[0].balance ?? 0)}',
                           style: textTheme.headlineLarge?.copyWith(
                               color: appColors.primaryLightest, fontSize: 50),
                         ),
@@ -320,7 +323,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               Container(
                                 margin:
                                     const EdgeInsets.symmetric(vertical: 16),
-                                height: size.height * 0.45,
+                                height: size.height * 0.41,
                                 child: Skeletonizer(
                                   enabled: transactionsQuery.isFetching,
                                   child: ListView(

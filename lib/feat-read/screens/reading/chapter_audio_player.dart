@@ -1,14 +1,20 @@
 import 'dart:math';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:audiory_v0/feat-read/models/position_audio.dart';
-import 'package:audiory_v0/models/Chapter.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+
+class PositionAudio {
+  final Duration position;
+  final Duration bufferedPosition;
+  final Duration? duration;
+  const PositionAudio(this.position, this.bufferedPosition, this.duration);
+}
 
 class ChapterAudioPlayer extends HookWidget {
   final Chapter? chapter;

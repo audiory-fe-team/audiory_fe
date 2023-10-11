@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import '../../../models/AuthUser.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -15,7 +14,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
   const HomeTopBar({super.key});
 
   @override
-  Size get preferredSize => const Size.fromHeight(65);
+  Size get preferredSize => const Size.fromHeight(58);
 
   @override
   Widget build(BuildContext context) {
@@ -138,24 +137,21 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                   ),
                   Row(
                     children: [
-                      InkWell(
-                        onTap: () {
-                          GoRouter.of(context).go('/explore/search');
-                        },
-                        child: SvgPicture.asset(
-                          'assets/icons/search.svg',
-                          width: 24,
-                          height: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      InkWell(
-                        child: SvgPicture.asset(
-                          'assets/icons/notification on.svg',
-                          width: 24,
-                          height: 24,
-                        ),
-                      ),
+                      IconButton(
+                          padding: EdgeInsets.zero,
+                          visualDensity:
+                              const VisualDensity(horizontal: -4, vertical: -4),
+                          onPressed: () {
+                            GoRouter.of(context).push('/explore/search');
+                          },
+                          icon: const Icon(Icons.search_rounded, size: 24)),
+                      IconButton(
+                          padding: EdgeInsets.zero,
+                          visualDensity:
+                              const VisualDensity(horizontal: -4, vertical: -4),
+                          onPressed: () {},
+                          icon: const Icon(Icons.notifications_outlined,
+                              size: 24)),
                     ],
                   ),
                 ])));

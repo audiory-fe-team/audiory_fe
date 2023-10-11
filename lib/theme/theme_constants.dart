@@ -180,7 +180,7 @@ ThemeData lightTheme = ThemeData(
     ),
     titleLarge: GoogleFonts.sourceSansPro(
         color: ColorPalette.inkBase,
-        fontSize: 18.0,
+        fontSize: 16.0,
         fontWeight: FontWeight.w600,
         letterSpacing: 0.15),
     titleMedium: GoogleFonts.sourceSansPro(

@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/SearchStory.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,7 +34,7 @@ class SlidableStoryCardDetail extends StatelessWidget {
     final readCount = story?.readCount ?? searchStory?.readCount ?? 0;
     final chapterNum =
         story?.numFreeChapters ?? searchStory?.numFreeChapters ?? 0;
-    final List<String> tags = story?.tags?.map((tag) => tag.name).toList() ??
+    final List<String?> tags = story?.tags?.map((tag) => tag.name).toList() ??
         searchStory?.tags?.split(",") ??
         [];
 
@@ -288,7 +288,8 @@ class SlidableStoryCardDetail extends StatelessWidget {
                                       .map((tag) => Padding(
                                           padding:
                                               const EdgeInsets.only(right: 8),
-                                          child: StoryDetailTag(content: tag)))
+                                          child: StoryDetailTag(
+                                              content: tag as String)))
                                       .toList(),
                                 ),
                               ),

@@ -1,7 +1,7 @@
 import 'dart:math';
 
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -97,15 +97,15 @@ class StoryRankCard extends StatelessWidget {
     switch (metric) {
       case RankingMetric.total_read:
         {
-          return "${story.totalRead ?? 0} lượt xem";
+          return "${story.readCount ?? 0} lượt xem";
         }
       case RankingMetric.total_vote:
         {
-          return "${story.totalVote ?? 0} bình chọn";
+          return "${story.readCount ?? 0} bình chọn";
         }
       default:
         {
-          return "${story.totalVote ?? 0} bình chọn";
+          return "${story.readCount ?? 0} bình chọn";
         }
     }
   }
@@ -195,7 +195,7 @@ class StoryRankCard extends StatelessWidget {
                           .sublist(0, min(3, story.tags?.length ?? 0))
                           .map((tag) => Padding(
                               padding: const EdgeInsets.only(right: 8),
-                              child: StoryDetailTag(content: tag.name)))
+                              child: StoryDetailTag(content: tag.name ?? '')))
                           .toList(),
                     ),
                   ],

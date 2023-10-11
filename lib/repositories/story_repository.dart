@@ -2,10 +2,9 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:audiory_v0/core/network/constant/endpoints.dart';
-import 'package:audiory_v0/models/Chapter.dart';
-import 'package:audiory_v0/models/ReadingList.dart';
-import 'package:audiory_v0/models/Story.dart';
-import 'package:flutter/material.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,6 +32,8 @@ class StoryRepostitory {
 
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(responseBody)['data'];
+      print('STORY LSITS');
+      print(result.map((i) => Story.fromJson(i)).toList());
       return result.map((i) => Story.fromJson(i)).toList();
     } else {
       throw Exception('Failed to load stories');
@@ -82,7 +83,7 @@ class StoryRepostitory {
 
     if (response.statusCode == 200) {
       final result = jsonDecode(responseBody)['data'];
-      print('story ${Story.fromJson(result).chapters}');
+      print('__STORY FROM JSON ${Story.fromJson(result).chapters}');
       return Story.fromJson(result);
     } else {
       throw Exception('Failed to load stories');
@@ -113,8 +114,30 @@ class StoryRepostitory {
   }
 
   Future<List<Story>> fetchStoriesByUserId(String userId) async {
-    final url = Uri.parse('${Endpoints().user}/${userId}/stories');
+    final url = Uri.parse('${Endpoints().user}/$userId/stories');
     final response = await http.get(url);
+    final responseBody = utf8.decode(response.bodyBytes);
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(responseBody)['data'];
+      return result.map((i) => Story.fromJson(i)).toList();
+    } else {
+      throw Exception('Failed to load stories');
+    }
+  }
+
+  Future<List<Story>?> fetchMyStories() async {
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    final url = Uri.parse('${Endpoints().user}/me/stories');
+    final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(responseBody)['data'];

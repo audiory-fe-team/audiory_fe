@@ -1,5 +1,5 @@
 import 'package:audiory_v0/models/Library.dart';
-import 'package:audiory_v0/models/Story.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 
 class Profile {
   final String? avatarUrl;
@@ -24,7 +24,7 @@ class Profile {
   final List<Profile>? followers;
   final int? reportCount;
   final String? updatedDate;
-  final String username;
+  final String? username;
   final List<Story>? stories;
   final Library? library;
 

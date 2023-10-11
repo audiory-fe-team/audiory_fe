@@ -1,14 +1,15 @@
 // import 'package:audioplayers/audioplayers.dart';
 
 import 'package:audiory_v0/constants/skeletons.dart';
-import 'package:audiory_v0/feat-read/layout/reading_bottom_bar.dart';
+import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_drawer.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_navigate_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/comment_section.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen_header.dart';
-import 'package:audiory_v0/feat-read/widgets/audio_bottom_bar.dart';
+import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/Paragraph.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
@@ -27,8 +28,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class ReadingScreen extends HookWidget {
   final String chapterId;
+  final bool? showComment;
 
-  ReadingScreen({super.key, required this.chapterId});
+  ReadingScreen({super.key, required this.chapterId, this.showComment = false});
 
   final player = AudioPlayer();
 
@@ -65,6 +67,28 @@ class ReadingScreen extends HookWidget {
       fontSize.value = newFontSize ?? fontSize.value;
       showCommentByParagraph.value =
           isShowCommentByParagraph ?? showCommentByParagraph.value;
+    }
+
+    void handleOpenCommentPara(String paraId) {
+      showModalBottomSheet(
+          isScrollControlled: true,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12.0),
+            topRight: Radius.circular(12.0),
+          )),
+          useSafeArea: true,
+          backgroundColor: Colors.white,
+          context: context,
+          builder: (context) {
+            return Padding(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                child: CommentScreen(
+                  chapterId: chapterId,
+                  paraId: paraId,
+                ));
+          });
     }
 
     useEffect(() {
@@ -122,14 +146,25 @@ class ReadingScreen extends HookWidget {
       });
     }, []);
 
+    // useEffect(() {
+    //   if (showComment == true) {
+    //     showModalBottomSheet(
+    //         isScrollControlled: true,
+    //         context: context,
+    //         builder: (context) {
+    //           return CommentChapterScreen(chapterId: chapterId);
+    //         });
+    //   }
+    // }, []);
+
     useEffect(() {
       return () => player.dispose();
     }, []);
 
     return Scaffold(
       backgroundColor: bgColor.value,
-      appBar: null,
-      body: Skeletonizer(
+      body: SafeArea(
+          child: Skeletonizer(
         enabled: chapterQuery.isFetching,
         child: RefreshIndicator(
             onRefresh: () async {
@@ -185,20 +220,47 @@ class ReadingScreen extends HookWidget {
                               player.seek(null, index: index);
                             }
                           },
-                          child: Container(
+                          child: SizedBox(
                             key: key,
-                            margin: const EdgeInsets.only(bottom: 24),
-                            padding: const EdgeInsets.all(8),
-                            decoration: (curParaIndex.value == index)
-                                ? BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: appColors.primaryLightest)
-                                : const BoxDecoration(),
-                            child: Text(para.content ?? '',
-                                style: textTheme.bodyLarge?.copyWith(
-                                  fontSize: fontSize.value.toDouble(),
-                                  fontFamily: GoogleFonts.gelasio().fontFamily,
-                                )),
+                            width: double.infinity,
+                            child: Stack(children: [
+                              Container(
+                                  padding: const EdgeInsets.only(
+                                      bottom: 24, left: 4, right: 4, top: 4),
+                                  decoration: (curParaIndex.value == index)
+                                      ? BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(12),
+                                          color: appColors.primaryLightest)
+                                      : const BoxDecoration(),
+                                  child: Text(para.content ?? '',
+                                      style: textTheme.bodyLarge?.copyWith(
+                                        fontSize: fontSize.value.toDouble(),
+                                        fontFamily:
+                                            GoogleFonts.gelasio().fontFamily,
+                                      ))),
+                              Positioned(
+                                  bottom: 10,
+                                  right: 0,
+                                  child: IconButton(
+                                      visualDensity: const VisualDensity(
+                                          horizontal: -4, vertical: -4),
+                                      onPressed: () =>
+                                          handleOpenCommentPara(para.id),
+                                      icon: Icon(Icons.mode_comment_outlined,
+                                          size: 16,
+                                          color: appColors.primaryBase))),
+                              Positioned(
+                                  bottom: 27,
+                                  right: 18,
+                                  child: Text('${para.commentCount}',
+                                      style: textTheme.labelMedium?.copyWith(
+                                          color: appColors.primaryBase,
+                                          fontFamily:
+                                              GoogleFonts.sourceSansPro()
+                                                  .fontFamily,
+                                          fontWeight: FontWeight.w600))),
+                            ]),
                           ));
                     }).toList(),
                     Skeleton.keep(
@@ -280,12 +342,11 @@ class ReadingScreen extends HookWidget {
                     )
                   ]),
                 ))),
+      )),
+      bottomNavigationBar: ReadingBottomBar(
+        changeStyle: changeStyle,
+        chapterId: chapterId,
       ),
-      bottomNavigationBar: hideBars.value
-          ? null
-          : ReadingBottomBar(
-              changeStyle: changeStyle,
-            ),
       floatingActionButton: AudioBottomBar(
         player: player,
         storyId: chapterQuery.data?.storyId,
@@ -296,6 +357,7 @@ class ReadingScreen extends HookWidget {
         currentChapterId: chapterId,
         story: storyQuery.data,
       ),
+      resizeToAvoidBottomInset: true,
     );
   }
 }

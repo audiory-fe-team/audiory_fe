@@ -1,12 +1,13 @@
-import 'package:audiory_v0/models/Category.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
+import 'package:audiory_v0/models/category/app_category_model.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/category_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../models/Chapter.dart';
-import '../models/Story.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 
 final storyFutureProvider = FutureProvider<List<Story>>((ref) async {
@@ -26,7 +27,7 @@ final storyByIdFutureProvider =
 //   final repository =  ref.watch(storyByIdFutureProvider);
 //   return repository.fetchAllChaptersStoryById(storyId);
 // });
-final categoryFutureProvider = FutureProvider<List<Category>>((ref) async {
+final categoryFutureProvider = FutureProvider<List<AppCategory>>((ref) async {
   final repository = ref.read(categoryRepositoryProvider);
   return repository.fetchCategory();
 });

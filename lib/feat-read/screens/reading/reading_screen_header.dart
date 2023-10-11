@@ -1,4 +1,4 @@
-import 'package:audiory_v0/models/Chapter.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -18,12 +18,12 @@ class ReadingScreenHeader extends StatelessWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return Column(children: [
-      Text('Chương ' + (num + 1).toString() + ":",
+      Text('Chương ${(num + 1)}:',
           style: Theme.of(context).textTheme.bodyLarge),
       Text(chapter.title,
           style: Theme.of(context).textTheme.bodyLarge, softWrap: true),
       const SizedBox(height: 12),
-      Container(
+      SizedBox(
         height: 24,
         child: Row(mainAxisSize: MainAxisSize.min, children: [
           Row(
