@@ -13,7 +13,16 @@ class ExploreTopBar extends StatelessWidget implements PreferredSizeWidget {
     return SafeArea(
         child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            color: Colors.white,
+            height: 58,
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Color.fromARGB(255, 172, 136, 28),
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+              ),
+            ),
             child: Stack(children: [
               Container(
                   width: double.infinity,

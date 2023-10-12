@@ -14,7 +14,6 @@ class LibraryTopBar extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             width: double.infinity,
             decoration: const BoxDecoration(
-              color: Colors.white,
               border: Border(
                 bottom: BorderSide(
                   color: Color.fromARGB(255, 172, 136, 28),

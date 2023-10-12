@@ -1,9 +1,8 @@
 //using freezed to create a model minimalize code for a class
 //have to add freezed_annotation if want to use freezed
+import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import "package:flutter/foundation.dart";
 import 'package:freezed_annotation/freezed_annotation.dart';
-
-import '../../../../models/Paragraph.dart';
 
 part 'chapter_model.freezed.dart'; //get the file name same as the class file name
 part 'chapter_model.g.dart';

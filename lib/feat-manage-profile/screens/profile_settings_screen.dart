@@ -1,25 +1,31 @@
 import 'package:audiory_v0/models/AuthUser.dart';
+import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../models/Profile.dart';
 import '../../theme/theme_constants.dart';
 
-class ProfileSettingsScreen extends StatefulWidget {
+class ProfileSettingsScreen extends ConsumerStatefulWidget {
   final UserServer? currentUser;
   final Profile? userProfile;
   const ProfileSettingsScreen({super.key, this.currentUser, this.userProfile});
 
   @override
-  State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
+  ConsumerState<ProfileSettingsScreen> createState() =>
+      _ProfileSettingsScreenState();
 }
 
-class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
+class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+
+    final notifier = ref.watch(themeNotifierProvider);
+
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     Widget listOfSettings() {
@@ -31,6 +37,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               initialValue: false,
               activeColor: appColors.primaryBase,
               name: 'isNotified',
+              onChanged: (value) {
+                notifier
+                    .setTheme(value == true ? ThemeMode.dark : ThemeMode.light);
+              },
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -96,6 +106,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           item('Hồ sơ', 'editProfile'),
           item('Cài đặt tài khoản', 'editAccount'),
           sliderItem(),
+          sliderItem(),
           item('Bảo mật và an toàn', 'editProfile'),
           item('Ví', 'wallet'),
           item('Về Audiory', 'editProfile'),
@@ -108,6 +119,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       return Column(
         children: [
           Material(
+            color: Colors.transparent,
             child: InkWell(
               onTap: () async {
                 context.push('/profile');

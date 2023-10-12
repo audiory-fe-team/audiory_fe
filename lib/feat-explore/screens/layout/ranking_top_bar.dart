@@ -12,8 +12,17 @@ class RankingTopBar extends StatelessWidget implements PreferredSizeWidget {
         child: Material(
             elevation: 2,
             child: Container(
+                height: 58,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                color: Colors.white,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Color.fromARGB(255, 172, 136, 28),
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                ),
                 child: Stack(children: [
                   SizedBox(
                       width: double.infinity,

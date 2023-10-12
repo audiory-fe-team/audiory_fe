@@ -1,6 +1,4 @@
 import 'package:audiory_v0/config/app_router.dart';
-import 'package:audiory_v0/providers/offline_database.dart';
-
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
 
@@ -35,51 +33,22 @@ Future<void> main() async {
 
   runApp(QueryClientProvider(
     queryClient: queryClient,
-    child: const ProviderScope(child: MyApp()),
+    child: ProviderScope(child: MyApp()),
   ));
 }
 
-ThemeManager _themeManager = ThemeManager();
-
-class MyApp extends ConsumerStatefulWidget {
-  const MyApp({super.key});
-
+class MyApp extends ConsumerWidget {
   @override
-  ConsumerState<MyApp> createState() => _MyAppState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final _themeNotifier = ref.watch(themeNotifierProvider);
 
-class _MyAppState extends ConsumerState<MyApp> {
-  @override
-  void dispose() {
-    _themeManager.removeListener(themeListener);
-    super.dispose();
-  }
-
-  @override
-  void initState() {
-    _themeManager.addListener(themeListener);
-    super.initState();
-  }
-
-  themeListener() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       title: 'Audiory app',
       theme: lightTheme,
       darkTheme: darkTheme,
-      themeMode: _themeManager.themeMode,
+      themeMode: _themeNotifier.themeMode,
       routerConfig: AppRoutes.routes,
-      // routeInformationParser: AppRoutes.routes.routeInformationParser,
-      // routeInformationProvider: AppRoutes.routes.routeInformationProvider,
-      // routerDelegate: AppRoutes.routes.routerDelegate,
     );
   }
 }

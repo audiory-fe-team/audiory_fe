@@ -85,11 +85,16 @@ class ChapterRepository {
     final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
-      final Chapter chapter =
-          Chapter.fromJson(json.decode(responseBody)['data']);
-      return chapter;
+      try {
+        final Chapter chapter =
+            Chapter.fromJson(json.decode(responseBody)['data']);
+        return chapter;
+      } catch (error) {
+        print(error);
+        throw (error);
+      }
     } else {
-      throw Exception('Failed to chapter');
+      throw Exception('Failed to fetch chapter');
     }
   }
 
@@ -105,13 +110,10 @@ class ChapterRepository {
     try {
       final response = await dio.get("$chapterEndpoint/$chapterId",
           options: Options(headers: header));
-      print('res');
-      print(response);
 
       final Chapter chapter = Chapter.fromJson(response.data['data']);
       return chapter;
     } on DioException catch (e) {
-      print('err');
       print(e.response);
     }
     return null;

@@ -9,7 +9,9 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class CommentDetailScreen extends HookWidget {
   final String commentId;
-  const CommentDetailScreen({super.key, required this.commentId});
+  final String? highlightId;
+  const CommentDetailScreen(
+      {super.key, required this.commentId, this.highlightId});
 
   static const pageSize = 10;
 
@@ -102,7 +104,11 @@ class CommentDetailScreen extends HookWidget {
 
                     return ListView(children: [
                       const SizedBox(height: 24),
-                      CommentCard(comment: comment, isDetail: true),
+                      CommentCard(
+                        comment: comment,
+                        isDetail: true,
+                        onLike: () => commentQuery.refetch(),
+                      ),
                       const SizedBox(height: 12),
                       Container(
                         padding: const EdgeInsets.only(left: 32),
@@ -113,8 +119,14 @@ class CommentDetailScreen extends HookWidget {
                                     .map((e) => Padding(
                                         padding:
                                             const EdgeInsets.only(bottom: 8),
-                                        child: CommentCard(
-                                            comment: e, isDetail: true)))
+                                        child: highlightId == null
+                                            ? CommentCard(
+                                                comment: e, isDetail: true)
+                                            : CommentCard(
+                                                comment: e,
+                                                isDetail: true,
+                                                isHighlighted:
+                                                    highlightId == e.id)))
                                     .toList())),
                       )
                     ]);

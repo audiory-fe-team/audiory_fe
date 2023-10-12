@@ -31,10 +31,13 @@ class StoryRepostitory {
     final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
-      final List<dynamic> result = jsonDecode(responseBody)['data'];
-      print('STORY LSITS');
-      print(result.map((i) => Story.fromJson(i)).toList());
-      return result.map((i) => Story.fromJson(i)).toList();
+      try {
+        final List<dynamic> result = jsonDecode(responseBody)['data'];
+        return result.map((i) => Story.fromJson(i)).toList();
+      } catch (error) {
+        print(error);
+        throw (error);
+      }
     } else {
       throw Exception('Failed to load stories');
     }
@@ -82,9 +85,13 @@ class StoryRepostitory {
     final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
-      final result = jsonDecode(responseBody)['data'];
-      print('__STORY FROM JSON ${Story.fromJson(result).chapters}');
-      return Story.fromJson(result);
+      try {
+        final result = jsonDecode(responseBody)['data'];
+        return Story.fromJson(result);
+      } catch (error) {
+        print(error);
+        throw (error);
+      }
     } else {
       throw Exception('Failed to load stories');
     }

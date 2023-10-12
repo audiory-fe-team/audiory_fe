@@ -375,7 +375,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         SizedBox(
                           width: size.width / 2.5,
                           child: AppIconButton(
-                              title: 'Đăng xuất ',
+                              title: 'Đăng xuất',
                               // icon: const Icon(Icons.add),
                               onPressed: () {
                                 signOut();

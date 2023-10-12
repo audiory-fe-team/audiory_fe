@@ -580,7 +580,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                 activeColor: appColors.primaryBase,
                 onChanged: (value) {
                   setState(() {
-                    isPaywalled = value as bool;
+                    isPaywalled = value == true;
                   });
                 },
                 name: 'isPaywalled',

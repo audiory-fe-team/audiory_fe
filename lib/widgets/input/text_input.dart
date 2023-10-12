@@ -84,7 +84,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
     var required = FormBuilderValidators.required(errorText: 'Nội dung trống');
 
     return FormBuilderTextField(
-      enabled: widget.isDisabled as bool,
+      enabled: widget.isDisabled == true,
       onChanged: (value) => {
         setState(() {
           _enteredText = value as String;
@@ -181,7 +181,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
                               .titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                        widget.isRequired as bool
+                        widget.isRequired == true
                             ? _requiredAsterisk()
                             : const SizedBox(
                                 height: 0,

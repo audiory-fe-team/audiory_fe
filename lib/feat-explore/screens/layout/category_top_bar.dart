@@ -14,34 +14,39 @@ class CategoryTopBar extends HookWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Material(
-            elevation: 2,
-            child: Container(
-                height: 58,
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                color: Colors.white,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TapEffectWrapper(
-                        onTap: () {
-                          if (GoRouter.of(context).canPop()) {
-                            GoRouter.of(context).pop();
-                          }
-                        },
-                        child: SvgPicture.asset('assets/icons/left-arrow.svg',
-                            width: 20, height: 20)),
-                    const SizedBox(width: 4),
-                    Expanded(
-                        child: Text('Thể loại $categoryName',
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                            style: Theme.of(context).textTheme.headlineSmall))
-                  ],
-                ))));
+        child: Container(
+            height: 58,
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Color.fromARGB(255, 172, 136, 28),
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                TapEffectWrapper(
+                    onTap: () {
+                      if (GoRouter.of(context).canPop()) {
+                        GoRouter.of(context).pop();
+                      }
+                    },
+                    child: SvgPicture.asset('assets/icons/left-arrow.svg',
+                        width: 20, height: 20)),
+                const SizedBox(width: 4),
+                Expanded(
+                    child: Text('Thể loại $categoryName',
+                        textAlign: TextAlign.left,
+                        overflow: TextOverflow.ellipsis,
+                        style: Theme.of(context).textTheme.headlineSmall))
+              ],
+            )));
   }
 }

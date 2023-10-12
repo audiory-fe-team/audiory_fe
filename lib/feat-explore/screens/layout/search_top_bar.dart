@@ -27,61 +27,66 @@ class SearchTopBar extends HookWidget implements PreferredSizeWidget {
     Timer? debounce;
 
     return SafeArea(
-        child: Material(
-            elevation: 2,
-            child: Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                color: Colors.white,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Expanded(
-                        child: TextField(
-                      onTap: () {
-                        onTap();
-                      },
-                      controller: controller,
-                      onChanged: (value) {
-                        if (debounce?.isActive ?? false) debounce?.cancel();
-                        debounce = Timer(const Duration(milliseconds: 200), () {
-                          onSearchValueChange(value);
-                        });
-                      },
-                      onSubmitted: (value) {
-                        onSubmit();
-                        FocusScope.of(context).unfocus();
-                      },
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      decoration: InputDecoration(
-                        hintText: 'Tìm kiếm truyện/tác giả',
-                        hintStyle: TextStyle(color: appColors.inkLighter),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(50),
-                          borderSide: const BorderSide(
-                            width: 0,
-                            style: BorderStyle.none,
-                          ),
-                        ),
-                        contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 0),
-                        fillColor: appColors.skyLightest,
-                        filled: true,
+        child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            decoration: const BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Color.fromARGB(255, 172, 136, 28),
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+              ),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Expanded(
+                    child: TextField(
+                  onTap: () {
+                    onTap();
+                  },
+                  controller: controller,
+                  onChanged: (value) {
+                    if (debounce?.isActive ?? false) debounce?.cancel();
+                    debounce = Timer(const Duration(milliseconds: 200), () {
+                      onSearchValueChange(value);
+                    });
+                  },
+                  onSubmitted: (value) {
+                    onSubmit();
+                    FocusScope.of(context).unfocus();
+                  },
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  decoration: InputDecoration(
+                    hintText: 'Tìm kiếm truyện/tác giả',
+                    hintStyle: TextStyle(color: appColors.inkLighter),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(50),
+                      borderSide: const BorderSide(
+                        width: 0,
+                        style: BorderStyle.none,
                       ),
-                    )),
-                    const SizedBox(width: 12),
-                    IconButton(
-                        padding: EdgeInsets.zero,
-                        constraints: const BoxConstraints(),
-                        onPressed: () {
-                          onSubmit();
-                        },
-                        icon: const Icon(
-                          Icons.search_rounded,
-                          size: 16,
-                        ))
-                  ],
-                ))));
+                    ),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+                    fillColor: appColors.skyLightest,
+                    filled: true,
+                  ),
+                )),
+                const SizedBox(width: 12),
+                IconButton(
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                    onPressed: () {
+                      onSubmit();
+                    },
+                    icon: const Icon(
+                      Icons.search_rounded,
+                      size: 16,
+                    ))
+              ],
+            )));
   }
 }

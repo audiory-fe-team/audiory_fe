@@ -15,13 +15,14 @@ class RankingRepository {
       {required RankingMetric metric,
       required RankingTimeRange time,
       String? category,
-      int? page}) async {
+      int? page,
+      int? page_size}) async {
     final url = Uri.parse("$storiesEndpoint/stories").replace(queryParameters: {
       'sort_by': getValueString(metric.toString()),
       'time_range': getValueString(time.toString()),
-      'category': category,
+      category ?? 'category': category,
       'page': (page ?? 1).toString(),
-      'page_size': 10.toString(),
+      'page_size': (page_size ?? 10).toString(),
     });
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
