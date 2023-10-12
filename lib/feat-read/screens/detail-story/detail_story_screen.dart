@@ -6,17 +6,24 @@ import 'package:audiory_v0/feat-read/screens/detail-story/detail_story_bottom_ba
 import 'package:audiory_v0/feat-read/screens/detail-story/detail_story_top_bar.dart';
 import 'package:audiory_v0/feat-read/screens/detail-story/story_chapter_tab.dart';
 import 'package:audiory_v0/feat-read/screens/detail-story/story_detail_tab.dart';
-import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/models/wallet/wallet_model.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
 import 'package:audiory_v0/providers/story_database.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
+import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
+import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
@@ -38,18 +45,154 @@ class DetailStoryScreen extends HookConsumerWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final isOffline = ref.read(isOfflineProvider);
     final textTheme = Theme.of(context).textTheme;
+    final size = MediaQuery.of(context).size;
     final tabController = useTabController(initialLength: 2);
 
-    final libraryQuery = useQuery(
-        ['library'], () => LibraryRepository.fetchMyLibrary(),
-        enabled: !isOffline);
+    final libraryQuery =
+        useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
 
-    final tabState = useState(0);
     final storyQuery = useQuery(
         ['story', id], () => StoryRepostitory().fetchStoryById(id),
         enabled: !isOffline);
+    final authorQuery = useQuery(['profile', storyQuery.data?.authorId],
+        () => ProfileRepository().fetchProfileById(storyQuery.data?.authorId),
+        enabled: storyQuery.isSuccess);
+
+    final userQuery = useQuery([
+      'userById',
+      storyQuery.data?.authorId
+    ], () => AuthRepository().getMyUserById(), enabled: storyQuery.isSuccess);
+
+    final tabState = useState(0);
     final storyOffline = useFuture<Story?>(
         Future<Story?>.value(isOffline ? storyDb.getStory(id) : null));
+    String handleCoins() {
+      List<Wallet>? wallets = userQuery.data?.wallets;
+      String coin = wallets?[0].balance.toString() ?? '_';
+      return coin;
+    }
+
+    void handleBuyChapter(Chapter chapter, int price) {
+      if (price != 0) {
+        showModalBottomSheet(
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16), topRight: Radius.circular(16)),
+          ),
+          context: context,
+          builder: (context) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+            height: MediaQuery.of(context).size.height / 3,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Container(
+                width: size.width / 3.7,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                    color: appColors.skyLightest,
+                    borderRadius: const BorderRadius.all(Radius.circular(50))),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                        child: GestureDetector(
+                      child: Image.asset(
+                        'assets/images/coin.png',
+                        width: 30,
+                        height: 30,
+                      ),
+                    )),
+                    Flexible(
+                        child: Skeletonizer(
+                      enabled: userQuery.isFetching,
+                      child: Text(
+                        handleCoins(),
+                        style: textTheme.titleMedium
+                            ?.copyWith(color: appColors.inkBase),
+                      ),
+                    )),
+                  ],
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                height: (size.height) / 4.5,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(chapter.title, style: textTheme.titleLarge),
+                    Text('Chương ${chapter.position}',
+                        style: textTheme.titleLarge),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(
+                          flex: 3,
+                          child: GestureDetector(
+                            child: Image.asset(
+                              'assets/images/coin.png',
+                              width: 30,
+                              height: 30,
+                            ),
+                          ),
+                        ),
+                        Flexible(
+                          flex: 2,
+                          child: Text(
+                            '$price',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium!
+                                .copyWith(color: appColors.inkLighter),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Container(
+                      width: size.width - 32,
+                      child: AppIconButton(
+                        onPressed: () async {
+                          print('authorId : ${authorQuery.data?.id}');
+                          Map<String, String> body = {
+                            // 'transaction':{
+                            //   'author_id': authorQuery.data?.id ?? ''
+                            // }
+                            'author_id': authorQuery.data?.id ?? ''
+                          };
+                          try {
+                            await ChapterRepository().buyChapter(
+                                storyQuery.data?.id, chapter.id, body);
+                          } catch (e) {
+                            if (kDebugMode) {
+                              print('error $e');
+                            }
+
+                            await AppSnackBar.buildTopSnackBar(context,
+                                'Mua chap lỗi', null, SnackBarType.error);
+                          }
+                          context.pop();
+                          storyQuery.refetch();
+                          await AppSnackBar.buildTopSnackBar(
+                              context,
+                              'Mua chap thành công',
+                              null,
+                              SnackBarType.success);
+                        },
+                        title: 'Mở khóa chương',
+                        textStyle: textTheme.titleMedium
+                            ?.copyWith(color: appColors.skyLightest),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ]),
+          ),
+        );
+      }
+    }
 
     Widget interactionInfo(Story? story) {
       final sharedNumberStyle =
@@ -217,29 +360,6 @@ class DetailStoryScreen extends HookConsumerWidget {
     final story = isOffline ? storyOffline.data : storyQuery.data;
 
     return Scaffold(
-
-        // appBar: AppBar(
-        //   elevation: 2,
-        //   leading: IconButton(
-        //     onPressed: () {
-        //       GoRouter.of(context).pop();
-        //     },
-        //     icon: Icon(Icons.arrow_back, size: 24, color: appColors.inkBase),
-        //   ),
-        //   leadingWidth: 40,
-        //   title: Text(
-        //     story?.title ?? 'Loading...',
-        //     style: textTheme.titleLarge,
-        //     overflow: TextOverflow.ellipsis,
-        //   ),
-        //   actions: [
-        //     IconButton(
-        //       onPressed: () {},
-        //       icon: Icon(Icons.more_vert_rounded,
-        //           size: 24, color: appColors.inkBase),
-        //     )
-        //   ],
-        // ),
         appBar: DetailStoryTopBar(story: story),
         body: Container(
             width: double.infinity,

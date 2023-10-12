@@ -51,6 +51,7 @@ class _ListWithPaginatorState extends State<ListWithPaginator> {
                 return Padding(
                     padding: const EdgeInsets.only(bottom: 12),
                     child: ChapterItem(
+                      onSelected: (_, __) {},
                       title: 'Chương ${i + 1}: $chapterName',
                       time: '20',
                     ));

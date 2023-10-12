@@ -193,7 +193,7 @@ class StoryRanking extends HookWidget {
                                 border: Border.all(
                                     color: appColors.primaryBase, width: 2))
                             : const BoxDecoration(),
-                        child: const CategoryBadge(
+                        child: const AppCategoryBadge(
                           imgUrl:
                               'https://www.thecreativepenn.com/wp-content/uploads/2019/02/The-Creative-Penn-website-banner.png',
                           title: 'Tất cả',
@@ -222,7 +222,7 @@ class StoryRanking extends HookWidget {
                             });
                           }
                         },
-                        child: CategoryBadge(
+                        child: AppCategoryBadge(
                           imgUrl: e.imageUrl ?? '',
                           title: e.name ?? '',
                         ))))

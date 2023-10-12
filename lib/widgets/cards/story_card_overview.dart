@@ -1,4 +1,5 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -29,15 +30,11 @@ class StoryCardOverView extends StatelessWidget {
                 child: Skeleton.replace(
                     width: 95,
                     height: 135,
-                    child: Container(
+                    child: AppImage(
+                      url: coverUrl,
+                      fit: BoxFit.fill,
                       width: 95,
                       height: 135,
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(coverUrl ?? FALLBACK_IMG_URL),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
                     ))),
             const SizedBox(height: 8),
             Text(this.title,

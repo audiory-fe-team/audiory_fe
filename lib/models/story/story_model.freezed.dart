@@ -32,6 +32,9 @@ mixin _$Story {
   @JsonKey(name: 'category_id')
   String? get categoryId =>
       throw _privateConstructorUsedError; // Story position
+  @JsonKey(name: 'category')
+  AppCategory? get category =>
+      throw _privateConstructorUsedError; // Story position
   @JsonKey(name: 'title')
   String get title => throw _privateConstructorUsedError;
   @JsonKey(name: 'description')
@@ -48,6 +51,8 @@ mixin _$Story {
   bool? get isCopyright => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_paywalled')
   bool? get isPaywalled => throw _privateConstructorUsedError;
+  @JsonKey(name: 'chapter_price')
+  int? get chapterPrice => throw _privateConstructorUsedError;
   @JsonKey(name: 'coin_cost')
   int? get coinCost => throw _privateConstructorUsedError;
   @JsonKey(name: 'author_earning_percentage')
@@ -94,6 +99,7 @@ abstract class $StoryCopyWith<$Res> {
       @JsonKey(name: 'author_id') String? authorId,
       @JsonKey(name: 'author') AuthorStory? author,
       @JsonKey(name: 'category_id') String? categoryId,
+      @JsonKey(name: 'category') AppCategory? category,
       @JsonKey(name: 'title') String title,
       @JsonKey(name: 'description') String? description,
       @JsonKey(name: 'cover_url') String? coverUrl,
@@ -102,6 +108,7 @@ abstract class $StoryCopyWith<$Res> {
       @JsonKey(name: 'is_completed') bool? isCompleted,
       @JsonKey(name: 'is_copyright') bool? isCopyright,
       @JsonKey(name: 'is_paywalled') bool? isPaywalled,
+      @JsonKey(name: 'chapter_price') int? chapterPrice,
       @JsonKey(name: 'coin_cost') int? coinCost,
       @JsonKey(name: 'author_earning_percentage') int? authorEarningPercentage,
       @JsonKey(name: 'paywall_effective_date') String? paywallEffectiveDate,
@@ -119,6 +126,7 @@ abstract class $StoryCopyWith<$Res> {
       @JsonKey(name: 'tags') List<Tag>? tags});
 
   $AuthorStoryCopyWith<$Res>? get author;
+  $AppCategoryCopyWith<$Res>? get category;
 }
 
 /// @nodoc
@@ -138,6 +146,7 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
     Object? authorId = freezed,
     Object? author = freezed,
     Object? categoryId = freezed,
+    Object? category = freezed,
     Object? title = null,
     Object? description = freezed,
     Object? coverUrl = freezed,
@@ -146,6 +155,7 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
     Object? isCompleted = freezed,
     Object? isCopyright = freezed,
     Object? isPaywalled = freezed,
+    Object? chapterPrice = freezed,
     Object? coinCost = freezed,
     Object? authorEarningPercentage = freezed,
     Object? paywallEffectiveDate = freezed,
@@ -179,6 +189,10 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
               as String?,
+      category: freezed == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as AppCategory?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -211,6 +225,10 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
           ? _value.isPaywalled
           : isPaywalled // ignore: cast_nullable_to_non_nullable
               as bool?,
+      chapterPrice: freezed == chapterPrice
+          ? _value.chapterPrice
+          : chapterPrice // ignore: cast_nullable_to_non_nullable
+              as int?,
       coinCost: freezed == coinCost
           ? _value.coinCost
           : coinCost // ignore: cast_nullable_to_non_nullable
@@ -285,6 +303,18 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
       return _then(_value.copyWith(author: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $AppCategoryCopyWith<$Res>? get category {
+    if (_value.category == null) {
+      return null;
+    }
+
+    return $AppCategoryCopyWith<$Res>(_value.category!, (value) {
+      return _then(_value.copyWith(category: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -298,6 +328,7 @@ abstract class _$$_StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
       @JsonKey(name: 'author_id') String? authorId,
       @JsonKey(name: 'author') AuthorStory? author,
       @JsonKey(name: 'category_id') String? categoryId,
+      @JsonKey(name: 'category') AppCategory? category,
       @JsonKey(name: 'title') String title,
       @JsonKey(name: 'description') String? description,
       @JsonKey(name: 'cover_url') String? coverUrl,
@@ -306,6 +337,7 @@ abstract class _$$_StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
       @JsonKey(name: 'is_completed') bool? isCompleted,
       @JsonKey(name: 'is_copyright') bool? isCopyright,
       @JsonKey(name: 'is_paywalled') bool? isPaywalled,
+      @JsonKey(name: 'chapter_price') int? chapterPrice,
       @JsonKey(name: 'coin_cost') int? coinCost,
       @JsonKey(name: 'author_earning_percentage') int? authorEarningPercentage,
       @JsonKey(name: 'paywall_effective_date') String? paywallEffectiveDate,
@@ -324,6 +356,8 @@ abstract class _$$_StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
 
   @override
   $AuthorStoryCopyWith<$Res>? get author;
+  @override
+  $AppCategoryCopyWith<$Res>? get category;
 }
 
 /// @nodoc
@@ -339,6 +373,7 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
     Object? authorId = freezed,
     Object? author = freezed,
     Object? categoryId = freezed,
+    Object? category = freezed,
     Object? title = null,
     Object? description = freezed,
     Object? coverUrl = freezed,
@@ -347,6 +382,7 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
     Object? isCompleted = freezed,
     Object? isCopyright = freezed,
     Object? isPaywalled = freezed,
+    Object? chapterPrice = freezed,
     Object? coinCost = freezed,
     Object? authorEarningPercentage = freezed,
     Object? paywallEffectiveDate = freezed,
@@ -380,6 +416,10 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
           ? _value.categoryId
           : categoryId // ignore: cast_nullable_to_non_nullable
               as String?,
+      category: freezed == category
+          ? _value.category
+          : category // ignore: cast_nullable_to_non_nullable
+              as AppCategory?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -412,6 +452,10 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
           ? _value.isPaywalled
           : isPaywalled // ignore: cast_nullable_to_non_nullable
               as bool?,
+      chapterPrice: freezed == chapterPrice
+          ? _value.chapterPrice
+          : chapterPrice // ignore: cast_nullable_to_non_nullable
+              as int?,
       coinCost: freezed == coinCost
           ? _value.coinCost
           : coinCost // ignore: cast_nullable_to_non_nullable
@@ -484,6 +528,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
       @JsonKey(name: 'author_id') this.authorId,
       @JsonKey(name: 'author') this.author,
       @JsonKey(name: 'category_id') this.categoryId,
+      @JsonKey(name: 'category') this.category,
       @JsonKey(name: 'title') this.title = '',
       @JsonKey(name: 'description') this.description,
       @JsonKey(name: 'cover_url') this.coverUrl,
@@ -492,6 +537,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
       @JsonKey(name: 'is_completed') this.isCompleted,
       @JsonKey(name: 'is_copyright') this.isCopyright,
       @JsonKey(name: 'is_paywalled') this.isPaywalled,
+      @JsonKey(name: 'chapter_price') this.chapterPrice,
       @JsonKey(name: 'coin_cost') this.coinCost,
       @JsonKey(name: 'author_earning_percentage') this.authorEarningPercentage,
       @JsonKey(name: 'paywall_effective_date') this.paywallEffectiveDate,
@@ -530,6 +576,10 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
   final String? categoryId;
 // Story position
   @override
+  @JsonKey(name: 'category')
+  final AppCategory? category;
+// Story position
+  @override
   @JsonKey(name: 'title')
   final String title;
   @override
@@ -553,6 +603,9 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
   @override
   @JsonKey(name: 'is_paywalled')
   final bool? isPaywalled;
+  @override
+  @JsonKey(name: 'chapter_price')
+  final int? chapterPrice;
   @override
   @JsonKey(name: 'coin_cost')
   final int? coinCost;
@@ -616,7 +669,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Story(id: $id, authorId: $authorId, author: $author, categoryId: $categoryId, title: $title, description: $description, coverUrl: $coverUrl, isDraft: $isDraft, isMature: $isMature, isCompleted: $isCompleted, isCopyright: $isCopyright, isPaywalled: $isPaywalled, coinCost: $coinCost, authorEarningPercentage: $authorEarningPercentage, paywallEffectiveDate: $paywallEffectiveDate, numFreeChapters: $numFreeChapters, publishedCount: $publishedCount, draftCount: $draftCount, reportCount: $reportCount, voteCount: $voteCount, readCount: $readCount, explicitPercentage: $explicitPercentage, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapters: $chapters, tags: $tags)';
+    return 'Story(id: $id, authorId: $authorId, author: $author, categoryId: $categoryId, category: $category, title: $title, description: $description, coverUrl: $coverUrl, isDraft: $isDraft, isMature: $isMature, isCompleted: $isCompleted, isCopyright: $isCopyright, isPaywalled: $isPaywalled, chapterPrice: $chapterPrice, coinCost: $coinCost, authorEarningPercentage: $authorEarningPercentage, paywallEffectiveDate: $paywallEffectiveDate, numFreeChapters: $numFreeChapters, publishedCount: $publishedCount, draftCount: $draftCount, reportCount: $reportCount, voteCount: $voteCount, readCount: $readCount, explicitPercentage: $explicitPercentage, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapters: $chapters, tags: $tags)';
   }
 
   @override
@@ -628,6 +681,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
       ..add(DiagnosticsProperty('authorId', authorId))
       ..add(DiagnosticsProperty('author', author))
       ..add(DiagnosticsProperty('categoryId', categoryId))
+      ..add(DiagnosticsProperty('category', category))
       ..add(DiagnosticsProperty('title', title))
       ..add(DiagnosticsProperty('description', description))
       ..add(DiagnosticsProperty('coverUrl', coverUrl))
@@ -636,6 +690,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
       ..add(DiagnosticsProperty('isCompleted', isCompleted))
       ..add(DiagnosticsProperty('isCopyright', isCopyright))
       ..add(DiagnosticsProperty('isPaywalled', isPaywalled))
+      ..add(DiagnosticsProperty('chapterPrice', chapterPrice))
       ..add(DiagnosticsProperty('coinCost', coinCost))
       ..add(DiagnosticsProperty(
           'authorEarningPercentage', authorEarningPercentage))
@@ -665,6 +720,8 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
             (identical(other.author, author) || other.author == author) &&
             (identical(other.categoryId, categoryId) ||
                 other.categoryId == categoryId) &&
+            (identical(other.category, category) ||
+                other.category == category) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -679,6 +736,8 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
                 other.isCopyright == isCopyright) &&
             (identical(other.isPaywalled, isPaywalled) ||
                 other.isPaywalled == isPaywalled) &&
+            (identical(other.chapterPrice, chapterPrice) ||
+                other.chapterPrice == chapterPrice) &&
             (identical(other.coinCost, coinCost) ||
                 other.coinCost == coinCost) &&
             (identical(
@@ -718,6 +777,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
         authorId,
         author,
         categoryId,
+        category,
         title,
         description,
         coverUrl,
@@ -726,6 +786,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
         isCompleted,
         isCopyright,
         isPaywalled,
+        chapterPrice,
         coinCost,
         authorEarningPercentage,
         paywallEffectiveDate,
@@ -763,6 +824,7 @@ abstract class _Story implements Story {
       @JsonKey(name: 'author_id') final String? authorId,
       @JsonKey(name: 'author') final AuthorStory? author,
       @JsonKey(name: 'category_id') final String? categoryId,
+      @JsonKey(name: 'category') final AppCategory? category,
       @JsonKey(name: 'title') final String title,
       @JsonKey(name: 'description') final String? description,
       @JsonKey(name: 'cover_url') final String? coverUrl,
@@ -771,6 +833,7 @@ abstract class _Story implements Story {
       @JsonKey(name: 'is_completed') final bool? isCompleted,
       @JsonKey(name: 'is_copyright') final bool? isCopyright,
       @JsonKey(name: 'is_paywalled') final bool? isPaywalled,
+      @JsonKey(name: 'chapter_price') final int? chapterPrice,
       @JsonKey(name: 'coin_cost') final int? coinCost,
       @JsonKey(name: 'author_earning_percentage')
       final int? authorEarningPercentage,
@@ -806,6 +869,9 @@ abstract class _Story implements Story {
   @JsonKey(name: 'category_id')
   String? get categoryId;
   @override // Story position
+  @JsonKey(name: 'category')
+  AppCategory? get category;
+  @override // Story position
   @JsonKey(name: 'title')
   String get title;
   @override
@@ -829,6 +895,9 @@ abstract class _Story implements Story {
   @override
   @JsonKey(name: 'is_paywalled')
   bool? get isPaywalled;
+  @override
+  @JsonKey(name: 'chapter_price')
+  int? get chapterPrice;
   @override
   @JsonKey(name: 'coin_cost')
   int? get coinCost;

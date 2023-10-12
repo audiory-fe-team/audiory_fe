@@ -1,4 +1,7 @@
-import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/models/Profile.dart';
+import 'package:audiory_v0/models/enums/Sex.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
@@ -6,192 +9,275 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../theme/theme_constants.dart';
-import '../../../repositories/auth_repository.dart';
 
 class FlowTwoScreen extends StatefulWidget {
-  final Map<String, String>? signUpBody;
-
-  const FlowTwoScreen({super.key, this.signUpBody});
+  final String userId;
+  const FlowTwoScreen({super.key, required this.userId});
 
   @override
   State<FlowTwoScreen> createState() => _FlowTwoScreenState();
 }
 
 class _FlowTwoScreenState extends State<FlowTwoScreen> {
-  final _formKey = GlobalKey<FormState>();
-  TextEditingController codeController = TextEditingController();
-  void _displaySnackBar(String content) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+  final _formKey = GlobalKey<FormBuilderState>();
 
-    AppSnackBar.buildSnackbar(context, content, null, SnackBarType.error);
-  }
-
+  String _selectedDate = (String? date) {
+    //use package intl
+    DateTime dateTime = DateTime.parse(date as String);
+    return DateFormat('dd/MM/yyyy').format(dateTime);
+  }(DateTime(2000, 1, 1).toIso8601String());
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     Size size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    String? gender;
+    DateTime? datepicked;
+
+    String formatDate(String? date) {
+      //use package intl
+      DateTime dateTime = DateTime.parse(date as String);
+      return DateFormat('dd/MM/yyyy').format(dateTime);
+    }
+
+    Future<void> showdobpicker() async {
+      datepicked = await showDatePicker(
+          helpText: 'Chọn ngày sinh',
+          context: context,
+          initialDate: DateTime(2000, 1, 1),
+          firstDate: DateTime(1933, 1, 1),
+          lastDate: DateTime(2017, 1, 1),
+          //initial entry : calendar picker or input
+          initialEntryMode: DatePickerEntryMode.input,
+          confirmText: 'Chọn',
+          cancelText: 'Hủy',
+          fieldHintText: '01/01/2002',
+          fieldLabelText: 'Nhập ngày',
+          errorInvalidText: 'Năm sinh trong khoảng 1933-2017',
+          errorFormatText: 'Lỗi định dạng (dd/MM/yyyy)',
+          builder: (BuildContext context, Widget? child) {
+            return Theme(
+              data: ThemeData.light().copyWith(
+                colorScheme: ColorScheme(
+                    primary: appColors.primaryBase,
+                    onPrimary: appColors.skyLightest,
+                    secondary: appColors.primaryBase,
+                    onSecondary: appColors.primaryBase,
+                    error: Colors.red,
+                    onError: Colors.red,
+                    background: appColors.primaryBase,
+                    onBackground: appColors.primaryBase,
+                    surface: appColors.primaryBase,
+                    onSurface: appColors.primaryBase,
+                    brightness: Brightness.light),
+                buttonBarTheme: const ButtonBarThemeData(
+                    buttonTextTheme: ButtonTextTheme.primary),
+              ),
+              child: child!,
+            );
+          });
+      // ignore: unrelated_type_equality_checks
+      if (datepicked != null) {
+        setState(() {
+          _selectedDate = formatDate(datepicked!.toString());
+        });
+      }
+    }
+
+    Widget timePickerWidget() {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Flexible(
+                flex: 9,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("Chọn độ tuổi của bạn*",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineMedium
+                            ?.copyWith(color: appColors.inkDarkest)),
+                    Text("Chọn độ tuổi để có gợi ý truyện phù hợp",
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: appColors.inkLight)),
+                  ],
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: GestureDetector(
+                    onTap: () {
+                      showdobpicker();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Icon(
+                        Icons.calendar_today,
+                        color: appColors.skyDark,
+                        size: 26,
+                      ),
+                    )),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 8,
+          ),
+          AppTextInputField(
+            isRequired: false,
+            isDisabled: false,
+            name: 'dob',
+            hintText: _selectedDate,
+            hintTextStyle: TextStyle(color: appColors.inkBase),
+          ),
+          const SizedBox(
+            height: 16,
+          )
+        ],
+      );
+    }
+
     return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text(''),
           elevation: 0,
         ),
-        body: SizedBox(
-          // margin: EdgeInsets.symmetric(horizontal: 2.0, vertical: 4.0),
+        body: Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
           height: size.height,
           width: size.width,
-          // decoration:
-          //     const BoxDecoration(color: Color.fromARGB(70, 244, 67, 54)),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                    flex: 2,
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text("Nhập mã xác nhận?",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineMedium
-                                  ?.copyWith(color: const Color(0xff000000))),
-                          Container(
-                            margin: const EdgeInsets.only(top: 16),
-                            width: size.width / 1.5,
-                            child: Text(
-                              "Mã xác nhận đã được gửi đến email ${widget.signUpBody?['email']}",
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .bodyMedium
-                                  ?.copyWith(
-                                    color: appColors.inkBase,
-                                  ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ],
-                      ),
-                    )),
-                Expanded(
-                  flex: 9,
-                  child: Container(
-                    width: size.width,
-                    margin: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 24),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(
-                            height: 8.0,
-                          ),
-                          TextFormField(
-                            maxLength: 4,
-                            controller: codeController,
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  style: BorderStyle.solid,
-                                  color: Color(0xFF439A97),
-                                ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  style: BorderStyle.solid,
-                                  color: Color(0xFF439A97),
-                                ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                              ),
-                              filled: true,
-                              hintStyle: TextStyle(
-                                color: Color.fromARGB(255, 228, 212, 212),
-                                fontSize: 24,
-                                fontFamily: 'Source San Pro',
-                                fontWeight: FontWeight.w400,
-                                letterSpacing: 0.06,
-                              ),
-                              fillColor: Colors.white70,
-                              floatingLabelAlignment:
-                                  FloatingLabelAlignment.center,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 1.0, horizontal: 24.0),
-                            ),
-                          ),
-                          Container(
-                            width: size.width,
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            child: AppIconButton(
-                              title: "Tiếp tục",
-                              color: Colors.white,
-                              bgColor: const Color(0xFF439A97),
-                              onPressed: () async {
-                                if (kDebugMode) {
-                                  print('eMAIL ${widget.signUpBody?['email']}');
-                                  print('body ${widget.signUpBody}');
-                                }
+          child: FormBuilder(
+            key: _formKey,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Expanded(
+                flex: 3,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Chọn giới tính của bạn*",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(color: appColors.inkDarker)),
+                      Text("Chọn giới tính để có gợi ý truyện phù hợp",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(color: appColors.inkLight)),
+                      FormBuilderRadioGroup(
+                          separator: const SizedBox(height: 20),
+                          orientation: OptionsOrientation.vertical,
+                          name: 'sex',
+                          activeColor: appColors.primaryBase,
+                          decoration:
+                              const InputDecoration(border: InputBorder.none),
+                          options: List.generate(
+                              Sex.values.length,
+                              (index) => FormBuilderFieldOption(
+                                    value: Sex.values[index].name,
+                                    child: Text(
+                                      Sex.values[index].displayTitle,
+                                      style: textTheme.titleLarge?.copyWith(
+                                          color: appColors.inkDarker),
+                                    ),
+                                  ))),
+                    ]),
+              ),
+              Expanded(
+                flex: 4,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 3.0)),
+                      timePickerWidget(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 100),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                  width: size.width / 1,
+                                  height: size.height / 4.5,
+                                  child: const Image(
+                                      height: double.maxFinite,
+                                      image: AssetImage(
+                                          'assets/images/skate_man.png'))),
+                            ]),
+                      )
+                    ]),
+              ),
+              Expanded(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width - 32,
+                        child: AppIconButton(
+                          title: "Tiếp tục",
+                          onPressed: () async {
+                            print('USER ID FLOW 2 ${widget.userId}');
+                            //save
+                            if (_formKey.currentState?.isValid == true) {
+                              _formKey.currentState!.save();
 
-                                final response = await AuthRepository().signUp(
-                                    email:
-                                        widget.signUpBody?['email'] as String,
-                                    password: widget.signUpBody?['password']
-                                        as String,
-                                    username: widget.signUpBody?['username']
-                                        as String,
-                                    fullname: widget.signUpBody?['username']
-                                        as String,
-                                    code: codeController.text);
+                              Map<String, String> body = {};
 
-                                if (kDebugMode) {
-                                  print(response);
-                                }
-                                FocusManager.instance.primaryFocus?.unfocus();
+                              body['sex'] =
+                                  _formKey.currentState!.fields['sex']?.value;
 
-                                // if (response == 200) {
-                                //   _displaySnackBar('Tạo acc thành công');
-                                //   // ignore: use_build_context_synchronously
-                                //   context.go('/login');
-                                // } else {
-                                //   _displaySnackBar('Sai mã xác nhận');
-                                //   codeController.text = '';
-                                // }
+                              //parse birth
+                              final parsedDate =
+                                  DateFormat('dd/MM/yyyy').parse(_selectedDate);
+                              body['dob'] =
+                                  parsedDate.toUtc().toIso8601String();
 
+                              //update new user data
+                              Profile? updatedProfile =
+                                  await ProfileRepository()
+                                      .updateNewUserProfile(
+                                          '', body, widget.userId);
+
+                              if (updatedProfile != null) {
                                 // ignore: use_build_context_synchronously
-                                context.push('/flowThree');
-                              },
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () async {
-                              final result = await AuthRepository().verifyEmail(
-                                  email: widget.signUpBody?['email'] as String);
-                              if (result == 200) {
-                                _displaySnackBar('Gửi mã thành công');
+                                context.push('/flowThree',
+                                    extra: {'userId': widget.userId});
+                              } else {
+                                // ignore: use_build_context_synchronously
+                                AppSnackBar.buildSnackbar(
+                                    context,
+                                    'Không được để trống',
+                                    null,
+                                    SnackBarType.error);
                               }
-                            },
-                            child: Center(
-                                child: Text('Gửi lại mã',
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium)),
-                          )
-                        ]),
-                  ),
-                ),
-              ]),
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              AppSnackBar.buildSnackbar(
+                                  context,
+                                  'Không được để trống',
+                                  null,
+                                  SnackBarType.error);
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  )),
+            ]),
+          ),
         ));
   }
 }

@@ -580,7 +580,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                 activeColor: appColors.primaryBase,
                 onChanged: (value) {
                   setState(() {
-                    isPaywalled = value as bool;
+                    isPaywalled = value == true;
                   });
                 },
                 name: 'isPaywalled',
@@ -622,7 +622,7 @@ class _ComposeScreenState extends ConsumerState<ComposeScreen> {
                         : '0',
                   ),
                   // this can be null ??? why
-                  AppTextInputField(
+                  const AppTextInputField(
                       name: 'numFreeChapters',
                       textInputType: TextInputType.number,
                       label: "Số chương miễn phí",

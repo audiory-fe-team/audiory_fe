@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:audiory_v0/repositories/notification_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +41,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
       return Row(
         children: [
           Material(
+            color: Colors.transparent,
             child: InkWell(
               onTap: () async {
                 context.push('/profile');
@@ -49,22 +51,12 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
               ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(50.0),
-                child: authUser?.photoURL == null
-                    ? Image.asset(
-                        'assets/images/user-avatar.jpg',
-                        width: 40,
-                        height: 40,
-                      )
-                    : Image.network(
-                        '${authUser?.photoURL}',
-                        width: 40,
-                        height: 40,
-                      ),
-                // child: Image.asset(
-                //   'assets/images/user-avatar.jpg',
-                //   width: 40,
-                //   height: 40,
-                // ),
+                child: AppImage(
+                    url: authUser?.photoURL,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.fill,
+                    defaultUrl: 'assets/images/fallback_story_cover.png'),
               ),
             ),
           ),
@@ -77,11 +69,11 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               const Text(
-                'Xin chào ',
+                'Xin chào',
                 style: TextStyle(fontSize: 14),
               ),
               Text(
-                user?.email ?? 'Người dùng',
+                currentUser?.username ?? 'Người dùng',
                 style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,

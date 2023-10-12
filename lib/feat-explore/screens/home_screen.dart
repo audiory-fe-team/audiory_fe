@@ -1,18 +1,20 @@
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
-import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
+import 'package:audiory_v0/feat-explore/widgets/story_grid_list.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
+import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-read/screens/library/downloaded_stories.dart';
-import 'package:audiory_v0/models/Category.dart';
-import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
+import 'package:audiory_v0/models/category/app_category_model.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
 import 'package:audiory_v0/repositories/category_repository.dart';
 import 'package:audiory_v0/repositories/ranking_repository.dart';
+import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
@@ -48,11 +50,20 @@ class HomeScreen extends HookConsumerWidget {
               ])));
     }
 
+    final paywalledStoriesQuery = useQuery(['paywalledStories'],
+        () => StoryRepostitory().fetchMyPaywalledStories());
+    final recommendStoriesQuery = useQuery(['recommendStories'],
+        () => StoryRepostitory().fetchMyRecommendStories());
+    final libraryQuery =
+        useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
+
     return Scaffold(
       appBar: const HomeTopBar(),
       body: RefreshIndicator(
           onRefresh: () async {
             storiesQuery.refetch();
+            recommendStoriesQuery.refetch();
+            libraryQuery.refetch();
           },
           child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -73,11 +84,11 @@ class HomeScreen extends HookConsumerWidget {
                           title: 'Có thể bạn sẽ thích')),
                   const SizedBox(height: 12),
                   Skeletonizer(
-                      enabled: storiesQuery.isFetching,
-                      child: StoryScrollList(
-                        storyList: storiesQuery.isFetching
+                      enabled: recommendStoriesQuery.isFetching,
+                      child: StoryGridList(
+                        storyList: recommendStoriesQuery.isFetching
                             ? skeletonStories
-                            : storiesQuery.data,
+                            : recommendStoriesQuery.data,
                       )),
                   const SizedBox(height: 32),
                   //NOTE: Ranking section
@@ -123,12 +134,11 @@ class HomeScreen extends HookConsumerWidget {
                       title: 'Truyện trả phí'),
                   const SizedBox(height: 12),
                   Skeletonizer(
-                      enabled: storiesQuery.isFetching,
-                      child: StoryScrollList(
-                        storyList: storiesQuery.isFetching
-                            ? skeletonStories
-                            : storiesQuery.data,
-                      )),
+                      enabled: paywalledStoriesQuery.isFetching,
+                      child: StoryGridList(
+                          storyList: paywalledStoriesQuery.isFetching
+                              ? skeletonStories
+                              : paywalledStoriesQuery.data)),
                   const SizedBox(height: 32),
 
                   //NOTE: Continue reading section
@@ -139,20 +149,34 @@ class HomeScreen extends HookConsumerWidget {
                       ),
                       title: 'Tiếp tục đọc'),
                   const SizedBox(height: 12),
+
                   Skeletonizer(
-                      enabled: storiesQuery.isFetching,
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: ((storiesQuery.isFetching
-                                      ? skeletonStories
-                                      : storiesQuery.data) ??
-                                  [])
-                              .map((story) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: StoryCardDetail(
-                                    story: story,
-                                  )))
-                              .toList())),
+                    enabled: libraryQuery.isFetching,
+                    child: Column(
+                        children: (libraryQuery.data?.libraryStory ?? [])
+                            .map((e) => Container(
+                                margin: const EdgeInsets.only(bottom: 16),
+                                child: CurrentReadCard(
+                                  story: e.story,
+                                  onDeleteStory: (id) => {},
+                                  isEditable: false,
+                                )))
+                            .toList()),
+                  ),
+                  // Skeletonizer(
+                  //     enabled: libraryQuery.isFetching,
+                  //     child: Column(
+                  //         mainAxisSize: MainAxisSize.min,
+                  //         children: ((libraryQuery.isFetching
+                  //                     ? skeletonStories
+                  //                     : libraryQuery.data?.libraryStory) ??
+                  //                 [])
+                  //             .map((story) => Padding(
+                  //                 padding: const EdgeInsets.only(bottom: 12),
+                  //                 child: StoryCardDetail(
+                  //                   story: story,
+                  //                 )))
+                  //             .toList())),
 
                   const SizedBox(height: 32),
                 ],
@@ -180,19 +204,16 @@ class HomeBanners extends StatelessWidget {
           itemCount: bannerList.length,
           itemBuilder: (BuildContext context, int index) {
             return Padding(
-                padding: const EdgeInsets.only(right: 16),
-                child: SizedBox(
-                  width: 240,
-                  child: Image.network(bannerList[index], fit: BoxFit.fill,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                    if (loadingProgress == null) return child;
-                    return ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: const Skeleton.replace(
-                            width: 240, height: 122, child: SizedBox()));
-                  }),
-                ));
+              padding: const EdgeInsets.only(right: 16),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: AppImage(
+                    url: bannerList[index],
+                    fit: BoxFit.fill,
+                    width: 240,
+                    height: 122,
+                  )),
+            );
           }),
     );
   }
@@ -246,7 +267,8 @@ class HomeRankingList extends StatefulWidget {
 
 class _HomeRankingListState extends State<HomeRankingList> {
   String? selectedCategory;
-  Future<List<Category>> categoryFuture = CategoryRepository().fetchCategory();
+  Future<List<AppCategory>> categoryFuture =
+      CategoryRepository().fetchCategory();
 
   @override
   void initState() {
@@ -393,23 +415,27 @@ class _HomeRankingListState extends State<HomeRankingList> {
               }),
           const SizedBox(height: 6),
           Material(
+            color: Colors.transparent,
             child: InkWell(
               onTap: () {
                 GoRouter.of(context).push("/ranking");
               },
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration:
-                    BoxDecoration(borderRadius: BorderRadius.circular(6)),
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: appColors.skyLightest,
+                ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'Xem thêm',
-                      style: Theme.of(context).textTheme.titleMedium!.copyWith(
-                            decoration: TextDecoration.underline,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            // decoration: TextDecoration.underline,
                             color: appColors.primaryBase,
+                            fontSize: 14,
                           ),
                     ),
                   ],

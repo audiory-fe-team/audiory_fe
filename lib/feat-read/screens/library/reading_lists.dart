@@ -55,7 +55,12 @@ class ReadingLists extends HookWidget {
                   ...(readingListQuery.data ?? [])
                       .map((e) => Container(
                           margin: const EdgeInsets.only(bottom: 16),
-                          child: ReadingListCard(readingList: e)))
+                          child: ReadingListCard(
+                            readingList: e,
+                            onDeleteReadingList: (_) {},
+                            onEditHandler: (_, __, ___) {},
+                            onPublishHandler: (_) {},
+                          )))
                       .toList(),
                 ]))));
   }

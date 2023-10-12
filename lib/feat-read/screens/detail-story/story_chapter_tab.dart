@@ -55,6 +55,7 @@ class StoryChapterTab extends StatelessWidget {
                     child: ChapterItem(
                       title: 'Chương ${index + 1}: ${chapter.title}',
                       time: '',
+                      onSelected: (p0, p1) {},
                     )));
           }).toList(),
         ),

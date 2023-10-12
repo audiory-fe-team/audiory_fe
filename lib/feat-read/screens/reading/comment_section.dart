@@ -1,7 +1,7 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
 import 'package:audiory_v0/feat-read/widgets/comment_card.dart';
-import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/comment_repository.dart';

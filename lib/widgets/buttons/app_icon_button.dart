@@ -39,30 +39,46 @@ class AppIconButton extends StatelessWidget {
           return ElevatedButton.icon(
             onPressed: onPressed,
             icon: icon as Icon,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: bgColor ?? appColors.primaryBase,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(25),
-              ),
-              minimumSize: const Size(double.minPositive, 48),
-            ),
+            style: isOutlined != false
+                ? OutlinedButton.styleFrom(
+                    shape: const StadiumBorder(),
+                    backgroundColor: bgColor ?? appColors.inkLighter,
+                    side: BorderSide(
+                        width: 1, color: color ?? appColors.primaryBase),
+                    minimumSize: const Size(double.minPositive, 48),
+                  )
+                : ElevatedButton.styleFrom(
+                    backgroundColor: bgColor ?? appColors.primaryBase,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    minimumSize: const Size(double.minPositive, 48),
+                  ),
             label: Text(title == null ? 'Default' : title as String,
                 style: textStyle ??
                     Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: color ?? appColors.skyLightest,
+                          color: color ?? appColors.backgroundLight,
                           fontWeight: FontWeight.bold,
                         )),
           );
         } else {
           return ElevatedButton(
             onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: bgColor ?? appColors.primaryBase,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-              minimumSize: const Size.fromHeight(48),
-            ),
+            style: isOutlined != false
+                ? OutlinedButton.styleFrom(
+                    shape: const StadiumBorder(),
+                    backgroundColor: bgColor ?? appColors.inkLighter,
+                    side: BorderSide(
+                        width: 1, color: color ?? appColors.primaryBase),
+                    minimumSize: const Size(double.minPositive, 48),
+                  )
+                : ElevatedButton.styleFrom(
+                    backgroundColor: bgColor ?? appColors.primaryBase,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(25),
+                    ),
+                    minimumSize: const Size(double.minPositive, 48),
+                  ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -89,7 +105,7 @@ class AppIconButton extends StatelessWidget {
                   shape: const StadiumBorder(),
                   backgroundColor: bgColor ?? appColors.inkLighter,
                   side: BorderSide(
-                      width: 2, color: color ?? appColors.primaryBase),
+                      width: 1, color: color ?? appColors.primaryBase),
                   minimumSize: const Size(double.minPositive, 48),
                 )
               : ElevatedButton.styleFrom(

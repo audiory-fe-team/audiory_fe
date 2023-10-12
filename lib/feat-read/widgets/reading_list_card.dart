@@ -1,27 +1,228 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
-import 'package:audiory_v0/models/ReadingList.dart';
+import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
+import 'package:audiory_v0/repositories/reading_list_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/input/text_input.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:form_builder_image_picker/form_builder_image_picker.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../models/enums/SnackbarType.dart';
 
 class ReadingListCard extends StatelessWidget {
   final ReadingList readingList;
-  const ReadingListCard({super.key, required this.readingList});
+  final dynamic Function(String) onDeleteReadingList;
+  final dynamic Function(String) onPublishHandler;
+  final dynamic Function(String, String, dynamic) onEditHandler;
+  ReadingListCard(
+      {super.key,
+      required this.readingList,
+      required this.onDeleteReadingList,
+      required this.onPublishHandler,
+      required this.onEditHandler});
+
+  final _formKey = GlobalKey<FormBuilderState>();
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final coverUrl = FALLBACK_IMG_URL;
+    String setDefaultCoverUrl() {
+      String initCoverUrl = FALLBACK_IMG_URL;
+
+      if (readingList.coverUrl?.trim() != '') {
+        initCoverUrl = readingList.coverUrl as String;
+      } else if (readingList.stories!.isNotEmpty) {
+        initCoverUrl = readingList.stories?[0].coverUrl ?? FALLBACK_IMG_URL;
+      }
+      return initCoverUrl;
+    }
+
+    final coverUrl = setDefaultCoverUrl();
     final readingListId = readingList.id ?? 'not-found';
     final title = readingList.name ?? 'Tiêu đề truyện';
 
     final isPrivate = readingList.isPrivate ?? false;
 
+    handleEdit() {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          scrollable: true,
+          title: Column(children: [
+            Text(
+              'Sửa một danh sách đọc',
+              style:
+                  textTheme.titleLarge?.copyWith(color: appColors.inkDarkest),
+            ),
+            Text(
+              'Đặt tên cho danh sách đọc của bạn',
+              style: textTheme.bodyMedium?.copyWith(color: appColors.inkLight),
+            )
+          ]),
+          content: SizedBox(
+            width: size.width / 2,
+            height: size.height / 2.7,
+            child: FormBuilder(
+              key: _formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    width: size.width / 4,
+                    child: FormBuilderImagePicker(
+                        initialValue: readingList.coverUrl?.trim() == ''
+                            ? []
+                            : [readingList.coverUrl],
+                        previewAutoSizeWidth: true,
+                        maxImages: 1,
+                        backgroundColor: appColors.skyLightest,
+                        iconColor: appColors.primaryBase,
+                        decoration:
+                            const InputDecoration(border: InputBorder.none),
+                        name: 'photo'),
+                  ),
+                  SizedBox(
+                    height: 70,
+                    child: AppTextInputField(
+                      initialValue: title,
+                      hintText: 'Ví dụ: Truyện trinh thám hay',
+                      name: 'name',
+                      validator: FormBuilderValidators.required(
+                          errorText: 'Không được để trống'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(
+                            width: 100,
+                            child: GestureDetector(
+                              onTap: () {
+                                context.pop();
+                              },
+                              child: Text(
+                                'Hủy',
+                                style: textTheme.titleMedium,
+                              ),
+                            )),
+                        SizedBox(
+                            width: 100,
+                            child: GestureDetector(
+                              onTap: () {
+                                //check if input validate
+                                final isValid =
+                                    _formKey.currentState?.validate();
+
+                                if (isValid != null && isValid) {
+                                  print('IS VALID');
+                                  _formKey.currentState?.save();
+                                  context.pop();
+                                  onEditHandler(
+                                      readingListId,
+                                      _formKey
+                                          .currentState?.fields['name']?.value,
+                                      _formKey.currentState?.fields['photo']
+                                          ?.value);
+                                }
+                                // context.pop();
+                              },
+                              child: Text(
+                                'Sửa',
+                                textAlign: TextAlign.end,
+                                style: textTheme.titleMedium?.copyWith(
+                                    color: _formKey.currentState?.validate() ==
+                                            true
+                                        ? appColors.primaryBase
+                                        : appColors.inkLighter),
+                              ),
+                            ))
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    handleDelete() {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          icon: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: appColors.secondaryBase,
+            ),
+            child: Icon(
+              Icons.delete,
+              color: appColors.skyLightest,
+            ),
+          ),
+          actionsPadding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          scrollable: true,
+          title: Column(children: [
+            Text(
+              'Xóa danh sách đọc',
+              style:
+                  textTheme.titleLarge?.copyWith(color: appColors.inkDarkest),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Bạn có chắc muốn xóa danh sách "$title"',
+                maxLines: 2,
+                style:
+                    textTheme.bodyMedium?.copyWith(color: appColors.inkLight),
+              ),
+            )
+          ]),
+          actionsAlignment: MainAxisAlignment.end,
+          actions: [
+            GestureDetector(
+              onTap: () async {
+                onDeleteReadingList(readingListId);
+              },
+              child: Text(
+                'Xóa danh sách',
+                style: textTheme.headlineSmall
+                    ?.copyWith(color: appColors.secondaryBase),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 16.0),
+              child: GestureDetector(
+                onTap: () {
+                  context.pop();
+                },
+                child: Text(
+                  'Hủy',
+                  style: textTheme.headlineSmall,
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
     return GestureDetector(
         onTap: () {
-          GoRouter.of(context).go("/library/reading-list/$readingListId");
+          GoRouter.of(context).push("/library/reading-list/$readingListId",
+              extra: {'name': title});
         },
         child: Container(
           width: double.infinity,
@@ -127,22 +328,65 @@ class ReadingListCard extends StatelessWidget {
                             child: Icon(Icons.more_vert_rounded,
                                 size: 18, color: appColors.skyDark)),
                         onSelected: (value) {
-                          if (value == "notification") {}
-                          if (value == "delete") {}
+                          if (value == "edit") {
+                            handleEdit();
+                          }
+                          if (value == "publish") {
+                            onPublishHandler(readingListId);
+                          }
+                          if (value == "share") {}
+                          if (value == "delete") {
+                            handleDelete();
+                          }
                         },
                         itemBuilder: (context) => [
                               PopupMenuItem(
                                   height: 36,
-                                  value: 'notification',
+                                  value: 'edit',
                                   child: Row(
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
-                                        Icon(Icons.notifications_active_rounded,
+                                        Icon(Icons.edit,
                                             size: 18,
                                             color: appColors.inkLighter),
                                         const SizedBox(width: 4),
                                         Text(
-                                          'Bật thông báo',
+                                          'Chỉnh sửa',
+                                          style: textTheme.titleMedium,
+                                        )
+                                      ])),
+                              PopupMenuItem(
+                                  height: 36,
+                                  value: 'publish',
+                                  child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                            isPrivate
+                                                ? Icons.public_rounded
+                                                : Icons.lock_rounded,
+                                            size: 18,
+                                            color: appColors.inkLighter),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          isPrivate
+                                              ? 'Chuyển sang công khai'
+                                              : 'Chuyển sang riêng tư',
+                                          style: textTheme.titleMedium,
+                                        )
+                                      ])),
+                              PopupMenuItem(
+                                  height: 36,
+                                  value: 'share',
+                                  child: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(Icons.share,
+                                            size: 18,
+                                            color: appColors.inkLighter),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          'Chia sẻ',
                                           style: textTheme.titleMedium,
                                         )
                                       ])),
@@ -157,7 +401,7 @@ class ReadingListCard extends StatelessWidget {
                                             color: appColors.secondaryBase),
                                         const SizedBox(width: 4),
                                         Text(
-                                          'Xóa truyện',
+                                          'Xóa danh sách',
                                           style: textTheme.titleMedium
                                               ?.copyWith(
                                                   color:

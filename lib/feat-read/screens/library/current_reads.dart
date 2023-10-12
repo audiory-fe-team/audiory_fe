@@ -1,5 +1,5 @@
 import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
-import 'package:audiory_v0/models/enum/SnackbarType.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +23,7 @@ class CurrentReadings extends HookWidget {
             context, 'Xóa thất bại, thử lại sau.', null, SnackBarType.error);
       }
       libraryQuery.refetch();
+      // ignore: use_build_context_synchronously
       await AppSnackBar.buildTopSnackBar(
           context, 'Xóa thành công.', null, SnackBarType.success);
     }

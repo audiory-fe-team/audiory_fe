@@ -169,7 +169,7 @@ class _$_Tag implements _Tag {
   const _$_Tag(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'created_date') this.createdDate = '',
-      @JsonKey(name: 'is_enabled') this.isEnabled = true,
+      @JsonKey(name: 'is_enabled') this.isEnabled,
       @JsonKey(name: 'name') this.name = '',
       @JsonKey(name: 'updated_date') this.updatedDate = '',
       @JsonKey(name: 'works_total') this.worksTotal = 0});

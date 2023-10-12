@@ -13,6 +13,9 @@ _$_Story _$$_StoryFromJson(Map<String, dynamic> json) => _$_Story(
           ? null
           : AuthorStory.fromJson(json['author'] as Map<String, dynamic>),
       categoryId: json['category_id'] as String?,
+      category: json['category'] == null
+          ? null
+          : AppCategory.fromJson(json['category'] as Map<String, dynamic>),
       title: json['title'] as String? ?? '',
       description: json['description'] as String?,
       coverUrl: json['cover_url'] as String?,
@@ -21,6 +24,7 @@ _$_Story _$$_StoryFromJson(Map<String, dynamic> json) => _$_Story(
       isCompleted: json['is_completed'] as bool?,
       isCopyright: json['is_copyright'] as bool?,
       isPaywalled: json['is_paywalled'] as bool?,
+      chapterPrice: json['chapter_price'] as int?,
       coinCost: json['coin_cost'] as int?,
       authorEarningPercentage: json['author_earning_percentage'] as int?,
       paywallEffectiveDate: json['paywall_effective_date'] as String?,
@@ -49,6 +53,7 @@ Map<String, dynamic> _$$_StoryToJson(_$_Story instance) => <String, dynamic>{
       'author_id': instance.authorId,
       'author': instance.author?.toJson(),
       'category_id': instance.categoryId,
+      'category': instance.category?.toJson(),
       'title': instance.title,
       'description': instance.description,
       'cover_url': instance.coverUrl,
@@ -57,6 +62,7 @@ Map<String, dynamic> _$$_StoryToJson(_$_Story instance) => <String, dynamic>{
       'is_completed': instance.isCompleted,
       'is_copyright': instance.isCopyright,
       'is_paywalled': instance.isPaywalled,
+      'chapter_price': instance.chapterPrice,
       'coin_cost': instance.coinCost,
       'author_earning_percentage': instance.authorEarningPercentage,
       'paywall_effective_date': instance.paywallEffectiveDate,

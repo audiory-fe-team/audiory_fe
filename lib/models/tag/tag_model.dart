@@ -12,7 +12,7 @@ class Tag with _$Tag {
 
     @JsonKey(name: 'id') required String id,
     @Default('') @JsonKey(name: 'created_date') String? createdDate,
-    @Default(true) @JsonKey(name: 'is_enabled') bool? isEnabled,
+    @JsonKey(name: 'is_enabled') bool? isEnabled,
     @Default('') @JsonKey(name: 'name') String? name,
     @Default('') @JsonKey(name: 'updated_date') String? updatedDate,
     @Default(0) @JsonKey(name: 'works_total') int? worksTotal,

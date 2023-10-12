@@ -4,6 +4,7 @@ import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/SearchStory.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -20,8 +21,7 @@ class StoryCardDetail extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final coverUrl =
-        story?.coverUrl ?? searchStory?.coverUrl ?? FALLBACK_IMG_URL;
+    final coverUrl = story?.coverUrl;
     final storyId = story?.id ?? searchStory?.id ?? 'not-found';
     final title = story?.title ?? searchStory?.title ?? 'Tiêu đề truyện';
     final description =
@@ -43,7 +43,7 @@ class StoryCardDetail extends StatelessWidget {
         },
         child: Container(
           width: double.infinity,
-          height: 135,
+          height: 145, //fix here because causing overflow
           decoration: ShapeDecoration(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -63,22 +63,18 @@ class StoryCardDetail extends StatelessWidget {
                       child: Skeleton.replace(
                           width: 95,
                           height: 135,
-                          child: Container(
+                          child: AppImage(
+                            url: coverUrl,
+                            fit: BoxFit.fill,
                             width: 95,
                             height: 135,
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: NetworkImage(coverUrl),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
                           ))),
                 ],
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
-                  mainAxisSize: MainAxisSize.min,
+                  mainAxisSize: MainAxisSize.max,
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -86,7 +82,8 @@ class StoryCardDetail extends StatelessWidget {
                       width: double.infinity,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment
+                            .spaceBetween, //fixed here because overflow on android
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           SizedBox(
@@ -125,7 +122,7 @@ class StoryCardDetail extends StatelessWidget {
                           SizedBox(
                             width: double.infinity,
                             child: Row(
-                              mainAxisSize: MainAxisSize.min,
+                              mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [

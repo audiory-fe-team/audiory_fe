@@ -1,25 +1,31 @@
 import 'package:audiory_v0/models/AuthUser.dart';
+import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../../models/Profile.dart';
 import '../../theme/theme_constants.dart';
 
-class ProfileSettingsScreen extends StatefulWidget {
+class ProfileSettingsScreen extends ConsumerStatefulWidget {
   final UserServer? currentUser;
   final Profile? userProfile;
   const ProfileSettingsScreen({super.key, this.currentUser, this.userProfile});
 
   @override
-  State<ProfileSettingsScreen> createState() => _ProfileSettingsScreenState();
+  ConsumerState<ProfileSettingsScreen> createState() =>
+      _ProfileSettingsScreenState();
 }
 
-class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
+class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+
+    final notifier = ref.watch(themeNotifierProvider);
+
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     Widget listOfSettings() {
@@ -31,6 +37,10 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               initialValue: false,
               activeColor: appColors.primaryBase,
               name: 'isNotified',
+              onChanged: (value) {
+                notifier
+                    .setTheme(value == true ? ThemeMode.dark : ThemeMode.light);
+              },
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -96,8 +106,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
           item('Hồ sơ', 'editProfile'),
           item('Cài đặt tài khoản', 'editAccount'),
           sliderItem(),
+          sliderItem(),
           item('Bảo mật và an toàn', 'editProfile'),
-          item('Ví', 'editProfile'),
+          item('Ví', 'wallet'),
           item('Về Audiory', 'editProfile'),
           item('Hỗ trợ và tư vấn', 'editProfile'),
         ],
@@ -108,6 +119,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       return Column(
         children: [
           Material(
+            color: Colors.transparent,
             child: InkWell(
               onTap: () async {
                 context.push('/profile');
@@ -118,7 +130,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
               child: ClipRRect(
                   borderRadius: BorderRadius.circular(100.0),
                   child: Image.network(
-                    'https://img.freepik.com/premium-vector/people-saving-money_24908-51569.jpg?w=2000',
+                    'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
                     width: size.width / 3.5,
                     height: size.width / 3.5,
                   )),
@@ -141,11 +153,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
 
     return Scaffold(
       appBar: CustomAppBar(
-        title: Center(
-          child: Text(
-            'Cài đặt',
-            style: textTheme.headlineMedium,
-          ),
+        title: Text(
+          'Cài đặt',
+          style: textTheme.headlineMedium,
         ),
         actions: [
           Container(

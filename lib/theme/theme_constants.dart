@@ -32,27 +32,27 @@ class ColorPaletteDark {
   static const Color primaryBase = Color(0xFF439A97);
   static const Color primaryLight = Color(0xFF69AEAC);
   static const Color primaryLighter = Color(0xFF8EC2C1);
-  static const Color primaryLightest = Color(0xFFD9EBEA);
+  static const Color primaryLightest = Color(0xFF367B79);
   static const Color primaryDark = Color(0xFF367B79);
-  static const Color skyBase = Color(0xFFCDCFD0);
-  static const Color skyLight = Color(0xFFE3E5E5);
-  static const Color skyLighter = Color(0xFFE3E5E5);
-  static const Color skyLightest = Color(0xFFF5F5F5);
+  static const Color skyBase = Color(0xFF72777A);
+  static const Color skyLight = Color(0xFF6C7072);
+  static const Color skyLighter = Color(0xFF404446);
+  static const Color skyLightest = Color(0xFF303437);
   static const Color skyDark = Color(0xFF979C9E);
   static const Color secondaryBase = Color(0xFFDB6244);
   static const Color secondaryLight = Color(0xFFE26D69);
   static const Color secondaryLighter = Color(0xFFE9918F);
   static const Color secondaryLightest = Color(0xFFF4C8C7);
   static const Color secondaryDark = Color(0xFFAF3A36);
-  static const Color inkBase = Color(0xFF404446);
-  static const Color inkLight = Color(0xFF6C7072);
-  static const Color inkLighter = Color(0xFF72777A);
-  static const Color inkDark = Color(0xFF303437);
+  static const Color inkBase = Color(0xFFF5F5F5);
+  static const Color inkLight = Color(0xFFE3E5E5);
+  static const Color inkLighter = Color(0xFFCDCFD0);
+  static const Color inkDark = Color(0xFFE3E5E5);
   static const Color inkDarker = Color(0xFF202325);
   static const Color inkDarkest = Color(0xFF090A0A);
 
   static const Color backgroundLight = Color.fromARGB(255, 251, 248, 248);
-  static const Color backgroundDark = Color(0xFF404446);
+  static const Color backgroundDark = Color(0xFF202325);
 }
 
 @immutable
@@ -198,9 +198,12 @@ class AppColors extends ThemeExtension<AppColors> {
 
 ThemeData lightTheme = ThemeData(
   scaffoldBackgroundColor: ColorPaletteLight.backgroundLight,
+  iconTheme: const IconThemeData(color: ColorPaletteLight.inkBase),
+  bottomAppBarTheme:
+      const BottomAppBarTheme(color: ColorPaletteLight.skyLightest),
   appBarTheme: const AppBarTheme(
     backgroundColor: ColorPaletteLight.backgroundLight,
-    iconTheme: IconThemeData(color: Colors.black),
+    iconTheme: IconThemeData(color: ColorPaletteLight.inkBase),
   ),
   // useMaterial3: true,
   textTheme: TextTheme(
@@ -267,8 +270,8 @@ ThemeData lightTheme = ThemeData(
       ),
     ),
   ),
-  colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
-      .copyWith(background: const Color.fromARGB(255, 82, 184, 216)),
+  colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green)
+      .copyWith(background: ColorPaletteDark.primaryBase),
   extensions: const <ThemeExtension<dynamic>>[
     AppColors(
       primaryBase: ColorPaletteLight.primaryBase,
@@ -300,9 +303,12 @@ ThemeData lightTheme = ThemeData(
 
 ThemeData darkTheme = ThemeData(
   scaffoldBackgroundColor: ColorPaletteDark.backgroundDark,
+  iconTheme: const IconThemeData(color: ColorPaletteDark.inkBase),
+  bottomAppBarTheme:
+      const BottomAppBarTheme(color: ColorPaletteDark.skyLightest),
   appBarTheme: const AppBarTheme(
     backgroundColor: ColorPaletteDark.backgroundDark,
-    iconTheme: IconThemeData(color: Colors.black),
+    iconTheme: IconThemeData(color: ColorPaletteDark.inkBase),
   ),
   // useMaterial3: true,
   textTheme: TextTheme(
@@ -369,8 +375,8 @@ ThemeData darkTheme = ThemeData(
       ),
     ),
   ),
-  colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue)
-      .copyWith(background: const Color.fromARGB(255, 82, 184, 216)),
+  colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green)
+      .copyWith(background: ColorPaletteDark.primaryBase),
   extensions: const <ThemeExtension<dynamic>>[
     AppColors(
       primaryBase: ColorPaletteDark.primaryBase,
