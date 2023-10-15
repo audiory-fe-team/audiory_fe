@@ -43,7 +43,7 @@ class StoryRepostitory {
   Future<List<Story>> fetchMyPaywalledStories() async {
     final storage = FlutterSecureStorage();
     final jwtToken = await storage.read(key: 'jwt');
-    final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
+    final userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
     final url = Uri.parse(
         '${dotenv.get('API_BASE_URL')}/users/$userId/recommendations/paywalled');
 

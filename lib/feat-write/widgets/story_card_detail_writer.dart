@@ -112,7 +112,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
     if (story?.isCompleted as bool) {
       map.update('status', (value) => 'Hoàn thành');
       map.update('color', (value) => Colors.blue);
-    } else if (story?.isDraft as bool) {
+    } else if (story?.isDraft ?? true) {
       map.update('status', (value) => 'Bản thảo');
       map.update('color', (value) => const Color.fromRGBO(255, 171, 64, 1));
     }

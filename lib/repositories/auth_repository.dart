@@ -68,16 +68,11 @@ class AuthRepository extends ChangeNotifier {
     try {
       final response =
           await http.post(url, headers: header, body: jsonEncode(body));
-      if (kDebugMode) {
-        print('res');
-        print(response.body);
-      }
+
       final token = jsonDecode(response.body)['data'];
 
       storage.write(key: 'jwt', value: token);
 
-      print('JWT  $token');
-      print('DECODED  ${JwtDecoder.decode(token)}');
       Map<String, String> header2 = {
         "Content-type": "application/json,,charset=UTF-8",
         "Accept": "application/json",
@@ -86,9 +81,7 @@ class AuthRepository extends ChangeNotifier {
 
       var uri = Uri.parse('${Endpoints().user}/me');
       var res = await http.get(uri, headers: header2);
-      print('res2 ${res.body}');
       if (res.statusCode == 200) {
-        print('yeah');
         storage.write(key: 'currentUser', value: res.body.toString());
         return res;
       }
@@ -181,8 +174,6 @@ class AuthRepository extends ChangeNotifier {
       GoogleSignInAccount? gUser = await googleSignIn.signIn();
 
       if (gUser != null) {
-        //begin interactive sign in process;
-
         //obtain auth detail from request
         final GoogleSignInAuthentication gAuth = await gUser!.authentication;
         //create a new credentiall for user
@@ -199,25 +190,21 @@ class AuthRepository extends ChangeNotifier {
 
         String idToken = tokenResult.token!;
 
-        print('jwt $idToken');
-
         User? user = userCredential.user;
         if (user != null) {
           final url = Uri.parse("$authUrl/login-with-google");
           Map<String, String> header = {
-            "Content-type": "application/json,charset=UTF-8",
+            "Content-type": "application/json",
             "Accept": "application/json",
-            "Authorization": 'Bearer $idToken'
+            "Authorization": idToken //no Bearer
           };
           final fcmToken = await FirebaseMessaging.instance.getToken();
-          Map<String, String> body = {'registration_token': fcmToken as String};
-          print('token ${fcmToken}');
+          Map<String, String> body = {'registration_token': fcmToken ?? ''};
+          // print('token ${fcmToken}');
+          // print('ID token ${idToken}');
 
           final response =
               await http.post(url, headers: header, body: jsonEncode(body));
-
-          print('res for login google');
-          print(response.body);
 
           if (response.statusCode == 200) {
             final token = jsonDecode(response.body)['data'];
@@ -225,7 +212,9 @@ class AuthRepository extends ChangeNotifier {
             //save token
             const storage = FlutterSecureStorage();
 
-            print('jwt ${token}');
+            // if (kDebugMode) {
+            //   print('jwt ${token}');
+            // }
 
             //Set the user to auth provider
             AuthProvider authProvider = AuthProvider();
