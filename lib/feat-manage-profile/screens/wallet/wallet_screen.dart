@@ -1,10 +1,7 @@
-import 'dart:ffi';
-
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/enums/TransactionType.dart';
 import 'package:audiory_v0/models/transaction/transaction_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
-import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/repositories/transaction_repository.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
@@ -28,6 +25,9 @@ class WalletScreen extends StatefulHookWidget {
 
 class _WalletScreenState extends State<WalletScreen> {
   convertThousands(num) {
+    if (num < 100) {
+      return '${double.parse(num.toString()).toStringAsFixed(0)}';
+    }
     var formatter = NumberFormat('#,##,000');
     return formatter.format(num);
   }
@@ -98,7 +98,7 @@ class _WalletScreenState extends State<WalletScreen> {
                 subContent,
                 textAlign: TextAlign.center,
                 style:
-                    textTheme.titleMedium?.copyWith(color: appColors.inkLight),
+                    textTheme.titleSmall?.copyWith(color: appColors.inkLight),
               ),
             ],
           ));

@@ -10,7 +10,7 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../theme/theme_constants.dart';
+import '../../../../theme/theme_constants.dart';
 
 class FLowFourScreen extends StatefulWidget {
   final String userId;

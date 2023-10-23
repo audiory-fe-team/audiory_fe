@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:audiory_v0/models/Profile.dart';
+import 'package:audiory_v0/models/streak/streak_model.dart';
 import "package:firebase_auth/firebase_auth.dart";
 import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
@@ -152,6 +153,66 @@ class AuthRepository extends ChangeNotifier {
     } on Exception catch (err) {}
   }
 
+  Future<dynamic> forgotPassword({
+    required String email,
+  }) async {
+    Map<String, String> body = {'email': email};
+    var url = Uri.parse('${Endpoints().auth}/forgot-password');
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    try {
+      final response =
+          await http.post(url, headers: header, body: jsonEncode(body));
+      if (response.statusCode == 200) {
+      } else {
+        throw Exception();
+      }
+    } catch (e) {}
+  }
+
+  Future<dynamic> resetPassword(
+      {required String resetToken, required String password}) async {
+    var dio = Dio();
+    var url = '${Endpoints().auth}/reset-password/$resetToken';
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    Map<String, String> body = {'password': password};
+    final response = await dio.patch(url,
+        options: Options(headers: header), data: jsonEncode(body));
+    if (kDebugMode) {
+      print('res for reset pass');
+      print(response);
+    }
+    if (response.statusCode == 200) {
+    } else {
+      return Exception();
+    }
+  }
+
+  Future<dynamic> checkResetPassword({
+    required String resetToken,
+  }) async {
+    var dio = Dio();
+    var url = '${Endpoints().auth}/reset-password/$resetToken';
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    final response = await dio.get(url, options: Options(headers: header));
+    if (kDebugMode) {
+      print('res for reset pass');
+      print(response);
+    }
+    if (response.statusCode == 200) {
+    } else {
+      return Exception();
+    }
+  }
+
   Future<void> createUserWithEmailAndPassword({
     required String email,
     required String password,
@@ -194,32 +255,26 @@ class AuthRepository extends ChangeNotifier {
         if (user != null) {
           final url = Uri.parse("$authUrl/login-with-google");
           Map<String, String> header = {
-            "Content-type": "application/json",
-            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "accept": "application/json",
             "Authorization": idToken //no Bearer
           };
           final fcmToken = await FirebaseMessaging.instance.getToken();
           Map<String, String> body = {'registration_token': fcmToken ?? ''};
-          // print('token ${fcmToken}');
-          // print('ID token ${idToken}');
 
           final response =
               await http.post(url, headers: header, body: jsonEncode(body));
 
+          if (kDebugMode) {
+            print('response body');
+            print(response.body);
+          }
+
           if (response.statusCode == 200) {
             final token = jsonDecode(response.body)['data'];
-
             //save token
             const storage = FlutterSecureStorage();
-
-            // if (kDebugMode) {
-            //   print('jwt ${token}');
-            // }
-
-            //Set the user to auth provider
-            AuthProvider authProvider = AuthProvider();
-            authProvider.setUser(currentUser);
-            await getUserDetails(authProvider);
+            storage.write(key: 'jwt', value: token);
           }
         }
       }
@@ -305,6 +360,55 @@ class AuthRepository extends ChangeNotifier {
     }
   }
 
+  Future<List<Streak>?> getMyStreak() async {
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    String userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
+    print('userId $userId');
+    final url = Uri.parse('${Endpoints().user}/$userId/streak');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json; charset=UTF-8",
+      "Accept": "application/json",
+    };
+
+    final response = await http.get(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+    if (response.statusCode == 200) {
+      final List<dynamic> result =
+          jsonDecode(responseBody)['data']['rewards'] ?? [];
+
+      return result.map((e) => Streak.fromJson(e)).toList();
+    } else {
+      throw Exception('Failed to load user info');
+    }
+  }
+
+  Future<dynamic> receiveReward() async {
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    String userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
+    final url = Uri.parse('${Endpoints().user}/$userId/daily-reward');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json; charset=UTF-8",
+      "Accept": "application/json",
+    };
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.post(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+    if (response.statusCode == 200) {
+    } else {
+      throw Exception('Failed to load user info');
+    }
+  }
+
   Future<UserServer> getMyUserById() async {
     final url = Uri.parse('${Endpoints().user}/me');
 
@@ -324,12 +428,10 @@ class AuthRepository extends ChangeNotifier {
     if (response.statusCode == 200) {
       try {
         final result = jsonDecode(responseBody)['data'];
-        print('cast userserver');
-        print(UserServer.fromJson(result));
+
         return UserServer.fromJson(result);
       } catch (e) {
-        print('hhhhh $e');
-        throw e;
+        rethrow;
       }
     } else {
       throw Exception('Failed to load user info');

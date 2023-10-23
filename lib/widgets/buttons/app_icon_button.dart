@@ -80,7 +80,7 @@ class AppIconButton extends StatelessWidget {
                     minimumSize: const Size(double.minPositive, 48),
                   ),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(title == null ? 'Default' : title as String,

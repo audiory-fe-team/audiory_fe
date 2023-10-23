@@ -100,10 +100,6 @@ class ReadingLists extends HookWidget {
     final readingListQuery = useQuery(
         ['readingList'], () => ReadingListRepository.fetchMyReadingList());
 
-    isRefetch() {
-      readingListQuery.refetch();
-    }
-
     handleCreateReadingList() async {
       Map<String, String> body = {};
 
@@ -143,8 +139,6 @@ class ReadingLists extends HookWidget {
     }
 
     handlePublishReadingList(String readingListId, bool isPrivate) async {
-      print('edit $readingListId  ');
-      print('status $isPrivate  ');
       const storage = FlutterSecureStorage();
       final jwtToken = await storage.read(key: 'jwt');
       final userId = JwtDecoder.decode(jwtToken as String)['user_id'];

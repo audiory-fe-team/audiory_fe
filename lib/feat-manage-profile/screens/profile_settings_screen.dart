@@ -1,4 +1,6 @@
 import 'package:audiory_v0/models/AuthUser.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -139,6 +141,18 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       );
     }
 
+    Future<void> signOut() async {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return const Center(child: CircularProgressIndicator());
+          });
+      await AuthRepository().singOut();
+
+      // ignore: use_build_context_synchronously
+      context.go('/login');
+    }
+
     return Scaffold(
       appBar: CustomAppBar(
         title: Text(
@@ -171,6 +185,14 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       child: listOfSettings()),
                 ),
+                Container(
+                  width: size.width - 32,
+                  child: AppIconButton(
+                      title: 'Đăng xuất',
+                      onPressed: () {
+                        signOut();
+                      }),
+                )
               ]),
         ),
       ),

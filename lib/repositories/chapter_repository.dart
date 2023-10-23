@@ -9,6 +9,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:dio/dio.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 final chapterRepositoryProvider =
     Provider<ChapterRepository>((_) => ChapterRepository());
@@ -50,14 +51,15 @@ class ChapterRepository {
   }
 
   Future<void> buyChapter(storyId, chapterId, body) async {
+    const storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
+    final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
     final url = Uri.parse(
-        '${Endpoints().user}/66b8f778-5506-11ee-8fba-0242ac180002/stories/$storyId/chapters/$chapterId/access');
+        '${Endpoints().user}/$userId/stories/$storyId/chapters/$chapterId/access');
     Map<String, String> header = {
       "Content-type": "application/json",
       "Accept": "application/json"
     };
-    const storage = FlutterSecureStorage();
-    String? jwtToken = await storage.read(key: 'jwt');
     if (jwtToken != null) {
       header['Authorization'] = 'Bearer $jwtToken';
     }

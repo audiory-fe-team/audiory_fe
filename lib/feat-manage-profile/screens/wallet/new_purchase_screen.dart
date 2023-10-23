@@ -1,3 +1,4 @@
+import 'package:audiory_v0/feat-manage-profile/models/CoinPack.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/coin_pack_card.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/vert_coin_pack_card.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
@@ -47,10 +48,6 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen> {
         () => PaymentMethodRepository().fetchAllPaymentMethods());
 
     handleCreatePurchase() {
-      if (kDebugMode) {
-        print('COINPACK ID $selectedCoinPackId');
-        print('METHOD ID $selectedPaymentMethodId');
-      }
       if (selectedCoinPackId == '' || selectedPaymentMethodId == '') {
         AppSnackBar.buildTopSnackBar(
             context, 'Hãy chọn', null, SnackBarType.error);
@@ -82,18 +79,20 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-            //
-            // Padding(
-            //   padding: const EdgeInsets.all(16.0),
-            //   child: Text(
-            //     'Gói xu',
-            //     style: textTheme.headlineMedium,
-            //   ),
-            // ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
-            Center(child: CoinPackCard()),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [...coinPacksQuery.data ?? []].asMap().entries.map((e) {
+                CoinPack coinPack = e.value;
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+                  child: CoinPackCard(coinPack: coinPack),
+                );
+              }).toList(),
+            )
 
             // SizedBox(
             //   height: size.height / 5,
