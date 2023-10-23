@@ -1,3 +1,5 @@
+import 'package:audiory_v0/feat-auth/screens/forgot_password/forgot_password_screen.dart';
+import 'package:audiory_v0/feat-auth/screens/forgot_password/reset_password_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/category_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/notification_screen.dart';
@@ -7,6 +9,7 @@ import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/ranking_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/search_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/daily-rewards/daily_rewards_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_account_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_email_screen.dart';
@@ -25,14 +28,14 @@ import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
-import 'package:audiory_v0/screens/register/register_screen.dart';
-import 'package:audiory_v0/screens/register/screens/flow_four.dart';
-import 'package:audiory_v0/screens/register/screens/flow_two.dart';
-import 'package:audiory_v0/screens/register/screens/flow_three.dart';
-import 'package:audiory_v0/screens/register/screens/flow_one.dart';
+import 'package:audiory_v0/feat-auth/screens/register/register_screen.dart';
+import 'package:audiory_v0/feat-auth/screens/register/screens/flow_four.dart';
+import 'package:audiory_v0/feat-auth/screens/register/screens/flow_two.dart';
+import 'package:audiory_v0/feat-auth/screens/register/screens/flow_three.dart';
+import 'package:audiory_v0/feat-auth/screens/register/screens/flow_one.dart';
 
 import 'package:audiory_v0/repositories/auth_repository.dart';
-import 'package:audiory_v0/screens/login/login_screen.dart';
+import 'package:audiory_v0/feat-auth/screens/login_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -81,6 +84,7 @@ class AppRoutes {
                   //     splashTransition: SplashTransition.fadeTransition,
                   //     pageTransitionType: PageTransitionType.scale,
                   //     backgroundColor: Colors.white);
+
                   return const HomeScreen();
                 },
                 routes: [
@@ -182,13 +186,22 @@ class AppRoutes {
                         ),
                       ]),
                   GoRoute(
-                    parentNavigatorKey: _shellNavigatorKey,
-                    name: 'profile',
-                    path: 'profile',
-                    builder: (_, GoRouterState state) {
-                      return const UserProfileScreen();
-                    },
-                  ),
+                      parentNavigatorKey: _shellNavigatorKey,
+                      name: 'profile',
+                      path: 'profile',
+                      builder: (_, GoRouterState state) {
+                        return const UserProfileScreen();
+                      },
+                      routes: [
+                        GoRoute(
+                          parentNavigatorKey: _shellNavigatorKey,
+                          name: 'dailyReward',
+                          path: 'dailyReward',
+                          builder: (_, GoRouterState state) {
+                            return const DailyRewardsScreen();
+                          },
+                        ),
+                      ]),
                   GoRoute(
                     parentNavigatorKey: _shellNavigatorKey,
                     name: 'writer',
@@ -240,7 +253,7 @@ class AppRoutes {
               name: 'chapter_detail',
               builder: (BuildContext context, GoRouterState state) {
                 String? chapterId = state.pathParameters["chapterId"];
-                
+
                 if (chapterId == null || chapterId == '') {
                   return const NotFoundScreen();
                 }
@@ -255,8 +268,25 @@ class AppRoutes {
         name: 'login',
         path: '/login',
         builder: (BuildContext context, GoRouterState state) {
-          // return const LibraryScreen();
           return const LoginScreen();
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: 'forgotPassword',
+        path: '/forgotPassword',
+        builder: (BuildContext context, GoRouterState state) {
+          return const ForgotPasswordScreen();
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: 'resetPassword',
+        path: '/resetPassword',
+        builder: (BuildContext context, GoRouterState state) {
+          final extraMap = state.extra as Map<String, dynamic>;
+          final token = extraMap['resetToken'] ?? {'': ''};
+          return ResetPasswordScreen(resetToken: token);
         },
       ),
       GoRoute(
@@ -272,7 +302,7 @@ class AppRoutes {
         path: '/flowOne',
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
-          final body = extraMap['signUpBody'] as Map<String, String>;
+          final body = extraMap['signUpBody'] ?? {'': ''};
           return FlowOneScreen(signUpBody: body);
         },
       ),
@@ -308,7 +338,7 @@ class AppRoutes {
         path: '/profileSettings',
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
-          final currentUser = extraMap["currentUser"] as UserServer;
+          final currentUser = extraMap["currentUser"] as AuthUser;
           final userProfile = extraMap["userProfile"] as Profile;
           return ProfileSettingsScreen(
               currentUser: currentUser, userProfile: userProfile);
@@ -319,7 +349,7 @@ class AppRoutes {
         path: '/wallet',
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
-          final currentUser = extraMap["currentUser"] as UserServer;
+          final currentUser = extraMap["currentUser"] as AuthUser;
           return WalletScreen(currentUser: currentUser);
         },
         routes: [
@@ -328,7 +358,7 @@ class AppRoutes {
             path: 'newPurchase',
             builder: (BuildContext context, GoRouterState state) {
               final extraMap = state.extra as Map<String, dynamic>;
-              final currentUser = extraMap["currentUser"] as UserServer;
+              final currentUser = extraMap["currentUser"] as AuthUser;
               return NewPurchaseScreen(
                 currentUser: currentUser,
               );
@@ -342,7 +372,7 @@ class AppRoutes {
           builder: (BuildContext context, GoRouterState state) {
             final extraMap = state.extra as Map<String, dynamic>;
 
-            final currentUser = extraMap["currentUser"] as UserServer;
+            final currentUser = extraMap["currentUser"] as AuthUser;
             final userProfile = extraMap["userProfile"] as Profile;
 
             return EditProfileScreen(
@@ -354,7 +384,7 @@ class AppRoutes {
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
 
-          final currentUser = extraMap["currentUser"] as UserServer;
+          final currentUser = extraMap["currentUser"] as AuthUser;
           final userProfile = extraMap["userProfile"] as Profile;
 
           return EditAccountScreen(
@@ -367,7 +397,7 @@ class AppRoutes {
             builder: (BuildContext context, GoRouterState state) {
               final extraMap = state.extra as Map<String, dynamic>;
 
-              final currentUser = extraMap["currentUser"] as UserServer;
+              final currentUser = extraMap["currentUser"] as AuthUser;
               final userProfile = extraMap["userProfile"] as Profile;
 
               return EditEmailScreen(

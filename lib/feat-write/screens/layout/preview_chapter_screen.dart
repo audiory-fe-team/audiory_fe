@@ -61,11 +61,11 @@ class _PreviewChapterScreenState extends ConsumerState<PreviewChapterScreen> {
               color: appColors.skyBase,
             ),
           ),
-          SizedBox(
-              child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: QuillEditor.basic(controller: _controller, readOnly: false),
-          )),
+          // SizedBox(
+          //     child: Padding(
+          //   padding: const EdgeInsets.all(16.0),
+          //   child: QuillEditor.basic(con: _controller, readOnly: false),
+          // )),
         ],
       ));
     }

@@ -10,7 +10,6 @@ class AppSnackBar {
     final typeOfSnackbar = type ?? SnackBarType.success;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
-
       elevation: 10,
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
       dismissDirection: DismissDirection.down,

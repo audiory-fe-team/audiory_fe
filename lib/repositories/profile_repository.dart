@@ -87,8 +87,8 @@ class ProfileRepository {
   Future<Profile?> updateProfile(formFile, Map<String, String> reqBody) async {
     //get userId
     String? value = await const FlutterSecureStorage().read(key: 'currentUser');
-    UserServer? currentUser =
-        value != null ? UserServer.fromJson(jsonDecode(value)['data']) : null;
+    AuthUser? currentUser =
+        value != null ? AuthUser.fromJson(jsonDecode(value)['data']) : null;
     String? userId = currentUser?.id;
 
     //call api

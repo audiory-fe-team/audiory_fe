@@ -1,4 +1,3 @@
-import 'package:audiory_v0/feat-read/screens/detail-story/donate_gift_modal.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
@@ -8,11 +7,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:readmore/readmore.dart';
+import './donate_gift_modal.dart';
 
 class StoryDetailTab extends StatelessWidget {
+  final double? coinsWallets;
   final Story? story;
 
-  const StoryDetailTab({super.key, required this.story});
+  const StoryDetailTab({super.key, required this.story, this.coinsWallets});
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +81,11 @@ class StoryDetailTab extends StatelessWidget {
                         showModalBottomSheet(
                             context: context,
                             builder: (BuildContext context) {
-                              return DonateGiftModal(story: story);
+                              return DonateGiftModal(
+                                coinsWallet: coinsWallets,
+                                story: story,
+                                handleSending: (selected, count) {},
+                              );
                             })
                       }),
             ),

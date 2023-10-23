@@ -10,6 +10,7 @@ import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -34,7 +35,7 @@ class UserProfileScreen extends StatefulHookWidget {
 class _UserProfileScreenState extends State<UserProfileScreen>
     with TickerProviderStateMixin {
   final storage = const FlutterSecureStorage();
-  UserServer? currentUser;
+  AuthUser? currentUser;
 
   late TabController tabController;
   int tabState = 0;
@@ -233,16 +234,17 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget userProfileInfo(
-      UseQueryResult<UserServer?, dynamic> userByIdQuery,
+      UseQueryResult<AuthUser?, dynamic> userByIdQuery,
       UseQueryResult<Profile, dynamic> profileQuery,
       UseQueryResult<List<Story>?, dynamic> publishedStoriesQuery,
       UseQueryResult<List<ReadingList>?, dynamic> readingStoriesQuery) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
-    print('error ${userByIdQuery.error}');
-    print('${userByIdQuery.data}');
-    print('${userByIdQuery.data?.wallets}');
+    roundBalance(balance) {
+      return double.parse(balance.toString()).toStringAsFixed(0);
+    }
+
     return RefreshIndicator(
       onRefresh: () async {
         profileQuery.refetch();
@@ -251,7 +253,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         child: Container(
           width: double.infinity,
           margin: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-          child: userByIdQuery == null
+          child: userByIdQuery.isError
               ? AppIconButton(
                   title: 'Đăng nhập',
                   onPressed: () {
@@ -266,43 +268,33 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       children: [
                         Skeletonizer(
                           enabled: profileQuery.isFetching,
-                          child: Material(
-                            child: InkWell(
-                              onTap: () async {
-                                context.push('/profile', extra: {});
-                              },
-                              customBorder: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100.0),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(100.0),
-                                child: profileQuery.data?.avatarUrl == ''
-                                    ? Image.network(
+                          child: CircleAvatar(
+                            radius: 45,
+                            child: ClipOval(
+                              child: CachedNetworkImage(
+                                imageUrl: profileQuery.data?.avatarUrl == ''
+                                    ? "https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw"
+                                    : profileQuery.data?.avatarUrl ??
                                         'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
-                                        width: size.width / 3.5,
-                                        height: size.width / 3.5,
-                                      )
-                                    : Image.network(
-                                        profileQuery.data?.avatarUrl ??
-                                            "https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw",
-                                        width: size.width / 3.5,
-                                        height: size.width / 3.5,
-                                      ),
+                                fit: BoxFit.cover,
+                                width: 90,
+                                height: 90,
                               ),
                             ),
                           ),
                         ),
+
                         const SizedBox(height: 8),
                         Skeletonizer(
                           enabled: profileQuery.isFetching,
                           child: Text(
-                            profileQuery.data?.fullName ?? 'email@gmail.com',
+                            userByIdQuery.data?.fullName ?? 'Họ và tên',
                             textAlign: TextAlign.center,
                             style: Theme.of(context).textTheme.headlineMedium,
                           ),
                         ),
                         Text(
-                          '@${profileQuery.data?.username ?? '_blank'}',
+                          '@${profileQuery.data?.username ?? 'Tên đăng nhập'}',
                           textAlign: TextAlign.center,
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
@@ -310,40 +302,53 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(
-                              width: size.width / 3.5,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  GestureDetector(
-                                    child: Image.asset(
+                            GestureDetector(
+                              onTap: () {
+                                userByIdQuery.isError == true
+                                    ? null
+                                    : GoRouter.of(context)
+                                  ?..pushNamed('profileSettings', extra: {
+                                    'currentUser': userByIdQuery.data,
+                                    'userProfile': profileQuery.data
+                                  })
+                                  ..push('/wallet', extra: {
+                                    'currentUser': userByIdQuery.data,
+                                    'userProfile': profileQuery.data
+                                  });
+                              },
+                              child: SizedBox(
+                                width: size.width / 3.5,
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
                                       'assets/images/coin.png',
                                       width: 24,
                                       height: 24,
                                     ),
-                                  ),
-                                  Skeletonizer(
-                                    enabled: userByIdQuery.isFetching,
-                                    child: SizedBox(
-                                      width: 50,
-                                      child: Text(
-                                        " ${userByIdQuery.data?.wallets?[0].balance ?? '_'}",
-                                        textAlign: TextAlign.center,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineSmall,
+                                    Skeletonizer(
+                                      enabled: userByIdQuery.isFetching,
+                                      child: SizedBox(
+                                        width: 50,
+                                        child: Text(
+                                          " ${userByIdQuery.data?.wallets?.isNotEmpty == true ? roundBalance(userByIdQuery.data?.wallets![0].balance) : '_'}",
+                                          textAlign: TextAlign.center,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .headlineSmall,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                            userByIdQuery.data?.wallets?[1].balance != 0
+                            userByIdQuery.data?.wallets?.isNotEmpty == true
                                 ? SizedBox(
-                                    width: size.width / 3.5,
+                                    width: size.width / 4,
                                     child: Row(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                          MainAxisAlignment.spaceAround,
                                       children: [
                                         GestureDetector(
                                           child: Image.asset(
@@ -354,15 +359,12 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                         ),
                                         Skeletonizer(
                                           enabled: userByIdQuery.isFetching,
-                                          child: SizedBox(
-                                            width: 50,
-                                            child: Text(
-                                              " ${userByIdQuery.data?.wallets?[1].balance ?? '_'}",
-                                              textAlign: TextAlign.center,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineSmall,
-                                            ),
+                                          child: Text(
+                                            " ${userByIdQuery.data?.wallets?.isNotEmpty == true ? userByIdQuery.data?.wallets![1].balance : '_'}",
+                                            textAlign: TextAlign.center,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .headlineSmall,
                                           ),
                                         ),
                                       ],
@@ -372,19 +374,27 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           ],
                         ),
                         const SizedBox(height: 8),
+
                         SizedBox(
-                          width: size.width / 2.5,
+                          width: size.width / 2.3,
                           child: AppIconButton(
-                              title: 'Đăng xuất',
+                              isOutlined: true,
+                              bgColor: appColors.skyLightest,
+                              color: appColors.primaryBase,
+                              title: 'Nhận phúc lợi',
+                              textStyle: textTheme.titleMedium
+                                  ?.copyWith(color: appColors.primaryBase),
+                              icon: Icon(
+                                Icons.calendar_today,
+                                color: appColors.primaryBase,
+                                size: 20,
+                              ),
                               // icon: const Icon(Icons.add),
                               onPressed: () {
-                                signOut();
-                                AppSnackBar.buildSnackbar(
-                                    context,
-                                    'Đăng xuất thành công',
-                                    null,
-                                    SnackBarType.success);
-                                context.go('/login');
+                                userByIdQuery.isError == true
+                                    ? null
+                                    : GoRouter.of(context)
+                                        .push('/profile/dailyReward');
                               }),
                         ),
 
@@ -538,30 +548,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         ]));
   }
 
-  Future<void> signOut() async {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return const Center(child: CircularProgressIndicator());
-        });
-    await AuthRepository().singOut();
-
-    setState(() {
-      currentUser = null;
-    });
-
-// ignore: use_build_context_synchronously
-    context.pop();
-  }
-
-  Future<UserServer?> getUserDetails() async {
-    String? value = await storage.read(key: 'currentUser');
-    currentUser =
-        value != null ? UserServer.fromJson(jsonDecode(value)['data']) : null;
-
-    return currentUser;
-  }
-
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -591,14 +577,19 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             margin: const EdgeInsets.symmetric(horizontal: 8.0),
             child: IconButton(
                 onPressed: () {
-                  context.pushNamed('profileSettings', extra: {
-                    'currentUser': userByIdQuery.data,
-                    'userProfile': profileQuery.data
-                  });
+                  userByIdQuery.isError == true
+                      ? null
+                      : context.pushNamed('profileSettings', extra: {
+                          'currentUser': userByIdQuery.data,
+                          'userProfile': profileQuery.data
+                        });
                 },
-                icon: const Icon(
+                icon: Icon(
                   Icons.settings_outlined,
                   size: 25,
+                  color: userByIdQuery.isError == true
+                      ? appColors.skyLight
+                      : appColors.inkBase,
                 )),
           )
         ],

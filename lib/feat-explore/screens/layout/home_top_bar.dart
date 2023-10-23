@@ -6,14 +6,14 @@ import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
-import '../../../models/AuthUser.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
+import 'package:audiory_v0/models/AuthUser.dart';
 
-import '../../../repositories/auth_repository.dart';
-
-class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
+class HomeTopBar extends HookWidget implements PreferredSizeWidget {
   const HomeTopBar({super.key});
 
   @override
@@ -21,42 +21,43 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    const storage = FlutterSecureStorage();
-    UserServer? currentUser;
-    User? authUser = AuthRepository().currentUser;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
-    Future<UserServer?> getUserDetails() async {
-      String? value = await storage.read(key: 'currentUser');
-      currentUser =
-          value != null ? UserServer.fromJson(jsonDecode(value)['data']) : null;
-
-      if (kDebugMode) {
-        print('currentuser ${currentUser?.email}');
-      }
-      return currentUser;
-    }
-
-    Widget _userInfo(UserServer? user) {
+    final myInfoQuery =
+        useQuery(['myInfo'], () => AuthRepository().getMyUserById());
+    Widget userInfo(UseQueryResult<AuthUser, dynamic> myInfoQuery) {
+      print('user data: ${myInfoQuery.data}');
       return Row(
         children: [
           Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () async {
-                context.push('/profile');
-              },
-              customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(90),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(50.0),
-                child: AppImage(
-                    url: authUser?.photoURL,
-                    width: 40,
-                    height: 40,
-                    fit: BoxFit.fill,
-                    defaultUrl: 'assets/images/fallback_story_cover.png'),
+            child: Skeletonizer(
+              enabled: myInfoQuery.isFetching,
+              child: InkWell(
+                onTap: () async {
+                  context.push('/profile');
+                },
+                customBorder: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(90),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(50.0),
+                  child: myInfoQuery.data?.avatarUrl == null
+                      ? Image.network(
+                          'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
+                          width: 40,
+                          height: 40,
+                        )
+                      : Image.network(
+                          '${myInfoQuery.data?.avatarUrl}',
+                          width: 40,
+                          height: 40,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.network(
+                            'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
+                            width: 40,
+                            height: 40,
+                          ),
+                        ),
+                ),
               ),
             ),
           ),
@@ -72,13 +73,17 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                 'Xin chào',
                 style: TextStyle(fontSize: 14),
               ),
-              Text(
-                currentUser?.username ?? 'Người dùng',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
+              Skeletonizer(
+                enabled: myInfoQuery.isFetching,
+                child: Text(
+                  myInfoQuery.data?.username ?? 'Người dùng',
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.left,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                textAlign: TextAlign.left,
               ),
             ],
           ),
@@ -102,27 +107,7 @@ class HomeTopBar extends StatelessWidget implements PreferredSizeWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  FutureBuilder<UserServer?>(
-                    future: getUserDetails(), // async work
-                    builder: (BuildContext context,
-                        AsyncSnapshot<UserServer?> snapshot) {
-                      switch (snapshot.connectionState) {
-                        case ConnectionState.waiting:
-                          return const Skeletonizer(
-                            // ignore: unrelated_type_equality_checks
-                            enabled: ConnectionState.waiting == true,
-                            child: Text(''),
-                          );
-
-                        default:
-                          if (snapshot.hasError) {
-                            return _userInfo(null);
-                          } else {
-                            return _userInfo(snapshot.data);
-                          }
-                      }
-                    },
-                  ),
+                  userInfo(myInfoQuery),
                   Row(
                     children: [
                       IconButton(

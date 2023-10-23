@@ -18,6 +18,7 @@ class Profile {
   final bool? isEnabled;
   final bool? isOnline;
   final String? lastName;
+  final int? totalDonation;
   final int? numberOfFollowers;
   final List<Profile>? followings;
   final int? numberOfFollowing;
@@ -45,6 +46,7 @@ class Profile {
     this.isEnabled,
     this.isOnline,
     this.lastName,
+    this.totalDonation,
     this.numberOfFollowers,
     this.numberOfFollowing,
     this.followings,
@@ -87,6 +89,7 @@ class Profile {
       isEnabled: json['is_enabled'],
       isOnline: json['is_online'],
       lastName: json['last_name'],
+      totalDonation: json['total_donation'],
       numberOfFollowers: json['number_of_followers'],
       numberOfFollowing: json['number_of_following'],
       followings: followings,
@@ -119,6 +122,7 @@ class Profile {
       'is_online': isOnline,
       'last_name': lastName,
       'number_of_followers': numberOfFollowers,
+      'total_donation': totalDonation,
       'number_of_following': numberOfFollowing,
       'followers': followers,
       'followings': followings,

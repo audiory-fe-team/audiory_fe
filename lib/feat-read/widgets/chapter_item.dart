@@ -8,7 +8,6 @@ class ChapterItem extends StatelessWidget {
   final String? storyId;
   final Chapter? chapter;
 
-  final int? price;
   final bool? isPaid;
   final String title;
   final int? position;
@@ -20,7 +19,6 @@ class ChapterItem extends StatelessWidget {
       required this.time,
       this.chapter,
       this.position = 0,
-      this.price = 0,
       this.storyId,
       required this.onSelected,
       this.isPaid});
@@ -29,6 +27,7 @@ class ChapterItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
+
     String formatDate(String? date) {
       DateTime currentDateTime = DateTime.now();
       //use package intl
@@ -42,15 +41,18 @@ class ChapterItem extends StatelessWidget {
     }
 
     String formatReadCount(int readCount) {
+      if (readCount <= 100) return '${readCount}';
       var formatter = NumberFormat('#,##,000');
-
       return formatter.format(readCount);
     }
 
     return GestureDetector(
       onTap: () {
-        price != 0
-            ? onSelected(chapter as Chapter, price ?? 0)
+        chapter?.price != 0
+            ? chapter?.isPaid == true
+                ? GoRouter.of(context)
+                    .push('/story/$storyId/chapter/${chapter?.id}')
+                : onSelected(chapter as Chapter, chapter?.price ?? 0)
             : GoRouter.of(context)
                 .push('/story/$storyId/chapter/${chapter?.id}');
       },
@@ -73,7 +75,7 @@ class ChapterItem extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Chương  $position:',
+                    'Chương $position',
                     style: Theme.of(context).textTheme.bodySmall,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -86,55 +88,54 @@ class ChapterItem extends StatelessWidget {
               ),
             ),
             Flexible(
-              flex: 6,
-              child: price != 0
-                  ? chapter?.isPaid == true
-                      ? Text(
-                          formatDate(time),
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context)
-                              .textTheme
-                              .labelLarge!
-                              .copyWith(
-                                  fontStyle: FontStyle.italic,
-                                  color: appColors.inkLighter),
-                        )
-                      : Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Flexible(
-                              flex: 3,
-                              child: GestureDetector(
-                                child: Image.asset(
-                                  'assets/images/coin.png',
-                                  width: 24,
-                                  height: 24,
+                flex: 6,
+                child: chapter?.isPaywalled == false
+                    ? Text(
+                        formatDate(time),
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
+                            fontStyle: FontStyle.italic,
+                            color: appColors.inkLighter),
+                      )
+                    : chapter?.isPaid == true
+                        ? Text(
+                            formatDate(time),
+                            textAlign: TextAlign.center,
+                            style: Theme.of(context)
+                                .textTheme
+                                .labelLarge!
+                                .copyWith(
+                                    fontStyle: FontStyle.italic,
+                                    color: appColors.inkLighter),
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                flex: 3,
+                                child: GestureDetector(
+                                  child: Image.asset(
+                                    'assets/images/coin.png',
+                                    width: 24,
+                                    height: 24,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Flexible(
-                              flex: 2,
-                              child: Text(
-                                '$price xu',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelLarge!
-                                    .copyWith(color: appColors.inkLighter),
+                              Flexible(
+                                flex: 2,
+                                child: Text(
+                                  '${chapter?.price} xu',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .labelLarge!
+                                      .copyWith(color: appColors.inkLighter),
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                  : Text(
-                      formatDate(time),
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                          fontStyle: FontStyle.italic,
-                          color: appColors.inkLighter),
-                    ),
-            ),
+                            ],
+                          )),
             Flexible(
               flex: 3,
-              child: price != 0 && chapter?.isPaid != true
+              child: chapter?.isPaywalled == true && chapter?.isPaid != true
                   ? Align(
                       alignment: Alignment.center,
                       child: Icon(
@@ -156,7 +157,7 @@ class ChapterItem extends StatelessWidget {
                         Flexible(
                           flex: 6,
                           child: Text(
-                            formatReadCount(chapter?.readCount as int),
+                            formatReadCount(chapter?.readCount ?? 0),
                             style: Theme.of(context)
                                 .textTheme
                                 .labelLarge!

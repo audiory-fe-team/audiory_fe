@@ -1,14 +1,16 @@
+import 'package:audiory_v0/feat-manage-profile/models/CoinPack.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/purchase_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:coupon_uikit/coupon_uikit.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CoinPackCard extends StatelessWidget {
-  const CoinPackCard({Key? key}) : super(key: key);
+  final CoinPack coinPack;
+  const CoinPackCard({Key? key, required this.coinPack}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,11 +21,22 @@ class CoinPackCard extends StatelessWidget {
     Color primaryColor = appColors.primaryLightest;
     Color secondaryColor = appColors.primaryBase;
     moveToMomo(url) async {
+      print('MOVE TO MOMO');
       // check if spotify is installed
-      if (await canLaunchUrl(Uri.parse(url as String))) {
+      if (await canLaunchUrl(Uri.parse(url))) {
         // launch the url which will open spotify
-        launchUrl(Uri.parse(url as String));
+        launchUrl(Uri.parse(url));
+      } else {
+        print('cant launch');
       }
+    }
+
+    convertThousands(num) {
+      if (num < 100) {
+        return double.parse(num.toString()).toStringAsFixed(0);
+      }
+      var formatter = NumberFormat('###,000');
+      return formatter.format(num);
     }
 
     handleCreatePurchase() async {
@@ -58,7 +71,7 @@ class CoinPackCard extends StatelessWidget {
         handleCreatePurchase();
       },
       child: CouponCard(
-        width: size.width - 32,
+        width: size.width,
         height: 150,
         backgroundColor: primaryColor,
         curveAxis: Axis.vertical,
@@ -66,7 +79,7 @@ class CoinPackCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: secondaryColor,
           ),
-          child: const Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
@@ -75,21 +88,13 @@ class CoinPackCard extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '-23%',
-                        style: TextStyle(
+                        '-10%',
+                        style: const TextStyle(
                           color: Colors.white,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      // Text(
-                      //   'OFF',
-                      //   style: TextStyle(
-                      //     color: Colors.white,
-                      //     fontSize: 16,
-                      //     fontWeight: FontWeight.bold,
-                      //   ),
-                      // ),
                     ],
                   ),
                 ),
@@ -129,7 +134,7 @@ class CoinPackCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '100',
+                '${coinPack.coinAmount}',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 24,
@@ -137,11 +142,11 @@ class CoinPackCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Spacer(),
+              const Spacer(),
               Text(
-                '5 ngày với mức giá này',
+                'Chỉ với ${convertThousands(coinPack.price)} đồng',
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.black45,
                 ),
               ),

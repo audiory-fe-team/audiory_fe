@@ -50,13 +50,13 @@ class HomeScreen extends HookConsumerWidget {
               ])));
     }
 
-    final paywalledStoriesQuery = useQuery(['paywalledStories'],
+    final paywalledStoriesQuery = useQuery(['myPaywalledStories'],
         () => StoryRepostitory().fetchMyPaywalledStories());
     final recommendStoriesQuery = useQuery(['recommendStories'],
         () => StoryRepostitory().fetchMyRecommendStories());
     final libraryQuery =
         useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
-
+    print('PAYWALLED ${paywalledStoriesQuery.data}');
     return Scaffold(
       appBar: const HomeTopBar(),
       body: RefreshIndicator(
@@ -75,14 +75,23 @@ class HomeScreen extends HookConsumerWidget {
 
                   //NOTE: Recommendations section
                   Skeletonizer(
-                      enabled: storiesQuery.isFetching,
-                      child: HeaderWithLink(
-                          icon: Image.asset(
-                            "assets/images/home_for_you.png",
-                            width: 24,
-                          ),
-                          title: 'Có thể bạn sẽ thích')),
-                  const SizedBox(height: 12),
+                      enabled: recommendStoriesQuery.isFetching,
+                      child: recommendStoriesQuery.isSuccess
+                          ? Column(
+                              children: [
+                                HeaderWithLink(
+                                    icon: Image.asset(
+                                      "assets/images/home_for_you.png",
+                                      width: 24,
+                                    ),
+                                    title: 'Có thể bạn sẽ thích'),
+                                const SizedBox(height: 12),
+                              ],
+                            )
+                          : const SizedBox(
+                              height: 0,
+                            )),
+
                   Skeletonizer(
                       enabled: recommendStoriesQuery.isFetching,
                       child: StoryGridList(
@@ -142,13 +151,19 @@ class HomeScreen extends HookConsumerWidget {
                   const SizedBox(height: 32),
 
                   //NOTE: Continue reading section
-                  HeaderWithLink(
-                      icon: Image.asset(
-                        "assets/images/home_continue_reading.png",
-                        width: 24,
-                      ),
-                      title: 'Tiếp tục đọc'),
-                  const SizedBox(height: 12),
+                  libraryQuery.data?.libraryStory?.isNotEmpty ?? false
+                      ? Column(
+                          children: [
+                            HeaderWithLink(
+                                icon: Image.asset(
+                                  "assets/images/home_continue_reading.png",
+                                  width: 24,
+                                ),
+                                title: 'Tiếp tục đọc'),
+                            const SizedBox(height: 12),
+                          ],
+                        )
+                      : const SizedBox(height: 0),
 
                   Skeletonizer(
                     enabled: libraryQuery.isFetching,

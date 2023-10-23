@@ -25,6 +25,7 @@ class AppTextInputField extends StatefulWidget {
   final TextStyle? labelTextStyle;
   final bool? isRequired;
   final String? Function(String?)? validator;
+  final bool? submmitted;
 
   //textinput field
   final String name; //form field name, must have
@@ -59,7 +60,8 @@ class AppTextInputField extends StatefulWidget {
       this.textAlign,
       this.maxLengthCharacters,
       this.marginBottom = 16,
-      this.isDisabled = true});
+      this.isDisabled = true,
+      this.submmitted = false});
 
   @override
   State<AppTextInputField> createState() => _AppTextInputFieldState();
@@ -84,6 +86,11 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
     var required = FormBuilderValidators.required(errorText: 'Nội dung trống');
 
     return FormBuilderTextField(
+      obscureText:
+          widget.textInputType == TextInputType.visiblePassword ? true : false,
+      // autovalidateMode: widget.submmitted == true
+      //     ? AutovalidateMode.onUserInteraction
+      //     : AutovalidateMode.disabled,
       enabled: widget.isDisabled == true,
       onChanged: (value) => {
         setState(() {
@@ -133,7 +140,6 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
         hintText: widget.hintText!,
         prefixIcon: widget.prefixIcon,
         suffixIcon: widget.suffixIcon,
-
         hintStyle: widget.hintTextStyle ??
             TextStyle(
               color: appColors.skyDark,

@@ -5,8 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../repositories/auth_repository.dart';
-import '../../../theme/theme_constants.dart';
+import '../../../../repositories/auth_repository.dart';
+import '../../../../theme/theme_constants.dart';
 
 class RegisterBodyScreen extends StatefulWidget {
   const RegisterBodyScreen({super.key});

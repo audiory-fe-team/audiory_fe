@@ -8,7 +8,7 @@ import '../../models/AuthUser.dart';
 import '../../theme/theme_constants.dart';
 
 class EditEmailScreen extends StatefulWidget {
-  final UserServer? currentUser;
+  final AuthUser? currentUser;
   const EditEmailScreen({super.key, this.currentUser});
 
   @override

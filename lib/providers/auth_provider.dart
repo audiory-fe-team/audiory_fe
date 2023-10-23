@@ -11,7 +11,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  UserServer _userDetails = UserServer(
+  AuthUser _userDetails = AuthUser(
       id: '',
       fullName: '',
       username: '',
@@ -25,9 +25,9 @@ class AuthProvider extends ChangeNotifier {
       isEnabled: true,
       isOnline: true,
       updatedDate: '');
-  UserServer get userDetails => _userDetails;
+  AuthUser get userDetails => _userDetails;
 
-  void setUserDetails(UserServer userDetail) {
+  void setUserDetails(AuthUser userDetail) {
     _userDetails = userDetail;
     notifyListeners();
   }

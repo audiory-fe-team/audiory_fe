@@ -10,8 +10,8 @@ import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../models/enums/SnackbarType.dart';
-import '../../../theme/theme_constants.dart';
+import '../../../../models/enums/SnackbarType.dart';
+import '../../../../theme/theme_constants.dart';
 
 class FlowThreeScreen extends StatefulHookWidget {
   final String userId;
