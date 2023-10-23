@@ -4,6 +4,7 @@ import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -123,18 +124,13 @@ class StoryRankCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: 75,
-            height: 107,
-            decoration: ShapeDecoration(
-              image: DecorationImage(
-                image: NetworkImage(story.coverUrl ?? ''),
-                fit: BoxFit.fill,
-              ),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4)),
-            ),
-          ),
+          ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: AppImage(
+                  url: story.coverUrl,
+                  width: 75,
+                  height: 107,
+                  fit: BoxFit.fill)),
           const SizedBox(width: 12),
           Expanded(
             child: Row(

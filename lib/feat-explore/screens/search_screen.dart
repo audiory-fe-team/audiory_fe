@@ -421,7 +421,7 @@ class SearchStoryFilter extends HookWidget {
     String? tagsValue,
   }) onSubmit;
 
-  const SearchStoryFilter(
+const SearchStoryFilter(
       {super.key,
       required this.sortBy,
       required this.category,

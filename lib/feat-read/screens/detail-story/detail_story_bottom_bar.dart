@@ -33,7 +33,8 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
     final textTheme = Theme.of(context).textTheme;
 
     return Material(
-      elevation: 10,
+      elevation: 2,
+      color: appColors.skyLightest,
       child: Container(
         height: 65,
         width: double.infinity,
@@ -44,7 +45,7 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TapEffectWrapper(
+            GestureDetector(
               onTap: () {
                 if (widget.isAddedToLibrary) {
                   AppSnackBar.buildTopSnackBar(
@@ -68,14 +69,14 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
                       size: 24,
                       color: widget.isAddedToLibrary
                           ? appColors.primaryBase
-                          : appColors.skyBase,
+                          : appColors.inkLighter,
                     ),
                     Text(
                       'Lưu trữ',
                       style: textTheme.labelLarge!.copyWith(
                         color: widget.isAddedToLibrary
                             ? appColors.primaryBase
-                            : appColors.skyBase,
+                            : appColors.inkLighter,
                       ),
                     ),
                   ],
@@ -86,7 +87,7 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
               future: storyDb.getStory(widget.storyId),
               builder: (context, snapshot) {
                 final isDownloaded = snapshot.data != null;
-                return TapEffectWrapper(
+                return GestureDetector(
                   onTap: () {
                     if (isDownloaded == true) {
                       AppSnackBar.buildTopSnackBar(

@@ -1,4 +1,5 @@
-String formatRelativeTime(String dateString) {
+String formatRelativeTime(String? dateString) {
+  if (dateString == null || dateString == '') return '';
   DateTime now = DateTime.now().toUtc();
   DateTime date = DateTime.parse(dateString);
 
@@ -6,17 +7,17 @@ String formatRelativeTime(String dateString) {
 
   if (difference.inDays > 30) {
     int months = (difference.inDays / 30).floor();
-    return '$months ${months == 1 ? 'month' : 'months'} ago';
+    return '$months tháng trước';
   } else if (difference.inDays >= 1) {
     int days = difference.inDays;
-    return '$days ${days == 1 ? 'day' : 'days'} ago';
+    return '$days ngày trước';
   } else if (difference.inHours >= 1) {
     int hours = difference.inHours;
-    return '$hours ${hours == 1 ? 'hour' : 'hours'} ago';
+    return '$hours giờ trước';
   } else if (difference.inMinutes >= 1) {
     int minutes = difference.inMinutes;
-    return '$minutes ${minutes == 1 ? 'minute' : 'minutes'} ago';
+    return '$minutes phút trước';
   } else {
-    return 'Just now';
+    return 'Vừa xong';
   }
 }

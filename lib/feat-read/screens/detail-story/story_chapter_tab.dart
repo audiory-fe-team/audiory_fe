@@ -3,8 +3,6 @@ import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:number_paginator/number_paginator.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class StoryChapterTab extends StatelessWidget {
@@ -16,7 +14,6 @@ class StoryChapterTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
-    final paginatorController = NumberPaginatorController();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -47,29 +44,12 @@ class StoryChapterTab extends StatelessWidget {
             int index = entry.key;
             return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: GestureDetector(
-                    onTap: () {
-                      GoRouter.of(context)
-                          .push('/story/${story?.id}/chapter/${chapter.id}');
-                    },
-                    child: ChapterItem(
-                      title: 'Chương ${index + 1}: ${chapter.title}',
-                      time: '',
-                      onSelected: (p0, p1) {},
-                    )));
+                child: ChapterItem(
+                  chapter: chapter,
+                  position: index,
+                ));
           }).toList(),
         ),
-        NumberPaginator(
-          config: NumberPaginatorUIConfig(
-            buttonSelectedBackgroundColor: appColors.primaryBase,
-            buttonUnselectedForegroundColor: appColors.primaryBase,
-          ),
-          controller: paginatorController,
-          numberPages: 100,
-          onPageChange: (index) {
-            print(index);
-          },
-        )
       ],
     );
   }

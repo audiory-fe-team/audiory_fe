@@ -8,6 +8,7 @@ import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -97,18 +98,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     Widget followingCard() {
       return Column(
         children: [
-          Container(
-            width: 85,
-            height: 85,
-            decoration: const ShapeDecoration(
-              image: DecorationImage(
-                image: NetworkImage(
-                    'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
-                fit: BoxFit.fill,
-              ),
-              shape: CircleBorder(),
-            ),
-          ),
+          ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: AppImage(
+                  url: currentUser?.avatarUrl,
+                  width: 85,
+                  height: 85,
+                  fit: BoxFit.fill)),
           const SizedBox(
             height: 4,
           ),
@@ -267,29 +263,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         Skeletonizer(
                           enabled: profileQuery.isFetching,
                           child: Material(
+                            color: Colors.transparent,
                             child: InkWell(
-                              onTap: () async {
-                                context.push('/profile', extra: {});
-                              },
-                              customBorder: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(100.0),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(100.0),
-                                child: profileQuery.data?.avatarUrl == ''
-                                    ? Image.network(
-                                        'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
+                                onTap: () async {
+                                  context.push('/profile', extra: {});
+                                },
+                                customBorder: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(100.0),
+                                ),
+                                child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(400),
+                                    child: AppImage(
+                                        url: profileQuery.data?.avatarUrl,
                                         width: size.width / 3.5,
                                         height: size.width / 3.5,
-                                      )
-                                    : Image.network(
-                                        profileQuery.data?.avatarUrl ??
-                                            "https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw",
-                                        width: size.width / 3.5,
-                                        height: size.width / 3.5,
-                                      ),
-                              ),
-                            ),
+                                        fit: BoxFit.fill))),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -377,6 +365,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           child: AppIconButton(
                               title: 'Đăng xuất',
                               // icon: const Icon(Icons.add),
+
                               onPressed: () {
                                 signOut();
                                 AppSnackBar.buildSnackbar(

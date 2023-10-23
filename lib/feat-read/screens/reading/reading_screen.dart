@@ -19,6 +19,7 @@ class ReadingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isOffline = ref.read(isOfflineProvider);
+
     if (isOffline == true) {
       return OfflineReadingScreen(
           chapterId: chapterId, showComment: showComment);

@@ -40,6 +40,7 @@ class ChapterAudioPlayer extends HookWidget {
     // final sequenceStateStream = useStream(player.sequenceStateStream);
     // final totalDuration = sequenceStateStream.data?.sequence.fold(Duration.zero,
     //     (previous, element) => previous + (element.duration ?? Duration.zero));
+
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
@@ -59,10 +60,10 @@ class ChapterAudioPlayer extends HookWidget {
                         .textTheme
                         .labelMedium!
                         .copyWith(fontStyle: FontStyle.italic))),
-            Skeleton.keep(
+            Skeleton.shade(
                 child: ProgressBar(
               barHeight: 4,
-              baseBarColor: Colors.white,
+              baseBarColor: appColors?.inkLighter,
               bufferedBarColor: appColors?.primaryLightest,
               progressBarColor: appColors?.primaryBase,
               thumbColor: appColors?.primaryBase,
@@ -107,56 +108,57 @@ class AudioControl extends StatelessWidget {
             size: 24,
             color: appColors.inkBase,
           )),
-      StreamBuilder<PlayerState>(
-          stream: audioPlayer.playerStateStream,
-          builder: ((context, snapshot) {
-            final playerState = snapshot.data;
-            final processingState = playerState?.processingState;
-            final playing = playerState?.playing;
-            if (!(playing ?? false)) {
-              return FilledButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStatePropertyAll(appColors.primaryBase),
-                      shape: const MaterialStatePropertyAll(CircleBorder()),
-                      elevation: const MaterialStatePropertyAll(1)),
-                  onPressed: audioPlayer.play,
-                  child: const Icon(
-                    Icons.play_arrow_rounded,
-                    size: 24,
-                    color: Colors.white,
-                  ));
-            } else if (processingState != ProcessingState.completed) {
-              return FilledButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStatePropertyAll(appColors.primaryBase),
-                      shape: const MaterialStatePropertyAll(CircleBorder()),
-                      elevation: const MaterialStatePropertyAll(1)),
-                  onPressed: audioPlayer.pause,
-                  child: const Icon(
-                    Icons.pause_rounded,
-                    size: 24,
-                    color: Colors.white,
-                  ));
-            }
+      Skeleton.shade(
+          child: StreamBuilder<PlayerState>(
+              stream: audioPlayer.playerStateStream,
+              builder: ((context, snapshot) {
+                final playerState = snapshot.data;
+                final processingState = playerState?.processingState;
+                final playing = playerState?.playing;
+                if (!(playing ?? false)) {
+                  return FilledButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(appColors.primaryBase),
+                          shape: const MaterialStatePropertyAll(CircleBorder()),
+                          elevation: const MaterialStatePropertyAll(1)),
+                      onPressed: audioPlayer.play,
+                      child: const Icon(
+                        Icons.play_arrow_rounded,
+                        size: 24,
+                        color: Colors.white,
+                      ));
+                } else if (processingState != ProcessingState.completed) {
+                  return FilledButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(appColors.primaryBase),
+                          shape: const MaterialStatePropertyAll(CircleBorder()),
+                          elevation: const MaterialStatePropertyAll(1)),
+                      onPressed: audioPlayer.pause,
+                      child: const Icon(
+                        Icons.pause_rounded,
+                        size: 24,
+                        color: Colors.white,
+                      ));
+                }
 
-            return FilledButton(
-                style: ButtonStyle(
-                    backgroundColor:
-                        MaterialStatePropertyAll(appColors.primaryBase),
-                    shape: const MaterialStatePropertyAll(CircleBorder()),
-                    elevation: const MaterialStatePropertyAll(1)),
-                child: const Icon(
-                  Icons.play_arrow_rounded,
-                  size: 24,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  audioPlayer.seek(Duration.zero);
-                  audioPlayer.play();
-                });
-          })),
+                return FilledButton(
+                    style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStatePropertyAll(appColors.primaryBase),
+                        shape: const MaterialStatePropertyAll(CircleBorder()),
+                        elevation: const MaterialStatePropertyAll(1)),
+                    child: const Icon(
+                      Icons.play_arrow_rounded,
+                      size: 24,
+                      color: Colors.white,
+                    ),
+                    onPressed: () {
+                      audioPlayer.seek(Duration.zero);
+                      audioPlayer.play();
+                    });
+              }))),
       IconButton(
           onPressed: () {
             audioPlayer.seek(Duration(

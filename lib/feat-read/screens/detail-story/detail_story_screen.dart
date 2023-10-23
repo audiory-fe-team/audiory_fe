@@ -20,6 +20,8 @@ import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
+import 'package:audiory_v0/utils/format_number.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
@@ -218,7 +220,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   )
                 ]),
                 const SizedBox(height: 4),
-                Text((story?.chapters?.length ?? '1000').toString(),
+                Text((formatNumber(story?.chapters?.length ?? 0)),
                     style: sharedNumberStyle)
               ],
             ),
@@ -238,7 +240,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   )
                 ]),
                 const SizedBox(height: 4),
-                Text((story?.readCount ?? '').toString(),
+                Text(formatNumber(story?.readCount ?? 0),
                     style: sharedNumberStyle)
               ],
             ),
@@ -258,7 +260,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   )
                 ]),
                 const SizedBox(height: 4),
-                Text((story?.voteCount ?? '').toString(),
+                Text(formatNumber(story?.voteCount ?? 0),
                     style: sharedNumberStyle)
               ],
             ),
@@ -278,7 +280,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   )
                 ]),
                 const SizedBox(height: 4),
-                Text((story?.voteCount ?? '').toString(),
+                Text(formatNumber(story?.voteCount ?? 0),
                     style: sharedNumberStyle)
               ],
             ),
@@ -293,24 +295,13 @@ class DetailStoryScreen extends HookConsumerWidget {
         children: [
           ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Skeleton.replace(
-                  width: 110,
-                  height: 165,
-                  child: Container(
+              child: Skeleton.shade(
+                child: AppImage(
+                    url: story?.coverUrl,
                     width: 110,
                     height: 165,
-                    decoration: isOffline
-                        ? BoxDecoration(
-                            color: appColors.primaryLightest,
-                          )
-                        : BoxDecoration(
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                  story?.coverUrl ?? FALLBACK_IMG_URL),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                  ))),
+                    fit: BoxFit.fill),
+              )),
           const SizedBox(height: 24),
           Text(
             story?.title ?? '',
@@ -394,26 +385,17 @@ class DetailStoryScreen extends HookConsumerWidget {
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Skeleton.shade(
-                                          child: Container(
-                                        width: 32,
-                                        height: 32,
-                                        decoration: isOffline
-                                            ? BoxDecoration(
-                                                color:
-                                                    appColors.primaryLightest,
-                                                borderRadius:
-                                                    BorderRadius.circular(28))
-                                            : ShapeDecoration(
-                                                image: DecorationImage(
-                                                  image: NetworkImage(story
-                                                          ?.author?.avatarUrl ??
-                                                      FALLBACK_IMG_URL),
-                                                  fit: BoxFit.fill,
-                                                ),
-                                                shape: const CircleBorder(),
-                                              ),
-                                      )),
+                                      ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(16),
+                                          child: Skeleton.shade(
+                                            child: AppImage(
+                                              url: story?.author?.avatarUrl,
+                                              fit: BoxFit.fill,
+                                              width: 32,
+                                              height: 32,
+                                            ),
+                                          )),
                                       const SizedBox(width: 8),
                                       Text(
                                         isLoading
@@ -454,34 +436,38 @@ class DetailStoryScreen extends HookConsumerWidget {
                                         )))
                                     .toList(),
                               ))),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 12),
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: TabBar(
-                          onTap: (value) {
-                            if (tabState.value != value) tabState.value = value;
-                          },
-                          controller: tabController,
-                          labelColor: appColors.inkBase,
-                          unselectedLabelColor: appColors.inkLighter,
-                          labelPadding: const EdgeInsets.symmetric(vertical: 0),
-                          indicatorColor: appColors.primaryBase,
-                          indicatorWeight: 2.5,
-                          indicatorPadding:
-                              const EdgeInsets.symmetric(horizontal: 24),
-                          labelStyle: textTheme.headlineSmall,
-                          tabs: const [
-                            Tab(
-                              text: 'Chi tiết',
-                              height: 36,
+                      Skeletonizer(
+                          enabled: isLoading,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: TabBar(
+                              onTap: (value) {
+                                if (tabState.value != value)
+                                  tabState.value = value;
+                              },
+                              controller: tabController,
+                              labelColor: appColors.inkBase,
+                              unselectedLabelColor: appColors.inkLighter,
+                              labelPadding:
+                                  const EdgeInsets.symmetric(vertical: 0),
+                              indicatorColor: appColors.primaryBase,
+                              indicatorWeight: 2.5,
+                              indicatorPadding:
+                                  const EdgeInsets.symmetric(horizontal: 24),
+                              labelStyle: textTheme.headlineSmall,
+                              tabs: const [
+                                Tab(
+                                  height: 36,
+                                  child: Text('Chi tiết'),
+                                ),
+                                Tab(
+                                  height: 36,
+                                  child: Text('Chương'),
+                                )
+                              ],
                             ),
-                            Tab(
-                              text: 'Chương',
-                              height: 36,
-                            )
-                          ],
-                        ),
-                      ),
+                          )),
                       const SizedBox(height: 4),
                       Builder(builder: (context) {
                         if (tabState.value == 0) {

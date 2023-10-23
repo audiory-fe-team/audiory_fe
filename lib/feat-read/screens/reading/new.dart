@@ -1,6 +1,7 @@
 // import 'package:audioplayers/audioplayers.dart';
 
 import 'package:audiory_v0/constants/skeletons.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
@@ -11,6 +12,7 @@ import 'package:audiory_v0/feat-read/screens/reading/comment_section.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen_header.dart';
 import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
+import 'package:audiory_v0/providers/audio_player_provider.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -22,51 +24,68 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class OnlineReadingScreen extends HookWidget {
+class OnlineReadingScreen extends ConsumerStatefulWidget {
   final String chapterId;
   final bool? showComment;
+  const OnlineReadingScreen(
+      {required this.chapterId, this.showComment, super.key});
 
-  OnlineReadingScreen(
-      {super.key, required this.chapterId, this.showComment = false});
-  AudioPlayer player = new AudioPlayer();
+  @override
+  ConsumerState<OnlineReadingScreen> createState() =>
+      _OnlineReadingScreenState();
+}
+
+class _OnlineReadingScreenState extends ConsumerState<OnlineReadingScreen> {
+  Color? bgColor;
+  int fontSize = 18;
+  bool showCommentByParagraph = true;
+  bool hideBars = false;
+  Future? chapterFuture;
+  Future? storyFuture;
+
+  void initState() {
+    super.initState();
+    final AppColors? appColors = Theme.of(context).extension<AppColors>();
+    bgColor = appColors?.background;
+    chapterFuture = ChapterRepository().fetchChapterDetail(widget.chapterId);
+    storyFuture = StoryRepostitory().fetchStoryById(widget.chapterId);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final AppColors? appColors = Theme.of(context).extension<AppColors>();
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final bgColor = useState(appColors.background);
-    final fontSize = useState(18);
-    final showCommentByParagraph = useState(true);
-    final hideBars = useState(false);
+    final audioPlayer = ref.watch(audioPlayerProvider);
+    final curParaIndex = ref.watch(audioCurrentIndexProvider);
+    final scrollController = ScrollController();
 
-    final curParaIndex = useState<int?>(null);
-    final keyList = useState<List<GlobalKey>>([]);
-    final scrollController = useScrollController();
+    final keyList = <List<GlobalKey>>([]);
 
-    final sequenceState = useStream(player.sequenceStateStream);
-    final playingState = useStream(player.playingStream);
+    // final chapterQuery = useQuery(
+    //   ['chapter', chapterId],
+    //   () => ChapterRepository().fetchChapterDetail(chapterId),
+    // );
 
-    final chapterQuery = useQuery(
-      ['chapter', chapterId],
-      () => ChapterRepository().fetchChapterDetail(chapterId),
-    );
-
-    final storyQuery = useQuery(
-        ['story', chapterQuery.data?.storyId],
-        () =>
-            StoryRepostitory().fetchStoryById(chapterQuery.data?.storyId ?? ''),
-        enabled: chapterQuery.data?.storyId != null);
+    // final storyQuery = useQuery(
+    //     ['story', chapterQuery.data?.storyId],
+    //     () =>
+    //         StoryRepostitory().fetchStoryById(chapterQuery.data?.storyId ?? ''),
+    //     enabled: chapterQuery.data?.storyId != null);
 
     void changeStyle(
         [Color? newBgColor, int? newFontSize, bool? isShowCommentByParagraph]) {
-      bgColor.value = newBgColor ?? bgColor.value;
-      fontSize.value = newFontSize ?? fontSize.value;
-      showCommentByParagraph.value =
-          isShowCommentByParagraph ?? showCommentByParagraph.value;
+          setState(() {
+              bgColor = newBgColor ?? bgColor;
+         fontSize = newFontSize ?? fontSize;
+          showCommentByParagraph =
+          isShowCommentByParagraph ?? showCommentByParagraph;
+          });
+    
     }
 
     void handleOpenCommentPara(String paraId) {
@@ -78,73 +97,73 @@ class OnlineReadingScreen extends HookWidget {
             topRight: Radius.circular(12.0),
           )),
           useSafeArea: true,
-          backgroundColor: appColors.background,
+          backgroundColor: appColors?.background,
           context: context,
           builder: (context) {
             return Padding(
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).viewInsets.bottom),
                 child: CommentScreen(
-                  chapterId: chapterId,
+                  chapterId: widget.chapterId,
                   paraId: paraId,
                 ));
           });
     }
 
-    useEffect(() {
-      final playlist = ConcatenatingAudioSource(
-          children: (chapterQuery.data?.paragraphs ?? [])
-              .asMap()
-              .entries
-              .map((entry) {
-        int idx = entry.key;
-        Paragraph p = entry.value;
-        return AudioSource.uri(
-            Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audioUrl}'),
-            tag: MediaItem(
-                id: p.id,
-                title: storyQuery.data?.title ?? '',
-                artist: 'Chương ${1} - Đoạn ${idx + 1}'));
-      }).toList());
-      try {
-        player.setAudioSource(playlist);
-      } catch (error) {
-        print(error.toString());
-      }
-      return () {};
-    }, [player, chapterQuery.data]);
+    // useEffect(() {
+    //   final playlist = ConcatenatingAudioSource(
+    //       children: (chapterQuery.data?.paragraphs ?? [])
+    //           .asMap()
+    //           .entries
+    //           .map((entry) {
+    //     int idx = entry.key;
+    //     Paragraph p = entry.value;
+    //     return AudioSource.uri(
+    //         Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audioUrl}'),
+    //         tag: MediaItem(
+    //             id: p.id,
+    //             title: storyQuery.data?.title ?? '',
+    //             artist: 'Chương ${1} - Đoạn ${idx + 1}'));
+    //   }).toList());
+    //   try {
+    //     player.setAudioSource(playlist);
+    //   } catch (error) {
+    //     print(error.toString());
+    //   }
+    //   return () {};
+    // }, [player, chapterQuery.data]);
 
-    useEffect(() {
-      final curIndex = sequenceState.data?.currentIndex;
-      if (curIndex == null || playingState.data != true) return;
-      curParaIndex.value = curIndex;
+    // useEffect(() {
+    //   final curIndex = sequenceState.data?.currentIndex;
+    //   if (curIndex == null || playingState.data != true) return;
+    //   curParaIndex.value = curIndex;
 
-      return;
-    }, [sequenceState.data?.currentIndex, playingState.data]);
+    //   return;
+    // }, [sequenceState.data?.currentIndex, playingState.data]);
 
-    useEffect(() {
-      final currentIndex = curParaIndex.value;
-      if (currentIndex == null) return;
-      final keyContext = keyList.value[currentIndex].currentContext;
-      if (keyContext == null) return;
-      Scrollable.ensureVisible(keyContext,
-          duration: const Duration(seconds: 1), alignment: 0.5);
+    // useEffect(() {
+    //   final currentIndex = curParaIndex.value;
+    //   if (currentIndex == null) return;
+    //   final keyContext = keyList.value[currentIndex].currentContext;
+    //   if (keyContext == null) return;
+    //   Scrollable.ensureVisible(keyContext,
+    //       duration: const Duration(seconds: 1), alignment: 0.5);
 
-      return;
-    }, [curParaIndex.value]);
+    //   return;
+    // }, [curParaIndex.value]);
 
-    useEffect(() {
-      scrollController.addListener(() {
-        if (scrollController.position.userScrollDirection ==
-            ScrollDirection.forward) {
-          if (hideBars.value) hideBars.value = false;
-        }
-        if (scrollController.position.userScrollDirection ==
-            ScrollDirection.reverse) {
-          if (!hideBars.value) hideBars.value = true;
-        }
-      });
-    }, []);
+    // useEffect(() {
+    //   scrollController.addListener(() {
+    //     if (scrollController.position.userScrollDirection ==
+    //         ScrollDirection.forward) {
+    //       if (hideBars.value) hideBars.value = false;
+    //     }
+    //     if (scrollController.position.userScrollDirection ==
+    //         ScrollDirection.reverse) {
+    //       if (!hideBars.value) hideBars.value = true;
+    //     }
+    //   });
+    // }, []);
 
     // useEffect(() {
     //   if (showComment == true) {
@@ -157,18 +176,18 @@ class OnlineReadingScreen extends HookWidget {
     //   }
     // }, []);
 
-    useEffect(() {
-      return () => player.dispose();
-    }, []);
+  
 
     return Scaffold(
-      backgroundColor: bgColor.value,
+      backgroundColor: bgColor,
       body: SafeArea(
-          child: Skeletonizer(
-        enabled: chapterQuery.isFetching,
+          child: FutureBuilder(future: chapterFuture, builder:(context, snapshot) {
+            return Skeletonizer(
         child: RefreshIndicator(
             onRefresh: () async {
-              chapterQuery.refetch();
+              setState(() {
+                chapterFuture =  ChapterRepository().fetchChapterDetail(widget.chapterId);
+              });
             },
             child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -343,7 +362,8 @@ class OnlineReadingScreen extends HookWidget {
                     )
                   ]),
                 ))),
-      )),
+      
+          }),
       bottomNavigationBar: ReadingBottomBar(
         changeStyle: changeStyle,
         chapterId: chapterId,

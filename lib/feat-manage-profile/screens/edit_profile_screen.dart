@@ -3,6 +3,7 @@ import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/enums/Sex.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/dropdown_button.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
@@ -169,20 +170,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       borderRadius: BorderRadius.circular(100.0),
                     ),
                     child: ClipRRect(
-                        borderRadius: BorderRadius.circular(100.0),
-                        child: Image.network(
-                          widget.userProfile?.avatarUrl?.trim() != ''
-                              ? profileQuery.data?.avatarUrl as String
-                              : 'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
-                          width: size.width / 3.5,
-                          height: size.width / 3.5,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Image.network(
-                            'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
+                        borderRadius: BorderRadius.circular(400),
+                        child: AppImage(
+                            url: widget.userProfile?.avatarUrl,
                             width: size.width / 3.5,
                             height: size.width / 3.5,
-                          ),
-                        )),
+                            fit: BoxFit.fill)),
                   ),
                 ),
               ),
