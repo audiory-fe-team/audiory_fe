@@ -182,7 +182,7 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                         color: Colors.white,
                         bgColor: appColors.primaryBase,
                         onPressed: () async {
-                          if (_formKey.currentState?.isValid as bool) {
+                          if (_formKey.currentState?.isValid == true) {
                             _formKey.currentState!.save();
 
                             Map<String, String> body = {};

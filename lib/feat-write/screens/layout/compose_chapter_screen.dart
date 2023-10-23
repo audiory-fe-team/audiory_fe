@@ -218,7 +218,7 @@ class _ComposeChapterScreenState extends ConsumerState<ComposeChapterScreen> {
                                 return const text.Text('model');
                               });
                         },
-                        child: chapter?.isDraft as bool
+                        child: chapter?.isDraft == true
                             ? Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Center(
@@ -338,35 +338,35 @@ class _ComposeChapterScreenState extends ConsumerState<ComposeChapterScreen> {
                             child:
                                 _createChapterForm(chapter as Chapter, data[0]),
                           ),
-                          QuillToolbar.basic(
-                            controller: _controller,
-                            showAlignmentButtons: false,
-                            showCodeBlock: false,
-                            showBackgroundColorButton: false,
-                            showIndent: false,
-                            showInlineCode: false,
-                            showLink: false,
-                            showListCheck: false,
-                            showQuote: false,
-                            showSubscript: false,
-                            showSuperscript: false,
-                            showStrikeThrough: false,
-                            showSmallButton: false,
-                            showColorButton: false,
-                            showDividers: false,
-                            showClearFormat: false,
-                          ),
-                          Expanded(
-                              child: Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: QuillEditor.basic(
-                                controller: QuillController(
-                                    document: Document.fromJson(
-                                        jsonDecode(data[0].richText as String)),
-                                    selection: const TextSelection.collapsed(
-                                        offset: 0)),
-                                readOnly: false),
-                          )),
+                          // QuillToolbar.basic(
+                          //   controller: _controller,
+                          //   showAlignmentButtons: false,
+                          //   showCodeBlock: false,
+                          //   showBackgroundColorButton: false,
+                          //   showIndent: false,
+                          //   showInlineCode: false,
+                          //   showLink: false,
+                          //   showListCheck: false,
+                          //   showQuote: false,
+                          //   showSubscript: false,
+                          //   showSuperscript: false,
+                          //   showStrikeThrough: false,
+                          //   showSmallButton: false,
+                          //   showColorButton: false,
+                          //   showDividers: false,
+                          //   showClearFormat: false,
+                          // ),
+                          // Expanded(
+                          //     child: Padding(
+                          //   padding: const EdgeInsets.all(16.0),
+                          //   child: QuillEditor.basic(
+                          //       controller: QuillController(
+                          //           document: Document.fromJson(
+                          //               jsonDecode(data[0].richText as String)),
+                          //           selection: const TextSelection.collapsed(
+                          //               offset: 0)),
+                          //       readOnly: false),
+                          // )),
                         ]),
                 ),
             error: (err, stack) => text.Text(

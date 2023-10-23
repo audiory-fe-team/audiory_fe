@@ -2,6 +2,7 @@ import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/LibraryStory.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -23,8 +24,7 @@ class CurrentReadCard extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final coverUrl =
-        libStory?.story.coverUrl ?? story?.coverUrl ?? FALLBACK_IMG_URL;
+    final coverUrl = libStory?.story.coverUrl ?? story?.coverUrl;
     final storyId = libStory?.storyId ?? story?.id ?? 'not-fount';
 
     final title = libStory?.story.title ?? story?.title ?? 'Tiêu đề truyện';
@@ -60,17 +60,11 @@ class CurrentReadCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 85,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: appColors.primaryLightest,
-                        image: DecorationImage(
-                          image: NetworkImage(coverUrl),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
+                    AppImage(
+                        url: coverUrl,
+                        width: 85,
+                        height: 120,
+                        fit: BoxFit.fill),
                   ],
                 ),
               ),

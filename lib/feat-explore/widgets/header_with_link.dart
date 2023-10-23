@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HeaderWithLink extends StatelessWidget {
   final Widget? icon;
@@ -20,8 +21,13 @@ class HeaderWithLink extends StatelessWidget {
         children: [
           Row(
             children: [
-              icon ?? const SizedBox(),
-              const SizedBox(width: 2),
+              icon != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child:
+                          Skeleton.replace(width: 20, height: 20, child: icon!))
+                  : const SizedBox(),
+              SizedBox(width: icon != null ? 4 : 0),
               Text(title, style: Theme.of(context).textTheme.headlineMedium),
             ],
           ),

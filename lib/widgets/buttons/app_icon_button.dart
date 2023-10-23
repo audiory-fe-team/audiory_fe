@@ -57,7 +57,7 @@ class AppIconButton extends StatelessWidget {
             label: Text(title == null ? 'Default' : title as String,
                 style: textStyle ??
                     Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: color ?? appColors.skyLightest,
+                          color: color ?? appColors.backgroundLight,
                           fontWeight: FontWeight.bold,
                         )),
           );

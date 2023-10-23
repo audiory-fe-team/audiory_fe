@@ -16,7 +16,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:lottie/lottie.dart';
 
 class DonateGiftModal extends StatefulHookWidget {
-  double? coinsWallet;
+  dynamic coinsWallet;
   final Story? story;
   Function(Gift, int) handleSending;
   DonateGiftModal(
@@ -41,7 +41,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
     final size = MediaQuery.of(context).size;
 
     final selectedItem = giftsQuery.data != null
-        ? useState<Gift?>(lists.length == 0 ? null : lists[0])
+        ? useState<dynamic>(lists.length == 0 ? null : lists[0])
         : null;
     final sizeController = useTextEditingController(text: "1");
 
@@ -253,8 +253,8 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                                     selectedItem?.value as Gift,
                                     int.parse(sizeController.value.text) ?? 1);
                                 setState(() {
-                                  widget.coinsWallet = (widget.coinsWallet)! -
-                                      int.parse(selectedItem?.value?.price
+                                  widget.coinsWallet = (widget.coinsWallet) ??
+                                      -int.parse(selectedItem?.value?.price
                                               .toString() ??
                                           '0');
                                 });

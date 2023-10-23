@@ -50,7 +50,7 @@ class AppDropdownButton extends StatelessWidget {
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ),
-            isRequired as bool
+            isRequired == true
                 ? requiredAsterisk()
                 : const SizedBox(
                     height: 0,

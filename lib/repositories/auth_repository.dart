@@ -229,7 +229,7 @@ class AuthRepository extends ChangeNotifier {
   }
 
   //Google Sign In
-  Future<UserServer?> signInWithGoogle() async {
+  Future<AuthUser?> signInWithGoogle() async {
     final GoogleSignIn googleSignIn = GoogleSignIn();
     try {
       GoogleSignInAccount? gUser = await googleSignIn.signIn();
@@ -300,7 +300,7 @@ class AuthRepository extends ChangeNotifier {
         storage.write(key: 'currentUser', value: response.body.toString());
         authProvider = AuthProvider();
         authProvider
-            .setUserDetails(UserServer.fromJson(jsonDecode(json)['data']));
+            .setUserDetails(AuthUser.fromJson(jsonDecode(json)['data']));
       }
     }
   }
@@ -321,7 +321,7 @@ class AuthRepository extends ChangeNotifier {
 
         if (response.statusCode == 200) {
           final result = response.data['data'];
-          final userProfile = UserServer.fromJson(result);
+          final userProfile = AuthUser.fromJson(result);
           final authProvider = AuthProvider();
           authProvider.setUserDetails(userProfile);
         }
@@ -409,12 +409,12 @@ class AuthRepository extends ChangeNotifier {
     }
   }
 
-  Future<UserServer> getMyUserById() async {
+  Future<AuthUser> getMyUserById() async {
     final url = Uri.parse('${Endpoints().user}/me');
 
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {
-      "Content-type": "application/json; charset=UTF-8",
+      "Content-type": "application/json",
       "Accept": "application/json",
     };
     const storage = FlutterSecureStorage();
@@ -428,8 +428,7 @@ class AuthRepository extends ChangeNotifier {
     if (response.statusCode == 200) {
       try {
         final result = jsonDecode(responseBody)['data'];
-
-        return UserServer.fromJson(result);
+        return AuthUser.fromJson(result);
       } catch (e) {
         rethrow;
       }

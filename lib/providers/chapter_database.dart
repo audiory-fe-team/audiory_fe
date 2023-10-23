@@ -17,6 +17,12 @@ class ChapterDatabase {
   Future<Chapter?> getChapter(String chapterId) async {
     final chapterJson = await chapterStore.record(chapterId).get(await _db);
     if (chapterJson == null) return null;
-    return Chapter.fromJson(chapterJson);
+    try {
+      final chapter = Chapter.fromJson(chapterJson);
+      return chapter;
+    } catch (error) {
+      print(error);
+      throw error;
+    }
   }
 }

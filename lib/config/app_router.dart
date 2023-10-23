@@ -2,6 +2,7 @@ import 'package:audiory_v0/feat-auth/screens/forgot_password/forgot_password_scr
 import 'package:audiory_v0/feat-auth/screens/forgot_password/reset_password_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/category_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/notification_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/tag_screen.dart';
 import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
@@ -209,6 +210,14 @@ class AppRoutes {
                       return const WriterScreen();
                     },
                   ),
+                  GoRoute(
+                    parentNavigatorKey: _shellNavigatorKey,
+                    path: 'notification',
+                    name: 'notification',
+                    builder: (BuildContext context, GoRouterState state) {
+                      return const NotificationScreen();
+                    },
+                  ),
                 ]),
           ]),
       GoRoute(
@@ -244,6 +253,7 @@ class AppRoutes {
               name: 'chapter_detail',
               builder: (BuildContext context, GoRouterState state) {
                 String? chapterId = state.pathParameters["chapterId"];
+
                 if (chapterId == null || chapterId == '') {
                   return const NotFoundScreen();
                 }
@@ -328,7 +338,7 @@ class AppRoutes {
         path: '/profileSettings',
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
-          final currentUser = extraMap["currentUser"] as UserServer;
+          final currentUser = extraMap["currentUser"] as AuthUser;
           final userProfile = extraMap["userProfile"] as Profile;
           return ProfileSettingsScreen(
               currentUser: currentUser, userProfile: userProfile);
@@ -339,7 +349,7 @@ class AppRoutes {
         path: '/wallet',
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
-          final currentUser = extraMap["currentUser"] as UserServer;
+          final currentUser = extraMap["currentUser"] as AuthUser;
           return WalletScreen(currentUser: currentUser);
         },
         routes: [
@@ -348,7 +358,7 @@ class AppRoutes {
             path: 'newPurchase',
             builder: (BuildContext context, GoRouterState state) {
               final extraMap = state.extra as Map<String, dynamic>;
-              final currentUser = extraMap["currentUser"] as UserServer;
+              final currentUser = extraMap["currentUser"] as AuthUser;
               return NewPurchaseScreen(
                 currentUser: currentUser,
               );
@@ -362,7 +372,7 @@ class AppRoutes {
           builder: (BuildContext context, GoRouterState state) {
             final extraMap = state.extra as Map<String, dynamic>;
 
-            final currentUser = extraMap["currentUser"] as UserServer;
+            final currentUser = extraMap["currentUser"] as AuthUser;
             final userProfile = extraMap["userProfile"] as Profile;
 
             return EditProfileScreen(
@@ -374,7 +384,7 @@ class AppRoutes {
         builder: (BuildContext context, GoRouterState state) {
           final extraMap = state.extra as Map<String, dynamic>;
 
-          final currentUser = extraMap["currentUser"] as UserServer;
+          final currentUser = extraMap["currentUser"] as AuthUser;
           final userProfile = extraMap["userProfile"] as Profile;
 
           return EditAccountScreen(
@@ -387,7 +397,7 @@ class AppRoutes {
             builder: (BuildContext context, GoRouterState state) {
               final extraMap = state.extra as Map<String, dynamic>;
 
-              final currentUser = extraMap["currentUser"] as UserServer;
+              final currentUser = extraMap["currentUser"] as AuthUser;
               final userProfile = extraMap["userProfile"] as Profile;
 
               return EditEmailScreen(

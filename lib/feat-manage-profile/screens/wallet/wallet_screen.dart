@@ -16,7 +16,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../../theme/theme_constants.dart';
 
 class WalletScreen extends StatefulHookWidget {
-  final UserServer currentUser;
+  final AuthUser currentUser;
   const WalletScreen({super.key, required this.currentUser});
 
   @override

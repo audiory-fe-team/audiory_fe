@@ -3,7 +3,11 @@ import 'dart:math';
 
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/constants/skeletons.dart';
-import 'package:audiory_v0/feat-read/widgets/donate_gift_modal.dart';
+import 'package:audiory_v0/feat-read/screens/detail-story/detail_story_bottom_bar.dart';
+import 'package:audiory_v0/feat-read/screens/detail-story/detail_story_top_bar.dart';
+import 'package:audiory_v0/feat-read/screens/detail-story/story_chapter_tab.dart';
+import 'package:audiory_v0/feat-read/screens/detail-story/story_detail_tab.dart';
+import 'package:audiory_v0/feat-read/screens/detail-story/donate_gift_modal.dart';
 import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
@@ -24,10 +28,8 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
-import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -37,10 +39,8 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:number_paginator/number_paginator.dart';
-import 'package:sembast/sembast.dart';
-import 'package:skeletonizer/skeletonizer.dart';
-
 import 'package:readmore/readmore.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailStoryScreen extends HookConsumerWidget {
   final String id;
@@ -60,27 +60,21 @@ class DetailStoryScreen extends HookConsumerWidget {
 
     final tabController = useTabController(initialLength: 2);
 
-    final paginatorController = NumberPaginatorController();
-    final numOfPages = useState(1);
-    final currentPage = useState(0);
-    final isDesc = useState(false);
-
-    final storyQuery =
-        useQuery(['story', id], () => StoryRepostitory().fetchStoryById(id));
-
     final donatorsQuery = useQuery(
         ['donators', id], () => StoryRepostitory().fetchTopDonators(id));
 
     final libraryQuery =
         useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
 
+    final storyQuery = useQuery(
+        ['story', id], () => StoryRepostitory().fetchStoryById(id),
+        enabled: !isOffline);
     final authorQuery = useQuery(['profile', storyQuery.data?.authorId],
         () => ProfileRepository().fetchProfileById(storyQuery.data?.authorId),
         enabled: storyQuery.isSuccess);
 
     final userQuery = useQuery([
       'userById',
-      storyQuery.data?.authorId
     ], () => AuthRepository().getMyUserById(), enabled: storyQuery.isSuccess);
 
     final tabState = useState(0);
@@ -124,7 +118,24 @@ class DetailStoryScreen extends HookConsumerWidget {
       }
     }
 
-    void handleBuyChapter(Chapter chapter, int price) {
+    handleBuyStory() async {
+      //check if paid chapters left >5 chapter
+      try {
+        await StoryRepostitory().buyStory(id);
+      } catch (e) {
+        // ignore: use_build_context_synchronously
+        AppSnackBar.buildTopSnackBar(
+            context, 'Mua truyện không thành công', null, SnackBarType.error);
+      }
+      storyQuery.refetch();
+      // ignore: use_build_context_synchronously
+      AppSnackBar.buildTopSnackBar(
+          context, 'Mua truyện thành công', null, SnackBarType.success);
+    }
+
+    void handleBuyChapter(
+        Chapter chapter, int price, int paywalledChaptersCount) {
+      bool isBuyStory = paywalledChaptersCount >= 5 ? true : false;
       if (price != 0) {
         showModalBottomSheet(
           shape: const RoundedRectangleBorder(
@@ -134,141 +145,167 @@ class DetailStoryScreen extends HookConsumerWidget {
           context: context,
           builder: (context) => Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-            height: MediaQuery.of(context).size.height / 3,
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(
-                width: size.width / 3.7,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                    color: appColors.skyLightest,
-                    borderRadius: const BorderRadius.all(Radius.circular(50))),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                        child: GestureDetector(
-                      child: Image.asset(
-                        'assets/images/coin.png',
-                        width: 30,
-                        height: 30,
-                      ),
-                    )),
-                    Flexible(
-                        child: Skeletonizer(
-                      enabled: userQuery.isFetching,
-                      child: Text(
-                        handleCoins(),
-                        style: textTheme.titleMedium
-                            ?.copyWith(color: appColors.inkBase),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                height: (size.height) / 4.5,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(chapter.title, style: textTheme.titleLarge),
-                    Text('Chương ${chapter.position}',
-                        style: textTheme.titleLarge),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+            height: isBuyStory
+                ? MediaQuery.of(context).size.height / 2.5
+                : MediaQuery.of(context).size.height / 3,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(
+                    width: size.width / 3.75,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: appColors.skyLightest,
+                        borderRadius:
+                            const BorderRadius.all(Radius.circular(50))),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Flexible(
-                          flex: 3,
-                          child: GestureDetector(
-                            child: Image.asset(
-                              'assets/images/coin.png',
-                              width: 30,
-                              height: 30,
-                            ),
+                            child: GestureDetector(
+                          child: Image.asset(
+                            'assets/images/coin.png',
+                            width: 30,
+                            height: 30,
                           ),
-                        ),
+                        )),
                         Flexible(
-                          flex: 2,
+                            child: Skeletonizer(
+                          enabled: userQuery.isFetching,
                           child: Text(
-                            '$price',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(color: appColors.inkLighter),
+                            handleCoins(),
+                            style: textTheme.titleMedium
+                                ?.copyWith(color: appColors.inkBase),
                           ),
-                        ),
+                        )),
                       ],
                     ),
-                    Container(
-                      width: size.width - 32,
-                      child: AppIconButton(
-                        onPressed: () async {
-                          var totalCoins =
-                              userQuery.data?.wallets?.isEmpty == true
-                                  ? 0
-                                  : userQuery.data?.wallets?[0].balance;
-                          if (price > totalCoins) {
-                            context.pop();
-                            await AppSnackBar.buildTopSnackBar(context,
-                                'Nạp xu để tiếp tục', null, SnackBarType.info);
-                          } else {
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(chapter.title, style: textTheme.titleLarge),
+                        Text('Chương ${chapter.position}',
+                            style: textTheme.titleLarge),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              flex: 3,
+                              child: GestureDetector(
+                                child: Image.asset(
+                                  'assets/images/coin.png',
+                                  width: 30,
+                                  height: 30,
+                                ),
+                              ),
+                            ),
+                            Flexible(
+                              flex: 2,
+                              child: Text(
+                                '$price',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(color: appColors.inkLighter),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        SizedBox(
+                          width: size.width - 32,
+                          child: AppIconButton(
+                            onPressed: () async {
+                              var totalCoins =
+                                  userQuery.data?.wallets?.isEmpty == true
+                                      ? 0
+                                      : userQuery.data?.wallets?[0].balance;
+                              if (price > totalCoins) {
+                                context.pop();
+                                await AppSnackBar.buildTopSnackBar(
+                                    context,
+                                    'Nạp xu để tiếp tục',
+                                    null,
+                                    SnackBarType.info);
+                              } else {
 // print('authorId : ${authorQuery.data?.id}');
-                            Map<String, String> body = {
-                              // 'transaction':{
-                              //   'author_id': authorQuery.data?.id ?? ''
-                              // }
-                              'author_id': authorQuery.data?.id ?? ''
-                            };
-                            try {
-                              await ChapterRepository().buyChapter(
-                                  storyQuery.data?.id, chapter.id, body);
-                            } catch (e) {
-                              if (kDebugMode) {
-                                print('error $e');
+                                Map<String, String> body = {
+                                  // 'transaction':{
+                                  //   'author_id': authorQuery.data?.id ?? ''
+                                  // }
+                                  'author_id': authorQuery.data?.id ?? ''
+                                };
+                                try {
+                                  await ChapterRepository().buyChapter(
+                                      storyQuery.data?.id, chapter.id, body);
+                                } catch (e) {
+                                  if (kDebugMode) {
+                                    print('error $e');
+                                  }
+
+                                  // ignore: use_build_context_synchronously
+                                  await AppSnackBar.buildTopSnackBar(
+                                      context,
+                                      'Mua chương lỗi',
+                                      null,
+                                      SnackBarType.error);
+                                }
+                                // ignore: use_build_context_synchronously
+                                context.pop();
+                                storyQuery.refetch();
+                                userQuery.refetch();
+
+                                // ignore: use_build_context_synchronously
+                                await AppSnackBar.buildTopSnackBar(
+                                    context,
+                                    'Mua chương thành công',
+                                    null,
+                                    SnackBarType.success);
                               }
-
-                              // ignore: use_build_context_synchronously
-                              await AppSnackBar.buildTopSnackBar(context,
-                                  'Mua chương lỗi', null, SnackBarType.error);
-                            }
-                            // ignore: use_build_context_synchronously
-                            context.pop();
-                            storyQuery.refetch();
-                            userQuery.refetch();
-
-                            await AppSnackBar.buildTopSnackBar(
-                                context,
-                                'Mua chương thành công',
-                                null,
-                                SnackBarType.success);
-                          }
-                        },
-                        title: 'Mở khóa chương',
-                        textStyle: textTheme.titleMedium
-                            ?.copyWith(color: appColors.skyLightest),
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ]),
+                            },
+                            title: 'Mở khóa chương',
+                            textStyle: textTheme.titleMedium
+                                ?.copyWith(color: appColors.skyLightest),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 8,
+                        ),
+                        paywalledChaptersCount >= 5
+                            ? SizedBox(
+                                width: size.width - 32,
+                                child: AppIconButton(
+                                  title:
+                                      'Mua cả truyện với ${(paywalledChaptersCount * (chapter.price ?? 0) * 0.8).round()} xu',
+                                  textStyle: textTheme.titleMedium
+                                      ?.copyWith(color: appColors.primaryBase),
+                                  isOutlined: true,
+                                  bgColor: appColors.skyLightest,
+                                  onPressed: () {
+                                    handleBuyStory();
+                                  },
+                                ),
+                              )
+                            : const SizedBox(
+                                height: 0,
+                              )
+                      ],
+                    ),
+                  )
+                ]),
           ),
         );
-      }
-    }
-
-    Future<void> handleAddToLibrary() async {
-      try {
-        await LibraryRepository.addStoryMyLibrary(id);
-        AppSnackBar.buildTopSnackBar(context,
-            'Thêm truyện vào thư viện thành công', null, SnackBarType.success);
-        libraryQuery.refetch();
-      } catch (error) {
-        AppSnackBar.buildTopSnackBar(
-            context, error.toString(), null, SnackBarType.warning);
       }
     }
 
@@ -283,19 +320,18 @@ class DetailStoryScreen extends HookConsumerWidget {
               children: [
             Column(
               children: [
-                Skeleton.keep(
-                  child: Row(children: [
-                    Image.asset(
-                      'assets/images/chapter_colored.png',
-                      width: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Chương',
-                      style: sharedHeaderStyle,
-                    )
-                  ]),
-                ),
+                Row(children: [
+                  Skeleton.shade(
+                      child: Image.asset(
+                    'assets/images/chapter_colored.png',
+                    width: 16,
+                  )),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Chương',
+                    style: sharedHeaderStyle,
+                  )
+                ]),
                 const SizedBox(height: 4),
                 Text((story?.chapters?.length ?? '1000').toString(),
                     style: sharedNumberStyle)
@@ -304,19 +340,18 @@ class DetailStoryScreen extends HookConsumerWidget {
             const VerticalDivider(),
             Column(
               children: [
-                Skeleton.keep(
-                  child: Row(children: [
-                    Image.asset(
-                      'assets/images/view_colored.png',
-                      width: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Lượt đọc',
-                      style: sharedHeaderStyle,
-                    )
-                  ]),
-                ),
+                Row(children: [
+                  Skeleton.shade(
+                      child: Image.asset(
+                    'assets/images/view_colored.png',
+                    width: 16,
+                  )),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Lượt đọc',
+                    style: sharedHeaderStyle,
+                  )
+                ]),
                 const SizedBox(height: 4),
                 Text((story?.readCount ?? '').toString(),
                     style: sharedNumberStyle)
@@ -325,19 +360,18 @@ class DetailStoryScreen extends HookConsumerWidget {
             const VerticalDivider(),
             Column(
               children: [
-                Skeleton.keep(
-                  child: Row(children: [
-                    Image.asset(
-                      'assets/images/comment_colored.png',
-                      width: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Bình luận',
-                      style: sharedHeaderStyle,
-                    )
-                  ]),
-                ),
+                Row(children: [
+                  Skeleton.shade(
+                      child: Image.asset(
+                    'assets/images/comment_colored.png',
+                    width: 16,
+                  )),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Bình luận',
+                    style: sharedHeaderStyle,
+                  )
+                ]),
                 const SizedBox(height: 4),
                 Text((story?.voteCount ?? '').toString(),
                     style: sharedNumberStyle)
@@ -346,19 +380,18 @@ class DetailStoryScreen extends HookConsumerWidget {
             const VerticalDivider(),
             Column(
               children: [
-                Skeleton.keep(
-                  child: Row(children: [
-                    Image.asset(
-                      'assets/images/vote_colored.png',
-                      width: 16,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      'Bình chọn',
-                      style: sharedHeaderStyle,
-                    )
-                  ]),
-                ),
+                Row(children: [
+                  Skeleton.shade(
+                      child: Image.asset(
+                    'assets/images/vote_colored.png',
+                    width: 16,
+                  )),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Bình chọn',
+                    style: sharedHeaderStyle,
+                  )
+                ]),
                 const SizedBox(height: 4),
                 Text((story?.voteCount ?? '').toString(),
                     style: sharedNumberStyle)
@@ -375,206 +408,82 @@ class DetailStoryScreen extends HookConsumerWidget {
                   chapter.isPaywalled == true || chapter.isPaid == false)
               .toList()
           : [];
-      handleBuyStory() async {
-        //check if paid chapters left >1 chapter
-
-        try {
-          await StoryRepostitory().buyStory(story?.id);
-        } catch (e) {
-          // ignore: use_build_context_synchronously
-          AppSnackBar.buildTopSnackBar(
-              context, 'Mua truyện không thành công', null, SnackBarType.error);
-        }
-        storyQuery.refetch();
-        // ignore: use_build_context_synchronously
-        AppSnackBar.buildTopSnackBar(
-            context, 'Mua truyện thành công', null, SnackBarType.success);
-      }
 
       return Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Skeleton.replace(
-              width: 110,
-              height: 165,
-              child: Container(
-                width: 110,
-                height: 165,
-                decoration: ShapeDecoration(
-                  image: DecorationImage(
-                    image: NetworkImage(
-                        story?.coverUrl == null || story?.coverUrl == ''
-                            ? FALLBACK_IMG_URL
-                            : story?.coverUrl ?? FALLBACK_IMG_URL),
-                    fit: BoxFit.fill,
-                  ),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                ),
-              )),
+          ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Skeleton.replace(
+                  width: 110,
+                  height: 165,
+                  child: Container(
+                    width: 110,
+                    height: 165,
+                    decoration: isOffline
+                        ? BoxDecoration(
+                            color: appColors.primaryLightest,
+                          )
+                        : BoxDecoration(
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                  story?.coverUrl ?? FALLBACK_IMG_URL),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                  ))),
           const SizedBox(height: 24),
           Text(
             story?.title ?? '',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          story?.isPaywalled == true && paywalledChaptersList.length >= 5
+          story?.isPaywalled == true
               ? Column(
                   children: [
-                    const SizedBox(height: 24),
-                    AppIconButton(
-                      onPressed: () {
-                        handleBuyStory();
-                      },
-                      title: 'Mua cả truyện',
-                      isOutlined: true,
-                      color: appColors.primaryBase,
-                      bgColor: appColors.skyLightest,
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 10),
+                      decoration: ShapeDecoration(
+                        color: appColors.primaryLightest,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Text(
+                        'Truyện trả phí ',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium!
+                            .copyWith(
+                                color: appColors.primaryBase,
+                                fontWeight: FontWeight.w600,
+                                overflow: TextOverflow.visible),
+                      ),
                     ),
                   ],
                 )
-              : story?.isPaywalled == true
-                  ? Column(
-                      children: [
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                          decoration: ShapeDecoration(
-                            color: appColors.primaryLightest,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                          ),
-                          child: Text(
-                            'Truyện trả phí ',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleMedium!
-                                .copyWith(
-                                    color: appColors.primaryBase,
-                                    fontWeight: FontWeight.w600,
-                                    overflow: TextOverflow.visible),
-                          ),
-                        ),
-                      ],
-                    )
-                  : const SizedBox(
-                      height: 0,
-                    )
+              : const SizedBox(
+                  height: 0,
+                )
         ],
       );
     }
 
-    Widget chapterView(
-      Story? story,
-    ) {
-      List<Chapter> chaptersList = story?.chapters ?? [];
-      numOfPages.value = (chaptersList.length / 10).ceil();
-
-      var pages = List.generate(
-        numOfPages.value,
-        (index) => Column(
-          children: [
-            Column(
-              children:
-                  (isDesc.value ? chaptersList.reversed.toList() : chaptersList)
-                      .getRange(
-                          currentPage.value * 10,
-                          currentPage.value + 1 == numOfPages.value
-                              ? currentPage.value * 10 +
-                                  min(10, chaptersList.length.remainder(10))
-                              : currentPage.value * 10 + 10)
-                      .toList()
-                      .asMap()
-                      .entries
-                      .map((entry) {
-                Chapter chapter = entry.value;
-                int index = isDesc.value
-                    ? chaptersList.length -
-                        1 -
-                        (entry.key + currentPage.value * 10)
-                    : entry.key + currentPage.value * 10;
-
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: ChapterItem(
-                    onSelected: (chapter, price) {
-                      handleBuyChapter(chapter, price);
-                    },
-                    storyId: story?.id ?? '',
-                    chapter: chapter,
-
-                    position: index + 1,
-                    title: chapter.title,
-                    time: chapter.createdDate ?? DateTime.now().toString(),
-                    //ispaywalled
-                  ),
-                );
-              }).toList(),
-            ),
-          ],
-        ),
-      );
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Cập nhật đến chương',
-                style: textTheme.headlineSmall,
-              ),
-              IntrinsicHeight(
-                child: Row(children: [
-                  TapEffectWrapper(
-                    onTap: () {
-                      isDesc.value = !isDesc.value;
-                    },
-                    child: Text(
-                        isDesc.value ? 'Đọc chương mới nhất' : 'Đọc từ cũ nhất',
-                        style: textTheme.titleSmall
-                            ?.copyWith(color: appColors.primaryBase)),
-                  ),
-                  // const VerticalDivider(),
-                  // GestureDetector(
-                  //     onTap: () {
-                  //       isDesc.value = false;
-                  //     },
-                  //     child: Text('Cũ nhất', style: textTheme.labelLarge)),
-                ]),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          Container(
-            child: pages[currentPage.value],
-          ),
-          Center(
-            child: SizedBox(
-              width: numOfPages.value <= 4 ? size.width / 2 : double.infinity,
-              child: NumberPaginator(
-                config: NumberPaginatorUIConfig(
-                  buttonSelectedBackgroundColor: appColors.primaryBase,
-                  buttonUnselectedForegroundColor: appColors.primaryBase,
-                ),
-                controller: paginatorController,
-                numberPages: numOfPages.value,
-                onPageChange: (index) {
-                  currentPage.value = index;
-                },
-              ),
-            ),
-          )
-        ],
-      );
+    handleAddToLibrary() async {
+      try {
+        await LibraryRepository.addStoryMyLibrary(id);
+        AppSnackBar.buildTopSnackBar(context,
+            'Thêm truyện vào thư viện thành công', null, SnackBarType.success);
+        libraryQuery.refetch();
+      } catch (error) {
+        AppSnackBar.buildTopSnackBar(
+            context, error.toString(), null, SnackBarType.warning);
+      }
     }
 
     Widget donatorsView(List<Profile> donators) {
@@ -834,108 +743,6 @@ class DetailStoryScreen extends HookConsumerWidget {
                 );
     }
 
-    Widget detailView(Story? story) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Giới thiệu', style: textTheme.headlineSmall),
-          const SizedBox(
-            height: 8,
-          ),
-          ReadMoreText(
-            story?.description ?? '',
-            trimLines: 4,
-            colorClickableText: appColors.primaryBase,
-            trimMode: TrimMode.Line,
-            trimCollapsedText: ' Xem thêm',
-            trimExpandedText: ' Ẩn bớt',
-            style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w400,
-                fontFamily: GoogleFonts.sourceSansPro().fontFamily),
-            moreStyle:
-                textTheme.titleMedium?.copyWith(color: appColors.primaryBase),
-          ),
-          const SizedBox(
-            height: 24,
-          ),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Người ủng hộ',
-                style: textTheme.headlineSmall,
-              ),
-              SizedBox(
-                height: 34,
-                child: AppIconButton(
-                    title: 'Tặng quà',
-                    textStyle: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(color: appColors.primaryBase),
-                    icon: Icon(
-                      Icons.card_giftcard,
-                      color: appColors.primaryBase,
-                      size: 14,
-                    ),
-                    iconPosition: 'start',
-                    color: appColors.primaryBase,
-                    bgColor: appColors.primaryLightest,
-                    onPressed: () => {
-                          showModalBottomSheet(
-                              barrierColor: Colors.black.withAlpha(1),
-                              // backgroundColor: Colors.transparent,
-                              context: context,
-                              builder: (BuildContext context) {
-                                return DonateGiftModal(
-                                  coinsWallet: double.parse(handleCoins()),
-                                  story: story,
-                                  handleSending: (selected, count) {
-                                    handleSendingGift(selected, count);
-                                  },
-                                );
-                              })
-                        }),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          Skeletonizer(
-              enabled: donatorsQuery.isFetching,
-              child: donatorsView(donatorsQuery.data ?? [])),
-          const SizedBox(
-            height: 8,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Bình luận nổi bật',
-                style: textTheme.headlineSmall,
-              ),
-              GestureDetector(
-                child: SvgPicture.asset(
-                  'assets/icons/right-arrow.svg',
-                  width: 24,
-                  height: 24,
-                  color: appColors.inkDark,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 12,
-          ),
-          // _commentList()
-        ],
-      );
-    }
-
     Future<void> handleDownloadStory() async {
       try {
         final wholeStory = await LibraryRepository.downloadStory(id);
@@ -959,264 +766,162 @@ class DetailStoryScreen extends HookConsumerWidget {
       }
     }
 
-    final isLoading = false;
-    // ? storyOffline.connectionState == ConnectionState.waiting
-    // : storyQuery.isFetching;
-    final story = storyQuery.data;
+    final isLoading = isOffline ? false : storyQuery.isFetching;
+    final story = isOffline ? storyOffline.data : storyQuery.data;
 
     return Scaffold(
-        appBar: AppBar(
-          elevation: 2,
-          leading: IconButton(
-            onPressed: () {
-              GoRouter.of(context).pop();
-            },
-            icon: Icon(Icons.arrow_back, size: 24, color: appColors.inkBase),
-          ),
-          leadingWidth: 40,
-          title: Container(
-              //no flexible here
-              color: Colors.amber,
-              child: Text(
-                story?.title ?? 'Loading...',
-                style: textTheme.titleLarge,
-              )),
-          actions: [
-            IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.more_vert_rounded,
-                  size: 24, color: appColors.inkBase),
-            )
-          ],
-        ),
-        body: RefreshIndicator(
-            onRefresh: () async {
-              storyQuery.refetch();
-              donatorsQuery.refetch();
-            },
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: SingleChildScrollView(
-                scrollDirection: Axis.vertical,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 12),
-                    Skeletonizer(
-                        enabled: isLoading,
-                        child: storyInfo(isLoading ? skeletonStory : story)),
-
-                    const SizedBox(height: 12),
-                    //NOTE: Profile image
-                    Skeletonizer(
-                      enabled: isLoading,
-                      child: Material(
-                          child: InkWell(
-                              onTap: () async {
-                                // context.go('/profile');
-                              },
-                              child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Skeleton.replace(
-                                        width: 32,
-                                        height: 32,
-                                        child: Container(
-                                          width: 32,
-                                          height: 32,
-                                          decoration: ShapeDecoration(
-                                            image: DecorationImage(
-                                              image: NetworkImage(
-                                                  story?.author?.avatarUrl ??
-                                                      FALLBACK_IMG_URL),
-                                              fit: BoxFit.fill,
-                                            ),
-                                            shape: const CircleBorder(),
-                                          ),
-                                        )),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      isLoading
-                                          ? generateFakeString(16)
-                                          : story?.author?.fullName ??
-                                              'Tác giả',
-                                      style: textTheme.titleMedium!.copyWith(
-                                          fontWeight: FontWeight.w400),
-                                    )
-                                  ]))),
-                    ),
-                    const SizedBox(height: 24),
-                    Skeletonizer(
-                        enabled: isLoading,
-                        child:
-                            interactionInfo(isLoading ? skeletonStory : story)),
-                    const SizedBox(height: 24),
-                    Skeletonizer(
-                        enabled: isLoading,
-                        child: SizedBox(
-                            width: double.infinity,
-                            child: Wrap(
-                              alignment: WrapAlignment.center,
-                              spacing: 6,
-                              runSpacing: 6,
-                              children: ((isLoading
-                                          ? skeletonStory.tags
-                                          : story?.tags) ??
-                                      [])
-                                  .map((tag) => GestureDetector(
-                                      onTap: () {
-                                        GoRouter.of(context).go(
-                                            '/tag/${tag.id}?tagName=${tag.name}');
-                                      },
-                                      child: StoryTag(
-                                        label: tag.name ?? '',
-                                        selected: false,
-                                      )))
-                                  .toList(),
-                            ))),
-                    Container(
-                      margin: const EdgeInsets.symmetric(vertical: 12),
-                      child: TabBar(
-                        onTap: (value) {
-                          if (tabState.value != value) tabState.value = value;
-                        },
-                        controller: tabController,
-                        labelColor: appColors.primaryBase,
-                        unselectedLabelColor: appColors.inkLight,
-                        labelPadding:
-                            const EdgeInsets.symmetric(horizontal: 16),
-                        indicatorColor: appColors.primaryBase,
-                        labelStyle: textTheme.titleLarge,
-                        tabs: const [
-                          Tab(
-                            text: 'Chi tiết',
-                          ),
-                          Tab(
-                            text: 'Chương',
-                          )
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Builder(builder: (context) {
-                      if (tabState.value == 0) {
-                        return Skeletonizer(
-                            enabled: isLoading,
-                            child:
-                                detailView(isLoading ? skeletonStory : story));
-                      }
-                      return Skeletonizer(
+        appBar: DetailStoryTopBar(story: story),
+        body: Container(
+            width: double.infinity,
+            child: RefreshIndicator(
+                onRefresh: () async {
+                  storyQuery.refetch();
+                },
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  scrollDirection: Axis.vertical,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const SizedBox(height: 12),
+                      Skeletonizer(
                           enabled: isLoading,
-                          child:
-                              chapterView(isLoading ? skeletonStory : story));
-                    }),
-                  ],
-                ),
-              ),
-            )),
-        bottomNavigationBar: Material(
-            elevation: 10,
-            child: Container(
-              height: 65,
-              width: double.infinity,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: const BoxDecoration(),
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Builder(builder: (context) {
-                    final isAdded = libraryQuery.data?.libraryStory
-                        ?.any((element) => element.storyId == id);
-                    return TapEffectWrapper(
-                        onTap: () {
-                          if (isAdded == true) {
-                            AppSnackBar.buildTopSnackBar(context,
-                                'Đã lưu truyện', null, SnackBarType.info);
-                            return;
-                          }
-                          handleAddToLibrary();
-                        },
-                        child: SizedBox(
-                            width: 50,
-                            child: Column(
-                                mainAxisSize: MainAxisSize.max,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.bookmark_rounded,
-                                    size: 24,
-                                    color: isAdded == true
-                                        ? appColors.primaryBase
-                                        : appColors.skyBase,
-                                  ),
-                                  Text('Lưu trữ',
-                                      style: textTheme.labelLarge!.copyWith(
-                                        color: isAdded == true
-                                            ? appColors.primaryBase
-                                            : appColors.skyBase,
-                                      ))
-                                ])));
-                  }),
-                  FutureBuilder(
-                      future: storyDb.getStory(id),
-                      builder: (context, snapshot) {
-                        final isDownloaded = snapshot.data != null;
-                        return TapEffectWrapper(
-                            onTap: () {
-                              if (isDownloaded == true) {
-                                AppSnackBar.buildTopSnackBar(context,
-                                    'Đã tải truyện', null, SnackBarType.info);
-                                return;
-                              }
-                              handleDownloadStory();
-                            },
-                            child: SizedBox(
-                                width: 50,
-                                child: Column(
-                                    mainAxisSize: MainAxisSize.max,
+                          child: storyInfo(isLoading ? skeletonStory : story)),
+
+                      const SizedBox(height: 12),
+                      //NOTE: Profile image
+                      Skeletonizer(
+                        enabled: isLoading,
+                        child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                                onTap: () async {
+                                  // context.go('/profile');
+                                },
+                                child: Row(
+                                    mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        Icons.download_rounded,
-                                        size: 24,
-                                        color: isDownloaded == true
-                                            ? appColors.primaryBase
-                                            : appColors.skyBase,
-                                      ),
-                                      Text('Tải xuống',
-                                          style: textTheme.labelLarge!.copyWith(
-                                            color: isDownloaded == true
-                                                ? appColors.primaryBase
-                                                : appColors.skyBase,
-                                          ))
-                                    ])));
-                      }),
-                  Flexible(
-                      child: FilledButton(
-                          onPressed: () {
-                            context.push(
-                                '/story/$id/chapter/41ccaddf-3b96-11ee-8842-e0d4e8a18075');
-                            //   .pushNamed("chapter_detail", pathParameters: {
-                            // "storyId": id,
-                            // "chapterId":
-                            //     // story?.chapters?[0].id ?? ''
-                            //     '41ccaddf-3b96-11ee-8842-e0d4e8a18075'
+                                      Skeleton.shade(
+                                          child: Container(
+                                        width: 32,
+                                        height: 32,
+                                        decoration: isOffline
+                                            ? BoxDecoration(
+                                                color:
+                                                    appColors.primaryLightest,
+                                                borderRadius:
+                                                    BorderRadius.circular(28))
+                                            : ShapeDecoration(
+                                                image: DecorationImage(
+                                                  image: NetworkImage(story
+                                                          ?.author?.avatarUrl ??
+                                                      FALLBACK_IMG_URL),
+                                                  fit: BoxFit.fill,
+                                                ),
+                                                shape: const CircleBorder(),
+                                              ),
+                                      )),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        isLoading
+                                            ? generateFakeString(16)
+                                            : story?.author?.fullName ??
+                                                'Tác giả',
+                                        style: textTheme.titleMedium!.copyWith(
+                                            fontWeight: FontWeight.w400),
+                                      )
+                                    ]))),
+                      ),
+                      const SizedBox(height: 24),
+                      Skeletonizer(
+                          enabled: isLoading,
+                          child: interactionInfo(
+                              isLoading ? skeletonStory : story)),
+                      const SizedBox(height: 24),
+                      Skeletonizer(
+                          enabled: isLoading,
+                          child: SizedBox(
+                              width: double.infinity,
+                              child: Wrap(
+                                alignment: WrapAlignment.center,
+                                spacing: 6,
+                                runSpacing: 6,
+                                children: ((isLoading
+                                            ? skeletonStory.tags
+                                            : story?.tags) ??
+                                        [])
+                                    .map((tag) => GestureDetector(
+                                        onTap: () {
+                                          GoRouter.of(context).go(
+                                              '/tag/${tag.id}?tagName=${tag.name}');
+                                        },
+                                        child: StoryTag(
+                                          label: tag.name ?? '',
+                                          selected: false,
+                                        )))
+                                    .toList(),
+                              ))),
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        child: TabBar(
+                          onTap: (value) {
+                            if (tabState.value != value) tabState.value = value;
                           },
-                          style: ButtonStyle(
-                              backgroundColor: MaterialStatePropertyAll(
-                                  appColors.primaryBase)),
-                          child: Text(
-                            'Đọc',
-                            style: textTheme.titleMedium!
-                                .copyWith(color: Colors.white),
-                          )))
-                ],
-              ),
-            )));
+                          controller: tabController,
+                          labelColor: appColors.inkBase,
+                          unselectedLabelColor: appColors.inkLighter,
+                          labelPadding: const EdgeInsets.symmetric(vertical: 0),
+                          indicatorColor: appColors.primaryBase,
+                          indicatorWeight: 2.5,
+                          indicatorPadding:
+                              const EdgeInsets.symmetric(horizontal: 24),
+                          labelStyle: textTheme.headlineSmall,
+                          tabs: const [
+                            Tab(
+                              text: 'Chi tiết',
+                              height: 36,
+                            ),
+                            Tab(
+                              text: 'Chương',
+                              height: 36,
+                            )
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Builder(builder: (context) {
+                        if (tabState.value == 0) {
+                          return Skeletonizer(
+                              enabled: isLoading,
+                              child: StoryDetailTab(
+                                  coinsWallets: double.parse(handleCoins()),
+                                  story: isLoading ? skeletonStory : story));
+                        }
+                        return Skeletonizer(
+                            enabled: isLoading,
+                            child: StoryChapterTab(
+                                handleBuyChapter:
+                                    (chapter, price, paywalledChaptersCount) {
+                                  handleBuyChapter(
+                                      chapter, price, paywalledChaptersCount);
+                                },
+                                story: isLoading ? skeletonStory : story));
+                      }),
+                    ],
+                  ),
+                ))),
+        bottomNavigationBar: Builder(builder: (context) {
+          final isAddedToLibrary = libraryQuery.data?.libraryStory
+              ?.any((element) => element.storyId == id);
+          return DetailStoryBottomBar(
+              storyId: id,
+              addToLibraryCallback: () => handleAddToLibrary(),
+              downloadStoryCallback: () => handleDownloadStory(),
+              isAddedToLibrary: isAddedToLibrary ?? false);
+        }));
   }
 }

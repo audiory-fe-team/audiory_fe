@@ -11,8 +11,7 @@ class StoryDatabase {
 
   Future<void> saveStory(Story story) async {
     final storyJson = story.toJson();
-    print(story.toJson());
-    // await storyStore.record(story.id).put(await _db, storyJson);
+    await storyStore.record(story.id).put(await _db, storyJson);
   }
 
   Future<void> deleteStory(String storyId) async {

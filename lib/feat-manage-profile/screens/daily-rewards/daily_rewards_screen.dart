@@ -16,7 +16,7 @@ import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DailyRewardsScreen extends StatefulHookWidget {
-  final UserServer? currentUser;
+  final AuthUser? currentUser;
   const DailyRewardsScreen({super.key, this.currentUser});
 
   @override

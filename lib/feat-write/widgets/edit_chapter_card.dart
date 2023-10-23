@@ -17,13 +17,13 @@ class EditChapterCard extends StatelessWidget {
       'status': 'Đã lưu bản thảo',
       'color': Colors.deepOrange,
     };
-    if (chapter?.isDraft as bool) {
+    if (chapter?.isDraft == true) {
       map.update('status', (value) => 'Đã lưu bản thảo');
       map.update('color', (value) => Colors.deepOrange[400]);
-    } else if (chapter?.isPaywalled as bool) {
+    } else if (chapter?.isPaywalled == true) {
       map.update('status', (value) => 'Tính phí');
       map.update('color', (value) => Colors.orangeAccent);
-    } else if (chapter?.isEnabled as bool) {
+    } else if (chapter?.isEnabled == true) {
       map.update('status', (value) => 'Đã đăng tải');
       map.update('color', (value) => Colors.orangeAccent);
     }

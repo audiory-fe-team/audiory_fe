@@ -51,7 +51,6 @@ class SearchTagScreen extends HookWidget {
       ),
       body: SafeArea(
           child: Material(
-              color: Colors.white,
               child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: HookBuilder(builder: (context) {

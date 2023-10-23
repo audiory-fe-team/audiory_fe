@@ -32,10 +32,8 @@ class LibraryScreen extends HookWidget {
     final tabState = useState(0);
 
     return Scaffold(
-        backgroundColor: Colors.white,
         appBar: const LibraryTopBar(),
         body: Material(
-            color: Colors.white,
             child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(

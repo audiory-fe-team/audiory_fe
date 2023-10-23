@@ -16,7 +16,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 
 class NewPurchaseScreen extends StatefulHookWidget {
-  final UserServer? currentUser;
+  final AuthUser? currentUser;
   const NewPurchaseScreen({super.key, this.currentUser});
 
   @override

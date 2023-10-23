@@ -12,12 +12,15 @@ import 'package:flutter/material.dart';
 class CommentCard extends StatelessWidget {
   final Comment comment;
   final bool isDetail;
+  final bool? isHighlighted;
+  final Function? onLike;
 
-  const CommentCard({
-    super.key,
-    required this.comment,
-    this.isDetail = false,
-  });
+  const CommentCard(
+      {super.key,
+      required this.comment,
+      this.isHighlighted,
+      this.isDetail = false,
+      this.onLike});
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +41,7 @@ class CommentCard extends StatelessWidget {
         actionType: isLiked ? 'UNLIKED' : 'LIKED',
         entityId: comment.id,
       );
+      if (onLike != null) onLike!();
     }
 
     void handleDeleteComment(String commentId) async {
@@ -75,8 +79,11 @@ class CommentCard extends StatelessWidget {
           });
     }
 
-    return SizedBox(
+    return Container(
       width: double.infinity,
+      color: isHighlighted == true
+          ? appColors.primaryLightest
+          : Colors.transparent,
       child: Row(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start,

@@ -10,6 +10,7 @@ class AppBottomNavigationBar extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final textTheme = Theme.of(context).textTheme;
     final selectedIndex = useState(0);
     // final router = useListenable(GoRouter.of(context).routeInformationProvider);
 
@@ -45,7 +46,7 @@ class AppBottomNavigationBar extends HookWidget {
     }
 
     return BottomNavigationBar(
-      backgroundColor: Colors.white,
+      backgroundColor: appColors.skyLightest,
       type: BottomNavigationBarType.fixed,
       items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
@@ -88,17 +89,10 @@ class AppBottomNavigationBar extends HookWidget {
       currentIndex: selectedIndex.value,
       selectedItemColor: appColors.primaryBase,
       onTap: (index) => onItemTapped(index, context),
-      unselectedLabelStyle: TextStyle(
-        fontFamily: GoogleFonts.sourceSansPro().fontFamily,
-        fontSize: 12,
-        fontWeight: FontWeight.w400,
-      ),
-      selectedLabelStyle: TextStyle(
-        fontFamily: GoogleFonts.sourceSansPro().fontFamily,
-        fontSize: 12,
-        fontWeight: FontWeight.w600,
-      ),
-      unselectedItemColor: appColors.skyBase,
+      unselectedLabelStyle: textTheme.titleSmall,
+      selectedLabelStyle:
+          textTheme.titleSmall?.copyWith(color: appColors.primaryBase),
+      unselectedItemColor: appColors.skyDark,
     );
   }
 }

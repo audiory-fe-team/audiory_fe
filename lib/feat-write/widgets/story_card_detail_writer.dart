@@ -109,7 +109,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
       'status': 'Đang tiến hành',
       'color': appColors.primaryBase,
     };
-    if (story?.isCompleted as bool) {
+    if (story?.isCompleted == true) {
       map.update('status', (value) => 'Hoàn thành');
       map.update('color', (value) => Colors.blue);
     } else if (story?.isDraft ?? true) {

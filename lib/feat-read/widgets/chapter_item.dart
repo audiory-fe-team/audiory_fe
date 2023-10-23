@@ -157,7 +157,7 @@ class ChapterItem extends StatelessWidget {
                         Flexible(
                           flex: 6,
                           child: Text(
-                            formatReadCount(chapter?.readCount as int),
+                            formatReadCount(chapter?.readCount ?? 0),
                             style: Theme.of(context)
                                 .textTheme
                                 .labelLarge!

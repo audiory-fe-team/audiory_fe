@@ -231,7 +231,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                           onPressed: () async {
                             print('USER ID FLOW 2 ${widget.userId}');
                             //save
-                            if (_formKey.currentState?.isValid as bool) {
+                            if (_formKey.currentState?.isValid == true) {
                               _formKey.currentState!.save();
 
                               Map<String, String> body = {};

@@ -35,7 +35,7 @@ class UserProfileScreen extends StatefulHookWidget {
 class _UserProfileScreenState extends State<UserProfileScreen>
     with TickerProviderStateMixin {
   final storage = const FlutterSecureStorage();
-  UserServer? currentUser;
+  AuthUser? currentUser;
 
   late TabController tabController;
   int tabState = 0;
@@ -234,7 +234,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget userProfileInfo(
-      UseQueryResult<UserServer?, dynamic> userByIdQuery,
+      UseQueryResult<AuthUser?, dynamic> userByIdQuery,
       UseQueryResult<Profile, dynamic> profileQuery,
       UseQueryResult<List<Story>?, dynamic> publishedStoriesQuery,
       UseQueryResult<List<ReadingList>?, dynamic> readingStoriesQuery) {

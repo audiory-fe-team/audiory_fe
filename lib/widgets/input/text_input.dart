@@ -91,7 +91,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
       // autovalidateMode: widget.submmitted == true
       //     ? AutovalidateMode.onUserInteraction
       //     : AutovalidateMode.disabled,
-      enabled: widget.isDisabled as bool,
+      enabled: widget.isDisabled == true,
       onChanged: (value) => {
         setState(() {
           _enteredText = value as String;
@@ -187,7 +187,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
                               .titleLarge
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                        widget.isRequired as bool
+                        widget.isRequired == true
                             ? _requiredAsterisk()
                             : const SizedBox(
                                 height: 0,

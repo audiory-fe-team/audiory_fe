@@ -102,332 +102,290 @@ class SearchScreen extends HookWidget {
           }),
       body: SafeArea(
           child: Material(
-              color: Colors.white,
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: HookBuilder(
-                  builder: (context) {
-                    final tabState = useState(0);
-                    final tabController = useTabController(initialLength: 2);
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: HookBuilder(
+          builder: (context) {
+            final tabState = useState(0);
+            final tabController = useTabController(initialLength: 2);
 
-                    if (!isTyping.value) {
-                      return Column(mainAxisSize: MainAxisSize.min, children: [
-                        TabBar(
-                          controller: tabController,
-                          onTap: (value) {
-                            tabState.value = value;
-                          },
-                          labelColor: appColors?.primaryBase,
-                          unselectedLabelColor: appColors?.inkLight,
-                          labelPadding:
-                              const EdgeInsets.symmetric(horizontal: 16),
-                          indicatorColor: appColors?.primaryBase,
-                          labelStyle: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          tabs: const [
-                            Tab(
-                              text: 'Tác phẩm',
-                            ),
-                            Tab(
-                              text: 'Tác giả',
-                            )
-                          ],
-                        ),
-                        const SizedBox(height: 12),
-                        Builder(builder: (context) {
-                          if (tabState.value == 1) {
-                            return Expanded(
-                                child: RefreshIndicator(
-                                    onRefresh: () async {
-                                      profilesPagingController.refresh();
-                                    },
-                                    child: PagedListView<int, Profile>(
-                                        pagingController:
-                                            profilesPagingController,
-                                        builderDelegate:
-                                            PagedChildBuilderDelegate<Profile>(
-                                                itemBuilder:
-                                                    (context, item, index) =>
-                                                        Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .only(
-                                                                    bottom: 8),
-                                                            child: ProfileCard(
-                                                              user: item,
-                                                            ))))));
-                          }
-                          return Expanded(
-                              child: RefreshIndicator(
-                            onRefresh: () async {
-                              storiesPagingController.refresh();
-                            },
-                            child: CustomScrollView(
-                              slivers: [
-                                // const SliverToBoxAdapter(
-                                //     child: SizedBox(height: 12)),
-                                if (tabState.value == 0)
-                                  SliverToBoxAdapter(child: SearchFilterButton(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        backgroundColor: Colors.transparent,
-                                        isScrollControlled: true,
-                                        context: context,
-                                        builder: (context) {
-                                          return SearchStoryFilter(
-                                            sortBy: sortBy.value,
-                                            category: category.value,
-                                            isMature: isMature.value,
-                                            isPaywalled: isPaywall.value,
-                                            tags: tags.value,
-                                            storyList: storiesPagingController
-                                                .itemList,
-                                            onSubmit: (
-                                                {categoryValue,
-                                                isMatureValue,
-                                                isPaywalledValue,
-                                                sortByValue,
-                                                tagsValue}) {
-                                              sortBy.value = sortByValue;
-                                              tags.value = tagsValue;
-                                              category.value = categoryValue;
-                                              isPaywall.value =
-                                                  isPaywalledValue;
-                                              isMature.value = isMatureValue;
-
-                                              //Reload:
-                                              storiesPagingController.refresh();
-                                            },
-                                          );
-                                        },
-                                      );
-                                    },
-                                  )),
-                                const SliverToBoxAdapter(
-                                    child: SizedBox(height: 12)),
-                                PagedSliverList<int, SearchStory>(
-                                    pagingController: storiesPagingController,
-                                    builderDelegate:
-                                        PagedChildBuilderDelegate<SearchStory>(
-                                            itemBuilder: (context, item,
-                                                    index) =>
-                                                Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 16),
-                                                    child: StoryCardDetail(
-                                                        searchStory: item))))
-                              ],
-                            ),
-                          ));
-                        }),
-                      ]);
-                    }
-
-                    return HookBuilder(builder: (_) {
-                      final storyQuery = useQuery(
-                        ['search', 'stories', searchValue.value],
-                        () => SearchRepository.searchStory(
-                            keyword: searchValue.value),
-                        enabled: isTyping.value && searchValue.value.length > 2,
-                      );
-                      final profileQuery = useQuery(
-                          ['search', 'users', searchValue.value],
-                          () => SearchRepository.searchUser(
-                              keyword: searchValue.value),
-                          enabled:
-                              isTyping.value && searchValue.value.length > 2);
-                      return ListView(children: [
-                        const SizedBox(height: 12),
-                        if (searchValue.value.length < 2)
-                          Text('Nhập ít nhất 3 ký tự để tìm kiếm',
-                              style: textTheme.labelLarge),
-                        if (searchValue.value.length > 2)
-                          Text('Truyện',
-                              style: Theme.of(context).textTheme.titleLarge),
-                        const SizedBox(height: 12),
-                        if (searchValue.value.length > 2)
-                          Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              child: Builder(builder: (_) {
-                                if (storyQuery.isError) {
-                                  return Text(
-                                      'Đã có lỗi xảy ra. Không thể tải gợi ý',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge);
-                                }
-
-                                if (storyQuery.isFetching) {
-                                  return Skeletonizer(
-                                      child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      generateFakeString(15),
-                                      generateFakeString(10),
-                                      generateFakeString(20),
-                                      generateFakeString(10),
-                                      generateFakeString(18),
-                                    ]
-                                        .map((e) => Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 8),
-                                            child: Text(
-                                              e,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
-                                            )))
-                                        .toList(),
-                                  ));
-                                }
-
-                                return Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: (storyQuery.data ?? [])
-                                        .sublist(
-                                            0,
-                                            min(5,
-                                                storyQuery.data?.length ?? 0))
-                                        .map((item) => Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 8),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                searchController.text =
-                                                    item.title;
-                                                searchValue.value = item.title;
-                                                storiesPagingController
-                                                    .refresh();
-
-                                                isTyping.value = false;
-                                                tabController.animateTo(0);
-                                                tabState.value = 0;
-
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    color:
-                                                        appColors?.skyLightest,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4)),
-                                                child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(6),
-                                                    child: Text(
-                                                      item.title,
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleSmall,
-                                                    )),
-                                              ),
-                                            )))
-                                        .toList());
-                              })),
-                        const SizedBox(height: 24),
-                        if (searchValue.value.length > 2)
-                          Text('Người dùng',
-                              style: Theme.of(context).textTheme.titleLarge),
-                        const SizedBox(height: 12),
-                        if (searchValue.value.length > 2)
-                          Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              child: Builder(builder: (_) {
-                                if (profileQuery.isError) {
-                                  return Text(
-                                      'Đã có lỗi xảy ra. Không thể tải gợi ý',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleLarge);
-                                }
-
-                                if (profileQuery.isFetching) {
-                                  return Skeletonizer(
-                                      child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      generateFakeString(15),
-                                      generateFakeString(10),
-                                      generateFakeString(20),
-                                      generateFakeString(10),
-                                      generateFakeString(18),
-                                    ]
-                                        .map((e) => Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 8),
-                                            child: Text(
-                                              e,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
-                                            )))
-                                        .toList(),
-                                  ));
-                                }
-
-                                return Column(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: (profileQuery.data ?? [])
-                                        .sublist(
-                                            0,
-                                            min(5,
-                                                profileQuery.data?.length ?? 0))
-                                        .map((item) => Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 8),
-                                            child: GestureDetector(
-                                              onTap: () {
-                                                searchController.text =
-                                                    item.fullName ?? 'Vô danh';
-                                                searchValue.value =
-                                                    item.fullName ?? 'Vô danh';
-                                                profilesPagingController
-                                                    .refresh();
-                                                isTyping.value = false;
-                                                tabController.animateTo(1);
-                                                tabState.value = 1;
-                                                FocusScope.of(context)
-                                                    .unfocus();
-                                              },
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                    color:
-                                                        appColors?.skyLightest,
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            4)),
-                                                child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(6),
-                                                    child: Text(
-                                                      item.fullName ??
-                                                          'Vô danh',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .titleSmall,
-                                                    )),
-                                              ),
-                                            )))
-                                        .toList());
-                              })),
-                      ]);
-                    });
-                  },
+            if (!isTyping.value) {
+              return Column(mainAxisSize: MainAxisSize.min, children: [
+                Container(
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: TabBar(
+                    onTap: (value) {
+                      if (tabState.value != value) {
+                        tabState.value = value;
+                      }
+                    },
+                    controller: tabController,
+                    labelColor: appColors?.inkBase,
+                    unselectedLabelColor: appColors?.inkLighter,
+                    labelPadding: const EdgeInsets.symmetric(vertical: 0),
+                    indicatorColor: appColors?.primaryBase,
+                    indicatorWeight: 2.5,
+                    indicatorPadding:
+                        const EdgeInsets.symmetric(horizontal: 24),
+                    labelStyle: textTheme.headlineSmall,
+                    tabs: const [
+                      Tab(
+                        text: 'Tác phẩm',
+                      ),
+                      Tab(
+                        text: 'Tác giả',
+                      )
+                    ],
+                  ),
                 ),
-              ))),
+                const SizedBox(height: 12),
+                Builder(builder: (context) {
+                  if (tabState.value == 1) {
+                    return Expanded(
+                        child: RefreshIndicator(
+                            onRefresh: () async {
+                              profilesPagingController.refresh();
+                            },
+                            child: PagedListView<int, Profile>(
+                                pagingController: profilesPagingController,
+                                builderDelegate:
+                                    PagedChildBuilderDelegate<Profile>(
+                                        itemBuilder: (context, item, index) =>
+                                            Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 8),
+                                                child: ProfileCard(
+                                                  user: item,
+                                                ))))));
+                  }
+                  return Expanded(
+                      child: RefreshIndicator(
+                    onRefresh: () async {
+                      storiesPagingController.refresh();
+                    },
+                    child: CustomScrollView(
+                      slivers: [
+                        // const SliverToBoxAdapter(
+                        //     child: SizedBox(height: 12)),
+                        if (tabState.value == 0)
+                          SliverToBoxAdapter(child: SearchFilterButton(
+                            onTap: () {
+                              showModalBottomSheet(
+                                backgroundColor: Colors.transparent,
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (context) {
+                                  return SearchStoryFilter(
+                                    sortBy: sortBy.value,
+                                    category: category.value,
+                                    isMature: isMature.value,
+                                    isPaywalled: isPaywall.value,
+                                    tags: tags.value,
+                                    storyList: storiesPagingController.itemList,
+                                    onSubmit: (
+                                        {categoryValue,
+                                        isMatureValue,
+                                        isPaywalledValue,
+                                        sortByValue,
+                                        tagsValue}) {
+                                      sortBy.value = sortByValue;
+                                      tags.value = tagsValue;
+                                      category.value = categoryValue;
+                                      isPaywall.value = isPaywalledValue;
+                                      isMature.value = isMatureValue;
+
+                                      //Reload:
+                                      storiesPagingController.refresh();
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          )),
+                        const SliverToBoxAdapter(child: SizedBox(height: 12)),
+                        PagedSliverList<int, SearchStory>(
+                            pagingController: storiesPagingController,
+                            builderDelegate: PagedChildBuilderDelegate<
+                                    SearchStory>(
+                                itemBuilder: (context, item, index) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: StoryCardDetail(searchStory: item))))
+                      ],
+                    ),
+                  ));
+                }),
+              ]);
+            }
+
+            return HookBuilder(builder: (_) {
+              final storyQuery = useQuery(
+                ['search', 'stories', searchValue.value],
+                () => SearchRepository.searchStory(keyword: searchValue.value),
+                enabled: isTyping.value && searchValue.value.length > 2,
+              );
+              final profileQuery = useQuery(
+                  ['search', 'users', searchValue.value],
+                  () => SearchRepository.searchUser(keyword: searchValue.value),
+                  enabled: isTyping.value && searchValue.value.length > 2);
+              return ListView(children: [
+                const SizedBox(height: 12),
+                if (searchValue.value.length < 2)
+                  Text('Nhập ít nhất 3 ký tự để tìm kiếm',
+                      style: textTheme.labelLarge),
+                if (searchValue.value.length > 2)
+                  Text('Truyện', style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 12),
+                if (searchValue.value.length > 2)
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Builder(builder: (_) {
+                        if (storyQuery.isError) {
+                          return Text('Đã có lỗi xảy ra. Không thể tải gợi ý',
+                              style: Theme.of(context).textTheme.titleLarge);
+                        }
+
+                        if (storyQuery.isFetching) {
+                          return Skeletonizer(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              generateFakeString(15),
+                              generateFakeString(10),
+                              generateFakeString(20),
+                              generateFakeString(10),
+                              generateFakeString(18),
+                            ]
+                                .map((e) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Text(
+                                      e,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    )))
+                                .toList(),
+                          ));
+                        }
+
+                        return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: (storyQuery.data ?? [])
+                                .sublist(
+                                    0, min(5, storyQuery.data?.length ?? 0))
+                                .map((item) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        searchController.text = item.title;
+                                        searchValue.value = item.title;
+                                        storiesPagingController.refresh();
+
+                                        isTyping.value = false;
+                                        tabController.animateTo(0);
+                                        tabState.value = 0;
+
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: appColors?.skyLightest,
+                                            borderRadius:
+                                                BorderRadius.circular(4)),
+                                        child: Padding(
+                                            padding: const EdgeInsets.all(6),
+                                            child: Text(
+                                              item.title,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleSmall,
+                                            )),
+                                      ),
+                                    )))
+                                .toList());
+                      })),
+                const SizedBox(height: 24),
+                if (searchValue.value.length > 2)
+                  Text('Người dùng',
+                      style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 12),
+                if (searchValue.value.length > 2)
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      child: Builder(builder: (_) {
+                        if (profileQuery.isError) {
+                          return Text('Đã có lỗi xảy ra. Không thể tải gợi ý',
+                              style: Theme.of(context).textTheme.titleLarge);
+                        }
+
+                        if (profileQuery.isFetching) {
+                          return Skeletonizer(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              generateFakeString(15),
+                              generateFakeString(10),
+                              generateFakeString(20),
+                              generateFakeString(10),
+                              generateFakeString(18),
+                            ]
+                                .map((e) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: Text(
+                                      e,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium,
+                                    )))
+                                .toList(),
+                          ));
+                        }
+
+                        return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: (profileQuery.data ?? [])
+                                .sublist(
+                                    0, min(5, profileQuery.data?.length ?? 0))
+                                .map((item) => Padding(
+                                    padding: const EdgeInsets.only(bottom: 8),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        searchController.text =
+                                            item.fullName ?? 'Vô danh';
+                                        searchValue.value =
+                                            item.fullName ?? 'Vô danh';
+                                        profilesPagingController.refresh();
+                                        isTyping.value = false;
+                                        tabController.animateTo(1);
+                                        tabState.value = 1;
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: appColors?.skyLightest,
+                                            borderRadius:
+                                                BorderRadius.circular(4)),
+                                        child: Padding(
+                                            padding: const EdgeInsets.all(6),
+                                            child: Text(
+                                              item.fullName ?? 'Vô danh',
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .titleSmall,
+                                            )),
+                                      ),
+                                    )))
+                                .toList());
+                      })),
+              ]);
+            });
+          },
+        ),
+      ))),
     );
   }
 }
