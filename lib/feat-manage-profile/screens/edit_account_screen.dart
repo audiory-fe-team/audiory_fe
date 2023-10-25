@@ -8,7 +8,7 @@ import '../../models/AuthUser.dart';
 import '../../theme/theme_constants.dart';
 
 class EditAccountScreen extends StatefulWidget {
-  final UserServer? currentUser;
+  final AuthUser? currentUser;
   final Profile? userProfile;
   const EditAccountScreen({super.key, this.currentUser, this.userProfile});
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:audiory_v0/core/network/constant/endpoints.dart';
+import 'package:audiory_v0/models/enums/TransactionType.dart';
 import 'package:audiory_v0/models/transaction/transaction_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -35,9 +36,12 @@ class TransactionRepository {
     }
   }
 
-  static Future<List<Transaction>?> fetchMyTransactions() async {
+  static Future<List<Transaction>?> fetchMyTransactions(
+      {TransactionType? type}) async {
     final url = Uri.parse('${Endpoints().user}/me/transactions');
-
+    if (type != null) {
+      url.replace(queryParameters: {'type': type});
+    }
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {
       "Content-type": "application/json; charset=UTF-8",

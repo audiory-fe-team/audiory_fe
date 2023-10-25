@@ -16,7 +16,7 @@ class StoryTag extends StatelessWidget {
         child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: ShapeDecoration(
-        color: selected ? appColors.primaryBase : appColors.skyLightest,
+        color: selected ? appColors.primaryLightest : appColors.skyLightest,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),

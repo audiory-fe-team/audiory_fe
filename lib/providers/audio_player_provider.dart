@@ -8,6 +8,13 @@ final audioPlayerProvider = Provider<AudioPlayer>((ref) {
   });
   return player;
 });
+final audioPlayerStoryIdProvider = Provider<String?>((ref) {
+  String? storyId;
+  ref.onDispose(() {
+    storyId = null;
+  });
+  return storyId;
+});
 
 final audioCurrentIndexProvider = Provider<int?>((ref) {
   final audioPlayer = ref.watch(audioPlayerProvider);

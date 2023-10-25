@@ -38,7 +38,7 @@ final storyOfUserProvider =
   return repository.fetchStoriesByUserId(userId);
 });
 
-final authUserProvider = FutureProvider<UserServer?>((ref) async {
+final authUserProvider = FutureProvider<AuthUser?>((ref) async {
   final repository = ref.read(authServiceProvider);
   return repository.signInWithGoogle();
 });

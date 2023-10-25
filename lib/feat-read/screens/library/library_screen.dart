@@ -34,6 +34,7 @@ class LibraryScreen extends HookWidget {
     return Scaffold(
         appBar: const LibraryTopBar(),
         body: Material(
+            color: Colors.transparent,
             child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
@@ -62,7 +63,7 @@ class LibraryScreen extends HookWidget {
                                             width: 2))),
                                 child: Text(
                                   tabName,
-                                  style: textTheme.titleMedium,
+                                  style: textTheme.titleLarge,
                                 )));
                       }).toList(),
                     ),
@@ -97,10 +98,6 @@ class ReadingLists extends HookWidget {
     final size = MediaQuery.of(context).size;
     final readingListQuery = useQuery(
         ['readingList'], () => ReadingListRepository.fetchMyReadingList());
-
-    isRefetch() {
-      readingListQuery.refetch();
-    }
 
     handleCreateReadingList() async {
       Map<String, String> body = {};
@@ -141,8 +138,6 @@ class ReadingLists extends HookWidget {
     }
 
     handlePublishReadingList(String readingListId, bool isPrivate) async {
-      print('edit $readingListId  ');
-      print('status $isPrivate  ');
       const storage = FlutterSecureStorage();
       final jwtToken = await storage.read(key: 'jwt');
       final userId = JwtDecoder.decode(jwtToken as String)['user_id'];

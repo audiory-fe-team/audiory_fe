@@ -4,33 +4,33 @@ import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/utils/relative_time.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 class ChapterItem extends StatelessWidget {
   final Chapter chapter;
-  final int? position;
-  final Function()? onLocked; //chapterId, price,
 
-  const ChapterItem({
-    super.key,
-    required this.chapter,
-    this.position = 0,
-    this.onLocked,
-  });
+  final bool? isPaid;
+  final int? position;
+  final Function(Chapter, int) onSelected; //chapterId, price,
+  const ChapterItem(
+      {super.key,
+      required this.chapter,
+      this.position = 0,
+      required this.onSelected,
+      this.isPaid});
 
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final size = MediaQuery.of(context).size;
 
     return GestureDetector(
       onTap: () {
-        if (chapter.price != 0) {
-          if (onLocked != null) onLocked!();
-          return;
-        }
-        GoRouter.of(context)
-            .push('/story/${chapter.storyId}/chapter/${chapter.id}');
+        chapter.price != 0
+            ? chapter.isPaid == true
+                ? GoRouter.of(context)
+                    .push('/story/${chapter.storyId}/chapter/${chapter.id}')
+                : onSelected(chapter, chapter.price ?? 0)
+            : GoRouter.of(context)
+                .push('/story/${chapter.storyId}/chapter/${chapter.id}');
       },
       child: Container(
         width: double.maxFinite,

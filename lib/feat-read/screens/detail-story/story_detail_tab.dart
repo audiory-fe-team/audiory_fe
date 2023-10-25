@@ -1,4 +1,3 @@
-import 'package:audiory_v0/feat-read/screens/detail-story/donate_gift_modal.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
@@ -8,15 +7,17 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'package:readmore/readmore.dart';
+import './donate_gift_modal.dart';
 
 class StoryDetailTab extends StatelessWidget {
+  final double? coinsWallets;
   final Story? story;
 
-  const StoryDetailTab({super.key, required this.story});
+  const StoryDetailTab({super.key, required this.story, this.coinsWallets});
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final AppColors? appColors = Theme.of(context).extension<AppColors>();
     final textTheme = Theme.of(context).textTheme;
 
     return Column(
@@ -29,7 +30,7 @@ class StoryDetailTab extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
-                    color: appColors.skyLightest),
+                    color: appColors?.skyLightest),
                 child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -40,7 +41,7 @@ class StoryDetailTab extends StatelessWidget {
                       ReadMoreText(
                         story?.description ?? '',
                         trimLines: 4,
-                        colorClickableText: appColors.primaryBase,
+                        colorClickableText: appColors?.primaryBase,
                         trimMode: TrimMode.Line,
                         trimCollapsedText: ' Xem thêm',
                         trimExpandedText: ' Ẩn bớt',
@@ -48,7 +49,7 @@ class StoryDetailTab extends StatelessWidget {
                             fontWeight: FontWeight.w400,
                             fontFamily: GoogleFonts.sourceSansPro().fontFamily),
                         moreStyle: textTheme.titleMedium
-                            ?.copyWith(color: appColors.primaryBase),
+                            ?.copyWith(color: appColors?.primaryBase),
                       )
                     ]))),
         const SizedBox(
@@ -69,20 +70,24 @@ class StoryDetailTab extends StatelessWidget {
                   textStyle: Theme.of(context)
                       .textTheme
                       .titleMedium
-                      ?.copyWith(color: appColors.primaryBase),
+                      ?.copyWith(color: appColors?.primaryBase),
                   icon: Icon(
                     Icons.card_giftcard,
-                    color: appColors.primaryBase,
+                    color: appColors?.primaryBase,
                     size: 14,
                   ),
                   iconPosition: 'start',
-                  color: appColors.primaryBase,
-                  bgColor: appColors.primaryLightest,
+                  color: appColors?.primaryBase,
+                  bgColor: appColors?.primaryLightest,
                   onPressed: () => {
                         showModalBottomSheet(
                             context: context,
                             builder: (BuildContext context) {
-                              return DonateGiftModal(story: story);
+                              return DonateGiftModal(
+                                coinsWallet: coinsWallets,
+                                story: story,
+                                handleSending: (selected, count) {},
+                              );
                             })
                       }),
             ),
@@ -103,7 +108,7 @@ class StoryDetailTab extends StatelessWidget {
                 'assets/icons/right-arrow.svg',
                 width: 24,
                 height: 24,
-                color: appColors.inkDark,
+                color: appColors?.inkDark,
               ),
             ),
           ],

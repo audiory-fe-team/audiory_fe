@@ -10,10 +10,11 @@ import 'package:http/http.dart' as http;
 class LibraryRepository {
   static final libraryEndpoint = "${dotenv.get('API_BASE_URL')}/libraries";
 
-  static Future<Library> fetchMyLibrary() async {
+  static Future<Library> fetchMyLibrary({int pageSize = 10}) async {
     const storage = FlutterSecureStorage();
     String? jwtToken = await storage.read(key: 'jwt');
-    final url = Uri.parse('$libraryEndpoint/me');
+    final url = Uri.parse('$libraryEndpoint/me')
+        .replace(queryParameters: {'pageSize': pageSize});
 
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {

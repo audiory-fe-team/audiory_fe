@@ -33,15 +33,10 @@ class ExploreTopBar extends StatelessWidget implements PreferredSizeWidget {
                 right: 0,
                 top: 20,
                 child: InkWell(
-                  onTap: () {
-                    GoRouter.of(context).go('/explore/search');
-                  },
-                  child: SvgPicture.asset(
-                    'assets/icons/search.svg',
-                    width: 24,
-                    height: 24,
-                  ),
-                ),
+                    onTap: () {
+                      GoRouter.of(context).go('/explore/search');
+                    },
+                    child: const Icon(Icons.search_rounded, size: 24)),
               )
             ])));
   }

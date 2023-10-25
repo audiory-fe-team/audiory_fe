@@ -20,7 +20,7 @@ import '../../theme/theme_constants.dart';
 import 'package:fquery/fquery.dart';
 
 class EditProfileScreen extends StatefulHookWidget {
-  final UserServer? currentUser;
+  final AuthUser? currentUser;
   final Profile? userProfile;
   const EditProfileScreen({super.key, this.currentUser, this.userProfile});
 

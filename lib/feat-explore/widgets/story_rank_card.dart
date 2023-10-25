@@ -63,7 +63,7 @@ class StoryRankCard extends StatelessWidget {
     if (order > 3) {
       return Text(
         story.title,
-        style: textTheme.titleMedium?.copyWith(color: appColors.primaryBase),
+        style: textTheme.titleMedium?.copyWith(color: appColors.inkBase),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
       );

@@ -178,8 +178,8 @@ class OnlineReadingScreen extends HookWidget {
                   child: Column(children: [
                     const SizedBox(height: 24),
                     ReadingScreenHeader(
-                      num: (storyQuery.data?.chapters ?? [])
-                          .indexWhere((element) => element.id == chapterId),
+                      // num: (storyQuery.data?.chapters ?? [])
+                      //     .indexWhere((element) => element.id == chapterId),
                       chapter: chapterQuery.isFetching
                           ? skeletonChapter
                           : chapterQuery.data ?? skeletonChapter,
@@ -356,7 +356,8 @@ class OnlineReadingScreen extends HookWidget {
           FloatingActionButtonLocation.miniCenterFloat,
       drawer: ChapterDrawer(
         currentChapterId: chapterId,
-        story: storyQuery.data,
+        // story: storyQuery.data,
+        storyId: '',
       ),
       resizeToAvoidBottomInset: true,
     );

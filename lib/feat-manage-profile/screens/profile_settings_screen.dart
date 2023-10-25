@@ -1,5 +1,7 @@
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -10,7 +12,7 @@ import '../../models/Profile.dart';
 import '../../theme/theme_constants.dart';
 
 class ProfileSettingsScreen extends ConsumerStatefulWidget {
-  final UserServer? currentUser;
+  final AuthUser? currentUser;
   final Profile? userProfile;
   const ProfileSettingsScreen({super.key, this.currentUser, this.userProfile});
 
@@ -29,7 +31,7 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     Widget listOfSettings() {
-      Widget sliderItem() {
+      Widget sliderItem({bool isDarkMode = false}) {
         return Column(
           children: [
             FormBuilderSwitch(
@@ -38,14 +40,16 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
               activeColor: appColors.primaryBase,
               name: 'isNotified',
               onChanged: (value) {
-                notifier
-                    .setTheme(value == true ? ThemeMode.dark : ThemeMode.light);
+                isDarkMode
+                    ? notifier.setTheme(
+                        value == true ? ThemeMode.dark : ThemeMode.light)
+                    : null;
               },
               title: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Thông báo',
+                    isDarkMode ? 'Chế độ ban đêm' : 'Thông báo',
                     style: Theme.of(context)
                         .textTheme
                         .bodyMedium
@@ -104,11 +108,11 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
       return Column(
         children: [
           item('Hồ sơ', 'editProfile'),
+          sliderItem(),
+          sliderItem(isDarkMode: true),
           item('Cài đặt tài khoản', 'editAccount'),
-          sliderItem(),
-          sliderItem(),
           item('Bảo mật và an toàn', 'editProfile'),
-          item('Ví', 'wallet'),
+          item('Ví của tôi', 'wallet'),
           item('Về Audiory', 'editProfile'),
           item('Hỗ trợ và tư vấn', 'editProfile'),
         ],
@@ -151,6 +155,18 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
       );
     }
 
+    Future<void> signOut() async {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return const Center(child: CircularProgressIndicator());
+          });
+      await AuthRepository().singOut();
+
+      // ignore: use_build_context_synchronously
+      context.go('/login');
+    }
+
     return Scaffold(
       appBar: CustomAppBar(
         title: Text(
@@ -183,6 +199,14 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 16),
                       child: listOfSettings()),
                 ),
+                Container(
+                  width: size.width - 32,
+                  child: AppIconButton(
+                      title: 'Đăng xuất',
+                      onPressed: () {
+                        signOut();
+                      }),
+                )
               ]),
         ),
       ),

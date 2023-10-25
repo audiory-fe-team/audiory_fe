@@ -1,6 +1,6 @@
 import 'package:audiory_v0/models/wallet/wallet_model.dart';
 
-class UserServer {
+class AuthUser {
   String? id;
   bool? isEnabled;
   String? fullName;
@@ -17,7 +17,7 @@ class UserServer {
   int? numOfFollowing;
   List<Wallet>? wallets;
 
-  UserServer(
+  AuthUser(
       {this.id,
       this.isEnabled = true,
       this.fullName,
@@ -34,12 +34,12 @@ class UserServer {
       this.numOfFollowing = 0,
       this.wallets});
 
-  factory UserServer.fromJson(Map<String, dynamic> json) {
+  factory AuthUser.fromJson(Map<String, dynamic> json) {
     List<dynamic> walletsJsonList = json['wallets'] ?? [];
     List<Wallet> wallets =
         walletsJsonList.map((wallet) => Wallet.fromJson(wallet)).toList();
 
-    return UserServer(
+    return AuthUser(
       id: json['id'] ?? 0,
       isEnabled: json['is_enabled'],
       fullName: json['full_name'],

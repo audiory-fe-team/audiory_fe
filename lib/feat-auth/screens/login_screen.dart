@@ -40,13 +40,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> signInGoogle() async {
+    // await AuthRepository().signInWithGoogle();
     try {
       await AuthRepository().signInWithGoogle();
 
       // ignore: use_build_context_synchronously
-      // context.go('/');
-    } on FirebaseAuthException catch (e) {
-      if (kDebugMode) {}
+      context.go('/');
+    } catch (e) {
+      if (kDebugMode) {
+        print('error: ${e.toString()}');
+      }
     }
   }
 
@@ -119,7 +122,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       AppSnackBar.buildSnackbar(
                           context, message, null, SnackBarType.success);
                     }
-                  } on Exception catch (e) {}
+                  } on Exception catch (_) {}
                 }),
     );
   }
@@ -274,8 +277,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                       style: BorderStyle.solid,
                                       color: appColors.primaryBase,
                                     ),
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(80)),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(80)),
                                   ),
                                   filled: true,
                                   hintStyle: const TextStyle(
@@ -301,7 +304,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             margin: const EdgeInsets.symmetric(vertical: 4.0),
                             width: double.infinity,
                             child: GestureDetector(
-                              onTap: () => {},
+                              onTap: () => {context.push('/forgotPassword')},
                               child: Text('Quên mật khẩu?',
                                   textAlign: TextAlign.right,
                                   style: Theme.of(context)
