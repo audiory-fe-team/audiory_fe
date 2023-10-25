@@ -1,24 +1,21 @@
-import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/gift/gift_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/gift_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
-import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
-import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DonateGiftModal extends StatefulHookWidget {
-  dynamic coinsWallet;
   final Story? story;
-  Function(Gift, int) handleSending;
-  DonateGiftModal(
-      {super.key, this.coinsWallet, this.story, required this.handleSending});
+  final dynamic coins;
+  final Function(Gift, int) handleSendingGift;
+  const DonateGiftModal(
+      {super.key, this.story, this.coins = 0, required this.handleSendingGift});
 
   @override
   State<DonateGiftModal> createState() => _DonateGiftModalState();
@@ -39,7 +36,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
     final size = MediaQuery.of(context).size;
 
     final selectedItem = giftsQuery.data != null
-        ? useState<dynamic>(lists.length == 0 ? null : lists[0])
+        ? useState<dynamic>(lists.isEmpty ? null : lists[0])
         : null;
     final sizeController = useTextEditingController(text: "1");
 
@@ -50,36 +47,6 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
       setState(() {
         total = price * count;
       });
-    }
-
-    handleSendingGift(Gift gift) async {
-      if (double.parse('${gift.price}') >
-          double.parse('${widget.coinsWallet}')) {
-        AppSnackBar.buildTopSnackBar(
-            context, 'Không đủ số dư', null, SnackBarType.info);
-      } else {
-        print('ID AUTHOR');
-        print(widget.story?.author);
-        try {
-          Map<String, String> body = {
-            'product_id': gift.id,
-            'author_id': widget.story?.authorId ?? '',
-          };
-
-          await GiftRepository().donateGift(widget.story?.id, body);
-        } catch (e) {
-          AppSnackBar.buildTopSnackBar(
-              context, 'Tặng quà không thành công', null, SnackBarType.error);
-        }
-
-        context.pop();
-        AppSnackBar.buildTopSnackBar(context, 'Tặng ${gift.name} thành công',
-            null, SnackBarType.success);
-        setState(() {
-          widget.coinsWallet =
-              widget.coinsWallet ?? 0 - double.parse('${gift.price}');
-        });
-      }
     }
 
     return Flexible(
@@ -121,7 +88,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                           )),
                           Flexible(
                               child: Text(
-                            '${widget.coinsWallet?.toStringAsFixed(0)}',
+                            '${widget.coins.toStringAsFixed(0)}',
                             style: textTheme.titleMedium
                                 ?.copyWith(color: appColors.inkBase),
                           )),
@@ -247,15 +214,8 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                             width: 75,
                             child: AppIconButton(
                               onPressed: () {
-                                widget.handleSending(
-                                    selectedItem?.value as Gift,
-                                    int.parse(sizeController.value.text) ?? 1);
-                                setState(() {
-                                  widget.coinsWallet = (widget.coinsWallet) ??
-                                      -int.parse(selectedItem?.value?.price
-                                              .toString() ??
-                                          '0');
-                                });
+                                widget.handleSendingGift(selectedItem?.value,
+                                    int.parse(sizeController.value.text));
                               },
                               title: 'Tặng',
                               textStyle: textTheme.titleLarge
