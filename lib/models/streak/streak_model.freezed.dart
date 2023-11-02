@@ -81,9 +81,10 @@ class _$StreakCopyWithImpl<$Res, $Val extends Streak>
 }
 
 /// @nodoc
-abstract class _$$_StreakCopyWith<$Res> implements $StreakCopyWith<$Res> {
-  factory _$$_StreakCopyWith(_$_Streak value, $Res Function(_$_Streak) then) =
-      __$$_StreakCopyWithImpl<$Res>;
+abstract class _$$StreakImplCopyWith<$Res> implements $StreakCopyWith<$Res> {
+  factory _$$StreakImplCopyWith(
+          _$StreakImpl value, $Res Function(_$StreakImpl) then) =
+      __$$StreakImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -93,10 +94,11 @@ abstract class _$$_StreakCopyWith<$Res> implements $StreakCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_StreakCopyWithImpl<$Res>
-    extends _$StreakCopyWithImpl<$Res, _$_Streak>
-    implements _$$_StreakCopyWith<$Res> {
-  __$$_StreakCopyWithImpl(_$_Streak _value, $Res Function(_$_Streak) _then)
+class __$$StreakImplCopyWithImpl<$Res>
+    extends _$StreakCopyWithImpl<$Res, _$StreakImpl>
+    implements _$$StreakImplCopyWith<$Res> {
+  __$$StreakImplCopyWithImpl(
+      _$StreakImpl _value, $Res Function(_$StreakImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -106,7 +108,7 @@ class __$$_StreakCopyWithImpl<$Res>
     Object? hasReceived = null,
     Object? amount = freezed,
   }) {
-    return _then(_$_Streak(
+    return _then(_$StreakImpl(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -125,14 +127,14 @@ class __$$_StreakCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Streak implements _Streak {
-  const _$_Streak(
+class _$StreakImpl implements _Streak {
+  const _$StreakImpl(
       {@JsonKey(name: 'name') required this.name,
       @JsonKey(name: 'has_received') this.hasReceived = false,
       @JsonKey(name: 'amount') this.amount = 0});
 
-  factory _$_Streak.fromJson(Map<String, dynamic> json) =>
-      _$$_StreakFromJson(json);
+  factory _$StreakImpl.fromJson(Map<String, dynamic> json) =>
+      _$$StreakImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -156,7 +158,7 @@ class _$_Streak implements _Streak {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Streak &&
+            other is _$StreakImpl &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.hasReceived, hasReceived) ||
                 other.hasReceived == hasReceived) &&
@@ -170,12 +172,12 @@ class _$_Streak implements _Streak {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_StreakCopyWith<_$_Streak> get copyWith =>
-      __$$_StreakCopyWithImpl<_$_Streak>(this, _$identity);
+  _$$StreakImplCopyWith<_$StreakImpl> get copyWith =>
+      __$$StreakImplCopyWithImpl<_$StreakImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_StreakToJson(
+    return _$$StreakImplToJson(
       this,
     );
   }
@@ -185,9 +187,9 @@ abstract class _Streak implements Streak {
   const factory _Streak(
       {@JsonKey(name: 'name') required final String name,
       @JsonKey(name: 'has_received') final bool hasReceived,
-      @JsonKey(name: 'amount') final int? amount}) = _$_Streak;
+      @JsonKey(name: 'amount') final int? amount}) = _$StreakImpl;
 
-  factory _Streak.fromJson(Map<String, dynamic> json) = _$_Streak.fromJson;
+  factory _Streak.fromJson(Map<String, dynamic> json) = _$StreakImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -202,6 +204,6 @@ abstract class _Streak implements Streak {
   int? get amount;
   @override
   @JsonKey(ignore: true)
-  _$$_StreakCopyWith<_$_Streak> get copyWith =>
+  _$$StreakImplCopyWith<_$StreakImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

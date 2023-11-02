@@ -6,7 +6,8 @@ part of 'paragraph_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Paragraph _$$_ParagraphFromJson(Map<String, dynamic> json) => _$_Paragraph(
+_$ParagraphImpl _$$ParagraphImplFromJson(Map<String, dynamic> json) =>
+    _$ParagraphImpl(
       id: json['id'] as String,
       chapterId: json['chapter_id'] as String,
       order: json['order'] as int? ?? 0,
@@ -15,7 +16,7 @@ _$_Paragraph _$$_ParagraphFromJson(Map<String, dynamic> json) => _$_Paragraph(
       audioUrl: json['audio_url'] as String? ?? '',
     );
 
-Map<String, dynamic> _$$_ParagraphToJson(_$_Paragraph instance) =>
+Map<String, dynamic> _$$ParagraphImplToJson(_$ParagraphImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'chapter_id': instance.chapterId,

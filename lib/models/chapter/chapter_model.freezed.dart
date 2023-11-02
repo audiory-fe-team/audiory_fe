@@ -209,10 +209,10 @@ class _$ChapterCopyWithImpl<$Res, $Val extends Chapter>
 }
 
 /// @nodoc
-abstract class _$$_ChapterCopyWith<$Res> implements $ChapterCopyWith<$Res> {
-  factory _$$_ChapterCopyWith(
-          _$_Chapter value, $Res Function(_$_Chapter) then) =
-      __$$_ChapterCopyWithImpl<$Res>;
+abstract class _$$ChapterImplCopyWith<$Res> implements $ChapterCopyWith<$Res> {
+  factory _$$ChapterImplCopyWith(
+          _$ChapterImpl value, $Res Function(_$ChapterImpl) then) =
+      __$$ChapterImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -238,10 +238,11 @@ abstract class _$$_ChapterCopyWith<$Res> implements $ChapterCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_ChapterCopyWithImpl<$Res>
-    extends _$ChapterCopyWithImpl<$Res, _$_Chapter>
-    implements _$$_ChapterCopyWith<$Res> {
-  __$$_ChapterCopyWithImpl(_$_Chapter _value, $Res Function(_$_Chapter) _then)
+class __$$ChapterImplCopyWithImpl<$Res>
+    extends _$ChapterCopyWithImpl<$Res, _$ChapterImpl>
+    implements _$$ChapterImplCopyWith<$Res> {
+  __$$ChapterImplCopyWithImpl(
+      _$ChapterImpl _value, $Res Function(_$ChapterImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -267,7 +268,7 @@ class __$$_ChapterCopyWithImpl<$Res>
     Object? chapterVersion = freezed,
     Object? paragraphs = freezed,
   }) {
-    return _then(_$_Chapter(
+    return _then(_$ChapterImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -350,8 +351,8 @@ class __$$_ChapterCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
-  const _$_Chapter(
+class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
+  const _$ChapterImpl(
       {@JsonKey(name: 'id') this.id = '',
       @JsonKey(name: 'story_id') this.storyId,
       @JsonKey(name: 'current_version_id') this.currentVersionId,
@@ -373,8 +374,8 @@ class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
       @JsonKey(name: 'paragraphs') final List<Paragraph>? paragraphs})
       : _paragraphs = paragraphs;
 
-  factory _$_Chapter.fromJson(Map<String, dynamic> json) =>
-      _$$_ChapterFromJson(json);
+  factory _$ChapterImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ChapterImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -480,7 +481,7 @@ class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Chapter &&
+            other is _$ChapterImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.storyId, storyId) || other.storyId == storyId) &&
             (identical(other.currentVersionId, currentVersionId) ||
@@ -542,12 +543,12 @@ class _$_Chapter with DiagnosticableTreeMixin implements _Chapter {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ChapterCopyWith<_$_Chapter> get copyWith =>
-      __$$_ChapterCopyWithImpl<_$_Chapter>(this, _$identity);
+  _$$ChapterImplCopyWith<_$ChapterImpl> get copyWith =>
+      __$$ChapterImplCopyWithImpl<_$ChapterImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ChapterToJson(
+    return _$$ChapterImplToJson(
       this,
     );
   }
@@ -574,9 +575,9 @@ abstract class _Chapter implements Chapter {
           @JsonKey(name: 'is_enabled') final bool? isEnabled,
           @JsonKey(name: 'chapter_version') final String? chapterVersion,
           @JsonKey(name: 'paragraphs') final List<Paragraph>? paragraphs}) =
-      _$_Chapter;
+      _$ChapterImpl;
 
-  factory _Chapter.fromJson(Map<String, dynamic> json) = _$_Chapter.fromJson;
+  factory _Chapter.fromJson(Map<String, dynamic> json) = _$ChapterImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -639,6 +640,6 @@ abstract class _Chapter implements Chapter {
   List<Paragraph>? get paragraphs;
   @override
   @JsonKey(ignore: true)
-  _$$_ChapterCopyWith<_$_Chapter> get copyWith =>
+  _$$ChapterImplCopyWith<_$ChapterImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

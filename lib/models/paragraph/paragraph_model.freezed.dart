@@ -106,10 +106,11 @@ class _$ParagraphCopyWithImpl<$Res, $Val extends Paragraph>
 }
 
 /// @nodoc
-abstract class _$$_ParagraphCopyWith<$Res> implements $ParagraphCopyWith<$Res> {
-  factory _$$_ParagraphCopyWith(
-          _$_Paragraph value, $Res Function(_$_Paragraph) then) =
-      __$$_ParagraphCopyWithImpl<$Res>;
+abstract class _$$ParagraphImplCopyWith<$Res>
+    implements $ParagraphCopyWith<$Res> {
+  factory _$$ParagraphImplCopyWith(
+          _$ParagraphImpl value, $Res Function(_$ParagraphImpl) then) =
+      __$$ParagraphImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -122,11 +123,11 @@ abstract class _$$_ParagraphCopyWith<$Res> implements $ParagraphCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_ParagraphCopyWithImpl<$Res>
-    extends _$ParagraphCopyWithImpl<$Res, _$_Paragraph>
-    implements _$$_ParagraphCopyWith<$Res> {
-  __$$_ParagraphCopyWithImpl(
-      _$_Paragraph _value, $Res Function(_$_Paragraph) _then)
+class __$$ParagraphImplCopyWithImpl<$Res>
+    extends _$ParagraphCopyWithImpl<$Res, _$ParagraphImpl>
+    implements _$$ParagraphImplCopyWith<$Res> {
+  __$$ParagraphImplCopyWithImpl(
+      _$ParagraphImpl _value, $Res Function(_$ParagraphImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -139,7 +140,7 @@ class __$$_ParagraphCopyWithImpl<$Res>
     Object? commentCount = freezed,
     Object? audioUrl = freezed,
   }) {
-    return _then(_$_Paragraph(
+    return _then(_$ParagraphImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -170,8 +171,8 @@ class __$$_ParagraphCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Paragraph implements _Paragraph {
-  const _$_Paragraph(
+class _$ParagraphImpl implements _Paragraph {
+  const _$ParagraphImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'chapter_id') required this.chapterId,
       @JsonKey(name: 'order') this.order = 0,
@@ -179,8 +180,8 @@ class _$_Paragraph implements _Paragraph {
       @JsonKey(name: 'comment_count') this.commentCount = 0,
       @JsonKey(name: 'audio_url') this.audioUrl = ''});
 
-  factory _$_Paragraph.fromJson(Map<String, dynamic> json) =>
-      _$$_ParagraphFromJson(json);
+  factory _$ParagraphImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ParagraphImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -213,7 +214,7 @@ class _$_Paragraph implements _Paragraph {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Paragraph &&
+            other is _$ParagraphImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.chapterId, chapterId) ||
                 other.chapterId == chapterId) &&
@@ -233,12 +234,12 @@ class _$_Paragraph implements _Paragraph {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ParagraphCopyWith<_$_Paragraph> get copyWith =>
-      __$$_ParagraphCopyWithImpl<_$_Paragraph>(this, _$identity);
+  _$$ParagraphImplCopyWith<_$ParagraphImpl> get copyWith =>
+      __$$ParagraphImplCopyWithImpl<_$ParagraphImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ParagraphToJson(
+    return _$$ParagraphImplToJson(
       this,
     );
   }
@@ -251,10 +252,10 @@ abstract class _Paragraph implements Paragraph {
       @JsonKey(name: 'order') final int? order,
       @JsonKey(name: 'content') final String? content,
       @JsonKey(name: 'comment_count') final int? commentCount,
-      @JsonKey(name: 'audio_url') final String? audioUrl}) = _$_Paragraph;
+      @JsonKey(name: 'audio_url') final String? audioUrl}) = _$ParagraphImpl;
 
   factory _Paragraph.fromJson(Map<String, dynamic> json) =
-      _$_Paragraph.fromJson;
+      _$ParagraphImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -278,6 +279,6 @@ abstract class _Paragraph implements Paragraph {
   String? get audioUrl;
   @override
   @JsonKey(ignore: true)
-  _$$_ParagraphCopyWith<_$_Paragraph> get copyWith =>
+  _$$ParagraphImplCopyWith<_$ParagraphImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

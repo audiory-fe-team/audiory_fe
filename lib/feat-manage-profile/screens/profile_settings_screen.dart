@@ -2,6 +2,7 @@ import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
+import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -122,23 +123,9 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
     Widget userInfo() {
       return Column(
         children: [
-          Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () async {
-                context.push('/profile');
-              },
-              customBorder: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100.0),
-              ),
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100.0),
-                  child: Image.network(
-                    'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
-                    width: size.width / 3.5,
-                    height: size.width / 3.5,
-                  )),
-            ),
+          AppAvatarImage(
+            url: widget.currentUser?.avatarUrl,
+            size: size.width / 3.5,
           ),
           Padding(
             padding: const EdgeInsets.all(4.0),
@@ -175,9 +162,12 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
         ),
         actions: [
           Container(
-            margin: const EdgeInsets.only(right: 8),
+            margin: const EdgeInsets.only(right: 16),
             child: GestureDetector(
-              onTap: () {},
+              onTap: () {
+                GoRouter.of(context).push('/profileSettings/messages',
+                    extra: {'userId': widget.currentUser?.id});
+              },
               child: const Icon(Icons.messenger_outline),
             ),
           )

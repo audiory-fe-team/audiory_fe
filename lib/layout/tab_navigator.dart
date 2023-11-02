@@ -22,7 +22,7 @@ class AppTabNavigator extends StatelessWidget {
     else if (tabItem == 'Library') {
       child = const LibraryScreen();
     } else if (tabItem == 'Writer')
-      child = WriterScreen();
+      child = const LibraryScreen();
     else if (tabItem == 'Profile') {
       child = const UserProfileScreen();
     }

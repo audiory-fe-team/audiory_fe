@@ -121,11 +121,11 @@ class _$ChapterVersionCopyWithImpl<$Res, $Val extends ChapterVersion>
 }
 
 /// @nodoc
-abstract class _$$_ChapterVersionCopyWith<$Res>
+abstract class _$$ChapterVersionImplCopyWith<$Res>
     implements $ChapterVersionCopyWith<$Res> {
-  factory _$$_ChapterVersionCopyWith(
-          _$_ChapterVersion value, $Res Function(_$_ChapterVersion) then) =
-      __$$_ChapterVersionCopyWithImpl<$Res>;
+  factory _$$ChapterVersionImplCopyWith(_$ChapterVersionImpl value,
+          $Res Function(_$ChapterVersionImpl) then) =
+      __$$ChapterVersionImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -140,11 +140,11 @@ abstract class _$$_ChapterVersionCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ChapterVersionCopyWithImpl<$Res>
-    extends _$ChapterVersionCopyWithImpl<$Res, _$_ChapterVersion>
-    implements _$$_ChapterVersionCopyWith<$Res> {
-  __$$_ChapterVersionCopyWithImpl(
-      _$_ChapterVersion _value, $Res Function(_$_ChapterVersion) _then)
+class __$$ChapterVersionImplCopyWithImpl<$Res>
+    extends _$ChapterVersionCopyWithImpl<$Res, _$ChapterVersionImpl>
+    implements _$$ChapterVersionImplCopyWith<$Res> {
+  __$$ChapterVersionImplCopyWithImpl(
+      _$ChapterVersionImpl _value, $Res Function(_$ChapterVersionImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -159,7 +159,7 @@ class __$$_ChapterVersionCopyWithImpl<$Res>
     Object? content = freezed,
     Object? timestamp = freezed,
   }) {
-    return _then(_$_ChapterVersion(
+    return _then(_$ChapterVersionImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -198,10 +198,10 @@ class __$$_ChapterVersionCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ChapterVersion
+class _$ChapterVersionImpl
     with DiagnosticableTreeMixin
     implements _ChapterVersion {
-  const _$_ChapterVersion(
+  const _$ChapterVersionImpl(
       {@JsonKey(name: 'id') this.id = '',
       @JsonKey(name: 'chapter_id') this.chapterId = '',
       @JsonKey(name: 'version_name') this.versionName,
@@ -211,8 +211,8 @@ class _$_ChapterVersion
       @JsonKey(name: 'content') this.content,
       @JsonKey(name: 'timestamp') this.timestamp});
 
-  factory _$_ChapterVersion.fromJson(Map<String, dynamic> json) =>
-      _$$_ChapterVersionFromJson(json);
+  factory _$ChapterVersionImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ChapterVersionImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
   @override
@@ -266,7 +266,7 @@ class _$_ChapterVersion
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ChapterVersion &&
+            other is _$ChapterVersionImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.chapterId, chapterId) ||
                 other.chapterId == chapterId) &&
@@ -290,12 +290,13 @@ class _$_ChapterVersion
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ChapterVersionCopyWith<_$_ChapterVersion> get copyWith =>
-      __$$_ChapterVersionCopyWithImpl<_$_ChapterVersion>(this, _$identity);
+  _$$ChapterVersionImplCopyWith<_$ChapterVersionImpl> get copyWith =>
+      __$$ChapterVersionImplCopyWithImpl<_$ChapterVersionImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ChapterVersionToJson(
+    return _$$ChapterVersionImplToJson(
       this,
     );
   }
@@ -303,17 +304,18 @@ class _$_ChapterVersion
 
 abstract class _ChapterVersion implements ChapterVersion {
   const factory _ChapterVersion(
-      {@JsonKey(name: 'id') final String id,
-      @JsonKey(name: 'chapter_id') final String chapterId,
-      @JsonKey(name: 'version_name') final String? versionName,
-      @JsonKey(name: 'banner_url') final String? bannerUrl,
-      @JsonKey(name: 'title') final String title,
-      @JsonKey(name: 'rich_text') final String? richText,
-      @JsonKey(name: 'content') final String? content,
-      @JsonKey(name: 'timestamp') final String? timestamp}) = _$_ChapterVersion;
+          {@JsonKey(name: 'id') final String id,
+          @JsonKey(name: 'chapter_id') final String chapterId,
+          @JsonKey(name: 'version_name') final String? versionName,
+          @JsonKey(name: 'banner_url') final String? bannerUrl,
+          @JsonKey(name: 'title') final String title,
+          @JsonKey(name: 'rich_text') final String? richText,
+          @JsonKey(name: 'content') final String? content,
+          @JsonKey(name: 'timestamp') final String? timestamp}) =
+      _$ChapterVersionImpl;
 
   factory _ChapterVersion.fromJson(Map<String, dynamic> json) =
-      _$_ChapterVersion.fromJson;
+      _$ChapterVersionImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
   @JsonKey(name: 'id')
@@ -341,6 +343,6 @@ abstract class _ChapterVersion implements ChapterVersion {
   String? get timestamp;
   @override
   @JsonKey(ignore: true)
-  _$$_ChapterVersionCopyWith<_$_ChapterVersion> get copyWith =>
+  _$$ChapterVersionImplCopyWith<_$ChapterVersionImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -6,8 +6,8 @@ part of 'transaction_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Transaction _$$_TransactionFromJson(Map<String, dynamic> json) =>
-    _$_Transaction(
+_$TransactionImpl _$$TransactionImplFromJson(Map<String, dynamic> json) =>
+    _$TransactionImpl(
       id: json['id'] as String,
       userId: json['user_id'] as String? ?? '',
       productType: json['product_type'] as String? ?? '',
@@ -22,7 +22,7 @@ _$_Transaction _$$_TransactionFromJson(Map<String, dynamic> json) =>
       updatedDate: json['updated_date'] as String? ?? '',
     );
 
-Map<String, dynamic> _$$_TransactionToJson(_$_Transaction instance) =>
+Map<String, dynamic> _$$TransactionImplToJson(_$TransactionImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'user_id': instance.userId,

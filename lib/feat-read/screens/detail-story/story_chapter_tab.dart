@@ -36,9 +36,10 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
     List<Chapter> chaptersList = widget.story?.chapters ?? [];
     List<Chapter> paywalledChapters = widget.story?.chapters
             ?.where((element) =>
-                element.isPaywalled == true && element.isPaid == true)
+                element.isPaywalled == true && element.isPaid == false)
             .toList() ??
         [];
+
     numOfPages.value = (chaptersList.length / 10).ceil();
 
     var pages = List.generate(

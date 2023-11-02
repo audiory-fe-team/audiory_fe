@@ -131,11 +131,11 @@ class _$ReadingListCopyWithImpl<$Res, $Val extends ReadingList>
 }
 
 /// @nodoc
-abstract class _$$_ReadingListCopyWith<$Res>
+abstract class _$$ReadingListImplCopyWith<$Res>
     implements $ReadingListCopyWith<$Res> {
-  factory _$$_ReadingListCopyWith(
-          _$_ReadingList value, $Res Function(_$_ReadingList) then) =
-      __$$_ReadingListCopyWithImpl<$Res>;
+  factory _$$ReadingListImplCopyWith(
+          _$ReadingListImpl value, $Res Function(_$ReadingListImpl) then) =
+      __$$ReadingListImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -151,11 +151,11 @@ abstract class _$$_ReadingListCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ReadingListCopyWithImpl<$Res>
-    extends _$ReadingListCopyWithImpl<$Res, _$_ReadingList>
-    implements _$$_ReadingListCopyWith<$Res> {
-  __$$_ReadingListCopyWithImpl(
-      _$_ReadingList _value, $Res Function(_$_ReadingList) _then)
+class __$$ReadingListImplCopyWithImpl<$Res>
+    extends _$ReadingListCopyWithImpl<$Res, _$ReadingListImpl>
+    implements _$$ReadingListImplCopyWith<$Res> {
+  __$$ReadingListImplCopyWithImpl(
+      _$ReadingListImpl _value, $Res Function(_$ReadingListImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -171,7 +171,7 @@ class __$$_ReadingListCopyWithImpl<$Res>
     Object? isEnabled = freezed,
     Object? stories = freezed,
   }) {
-    return _then(_$_ReadingList(
+    return _then(_$ReadingListImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -214,8 +214,8 @@ class __$$_ReadingListCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ReadingList implements _ReadingList {
-  const _$_ReadingList(
+class _$ReadingListImpl implements _ReadingList {
+  const _$ReadingListImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'name') this.name = '',
       @JsonKey(name: 'user_id') this.userId = '',
@@ -227,8 +227,8 @@ class _$_ReadingList implements _ReadingList {
       @JsonKey(name: 'stories') final List<Story>? stories = const []})
       : _stories = stories;
 
-  factory _$_ReadingList.fromJson(Map<String, dynamic> json) =>
-      _$$_ReadingListFromJson(json);
+  factory _$ReadingListImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ReadingListImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -277,7 +277,7 @@ class _$_ReadingList implements _ReadingList {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ReadingList &&
+            other is _$ReadingListImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.userId, userId) || other.userId == userId) &&
@@ -311,12 +311,12 @@ class _$_ReadingList implements _ReadingList {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ReadingListCopyWith<_$_ReadingList> get copyWith =>
-      __$$_ReadingListCopyWithImpl<_$_ReadingList>(this, _$identity);
+  _$$ReadingListImplCopyWith<_$ReadingListImpl> get copyWith =>
+      __$$ReadingListImplCopyWithImpl<_$ReadingListImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ReadingListToJson(
+    return _$$ReadingListImplToJson(
       this,
     );
   }
@@ -324,18 +324,19 @@ class _$_ReadingList implements _ReadingList {
 
 abstract class _ReadingList implements ReadingList {
   const factory _ReadingList(
-      {@JsonKey(name: 'id') required final String id,
-      @JsonKey(name: 'name') final String? name,
-      @JsonKey(name: 'user_id') final String? userId,
-      @JsonKey(name: 'cover_url') final String? coverUrl,
-      @JsonKey(name: 'created_date') final String? createdDate,
-      @JsonKey(name: 'updated_date') final String? updatedDate,
-      @JsonKey(name: 'is_private') final bool? isPrivate,
-      @JsonKey(name: 'is_enabled') final bool? isEnabled,
-      @JsonKey(name: 'stories') final List<Story>? stories}) = _$_ReadingList;
+          {@JsonKey(name: 'id') required final String id,
+          @JsonKey(name: 'name') final String? name,
+          @JsonKey(name: 'user_id') final String? userId,
+          @JsonKey(name: 'cover_url') final String? coverUrl,
+          @JsonKey(name: 'created_date') final String? createdDate,
+          @JsonKey(name: 'updated_date') final String? updatedDate,
+          @JsonKey(name: 'is_private') final bool? isPrivate,
+          @JsonKey(name: 'is_enabled') final bool? isEnabled,
+          @JsonKey(name: 'stories') final List<Story>? stories}) =
+      _$ReadingListImpl;
 
   factory _ReadingList.fromJson(Map<String, dynamic> json) =
-      _$_ReadingList.fromJson;
+      _$ReadingListImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -368,6 +369,6 @@ abstract class _ReadingList implements ReadingList {
   List<Story>? get stories;
   @override
   @JsonKey(ignore: true)
-  _$$_ReadingListCopyWith<_$_ReadingList> get copyWith =>
+  _$$ReadingListImplCopyWith<_$ReadingListImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

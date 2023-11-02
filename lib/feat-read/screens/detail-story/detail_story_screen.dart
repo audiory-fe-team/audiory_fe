@@ -395,32 +395,42 @@ class DetailStoryScreen extends HookConsumerWidget {
                         child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                                onTap: () async {
-                                  // context.go('/profile');
+                                onTap: () {
+                                  if (isOffline == false) {
+                                    context.push(
+                                        '/accountProfile/${story?.authorId}',
+                                        extra: {
+                                          'name': story?.author?.fullName,
+                                          'avatar': story?.author?.avatarUrl,
+                                        });
+                                  }
                                 },
                                 child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Skeleton.shade(
-                                          child: Container(
-                                        width: 32,
-                                        height: 32,
-                                        decoration: isOffline
-                                            ? BoxDecoration(
-                                                color:
-                                                    appColors.primaryLightest,
-                                                borderRadius:
-                                                    BorderRadius.circular(28))
-                                            : ShapeDecoration(
-                                                image: DecorationImage(
-                                                  image: NetworkImage(story
-                                                          ?.author?.avatarUrl ??
-                                                      FALLBACK_IMG_URL),
-                                                  fit: BoxFit.fill,
+                                          child: GestureDetector(
+                                        child: Container(
+                                          width: 32,
+                                          height: 32,
+                                          decoration: isOffline
+                                              ? BoxDecoration(
+                                                  color:
+                                                      appColors.primaryLightest,
+                                                  borderRadius:
+                                                      BorderRadius.circular(28))
+                                              : ShapeDecoration(
+                                                  image: DecorationImage(
+                                                    image: NetworkImage(story
+                                                            ?.author
+                                                            ?.avatarUrl ??
+                                                        FALLBACK_IMG_URL),
+                                                    fit: BoxFit.fill,
+                                                  ),
+                                                  shape: const CircleBorder(),
                                                 ),
-                                                shape: const CircleBorder(),
-                                              ),
+                                        ),
                                       )),
                                       const SizedBox(width: 8),
                                       Text(

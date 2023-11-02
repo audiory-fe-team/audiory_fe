@@ -36,12 +36,18 @@ class TransactionRepository {
     }
   }
 
-  static Future<List<Transaction>?> fetchMyTransactions(
-      {TransactionType? type}) async {
-    final url = Uri.parse('${Endpoints().user}/me/transactions');
+  static Future<List<Transaction>?> fetchMyTransactions({
+    TransactionType? type,
+    int? page = 1,
+    int? pageSize = 20,
+  }) async {
+    String transactionEndpoint =
+        '${Endpoints().user}/me/transactions?page=$page&page_size=$pageSize';
     if (type != null) {
-      url.replace(queryParameters: {'type': type});
+      transactionEndpoint += '&type=${type.name}';
     }
+    final url = Uri.parse(transactionEndpoint);
+    print('endpoint $transactionEndpoint');
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {
       "Content-type": "application/json; charset=UTF-8",

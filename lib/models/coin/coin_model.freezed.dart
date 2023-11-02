@@ -105,9 +105,10 @@ class _$CoinCopyWithImpl<$Res, $Val extends Coin>
 }
 
 /// @nodoc
-abstract class _$$_CoinCopyWith<$Res> implements $CoinCopyWith<$Res> {
-  factory _$$_CoinCopyWith(_$_Coin value, $Res Function(_$_Coin) then) =
-      __$$_CoinCopyWithImpl<$Res>;
+abstract class _$$CoinImplCopyWith<$Res> implements $CoinCopyWith<$Res> {
+  factory _$$CoinImplCopyWith(
+          _$CoinImpl value, $Res Function(_$CoinImpl) then) =
+      __$$CoinImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -120,9 +121,10 @@ abstract class _$$_CoinCopyWith<$Res> implements $CoinCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_CoinCopyWithImpl<$Res> extends _$CoinCopyWithImpl<$Res, _$_Coin>
-    implements _$$_CoinCopyWith<$Res> {
-  __$$_CoinCopyWithImpl(_$_Coin _value, $Res Function(_$_Coin) _then)
+class __$$CoinImplCopyWithImpl<$Res>
+    extends _$CoinCopyWithImpl<$Res, _$CoinImpl>
+    implements _$$CoinImplCopyWith<$Res> {
+  __$$CoinImplCopyWithImpl(_$CoinImpl _value, $Res Function(_$CoinImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -135,7 +137,7 @@ class __$$_CoinCopyWithImpl<$Res> extends _$CoinCopyWithImpl<$Res, _$_Coin>
     Object? createdDate = freezed,
     Object? updatedDate = freezed,
   }) {
-    return _then(_$_Coin(
+    return _then(_$CoinImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -166,8 +168,8 @@ class __$$_CoinCopyWithImpl<$Res> extends _$CoinCopyWithImpl<$Res, _$_Coin>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Coin implements _Coin {
-  const _$_Coin(
+class _$CoinImpl implements _Coin {
+  const _$CoinImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'name') this.name = '',
       @JsonKey(name: 'value') this.value,
@@ -175,7 +177,8 @@ class _$_Coin implements _Coin {
       @JsonKey(name: 'created_date') this.createdDate = '',
       @JsonKey(name: 'updated_date') this.updatedDate = ''});
 
-  factory _$_Coin.fromJson(Map<String, dynamic> json) => _$$_CoinFromJson(json);
+  factory _$CoinImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CoinImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -209,7 +212,7 @@ class _$_Coin implements _Coin {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Coin &&
+            other is _$CoinImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             const DeepCollectionEquality().equals(other.value, value) &&
@@ -235,12 +238,12 @@ class _$_Coin implements _Coin {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CoinCopyWith<_$_Coin> get copyWith =>
-      __$$_CoinCopyWithImpl<_$_Coin>(this, _$identity);
+  _$$CoinImplCopyWith<_$CoinImpl> get copyWith =>
+      __$$CoinImplCopyWithImpl<_$CoinImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CoinToJson(
+    return _$$CoinImplToJson(
       this,
     );
   }
@@ -253,9 +256,9 @@ abstract class _Coin implements Coin {
       @JsonKey(name: 'value') final dynamic value,
       @JsonKey(name: 'image_url') final String? imageUrl,
       @JsonKey(name: 'created_date') final String? createdDate,
-      @JsonKey(name: 'updated_date') final String? updatedDate}) = _$_Coin;
+      @JsonKey(name: 'updated_date') final String? updatedDate}) = _$CoinImpl;
 
-  factory _Coin.fromJson(Map<String, dynamic> json) = _$_Coin.fromJson;
+  factory _Coin.fromJson(Map<String, dynamic> json) = _$CoinImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -279,5 +282,6 @@ abstract class _Coin implements Coin {
   String? get updatedDate;
   @override
   @JsonKey(ignore: true)
-  _$$_CoinCopyWith<_$_Coin> get copyWith => throw _privateConstructorUsedError;
+  _$$CoinImplCopyWith<_$CoinImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

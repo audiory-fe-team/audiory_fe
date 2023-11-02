@@ -31,9 +31,11 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final transactionsQuery = useQuery(
-        ['transactions'],
+        ['myDailyRewardTransactions'],
         () => TransactionRepository.fetchMyTransactions(
             type: TransactionType.DAILY_REWARD));
+
+    print(transactionsQuery.data);
     final userStreakQuery =
         useQuery(['userStreak'], () => AuthRepository().getMyStreak());
     handleReceiveReward(bool isToday) async {
@@ -54,15 +56,15 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
     }
 
     Widget transactionCard(Transaction transaction) {
-      final containerSize = double.infinity;
+      final containerSize = double.infinity - 32;
       String formatDate(String? date) {
         DateTime dateTime = DateTime.parse(date as String);
         return DateFormat('dd/MM/yyyy').format(dateTime);
       }
 
       TransactionType transactionType = TransactionType.values
-          .byName(transaction.transactionType?.toUpperCase() ?? 'PURCHASE');
-      return Container(
+          .byName(transaction.transactionType?.toUpperCase() ?? 'DAILY_REWARD');
+      return SizedBox(
         height: 75,
         // padding: const EdgeInsets.symmetric(horizontal: 16),
         // decoration: BoxDecoration(
@@ -250,7 +252,7 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                               children: [
                                 Flexible(
                                   child: Text(
-                                    'Lịch sử nhận thưởng',
+                                    'Lịch sử nhận thưởng ${transactionsQuery.data?.length}',
                                     style: textTheme.headlineSmall
                                         ?.copyWith(color: appColors.inkDarkest),
                                   ),
@@ -270,33 +272,40 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                               height: size.height * 0.41,
                               child: Skeletonizer(
                                 enabled: transactionsQuery.isFetching,
-                                child: ListView(
+                                child: ListView.builder(
                                   scrollDirection: Axis.vertical,
-                                  shrinkWrap: true,
-                                  children: transactionsQuery.data?.length == 0
-                                      ? List.generate(
-                                          transactionsQuery.data?.length ?? 0,
-                                          (index) {
-                                          transactionsQuery.data?.sort((a, b) {
-                                            //sorting in ascending order
-                                            return DateTime.parse(
-                                                        validFormatDateForParsing(
-                                                            a.createdDate))
-                                                    .isBefore(DateTime.parse(
-                                                        validFormatDateForParsing(
-                                                            b.createdDate)))
-                                                ? 1
-                                                : -1;
-                                          });
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8.0),
-                                            child: transactionCard(
-                                                transactionsQuery.data?[index]
-                                                    as Transaction),
-                                          );
-                                        }).toList()
-                                      : [Text('Chưa nhận thưởng')],
+                                  itemCount:
+                                      transactionsQuery.data?.length ?? 0,
+                                  itemBuilder: (context, i) {
+                                    print(transactionsQuery.data?[i]);
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 8.0),
+                                      child: transactionCard(transactionsQuery
+                                          .data?[i] as Transaction),
+                                    );
+                                  },
+                                  // children: List.generate(
+                                  //     transactionsQuery.data?.length ?? 0,
+                                  //     (index) {
+                                  //   transactionsQuery.data?.sort((a, b) {
+                                  //     //sorting in ascending order
+                                  //     return DateTime.parse(
+                                  //                 validFormatDateForParsing(
+                                  //                     a.createdDate))
+                                  //             .isBefore(DateTime.parse(
+                                  //                 validFormatDateForParsing(
+                                  //                     b.createdDate)))
+                                  //         ? 1
+                                  //         : -1;
+                                  //   });
+                                  //   return Padding(
+                                  //     padding: const EdgeInsets.symmetric(
+                                  //         vertical: 8.0),
+                                  //     child: transactionCard(transactionsQuery
+                                  //         .data?[index] as Transaction),
+                                  //   );
+                                  // }).toList(),
                                 ),
                               ),
                             ),

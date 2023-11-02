@@ -40,16 +40,8 @@ extension TransactionTypeExtension on TransactionType {
 
   Color get displayBgColor {
     switch (this) {
-      case TransactionType.PURCHASE:
-        return const Color(0xFF439A97);
-      case TransactionType.WITHDRAW:
-        return const Color(0xFF303437);
-      case TransactionType.CHAPTER_BOUGHT:
-        return Colors.redAccent;
-      case TransactionType.DAILY_REWARD:
-        return Colors.cyan[300] as Color;
       default:
-        return Color.fromARGB(255, 123, 150, 149);
+        return Color.fromARGB(0, 237, 235, 235);
     }
   }
 
@@ -59,10 +51,18 @@ extension TransactionTypeExtension on TransactionType {
         return 'Nạp thành công vào ví';
       case TransactionType.WITHDRAW:
         return 'Rút thành công';
+      case TransactionType.REFUND:
+        return 'Hoàn tiền thành công';
+      case TransactionType.GIFT_SENT:
+        return 'Tặng quà thành công';
       case TransactionType.CHAPTER_BOUGHT:
         return 'Mua chương';
       case TransactionType.DAILY_REWARD:
         return 'Nhận thưởng hàng ngày';
+      case TransactionType.REWARD_FROM_GIFT:
+        return 'Nhận quà từ người đọc';
+      case TransactionType.REWARD_FROM_STORY:
+        return 'Nhận thưởng từ tác phẩm';
       default:
         return 'Giao dịch khác';
     }
@@ -89,8 +89,21 @@ extension TransactionTypeExtension on TransactionType {
         return '-';
       case TransactionType.CHAPTER_BOUGHT:
         return '-';
+      case TransactionType.GIFT_SENT:
+        return '-';
       default:
         return '+';
+    }
+  }
+
+  bool get isCoin {
+    switch (this) {
+      case TransactionType.REWARD_FROM_GIFT:
+        return false;
+      case TransactionType.REWARD_FROM_STORY:
+        return false;
+      default:
+        return true;
     }
   }
 }

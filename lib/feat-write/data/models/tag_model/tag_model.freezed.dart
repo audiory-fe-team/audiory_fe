@@ -101,9 +101,9 @@ class _$TagCopyWithImpl<$Res, $Val extends Tag> implements $TagCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$$_TagCopyWith<$Res> implements $TagCopyWith<$Res> {
-  factory _$$_TagCopyWith(_$_Tag value, $Res Function(_$_Tag) then) =
-      __$$_TagCopyWithImpl<$Res>;
+abstract class _$$TagImplCopyWith<$Res> implements $TagCopyWith<$Res> {
+  factory _$$TagImplCopyWith(_$TagImpl value, $Res Function(_$TagImpl) then) =
+      __$$TagImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -116,9 +116,9 @@ abstract class _$$_TagCopyWith<$Res> implements $TagCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$_Tag>
-    implements _$$_TagCopyWith<$Res> {
-  __$$_TagCopyWithImpl(_$_Tag _value, $Res Function(_$_Tag) _then)
+class __$$TagImplCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$TagImpl>
+    implements _$$TagImplCopyWith<$Res> {
+  __$$TagImplCopyWithImpl(_$TagImpl _value, $Res Function(_$TagImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -131,7 +131,7 @@ class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$_Tag>
     Object? isEnabled = freezed,
     Object? worksTotal = freezed,
   }) {
-    return _then(_$_Tag(
+    return _then(_$TagImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -162,8 +162,8 @@ class __$$_TagCopyWithImpl<$Res> extends _$TagCopyWithImpl<$Res, _$_Tag>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Tag with DiagnosticableTreeMixin implements _Tag {
-  const _$_Tag(
+class _$TagImpl with DiagnosticableTreeMixin implements _Tag {
+  const _$TagImpl(
       {@JsonKey(name: 'id') required this.id = '',
       @JsonKey(name: 'name') this.name,
       @JsonKey(name: 'created_date') this.createdDate,
@@ -171,7 +171,8 @@ class _$_Tag with DiagnosticableTreeMixin implements _Tag {
       @JsonKey(name: 'is_enabled') this.isEnabled,
       @JsonKey(name: 'works_total') this.worksTotal});
 
-  factory _$_Tag.fromJson(Map<String, dynamic> json) => _$$_TagFromJson(json);
+  factory _$TagImpl.fromJson(Map<String, dynamic> json) =>
+      _$$TagImplFromJson(json);
 
   @override
   @JsonKey(name: 'id')
@@ -214,7 +215,7 @@ class _$_Tag with DiagnosticableTreeMixin implements _Tag {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Tag &&
+            other is _$TagImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.createdDate, createdDate) ||
@@ -235,12 +236,12 @@ class _$_Tag with DiagnosticableTreeMixin implements _Tag {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_TagCopyWith<_$_Tag> get copyWith =>
-      __$$_TagCopyWithImpl<_$_Tag>(this, _$identity);
+  _$$TagImplCopyWith<_$TagImpl> get copyWith =>
+      __$$TagImplCopyWithImpl<_$TagImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_TagToJson(
+    return _$$TagImplToJson(
       this,
     );
   }
@@ -253,9 +254,9 @@ abstract class _Tag implements Tag {
       @JsonKey(name: 'created_date') final String? createdDate,
       @JsonKey(name: 'updated_date') final String? updatedDate,
       @JsonKey(name: 'is_enabled') final bool? isEnabled,
-      @JsonKey(name: 'works_total') final int? worksTotal}) = _$_Tag;
+      @JsonKey(name: 'works_total') final int? worksTotal}) = _$TagImpl;
 
-  factory _Tag.fromJson(Map<String, dynamic> json) = _$_Tag.fromJson;
+  factory _Tag.fromJson(Map<String, dynamic> json) = _$TagImpl.fromJson;
 
   @override
   @JsonKey(name: 'id')
@@ -277,5 +278,6 @@ abstract class _Tag implements Tag {
   int? get worksTotal;
   @override
   @JsonKey(ignore: true)
-  _$$_TagCopyWith<_$_Tag> get copyWith => throw _privateConstructorUsedError;
+  _$$TagImplCopyWith<_$TagImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

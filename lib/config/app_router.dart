@@ -3,6 +3,7 @@ import 'package:audiory_v0/feat-auth/screens/forgot_password/reset_password_scre
 import 'package:audiory_v0/feat-explore/screens/category_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/notification_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/profile_screen.dart';
 import 'package:audiory_v0/feat-explore/screens/tag_screen.dart';
 import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
@@ -13,6 +14,8 @@ import 'package:audiory_v0/feat-manage-profile/screens/daily-rewards/daily_rewar
 import 'package:audiory_v0/feat-manage-profile/screens/edit_account_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_email_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/messages/detail_conversation_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/messages/messages_list_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_screen.dart';
@@ -27,6 +30,8 @@ import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
+import 'package:audiory_v0/models/author-story/author_story_model.dart';
+import 'package:audiory_v0/models/conversation/conversation_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/feat-auth/screens/register/register_screen.dart';
 import 'package:audiory_v0/feat-auth/screens/register/screens/flow_four.dart';
@@ -334,16 +339,40 @@ class AppRoutes {
         },
       ),
       GoRoute(
-        name: 'profileSettings',
-        path: '/profileSettings',
-        builder: (BuildContext context, GoRouterState state) {
-          final extraMap = state.extra as Map<String, dynamic>;
-          final currentUser = extraMap["currentUser"] as AuthUser;
-          final userProfile = extraMap["userProfile"] as Profile;
-          return ProfileSettingsScreen(
-              currentUser: currentUser, userProfile: userProfile);
-        },
-      ),
+          name: 'profileSettings',
+          path: '/profileSettings',
+          builder: (BuildContext context, GoRouterState state) {
+            final extraMap = state.extra as Map<String, dynamic>;
+            final currentUser = extraMap["currentUser"] as AuthUser;
+            final userProfile = extraMap["userProfile"] as Profile;
+            return ProfileSettingsScreen(
+                currentUser: currentUser, userProfile: userProfile);
+          },
+          routes: [
+            GoRoute(
+                parentNavigatorKey: _rootNavigatorKey,
+                name: 'messages',
+                path: 'messages',
+                builder: (BuildContext context, GoRouterState state) {
+                  final extraMap = state.extra as Map<String, dynamic>;
+                  final userId = extraMap['userId'] as String;
+                  return MessagesListScreen(userId: userId);
+                },
+                routes: [
+                  GoRoute(
+                    parentNavigatorKey: _rootNavigatorKey,
+                    name: 'detailMessage',
+                    path: 'detailMessage',
+                    builder: (BuildContext context, GoRouterState state) {
+                      final extraMap = state.extra as Map<String, dynamic>;
+                      final conversation = extraMap['conversation'] ?? null;
+                      final userId = extraMap['userId'] ?? null;
+                      return DetailConversationScreen(
+                          conversation: conversation, userId: userId);
+                    },
+                  ),
+                ]),
+          ]),
       GoRoute(
         name: 'wallet',
         path: '/wallet',
@@ -456,6 +485,27 @@ class AppRoutes {
               //extra
               story: story,
               chapterId: chapterId);
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: 'accountProfile',
+        path: '/accountProfile/:id',
+        builder: (BuildContext context, GoRouterState state) {
+          final id = state.pathParameters['id'];
+          print('ID $id');
+          final extraMap = state.extra as Map<String, dynamic>;
+          final name = extraMap['name'] ?? '';
+          final avatar = extraMap['avatar'] ?? '';
+          print('alo');
+          if (id == null || id == '' || id == 'not-found') {
+            return const NotFoundScreen();
+          }
+          return AppProfileScreen(
+            name: name,
+            avatar: avatar,
+            id: id,
+          );
         },
       ),
     ],

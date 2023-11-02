@@ -316,26 +316,27 @@ class StoryDetailTab extends HookWidget {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(8),
                 color: appColors.primaryLightest),
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('Giới thiệu', style: textTheme.headlineSmall),
-              const SizedBox(
-                height: 8,
-              ),
-              ReadMoreText(
-                story?.description ?? '',
-                trimLines: 4,
-                colorClickableText: appColors.primaryBase,
-                trimMode: TrimMode.Line,
-                trimCollapsedText: ' Xem thêm',
-                trimExpandedText: ' Ẩn bớt',
-                style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w400,
-                    fontFamily: GoogleFonts.sourceSansPro().fontFamily),
-                moreStyle: textTheme.titleMedium
-                    ?.copyWith(color: appColors.primaryBase),
-              )
-            ])),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text('Giới thiệu', style: textTheme.headlineSmall),
+                  const SizedBox(
+                    height: 8,
+                  ),
+                  ReadMoreText(
+                    story?.description ?? '',
+                    trimLines: 4,
+                    colorClickableText: appColors.primaryBase,
+                    trimMode: TrimMode.Line,
+                    trimCollapsedText: ' Xem thêm',
+                    trimExpandedText: ' Ẩn bớt',
+                    style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w400,
+                        fontFamily: GoogleFonts.sourceSansPro().fontFamily),
+                    moreStyle: textTheme.titleMedium
+                        ?.copyWith(color: appColors.primaryBase),
+                  )
+                ])),
         const SizedBox(
           height: 24,
         ),
