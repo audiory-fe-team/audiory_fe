@@ -28,28 +28,31 @@ class ReadingLists extends HookWidget {
                       mainAxisSize: MainAxisSize.max,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 15, vertical: 8),
-                            decoration: BoxDecoration(
-                                color: appColors?.skyLightest,
-                                borderRadius: BorderRadius.circular(28)),
-                            child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                    child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                      Text('Tạo danh sách đọc',
-                                          style: textTheme.titleMedium
-                                              ?.copyWith(
-                                                  color: appColors?.inkLight)),
-                                      const SizedBox(
-                                        width: 4,
-                                      ),
-                                      Icon(Icons.add_rounded,
-                                          size: 14, color: appColors?.inkBase),
-                                    ]))))
+                        Skeleton.shade(
+                            child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 8),
+                                decoration: BoxDecoration(
+                                    color: appColors?.skyLightest,
+                                    borderRadius: BorderRadius.circular(28)),
+                                child: Material(
+                                    color: Colors.transparent,
+                                    child: InkWell(
+                                        child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                          Text('Tạo danh sách đọc',
+                                              style: textTheme.titleMedium
+                                                  ?.copyWith(
+                                                      color:
+                                                          appColors?.inkLight)),
+                                          const SizedBox(
+                                            width: 4,
+                                          ),
+                                          Icon(Icons.add_rounded,
+                                              size: 14,
+                                              color: appColors?.inkBase),
+                                        ])))))
                       ]),
                   const SizedBox(height: 16),
                   ...(readingListQuery.data ?? [])

@@ -1,5 +1,6 @@
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
 import 'package:audiory_v0/feat-explore/utils/ranking.dart';
 import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/ranking_top_bar.dart';
@@ -35,70 +36,83 @@ class RankingScreen extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    // final textTheme = Theme.of(context).textTheme;
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final textTheme = Theme.of(context).textTheme;
+    final tabController = useTabController(
+      initialIndex: type == RankingType.story ? 0 : 1,
+      initialLength: 2,
+    );
 
     return Scaffold(
       appBar: const RankingTopBar(),
       body: SafeArea(
           child: Container(
         width: double.infinity,
-        color: Colors.white,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(
-              height: 16,
+            Container(
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: TabBar(
+                onTap: (value) {
+                  if (value == 0 && type != RankingType.story) {
+                    GoRouter.of(context).goNamed("ranking", queryParameters: {
+                      "type": RankingType.story.toString().split(".").last,
+                      "time": time.toString().split(".").last,
+                    });
+                  }
+                  if (value == 1 && type != RankingType.author) {
+                    GoRouter.of(context).goNamed("ranking", queryParameters: {
+                      "type": RankingType.author.toString().split(".").last,
+                      "time": time.toString().split(".").last,
+                    });
+                  }
+                },
+                controller: tabController,
+                labelColor: appColors.inkBase,
+                unselectedLabelColor: appColors.inkLighter,
+                labelPadding: const EdgeInsets.symmetric(vertical: 0),
+                indicatorColor: appColors.primaryBase,
+                indicatorWeight: 2.5,
+                indicatorPadding: const EdgeInsets.symmetric(horizontal: 24),
+                labelStyle: textTheme.headlineSmall,
+                tabs: [
+                  Tab(
+                    height: 36,
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/book.png',
+                            width: 16,
+                            height: 16,
+                          ),
+                          const SizedBox(width: 2),
+                          const Text('Tác phẩm')
+                        ]),
+                  ),
+                  Tab(
+                    height: 36,
+                    child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            'assets/images/hand_with_pen.png',
+                            width: 16,
+                            height: 16,
+                          ),
+                          const SizedBox(width: 2),
+                          const Text('Tác giả')
+                        ]),
+                  )
+                ],
+              ),
             ),
-            Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  InkWell(
-                      onTap: () {
-                        GoRouter.of(context)
-                            .goNamed("ranking", queryParameters: {
-                          "type": RankingType.story.toString().split(".").last,
-                          "time": time.toString().split(".").last,
-                        });
-                      },
-                      child: RankingTypeButton(
-                        iconUrl: 'assets/images/book.png',
-                        title: 'Tác phẩm',
-                        selected: type == RankingType.story,
-                      )),
-                  const SizedBox(width: 12),
-                  InkWell(
-                      onTap: () {
-                        GoRouter.of(context)
-                            .goNamed("ranking", queryParameters: {
-                          "type": RankingType.author.toString().split(".").last,
-                          "time": time.toString().split(".").last,
-                        });
-                      },
-                      child: RankingTypeButton(
-                        iconUrl: 'assets/images/hand_with_pen.png',
-                        title: 'Tác giả',
-                        selected: type == RankingType.author,
-                      )),
-                  // const SizedBox(width: 12),
-                  // InkWell(
-                  //     onTap: () {
-                  //       GoRouter.of(context).goNamed("ranking", queryParameters: {
-                  //         "type": RankingType.reader.toString().split(".").last,
-                  //         "time": time.toString().split(".").last,
-                  //       });
-                  //     },
-                  //     child: RankingTypeButton(
-                  //       iconUrl: 'assets/images/person_reading.png',
-                  //       title: 'Độc giả',
-                  //       selected: type == RankingType.reader,
-                  //     )),
-                ]),
             const SizedBox(
-              height: 16,
+              height: 8,
             ),
             Builder(builder: (_) {
               if (type == RankingType.author) return AuthorRanking(time: time);
@@ -141,95 +155,57 @@ class StoryRanking extends HookWidget {
     return Expanded(
         child: Column(
       children: [
-        // CarouselSlider(
-        //   carouselController: controller,
-        //   options: CarouselOptions(
-        //       height: 50,
-        //       enlargeCenterPage: true,
-        //       onPageChanged: (index, reason) {
-        //         // current.value = index;
-        //       }),
-        //   items: (categories.data ?? [])
-        //       .map((e) => Container(
-        //           width: 160,
-        //           height: 60,
-        //           // margin: const EdgeInsets.only(right: 12),
-        //           decoration: e.name == category
-        //               ? BoxDecoration(
-        //                   borderRadius: BorderRadius.circular(8),
-        //                   border: Border.all(
-        //                       color: appColors.primaryBase, width: 2))
-        //               : BoxDecoration(),
-        //           child: CategoryBadge(
-        //             imgUrl: e.imageUrl ?? '',
-        //             title: e.name ?? '',
-        //           )))
-        //       .toList(),
-        // ),
-        SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                GestureDetector(
-                    onTap: () {
-                      if (category != null) {
-                        GoRouter.of(context)
-                            .goNamed('ranking', queryParameters: {
-                          "type": getValueString(RankingType.story.toString()),
-                          "metric": getValueString(metric.toString()),
-                          "time": getValueString(time.toString()),
-                        });
-                      }
-                    },
-                    child: Container(
-                        width: 106,
-                        height: 53,
-                        padding: EdgeInsets.all(1),
-                        margin: const EdgeInsets.only(right: 12),
-                        decoration: category == null
-                            ? BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                    color: appColors.primaryBase, width: 2))
-                            : const BoxDecoration(),
-                        child: const AppCategoryBadge(
-                          imgUrl:
-                              'https://www.thecreativepenn.com/wp-content/uploads/2019/02/The-Creative-Penn-website-banner.png',
-                          title: 'Tất cả',
-                        ))),
-                ...(categories.data ?? []).map((e) => Container(
-                    width: 106,
-                    height: 53,
-                    padding: EdgeInsets.all(1),
-                    margin: const EdgeInsets.only(right: 12),
-                    decoration: e.name == category
-                        ? BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(
-                                color: appColors.primaryBase, width: 2))
-                        : BoxDecoration(),
+        Skeletonizer(
+            enabled: categories.isFetching,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(right: 8),
                     child: GestureDetector(
                         onTap: () {
-                          if (e.name != category) {
+                          if (category != null) {
                             GoRouter.of(context)
                                 .goNamed('ranking', queryParameters: {
                               "type":
                                   getValueString(RankingType.story.toString()),
                               "metric": getValueString(metric.toString()),
                               "time": getValueString(time.toString()),
-                              "category": e.name,
                             });
                           }
                         },
-                        child: AppCategoryBadge(
-                          imgUrl: e.imageUrl ?? '',
-                          title: e.name ?? '',
-                        ))))
-              ],
+                        child: RankingListBadge(
+                          label: 'Tất cả',
+                          selected: category == null,
+                        )),
+                  ),
+                  ...(categories.data ?? []).map((e) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: GestureDetector(
+                          onTap: () {
+                            if (e.name != category) {
+                              GoRouter.of(context)
+                                  .goNamed('ranking', queryParameters: {
+                                "type": getValueString(
+                                    RankingType.story.toString()),
+                                "metric": getValueString(metric.toString()),
+                                "time": getValueString(time.toString()),
+                                "category": e.name,
+                              });
+                            }
+                          },
+                          child: RankingListBadge(
+                            label: e.name ?? '',
+                            selected: e.name == category,
+                          )),
+                    );
+                  }).toList()
+                ],
+              ),
             )),
-        const SizedBox(height: 32),
-
+        const SizedBox(height: 16),
         Row(
             mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -319,7 +295,6 @@ class StoryRanking extends HookWidget {
         const SizedBox(
           height: 16,
         ),
-
         Expanded(
             child: RefreshIndicator(
                 onRefresh: () async {

@@ -92,7 +92,8 @@ dependencies:
   lottie: ^2.6.0
   email_validator: ^2.1.17
   flutter_timer_countdown: ^1.0.6
-  flutter_quill: ^7.4.16
+  flutter_quill: 7.3.0
+  transparent_image: ^2.0.1
 
 flutter_launcher_icons:
   image_path: "assets/images/logo.png"

@@ -34,33 +34,28 @@ class ChapterNavigateButton extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           !next
-              ? SvgPicture.asset(
-                  'assets/icons/left-arrow.svg',
+              ? SvgPicture.asset('assets/icons/left-arrow.svg',
                   width: 12,
                   height: 12,
-                  color: Colors.white,
-                )
+                  color: disabled ? appColors.skyDark : Colors.white)
               : const SizedBox.shrink(),
           const SizedBox(
             width: 4,
           ),
           Text(
             next ? 'Chương sau' : 'Chương trước',
-            style: Theme.of(context)
-                .textTheme
-                .titleMedium!
-                .copyWith(fontWeight: FontWeight.w600, color: Colors.white),
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: disabled ? appColors.skyDark : Colors.white),
           ),
           const SizedBox(
             width: 4,
           ),
           next
-              ? SvgPicture.asset(
-                  'assets/icons/right-arrow.svg',
+              ? SvgPicture.asset('assets/icons/right-arrow.svg',
                   width: 12,
                   height: 12,
-                  color: Colors.white,
-                )
+                  color: disabled ? appColors.skyDark : Colors.white)
               : const SizedBox.shrink(),
         ],
       ),

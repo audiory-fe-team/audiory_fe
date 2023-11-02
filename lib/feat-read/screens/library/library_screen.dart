@@ -34,6 +34,7 @@ class LibraryScreen extends HookWidget {
     return Scaffold(
         appBar: const LibraryTopBar(),
         body: Material(
+            color: Colors.transparent,
             child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Column(
@@ -62,7 +63,7 @@ class LibraryScreen extends HookWidget {
                                             width: 2))),
                                 child: Text(
                                   tabName,
-                                  style: textTheme.titleMedium,
+                                  style: textTheme.titleLarge,
                                 )));
                       }).toList(),
                     ),

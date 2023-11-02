@@ -1,6 +1,5 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class AppImage extends StatelessWidget {
   final String? url;
@@ -27,14 +26,12 @@ class AppImage extends StatelessWidget {
         fit: fit,
       );
     }
-    return CachedNetworkImage(
-        placeholder: (context, url) => Skeletonizer(
-            enabled: true,
-            child: Skeleton.replace(
-                width: width, height: height, child: SizedBox())),
-        width: width,
-        height: height,
-        fit: fit,
-        imageUrl: url!);
+    return FadeInImage.memoryNetwork(
+      placeholder: kTransparentImage,
+      image: url!,
+      width: width,
+      height: height,
+      fit: fit,
+    );
   }
 }

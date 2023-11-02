@@ -41,6 +41,8 @@ class AppIconButton extends StatelessWidget {
             icon: icon as Icon,
             style: isOutlined != false
                 ? OutlinedButton.styleFrom(
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -2),
                     shape: const StadiumBorder(),
                     backgroundColor: bgColor ?? appColors.inkLighter,
                     side: BorderSide(
@@ -48,6 +50,8 @@ class AppIconButton extends StatelessWidget {
                     minimumSize: const Size(double.minPositive, 48),
                   )
                 : ElevatedButton.styleFrom(
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -2),
                     backgroundColor: bgColor ?? appColors.primaryBase,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
@@ -56,8 +60,8 @@ class AppIconButton extends StatelessWidget {
                   ),
             label: Text(title == null ? 'Default' : title as String,
                 style: textStyle ??
-                    Theme.of(context).textTheme.headlineSmall?.copyWith(
-                          color: color ?? appColors.backgroundLight,
+                    Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: color ?? appColors.background,
                           fontWeight: FontWeight.bold,
                         )),
           );
@@ -66,6 +70,8 @@ class AppIconButton extends StatelessWidget {
             onPressed: onPressed,
             style: isOutlined != false
                 ? OutlinedButton.styleFrom(
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -2),
                     shape: const StadiumBorder(),
                     backgroundColor: bgColor ?? appColors.inkLighter,
                     side: BorderSide(
@@ -73,6 +79,8 @@ class AppIconButton extends StatelessWidget {
                     minimumSize: const Size(double.minPositive, 48),
                   )
                 : ElevatedButton.styleFrom(
+                    visualDensity:
+                        const VisualDensity(horizontal: -4, vertical: -2),
                     backgroundColor: bgColor ?? appColors.primaryBase,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
@@ -85,7 +93,7 @@ class AppIconButton extends StatelessWidget {
               children: [
                 Text(title == null ? 'Default' : title as String,
                     style: textStyle ??
-                        Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        Theme.of(context).textTheme.titleLarge?.copyWith(
                               color: color ?? appColors.skyLightest,
                               fontWeight: FontWeight.bold,
                             )),
@@ -102,6 +110,8 @@ class AppIconButton extends StatelessWidget {
           onPressed: onPressed,
           style: isOutlined != false
               ? OutlinedButton.styleFrom(
+                  visualDensity:
+                      const VisualDensity(horizontal: -4, vertical: -2),
                   shape: const StadiumBorder(),
                   backgroundColor: bgColor ?? appColors.inkLighter,
                   side: BorderSide(
@@ -109,6 +119,8 @@ class AppIconButton extends StatelessWidget {
                   minimumSize: const Size(double.minPositive, 48),
                 )
               : ElevatedButton.styleFrom(
+                  visualDensity:
+                      const VisualDensity(horizontal: -4, vertical: -2),
                   backgroundColor: bgColor ?? appColors.primaryBase,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(25),
@@ -117,7 +129,7 @@ class AppIconButton extends StatelessWidget {
                 ),
           child: Text(title == null ? 'Default' : title as String,
               style: textStyle ??
-                  Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: color ?? appColors.skyLightest,
                         fontWeight: FontWeight.bold,
                       )),

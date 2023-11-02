@@ -29,34 +29,20 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
       return Row(
         children: [
           Material(
+            color: Colors.transparent,
             child: Skeletonizer(
               enabled: myInfoQuery.isFetching,
-              child: InkWell(
-                onTap: () async {
-                  context.push('/profile');
-                },
-                customBorder: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(90),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(50.0),
-                  child: myInfoQuery.data?.avatarUrl == null
-                      ? Image.network(
-                          'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
-                          width: 40,
-                          height: 40,
-                        )
-                      : Image.network(
-                          '${myInfoQuery.data?.avatarUrl}',
-                          width: 40,
-                          height: 40,
-                          errorBuilder: (context, error, stackTrace) =>
-                              Image.network(
-                            'https://play-lh.googleusercontent.com/MDmnqZ0E9abxJhYIqyRUtumShQpunXSFTRuolTYQh-zy4pAg6bI-dMAhwY5M2rakI9Jb=w800-h500-rw',
-                            width: 40,
-                            height: 40,
-                          ),
-                        ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(50.0),
+                child: InkWell(
+                  onTap: () async {
+                    context.push('/profile');
+                  },
+                  child: AppImage(
+                      url: myInfoQuery.data?.avatarUrl,
+                      width: 40,
+                      height: 40,
+                      fit: BoxFit.fill),
                 ),
               ),
             ),

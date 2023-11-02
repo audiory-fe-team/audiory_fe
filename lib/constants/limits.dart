@@ -1,0 +1,1 @@
+const int LIBRARY_STORY_LIMIT = 10;

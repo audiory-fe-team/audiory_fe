@@ -8,8 +8,6 @@ import 'package:audiory_v0/widgets/paginators/infinite_scroll_paginator.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-import 'package:skeletonizer/skeletonizer.dart';
-
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({Key? key}) : super(key: key);
 

@@ -25,11 +25,11 @@ final skeletonStory = Story(
     ]);
 
 final skeletonStories = [
-  Story(id: '1', title: generateFakeString(20)),
-  Story(id: '2', title: generateFakeString(15)),
-  Story(id: '3', title: generateFakeString(25)),
-  Story(id: '4', title: generateFakeString(23)),
-  Story(id: '5', title: generateFakeString(33)),
+  Story(id: '1', title: generateFakeString(20), chapters: []),
+  Story(id: '2', title: generateFakeString(15), chapters: []),
+  Story(id: '3', title: generateFakeString(25), chapters: []),
+  Story(id: '4', title: generateFakeString(23), chapters: []),
+  Story(id: '5', title: generateFakeString(33), chapters: []),
 ];
 final skeletonProfiles = [
   Profile(

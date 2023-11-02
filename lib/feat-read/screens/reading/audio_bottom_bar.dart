@@ -1,28 +1,24 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
-import 'package:audiory_v0/repositories/story_repository.dart';
+import 'package:audiory_v0/providers/audio_player_provider.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:fquery/fquery.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 
-class AudioBottomBar extends HookWidget {
-  final String? storyId;
-  final AudioPlayer player;
-  const AudioBottomBar(
-      {super.key, required this.player, required this.storyId});
+class AudioBottomBar extends HookConsumerWidget {
+  const AudioBottomBar({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
+    final player = ref.watch(audioPlayerProvider);
 
-    final storyQuery = useQuery(
-        ['story', storyId], () => StoryRepostitory().fetchStoryById(storyId!),
-        enabled: storyId != null);
+    // final storyQuery = useQuery(
+    //     ['story', storyId], () => StoryRepostitory().fetchStoryById(storyId!),
+    //     enabled: storyId != null);
 
     return HookBuilder(builder: (_) {
       final playingStream = useStream(player.playingStream);
@@ -35,8 +31,9 @@ class AudioBottomBar extends HookWidget {
                   PositionAudio(position, bufferedPosition, duration)));
       final playing = playingStream.data ?? false;
       final position = positionAudioStream.data;
-      if (playingStream.data != true &&
-          (position?.position == Duration.zero || position?.position == null)) {
+      if (!playingStream.hasData ||
+          player.sequence == null ||
+          player.sequence!.isEmpty) {
         return const SizedBox();
       }
       return Container(
@@ -55,28 +52,29 @@ class AudioBottomBar extends HookWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Row(mainAxisSize: MainAxisSize.min, children: [
-                    Container(
-                      width: 30,
-                      height: 42,
-                      decoration: ShapeDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(
-                              storyQuery.data?.coverUrl ?? FALLBACK_IMG_URL),
-                          fit: BoxFit.fill,
-                        ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4)),
-                      ),
-                    ),
+                    // Container(
+                    //   width: 30,
+                    //   height: 42,
+                    //   decoration: ShapeDecoration(
+                    //     image: DecorationImage(
+                    //       image: NetworkImage(
+                    //           storyQuery.data?.coverUrl ?? FALLBACK_IMG_URL),
+                    //       fit: BoxFit.fill,
+                    //     ),
+                    //     shape: RoundedRectangleBorder(
+                    //         borderRadius: BorderRadius.circular(4)),
+                    //   ),
+                    // ),
                     const SizedBox(width: 6),
                     Column(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(storyQuery.data?.title ?? '',
-                            style: textTheme.titleSmall
-                                ?.copyWith(fontWeight: FontWeight.bold)),
+                        // player.sequenceState.currentSource.tag.,
+                        // Text(storyQuery.data?.title ?? '',
+                        //     style: textTheme.titleSmall
+                        //         ?.copyWith(fontWeight: FontWeight.bold)),
                         const SizedBox(height: 4),
                         StreamBuilder(
                             stream: player.sequenceStateStream,
@@ -138,7 +136,7 @@ class AudioBottomBar extends HookWidget {
               Positioned(
                   bottom: 1,
                   width: MediaQuery.of(context).size.width,
-                  child: Container(
+                  child: SizedBox(
                       height: 2,
                       child: ProgressBar(
                         barHeight: 2,

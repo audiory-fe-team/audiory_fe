@@ -6,6 +6,7 @@ import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/comment_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -27,7 +28,7 @@ class CommentSection extends HookWidget {
     final commentsQuery = useQuery(
         ['comments', 'chapter', chapterId],
         () => ChapterRepository.fetchCommentsByChapterId(
-            chapterId: chapterId, offset: 0, limit: 3, sortBy: 'like_count'));
+            chapterId: chapterId, offset: 0, limit: 4, sortBy: 'like_count'));
 
     handleSubmitComment() async {
       //CALL API
@@ -48,7 +49,7 @@ class CommentSection extends HookWidget {
             topRight: Radius.circular(12.0),
           )),
           useSafeArea: true,
-          backgroundColor: Colors.white,
+          backgroundColor: appColors.background,
           context: context,
           builder: (context) {
             return Padding(
@@ -69,19 +70,13 @@ class CommentSection extends HookWidget {
         SizedBox(
           width: double.infinity,
           child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-            Container(
-              height: 40,
-              width: 40,
-              decoration: ShapeDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(((infoQuery.data?.avatarUrl ?? '') == '')
-                      ? FALLBACK_IMG_URL
-                      : infoQuery.data?.avatarUrl ?? ''),
-                  fit: BoxFit.fill,
-                ),
-                shape: const CircleBorder(),
-              ),
-            ),
+            ClipRRect(
+                borderRadius: BorderRadius.circular(40),
+                child: AppImage(
+                    url: infoQuery.data?.avatarUrl,
+                    width: 40,
+                    height: 40,
+                    fit: BoxFit.fill)),
             const SizedBox(width: 12),
             Expanded(
               child: TextField(
@@ -134,30 +129,31 @@ class CommentSection extends HookWidget {
               padding: const EdgeInsets.symmetric(vertical: 8),
               child: CommentCard(comment: e),
             )),
-        Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              FilledButton(
-                  onPressed: () {
-                    handleOpenCommentChapter();
-                  },
-                  style: FilledButton.styleFrom(
-                    backgroundColor: appColors.skyLighter,
-                    minimumSize: Size.zero, // Set this
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-                    alignment: Alignment.center,
-                    // and this
-                  ),
-                  child: Text(
-                    'Xem thêm bình luận',
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleMedium
-                        ?.copyWith(color: appColors.inkLight),
-                  ))
-            ])
+        if ((commentsQuery.data ?? []).length > 3)
+          Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                FilledButton(
+                    onPressed: () {
+                      handleOpenCommentChapter();
+                    },
+                    style: FilledButton.styleFrom(
+                      backgroundColor: appColors.skyLighter,
+                      minimumSize: Size.zero, // Set this
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 6),
+                      alignment: Alignment.center,
+                      // and this
+                    ),
+                    child: Text(
+                      'Xem thêm bình luận',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleSmall
+                          ?.copyWith(color: appColors.inkLight, fontSize: 12),
+                    ))
+              ])
       ],
     );
   }

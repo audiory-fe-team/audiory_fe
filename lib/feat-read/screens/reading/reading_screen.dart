@@ -1,5 +1,6 @@
 // import 'package:audioplayers/audioplayers.dart';
 
+import 'package:audiory_v0/feat-read/screens/reading/new.dart';
 import 'package:audiory_v0/feat-read/screens/reading/offline_reading_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/online_reading_screen.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
@@ -19,6 +20,7 @@ class ReadingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isOffline = ref.read(isOfflineProvider);
+
     if (isOffline == true) {
       return OfflineReadingScreen(
           chapterId: chapterId, showComment: showComment);

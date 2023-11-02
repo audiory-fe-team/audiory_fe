@@ -7,7 +7,6 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
 import 'package:number_paginator/number_paginator.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -73,11 +72,8 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
                     widget.handleBuyChapter(
                         chapter, price, paywalledChapters.length);
                   },
-                  storyId: widget.story?.id ?? '',
                   chapter: chapter,
                   position: index + 1,
-                  title: chapter.title,
-                  time: chapter.createdDate ?? DateTime.now().toString(),
                   //ispaywalled
                 ),
               );

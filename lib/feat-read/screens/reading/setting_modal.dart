@@ -1,31 +1,56 @@
+import 'package:audiory_v0/constants/theme_options.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class SettingModel extends HookWidget {
-  final Function([Color? bgColor, int? fontSize, bool? showCommentByParagraph])
-      changeStyle;
+class SettingModel extends HookConsumerWidget {
+  final Function() onChangeStyle;
 
-  const SettingModel({super.key, required this.changeStyle});
+  const SettingModel({super.key, required this.onChangeStyle});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final selectedOption = useState(0);
-    final fontSize = useState(16);
+    final fontSize = useState(18);
     final showCommentByParagraph = useState(false);
     final audioSpeed = useState<double>(1);
+
+    final notifier = ref.watch(themeNotifierProvider);
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
-    final List<Color> DEFAULT_OPTION = [
-      appColors.skyLightest,
-      appColors.inkBase,
-      appColors.primaryLightest,
-    ];
+    final sizeController = useTextEditingController(text: '18');
 
-    final sizeController = useTextEditingController(text: "16");
+    setPreference() async {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('fontSize', int.tryParse(sizeController.text) ?? 18);
+      await prefs.setBool(
+          'showCommentByParagraph', showCommentByParagraph.value);
+      await prefs.setInt('themeOption', selectedOption.value);
+      if (selectedOption.value <= 1) {
+        notifier.setTheme(
+            selectedOption.value == 1 ? ThemeMode.dark : ThemeMode.light);
+        return;
+      }
+    }
+
+    syncPreference() async {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      selectedOption.value = prefs.getInt('themeOption') ?? 0;
+      sizeController.text = (prefs.getInt('fontSize') ?? 18).toString();
+      showCommentByParagraph.value =
+          prefs.getBool('showCommentByParagraph') ?? true;
+    }
+
+    useEffect(() {
+      syncPreference();
+    }, []);
 
     return Column(mainAxisSize: MainAxisSize.min, children: [
       Container(
@@ -62,6 +87,7 @@ class SettingModel extends HookWidget {
           padding: const EdgeInsets.all(16),
           child: ListView(
             children: <Widget>[
+              //Audio setting
               Row(children: [
                 Expanded(
                     child: Container(
@@ -143,6 +169,7 @@ class SettingModel extends HookWidget {
                 ],
               ),
               const SizedBox(height: 16),
+              //Display setting
               Row(children: [
                 Expanded(
                     child: Container(
@@ -181,9 +208,9 @@ class SettingModel extends HookWidget {
                   //Note:Background colors option
                   Row(
                     children: [
-                      ...DEFAULT_OPTION.asMap().entries.map((entry) {
+                      ...THEME_OPTIONS.asMap().entries.map((entry) {
                         int idx = entry.key;
-                        Color val = entry.value;
+                        Map<String, Color> val = entry.value;
                         return GestureDetector(
                             onTap: () {
                               selectedOption.value = idx;
@@ -194,7 +221,7 @@ class SettingModel extends HookWidget {
                                     height: 30,
                                     width: 30,
                                     decoration: BoxDecoration(
-                                      color: val,
+                                      color: val['bgColor'],
                                       shape: BoxShape.circle,
                                       border: selectedOption.value == idx
                                           ? Border.all(
@@ -205,26 +232,6 @@ class SettingModel extends HookWidget {
                                           : null,
                                     ))));
                       }).toList(),
-                      GestureDetector(
-                          onTap: () {},
-                          child: Stack(
-                            children: [
-                              Container(
-                                  height: 30,
-                                  width: 30,
-                                  decoration: BoxDecoration(
-                                    color: appColors.primaryBase,
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: Center(
-                                      child: SvgPicture.asset(
-                                    'assets/icons/plus.svg',
-                                    color: Colors.white,
-                                    width: 16,
-                                    height: 16,
-                                  ))),
-                            ],
-                          )),
                     ],
                   ),
                 ],
@@ -359,9 +366,9 @@ class SettingModel extends HookWidget {
                 const SizedBox(width: 20),
                 Expanded(
                     child: FilledButton(
-                        onPressed: () {
-                          changeStyle(DEFAULT_OPTION[selectedOption.value],
-                              fontSize.value, showCommentByParagraph.value);
+                        onPressed: () async {
+                          await setPreference();
+                          onChangeStyle();
                           Navigator.pop(context);
                         },
                         style: FilledButton.styleFrom(

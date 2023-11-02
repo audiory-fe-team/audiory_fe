@@ -1,7 +1,7 @@
+import 'package:audiory_v0/constants/limits.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -33,7 +33,8 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
     final textTheme = Theme.of(context).textTheme;
 
     return Material(
-      elevation: 10,
+      elevation: 2,
+      color: appColors.skyLightest,
       child: Container(
         height: 65,
         width: double.infinity,
@@ -44,7 +45,7 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            TapEffectWrapper(
+            GestureDetector(
               onTap: () {
                 if (widget.isAddedToLibrary) {
                   AppSnackBar.buildTopSnackBar(
@@ -86,8 +87,18 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
               future: storyDb.getStory(widget.storyId),
               builder: (context, snapshot) {
                 final isDownloaded = snapshot.data != null;
-                return TapEffectWrapper(
-                  onTap: () {
+                return GestureDetector(
+                  onTap: () async {
+                    final stories = await storyDb.getAllStories();
+                    if (stories.length >= LIBRARY_STORY_LIMIT) {
+                      AppSnackBar.buildTopSnackBar(
+                        context,
+                        'Giới hạn tải về là ${LIBRARY_STORY_LIMIT} truyện',
+                        null,
+                        SnackBarType.info,
+                      );
+                      return;
+                    }
                     if (isDownloaded == true) {
                       AppSnackBar.buildTopSnackBar(
                         context,

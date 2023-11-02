@@ -85,9 +85,9 @@ class _WritingScreenState extends State<WritingScreen> {
               bgColor: appColors.inkBase,
             ),
           ),
-          QuillToolbar.basic(
-              controller: _controller, showAlignmentButtons: false),
-          QuillEditor.basic(controller: _controller, readOnly: false),
+          // QuillToolbar.basic(
+          //     controller: _controller, showAlignmentButtons: false),
+          // QuillEditor.basic(controller: _controller, readOnly: false),
           Container(
             margin: const EdgeInsets.all(12),
             alignment: Alignment.bottomRight,
@@ -104,15 +104,15 @@ class _WritingScreenState extends State<WritingScreen> {
               bgColor: appColors.inkBase,
             ),
           ),
-          Expanded(
-              child: QuillEditor.basic(
-                  controller: QuillController(
-                      document: json!.isNotEmpty
-                          ? Document.fromJson(json as List<dynamic>)
-                          : Document()
-                        ..insert(0, 'Empty'),
-                      selection: const TextSelection.collapsed(offset: 0)),
-                  readOnly: true)),
+          // Expanded(
+          //     child: QuillEditor.basic(
+          //         controller: QuillController(
+          //             document: json!.isNotEmpty
+          //                 ? Document.fromJson(json as List<dynamic>)
+          //                 : Document()
+          //               ..insert(0, 'Empty'),
+          //             selection: const TextSelection.collapsed(offset: 0)),
+          //         readOnly: true)),
         ]),
       ),
     );

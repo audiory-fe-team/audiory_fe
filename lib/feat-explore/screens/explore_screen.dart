@@ -252,11 +252,11 @@ class AppCategoryBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      SizedBox(
-          width: double.infinity,
-          height: 53,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+      ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: SizedBox(
+            width: double.infinity,
+            height: 53,
             child: Image.network(imgUrl, fit: BoxFit.cover),
           )),
       Positioned(

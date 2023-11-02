@@ -1,4 +1,3 @@
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_detail_screen.dart';
 import 'package:audiory_v0/models/Comment.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
@@ -6,47 +5,72 @@ import 'package:audiory_v0/repositories/activities_repository.dart';
 import 'package:audiory_v0/repositories/comment_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/relative_time.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 
-class CommentCard extends StatelessWidget {
+class CommentCard extends StatefulWidget {
   final Comment comment;
   final bool isDetail;
   final bool? isHighlighted;
   final Function? onLike;
-
   const CommentCard(
-      {super.key,
+      {Key? key,
       required this.comment,
       this.isHighlighted,
       this.isDetail = false,
-      this.onLike});
+      this.onLike})
+      : super(key: key);
+
+  @override
+  _CommentCardState createState() => _CommentCardState();
+}
+
+class _CommentCardState extends State<CommentCard> {
+  late bool isLiked;
+
+  @override
+  void initState() {
+    isLiked = widget.comment.isLiked ?? false;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
+    final comment = widget.comment;
 
     final userName = comment.user?.username ?? 'username';
     final createdTime = comment.createdDate ?? '2023-09-25T21:15:38+07:00';
     final content = comment.text;
-
     goToUserProfile() {
       //go to user profile
     }
 
     void handleLikeComment(bool isLiked) async {
-      await ActivitiesRepository.sendActivity(
-        actionEntity: 'COMMENT',
-        actionType: isLiked ? 'UNLIKED' : 'LIKED',
-        entityId: comment.id,
-      );
-      if (onLike != null) onLike!();
+      setState(() {
+        isLiked = !isLiked;
+      });
+      try {
+        await ActivitiesRepository.sendActivity(
+          actionEntity: 'COMMENT',
+          actionType: isLiked ? 'UNLIKED' : 'LIKED',
+          entityId: comment.id,
+        );
+      } catch (error) {
+        setState(() {
+          isLiked = !isLiked;
+        });
+        AppSnackBar.buildTopSnackBar(
+            context, error.toString(), null, SnackBarType.success);
+      }
+      if (widget.onLike != null) widget.onLike!();
     }
 
     void handleDeleteComment(String commentId) async {
       await CommentRepository.deleteComment(commentId: comment.id);
-      AppSnackBar.buildTopSnackBar(
+      await AppSnackBar.buildTopSnackBar(
           context, 'Xóa bình luận thành công', null, SnackBarType.success);
     }
 
@@ -57,7 +81,7 @@ class CommentCard extends StatelessWidget {
         entityId: comment.id,
       );
       AppSnackBar.buildTopSnackBar(
-          context, 'Xóa bình luận thành công', null, SnackBarType.success);
+          context, 'Báo cáo thành công', null, SnackBarType.success);
     }
 
     handleOpenCommentDetail(String id) {
@@ -69,7 +93,7 @@ class CommentCard extends StatelessWidget {
             topRight: Radius.circular(8.0),
           )),
           useSafeArea: true,
-          backgroundColor: Colors.white,
+          backgroundColor: appColors.background,
           context: context,
           builder: (context) {
             return Padding(
@@ -81,7 +105,7 @@ class CommentCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      color: isHighlighted == true
+      color: widget.isHighlighted == true
           ? appColors.primaryLightest
           : Colors.transparent,
       child: Row(
@@ -91,9 +115,12 @@ class CommentCard extends StatelessWidget {
             GestureDetector(
                 onTap: goToUserProfile,
                 child: ClipRRect(
-                    // borderRadius: BorderRadius.circular(50.0),
-                    child: Image.network(FALLBACK_IMG_URL,
-                        width: 40.0, height: 40.0))),
+                    borderRadius: BorderRadius.circular(50.0),
+                    child: AppImage(
+                        url: comment.user?.avatarUrl,
+                        width: 40,
+                        height: 40,
+                        fit: BoxFit.fill))),
             const SizedBox(
               width: 10,
             ),
@@ -149,8 +176,7 @@ class CommentCard extends StatelessWidget {
                                       color: Colors.transparent,
                                       child: InkWell(
                                           onTap: () {
-                                            handleLikeComment(
-                                                comment.isLiked == true);
+                                            handleLikeComment(isLiked);
                                           },
                                           child: Container(
                                             padding: const EdgeInsets.all(4),
@@ -160,9 +186,7 @@ class CommentCard extends StatelessWidget {
                                                     .titleMedium
                                                     ?.copyWith(
                                                         fontSize: 14,
-                                                        color: comment
-                                                                    .isLiked ==
-                                                                true
+                                                        color: isLiked
                                                             ? appColors
                                                                 .primaryBase
                                                             : appColors
@@ -171,7 +195,7 @@ class CommentCard extends StatelessWidget {
                                   const SizedBox(
                                     width: 4,
                                   ),
-                                  if (!isDetail)
+                                  if (!widget.isDetail)
                                     Material(
                                         color: Colors.transparent,
                                         child: InkWell(
@@ -194,7 +218,8 @@ class CommentCard extends StatelessWidget {
                                     width: 4,
                                   ),
                                   Builder(builder: (context) {
-                                    if (isDetail) return const SizedBox();
+                                    if (widget.isDetail)
+                                      return const SizedBox();
                                     final replyCount = comment.children?.length;
                                     if (replyCount == null)
                                       return const SizedBox();
@@ -296,17 +321,17 @@ class CommentCard extends StatelessWidget {
                                             .textTheme
                                             .titleMedium
                                             ?.copyWith(
-                                                color: comment.isLiked == true
+                                                color: isLiked
                                                     ? appColors.primaryBase
                                                     : appColors.inkLighter,
                                                 fontSize: 14),
                                       )),
                                   Icon(
-                                      comment.isLiked == true
+                                      isLiked
                                           ? Icons.thumb_up_rounded
                                           : Icons.thumb_up_outlined,
                                       size: 16,
-                                      color: comment.isLiked == true
+                                      color: isLiked
                                           ? appColors.primaryBase
                                           : appColors.inkLighter),
                                 ],
