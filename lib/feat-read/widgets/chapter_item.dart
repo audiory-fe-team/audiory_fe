@@ -31,7 +31,7 @@ class ChapterItem extends StatelessWidget {
     String formatDate(String? date) {
       DateTime currentDateTime = DateTime.now();
       //use package intl
-      DateTime dateTime = DateTime.parse(date as String);
+      DateTime dateTime = DateTime.parse(date ?? currentDateTime.toString());
       int timeDiffInDays = currentDateTime.difference(dateTime).inDays;
       if (timeDiffInDays < 1) {
         return '${currentDateTime.difference(dateTime)} giờ trước';
