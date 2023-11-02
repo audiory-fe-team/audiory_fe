@@ -1,7 +1,8 @@
 import 'package:just_audio/just_audio.dart';
+// ignore: depend_on_referenced_packages
 import 'package:riverpod/riverpod.dart';
 
-final audioPlayerProvider = Provider<AudioPlayer>((ref) {
+final audioPlayerProvider = StateProvider<AudioPlayer>((ref) {
   final player = AudioPlayer();
   ref.onDispose(() {
     player.dispose();

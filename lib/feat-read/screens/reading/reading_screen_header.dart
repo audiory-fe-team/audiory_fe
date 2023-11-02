@@ -5,19 +5,27 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class ReadingScreenHeader extends StatelessWidget {
   final Chapter chapter;
+  final Color textColor;
 
   const ReadingScreenHeader({
     super.key,
     required this.chapter,
+    required this.textColor,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      Text('Chương :', style: Theme.of(context).textTheme.bodyLarge),
+      Text('Chương :',
+          style: Theme.of(context)
+              .textTheme
+              .bodyLarge
+              ?.copyWith(color: textColor)),
       Text(chapter.title,
-          style: Theme.of(context).textTheme.bodyLarge, softWrap: true),
-      const SizedBox(height: 12),
+          style:
+              Theme.of(context).textTheme.bodyLarge?.copyWith(color: textColor),
+          softWrap: true),
+      const SizedBox(height: 6),
       SizedBox(
         height: 24,
         child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -29,13 +37,11 @@ class ReadingScreenHeader extends StatelessWidget {
                 width: 16,
               )),
               const SizedBox(width: 2),
-              Text(
-                formatNumber(chapter.readCount ?? 0),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(fontStyle: FontStyle.italic),
-              )
+              Text(formatNumber(chapter.readCount ?? 0),
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                      color: textColor,
+                      fontSize: 14,
+                      fontStyle: FontStyle.italic))
             ],
           ),
           const SizedBox(width: 24),
@@ -49,10 +55,10 @@ class ReadingScreenHeader extends StatelessWidget {
               const SizedBox(width: 2),
               Text(
                 formatNumber(chapter.voteCount ?? 0),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(fontStyle: FontStyle.italic),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: textColor,
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic),
               )
             ],
           ),
@@ -67,10 +73,10 @@ class ReadingScreenHeader extends StatelessWidget {
               const SizedBox(width: 2),
               Text(
                 formatNumber(chapter.commentCount ?? 0),
-                style: Theme.of(context)
-                    .textTheme
-                    .titleSmall!
-                    .copyWith(fontStyle: FontStyle.italic),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: textColor,
+                    fontSize: 14,
+                    fontStyle: FontStyle.italic),
               )
             ],
           ),

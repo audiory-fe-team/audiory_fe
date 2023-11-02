@@ -15,7 +15,7 @@ class ColorPaletteLight {
   static const Color secondaryBase = Color(0xFFDB6244);
   static const Color secondaryLight = Color(0xFFE26D69);
   static const Color secondaryLighter = Color(0xFFE9918F);
-  static const Color secondaryLightest = Color(0xFFF4C8C7);
+  static const Color secondaryLightest = Color.fromARGB(255, 244, 216, 215);
   static const Color secondaryDark = Color(0xFFAF3A36);
   static const Color inkBase = Color(0xFF404446);
   static const Color inkLight = Color(0xFF6C7072);
@@ -41,7 +41,7 @@ class ColorPaletteDark {
   static const Color secondaryBase = Color(0xFFDB6244);
   static const Color secondaryLight = Color(0xFFE26D69);
   static const Color secondaryLighter = Color(0xFFE9918F);
-  static const Color secondaryLightest = Color(0xFFF4C8C7);
+  static const Color secondaryLightest = Color.fromARGB(255, 202, 84, 54);
   static const Color secondaryDark = Color(0xFFAF3A36);
   static const Color inkBase = Color(0xFFF5F5F5);
   static const Color inkLight = Color(0xFFE3E5E5);

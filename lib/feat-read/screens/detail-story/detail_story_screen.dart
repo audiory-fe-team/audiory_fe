@@ -503,7 +503,6 @@ class DetailStoryScreen extends HookConsumerWidget {
         bottomNavigationBar: Builder(builder: (context) {
           final isAddedToLibrary = libraryQuery.data?.libraryStory
               ?.any((element) => element.storyId == id);
-          print(isAddedToLibrary);
           return DetailStoryBottomBar(
               storyId: id,
               addToLibraryCallback: () => handleAddToLibrary(),

@@ -19,98 +19,108 @@ class ChapterDrawer extends HookWidget {
       ['story', storyId],
       () => StoryRepostitory().fetchStoryById(storyId),
     );
+    Size size = MediaQuery.of(context).size;
+
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return SafeArea(
         child: Drawer(
+            backgroundColor: appColors.background,
+            width: size.width * 0.8,
             child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 children: [
-          const SizedBox(height: 12),
-          Expanded(
-              child:
-                  Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-                GoRouter.of(context)
-                    .push('/story/${storyQuery.data?.id ?? ''}');
-              },
-              child: AppImage(
-                  url: storyQuery.data?.coverUrl, width: 70, height: 97),
-            ),
-            const SizedBox(width: 8),
-            Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    storyQuery.data?.title ?? '',
-                    style: Theme.of(context).textTheme.titleMedium,
-                    softWrap: true,
-                    maxLines: 2,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    storyQuery.data?.author?.fullName ?? '',
-                    style: Theme.of(context).textTheme.titleSmall,
-                    softWrap: true,
-                    maxLines: 2,
-                  ),
-                ]),
-          ])),
-          const Divider(),
-          const SizedBox(height: 24),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Icon(
-              Icons.format_list_bulleted_rounded,
-              size: 24,
-              color: appColors.secondaryBase,
-            ),
-            Text(
-              'Danh sách chương',
-              style: Theme.of(context).textTheme.titleLarge,
-              softWrap: true,
-              maxLines: 2,
-            ),
-          ]),
-          const SizedBox(height: 16),
-          ...(storyQuery.data?.chapters ?? []).map((chapter) {
-            return Container(
-                margin: const EdgeInsets.only(bottom: 6),
-                decoration: BoxDecoration(
-                    color: chapter.id == currentChapterId
-                        ? appColors.primaryLight
-                        : appColors.skyLightest,
-                    borderRadius: BorderRadius.circular(8)),
-                width: double.infinity,
-                child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                        onTap: () {
-                          Navigator.pop(context);
-                          GoRouter.of(context).go(
-                              '/story/${storyQuery.data?.id ?? ''}/chapter/${chapter.id}');
-                        },
-                        borderRadius: BorderRadius.circular(8),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 12),
-                          child: Text(chapter.title,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                      color: chapter.id == currentChapterId
-                                          ? Colors.white
-                                          : appColors.inkBase,
-                                      fontSize: 16,
-                                      fontFamily: GoogleFonts.sourceSansPro()
-                                          .fontFamily,
-                                      fontWeight: FontWeight.w400)),
-                        ))));
-          }).toList()
-        ])));
+                  const SizedBox(height: 12),
+                  Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                            GoRouter.of(context)
+                                .push('/story/${storyQuery.data?.id ?? ''}');
+                          },
+                          child: AppImage(
+                              url: storyQuery.data?.coverUrl,
+                              width: 70,
+                              height: 94),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                            child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                              Text(
+                                storyQuery.data?.title ?? '',
+                                style: Theme.of(context).textTheme.titleMedium,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                storyQuery.data?.author?.fullName ?? '',
+                                style: Theme.of(context).textTheme.titleSmall,
+                                softWrap: true,
+                                maxLines: 2,
+                              ),
+                            ])),
+                      ]),
+                  const Divider(),
+                  const SizedBox(height: 24),
+                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                    Icon(
+                      Icons.format_list_bulleted_rounded,
+                      size: 24,
+                      color: appColors.secondaryBase,
+                    ),
+                    Text(
+                      'Danh sách chương',
+                      style: Theme.of(context).textTheme.titleLarge,
+                      softWrap: true,
+                      maxLines: 2,
+                    ),
+                  ]),
+                  const SizedBox(height: 16),
+                  ...(storyQuery.data?.chapters ?? []).map((chapter) {
+                    return Container(
+                        margin: const EdgeInsets.only(bottom: 6),
+                        decoration: BoxDecoration(
+                            color: chapter.id == currentChapterId
+                                ? appColors.primaryLight
+                                : appColors.skyLightest,
+                            borderRadius: BorderRadius.circular(8)),
+                        width: double.infinity,
+                        child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  GoRouter.of(context).go(
+                                      '/story/${storyQuery.data?.id ?? ''}/chapter/${chapter.id}');
+                                },
+                                borderRadius: BorderRadius.circular(8),
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 10, horizontal: 12),
+                                  child: Text(chapter.title,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium
+                                          ?.copyWith(
+                                              color:
+                                                  chapter.id == currentChapterId
+                                                      ? Colors.white
+                                                      : appColors.inkBase,
+                                              fontSize: 14,
+                                              fontFamily:
+                                                  GoogleFonts.sourceSansPro()
+                                                      .fontFamily,
+                                              fontWeight: FontWeight.w400)),
+                                ))));
+                  }).toList()
+                ])));
   }
 }

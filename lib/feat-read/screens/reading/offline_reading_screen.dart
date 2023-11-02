@@ -133,7 +133,7 @@ class _OfflineReadingScreenState extends State<OfflineReadingScreen> {
         ),
       ),
       bottomNavigationBar: ReadingBottomBar(
-        changeStyle: changeStyle,
+        onChangeStyle: changeStyle,
         chapterId: widget.chapterId,
       ),
       floatingActionButtonLocation:

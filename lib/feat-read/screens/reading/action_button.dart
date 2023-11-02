@@ -21,11 +21,16 @@ class ActionButton extends StatelessWidget {
     return FilledButton(
       onPressed: () {},
       style: FilledButton.styleFrom(
-          backgroundColor: appColors.primaryLightest,
-          minimumSize: Size.zero, // Set this
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          alignment: Alignment.center // and this
-          ),
+        backgroundColor: appColors.secondaryLightest,
+        elevation: 2,
+        minimumSize: Size.zero, // Set this
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        alignment: Alignment.center, // and this
+        shape: RoundedRectangleBorder(
+            side: BorderSide(
+                color: appColors.inkLight, width: 1, style: BorderStyle.solid),
+            borderRadius: BorderRadius.circular(50)),
+      ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -33,7 +38,7 @@ class ActionButton extends StatelessWidget {
             'assets/icons/$iconName.svg',
             width: 12,
             height: 12,
-            color: appColors.secondaryBase,
+            color: appColors.inkLight,
           ),
           const SizedBox(
             width: 4,
@@ -43,7 +48,7 @@ class ActionButton extends StatelessWidget {
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w500,
                 fontFamily: GoogleFonts.sourceSansPro().fontFamily,
-                color: appColors.inkBase),
+                color: appColors.inkLight),
           )
         ],
       ),

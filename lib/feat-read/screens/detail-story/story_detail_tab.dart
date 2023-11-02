@@ -13,6 +13,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../models/Profile.dart';
 import 'package:readmore/readmore.dart';
 import './donate_gift_modal.dart';

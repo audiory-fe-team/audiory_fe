@@ -1,6 +1,7 @@
 // import 'package:audioplayers/audioplayers.dart';
 
 import 'package:audiory_v0/constants/skeletons.dart';
+import 'package:audiory_v0/constants/theme_options.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
@@ -11,9 +12,12 @@ import 'package:audiory_v0/feat-read/screens/reading/comment_section.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen_header.dart';
 import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
+import 'package:audiory_v0/providers/audio_player_provider.dart';
+import 'package:audiory_v0/repositories/activities_repository.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/theme/theme_manager.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -22,28 +26,36 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class OnlineReadingScreen extends HookWidget {
+class OnlineReadingScreen extends HookConsumerWidget {
   final String chapterId;
   final bool? showComment;
 
   OnlineReadingScreen(
       {super.key, required this.chapterId, this.showComment = false});
-  AudioPlayer player = new AudioPlayer();
+
+  final localPlayer = AudioPlayer();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
+
     final bgColor = useState(appColors.background);
+    final textColor = useState(appColors.inkBase);
+    final selectedOption = useState(0);
     final fontSize = useState(18);
     final showCommentByParagraph = useState(true);
+    final haveRead = useState(false);
     final hideBars = useState(false);
+    final player = ref.watch(audioPlayerProvider);
+    final curParaIndex = ref.watch(audioCurrentIndexProvider);
 
-    final curParaIndex = useState<int?>(null);
     final keyList = useState<List<GlobalKey>>([]);
     final scrollController = useScrollController();
 
@@ -60,14 +72,6 @@ class OnlineReadingScreen extends HookWidget {
         () =>
             StoryRepostitory().fetchStoryById(chapterQuery.data?.storyId ?? ''),
         enabled: chapterQuery.data?.storyId != null);
-
-    void changeStyle(
-        [Color? newBgColor, int? newFontSize, bool? isShowCommentByParagraph]) {
-      bgColor.value = newBgColor ?? bgColor.value;
-      fontSize.value = newFontSize ?? fontSize.value;
-      showCommentByParagraph.value =
-          isShowCommentByParagraph ?? showCommentByParagraph.value;
-    }
 
     void handleOpenCommentPara(String paraId) {
       showModalBottomSheet(
@@ -91,6 +95,29 @@ class OnlineReadingScreen extends HookWidget {
           });
     }
 
+    void handleFirstPlayAudio() {
+      ref.read(audioPlayerProvider.notifier).state = localPlayer;
+    }
+
+    syncPreference() async {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      fontSize.value = prefs.getInt('fontSize') ?? 18;
+      showCommentByParagraph.value =
+          prefs.getBool('showCommentByParagraph') ?? true;
+      final savedOption = prefs.getInt('themeOption') ?? 0;
+      selectedOption.value = savedOption;
+
+      bgColor.value =
+          THEME_OPTIONS[savedOption]["bgColor"] ?? appColors.background;
+      textColor.value =
+          THEME_OPTIONS[savedOption]["textColor"] ?? appColors.inkBase;
+    }
+
+    useEffect(() {
+      syncPreference();
+    }, []);
+
     useEffect(() {
       final playlist = ConcatenatingAudioSource(
           children: (chapterQuery.data?.paragraphs ?? [])
@@ -104,36 +131,32 @@ class OnlineReadingScreen extends HookWidget {
             tag: MediaItem(
                 id: p.id,
                 title: storyQuery.data?.title ?? '',
-                artist: 'Chương ${1} - Đoạn ${idx + 1}'));
+                artist:
+                    'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
+                album: storyQuery.data?.id));
       }).toList());
-      try {
-        player.setAudioSource(playlist);
-      } catch (error) {
-        print(error.toString());
-      }
-      return () {};
-    }, [player, chapterQuery.data]);
+      localPlayer.setAudioSource(playlist);
+    }, [localPlayer, chapterQuery.data]);
 
     useEffect(() {
-      final curIndex = sequenceState.data?.currentIndex;
-      if (curIndex == null || playingState.data != true) return;
-      curParaIndex.value = curIndex;
-
-      return;
-    }, [sequenceState.data?.currentIndex, playingState.data]);
-
-    useEffect(() {
-      final currentIndex = curParaIndex.value;
-      if (currentIndex == null) return;
-      final keyContext = keyList.value[currentIndex].currentContext;
+      if (curParaIndex == null) return;
+      final keyContext = keyList.value[curParaIndex].currentContext;
       if (keyContext == null) return;
       Scrollable.ensureVisible(keyContext,
           duration: const Duration(seconds: 1), alignment: 0.5);
 
       return;
-    }, [curParaIndex.value]);
+    }, [curParaIndex]);
 
     useEffect(() {
+      scrollController.addListener(() {
+        if (scrollController.position.atEdge) {
+          if (haveRead.value) return;
+          ActivitiesRepository.sendActivity(
+              actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
+          haveRead.value = true;
+        }
+      });
       scrollController.addListener(() {
         if (scrollController.position.userScrollDirection ==
             ScrollDirection.forward) {
@@ -157,10 +180,6 @@ class OnlineReadingScreen extends HookWidget {
     //   }
     // }, []);
 
-    useEffect(() {
-      return () => player.dispose();
-    }, []);
-
     return Scaffold(
       backgroundColor: bgColor.value,
       body: SafeArea(
@@ -180,21 +199,25 @@ class OnlineReadingScreen extends HookWidget {
                     ReadingScreenHeader(
                       // num: (storyQuery.data?.chapters ?? [])
                       //     .indexWhere((element) => element.id == chapterId),
+                      textColor: textColor.value,
                       chapter: chapterQuery.isFetching
                           ? skeletonChapter
                           : chapterQuery.data ?? skeletonChapter,
                     ),
                     const SizedBox(height: 24),
                     StreamBuilder(
-                        stream: player.sequenceStream,
+                        stream: localPlayer.sequenceStream,
                         builder: ((context, snapshot) {
                           final a = snapshot.data;
                           if (a == null || a.isEmpty) {
                             return const SizedBox();
                           }
+                          print(selectedOption.value);
                           return ChapterAudioPlayer(
                             chapter: chapterQuery.data,
-                            player: player,
+                            player: localPlayer,
+                            onFirstPlay: handleFirstPlayAudio,
+                            selectedThemeOption: selectedOption.value,
                           );
                         })),
                     const SizedBox(height: 24),
@@ -225,10 +248,10 @@ class OnlineReadingScreen extends HookWidget {
                             width: double.infinity,
                             child: Stack(children: [
                               Container(
-                                  margin: EdgeInsets.only(bottom: 16),
+                                  margin: const EdgeInsets.only(bottom: 16),
                                   padding: const EdgeInsets.only(
                                       bottom: 4, left: 4, right: 4, top: 4),
-                                  decoration: (curParaIndex.value == index)
+                                  decoration: (curParaIndex == index)
                                       ? BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(8),
@@ -236,31 +259,33 @@ class OnlineReadingScreen extends HookWidget {
                                       : const BoxDecoration(),
                                   child: Text(para.content ?? '',
                                       style: textTheme.bodyLarge?.copyWith(
-                                        fontSize: fontSize.value.toDouble(),
-                                        fontFamily:
-                                            GoogleFonts.gelasio().fontFamily,
-                                      ))),
-                              Positioned(
-                                  bottom: 0,
-                                  right: 0,
-                                  child: IconButton(
-                                      visualDensity: const VisualDensity(
-                                          horizontal: -4, vertical: -4),
-                                      onPressed: () =>
-                                          handleOpenCommentPara(para.id),
-                                      icon: Icon(Icons.mode_comment_outlined,
-                                          size: 16,
-                                          color: appColors.primaryBase))),
-                              Positioned(
-                                  bottom: 17,
-                                  right: 18,
-                                  child: Text('${para.commentCount}',
-                                      style: textTheme.labelMedium?.copyWith(
-                                          color: appColors.primaryBase,
+                                          fontSize: fontSize.value.toDouble(),
                                           fontFamily:
-                                              GoogleFonts.sourceSansPro()
-                                                  .fontFamily,
-                                          fontWeight: FontWeight.w600))),
+                                              GoogleFonts.gelasio().fontFamily,
+                                          color: textColor.value))),
+                              if (showCommentByParagraph.value)
+                                Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: IconButton(
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4, vertical: -4),
+                                        onPressed: () =>
+                                            handleOpenCommentPara(para.id),
+                                        icon: Icon(Icons.mode_comment_outlined,
+                                            size: 16,
+                                            color: appColors.primaryBase))),
+                              if (showCommentByParagraph.value)
+                                Positioned(
+                                    bottom: 17,
+                                    right: 18,
+                                    child: Text('${para.commentCount}',
+                                        style: textTheme.labelMedium?.copyWith(
+                                            color: appColors.primaryBase,
+                                            fontFamily:
+                                                GoogleFonts.sourceSansPro()
+                                                    .fontFamily,
+                                            fontWeight: FontWeight.w600))),
                             ]),
                           ));
                     }).toList(),
@@ -327,37 +352,36 @@ class OnlineReadingScreen extends HookWidget {
                         );
                       },
                     ))),
-                    const SizedBox(height: 24),
-                    Builder(builder: (context) {
-                      final paragraphs = chapterQuery.data?.paragraphs;
-                      if (paragraphs == null || paragraphs.isEmpty) {
-                        return const SizedBox();
-                      }
+                    // const SizedBox(height: 24),
+                    // Builder(builder: (context) {
+                    //   final paragraphs = chapterQuery.data?.paragraphs;
+                    //   if (paragraphs == null || paragraphs.isEmpty) {
+                    //     return const SizedBox();
+                    //   }
 
-                      return CommentSection(
-                          chapterId: chapterId,
-                          paraId: paragraphs[paragraphs.length - 1].id);
-                    }),
+                    //   return CommentSection(
+                    //       chapterId: chapterId,
+                    //       paraId: paragraphs[paragraphs.length - 1].id);
+                    // }),
                     const SizedBox(
                       height: 56,
                     )
                   ]),
                 ))),
       )),
-      bottomNavigationBar: ReadingBottomBar(
-        changeStyle: changeStyle,
-        chapterId: chapterId,
-      ),
-      floatingActionButton: AudioBottomBar(
-        player: player,
-        storyId: chapterQuery.data?.storyId,
-      ),
+      bottomNavigationBar: hideBars.value
+          ? const SizedBox()
+          : ReadingBottomBar(
+              onChangeStyle: syncPreference,
+              chapterId: chapterId,
+            ),
+      floatingActionButton: AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       drawer: ChapterDrawer(
         currentChapterId: chapterId,
         // story: storyQuery.data,
-        storyId: '',
+        storyId: chapterQuery.data?.storyId ?? '',
       ),
       resizeToAvoidBottomInset: true,
     );

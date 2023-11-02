@@ -66,6 +66,9 @@ class _DownloadedStoriesState extends State<DownloadedStories> {
           syncProgress = (syncProgress ?? 0) + 1;
         });
       }).toList());
+
+      await AppSnackBar.buildTopSnackBar(
+          context, 'Cập nhật thành công.', null, SnackBarType.success);
     } catch (error) {
       // ignore: use_build_context_synchronously
       AppSnackBar.buildTopSnackBar(
@@ -81,9 +84,6 @@ class _DownloadedStoriesState extends State<DownloadedStories> {
     setState(() {
       libraryData = storyDb.getAllStories();
     });
-
-    await AppSnackBar.buildTopSnackBar(
-        context, 'Cập nhật thành công.', null, SnackBarType.success);
   }
 
   @override

@@ -25,7 +25,6 @@ class ReadingScreen extends ConsumerWidget {
       return OfflineReadingScreen(
           chapterId: chapterId, showComment: showComment);
     }
-    return NewOnlineReadingScreen(
-        chapterId: chapterId, showComment: showComment);
+    return OnlineReadingScreen(chapterId: chapterId, showComment: showComment);
   }
 }
