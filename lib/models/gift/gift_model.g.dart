@@ -6,7 +6,7 @@ part of 'gift_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Gift _$$_GiftFromJson(Map<String, dynamic> json) => _$_Gift(
+_$GiftImpl _$$GiftImplFromJson(Map<String, dynamic> json) => _$GiftImpl(
       id: json['id'] as String,
       name: json['name'] as String? ?? '',
       description: json['description'] as String? ?? '',
@@ -16,7 +16,8 @@ _$_Gift _$$_GiftFromJson(Map<String, dynamic> json) => _$_Gift(
       updatedDate: json['updated_date'] as String?,
     );
 
-Map<String, dynamic> _$$_GiftToJson(_$_Gift instance) => <String, dynamic>{
+Map<String, dynamic> _$$GiftImplToJson(_$GiftImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'description': instance.description,

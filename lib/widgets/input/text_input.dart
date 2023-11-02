@@ -13,9 +13,11 @@ class AppTextInputField extends StatefulWidget {
   final double? paddingVertical;
   final double? paddingHorizontal;
   final double? sizeBoxHeight;
+  final EdgeInsets? contentPadding;
 
   //type
   final bool? isTextArea;
+  final bool? isNoError;
   final bool? isDisabled;
   final int? maxLengthCharacters;
   final int? minLines;
@@ -36,32 +38,42 @@ class AppTextInputField extends StatefulWidget {
   final TextStyle? hintTextStyle;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
-  const AppTextInputField(
-      {super.key,
-      this.label,
-      this.labelTextStyle,
-      this.initialValue = '',
-      required this.name,
-      this.marginVertical = 0,
-      this.marginHorizontal = 0,
-      this.paddingVertical = 0,
-      this.paddingHorizontal = 0,
-      this.width = double.infinity,
-      this.sizeBoxHeight = 5,
-      this.hintText = '',
-      this.isTextArea = false,
-      this.minLines = 1,
-      this.hintTextStyle,
-      this.prefixIcon,
-      this.suffixIcon,
-      this.textInputType = TextInputType.text,
-      this.isRequired = false,
-      this.validator,
-      this.textAlign,
-      this.maxLengthCharacters,
-      this.marginBottom = 16,
-      this.isDisabled = true,
-      this.submmitted = false});
+  final Color? backgroundColor;
+
+  //function callback
+  final Function? onChangeCallback;
+  const AppTextInputField({
+    super.key,
+    this.label,
+    this.labelTextStyle,
+    this.initialValue = '',
+    required this.name,
+    this.marginVertical = 0,
+    this.marginHorizontal = 0,
+    this.paddingVertical = 0,
+    this.paddingHorizontal = 0,
+    this.width = double.infinity,
+    this.sizeBoxHeight = 5,
+    this.hintText = '',
+    this.isTextArea = false,
+    this.minLines = 1,
+    this.hintTextStyle,
+    this.prefixIcon,
+    this.suffixIcon,
+    this.textInputType = TextInputType.text,
+    this.isRequired = false,
+    this.validator,
+    this.textAlign,
+    this.maxLengthCharacters,
+    this.marginBottom = 16,
+    this.isDisabled = true,
+    this.submmitted = false,
+    this.backgroundColor = Colors.transparent,
+    this.isNoError = false,
+    this.contentPadding =
+        const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12),
+    this.onChangeCallback,
+  });
 
   @override
   State<AppTextInputField> createState() => _AppTextInputFieldState();
@@ -83,19 +95,15 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
   Widget _inputTextFormField(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    var required = FormBuilderValidators.required(errorText: 'Nội dung trống');
-
     return FormBuilderTextField(
       obscureText:
           widget.textInputType == TextInputType.visiblePassword ? true : false,
-      // autovalidateMode: widget.submmitted == true
-      //     ? AutovalidateMode.onUserInteraction
-      //     : AutovalidateMode.disabled,
       enabled: widget.isDisabled == true,
-      onChanged: (value) => {
+      onChanged: (value) {
         setState(() {
           _enteredText = value as String;
-        })
+        });
+        widget.onChangeCallback;
       },
 
       textAlign: widget.textAlign ?? TextAlign.left,
@@ -107,6 +115,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
       maxLength: widget.maxLengthCharacters,
       cursorColor: appColors.primaryBase,
       decoration: InputDecoration(
+        errorStyle: widget.isNoError == true ? TextStyle(height: 0) : null,
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             style: BorderStyle.solid,
@@ -116,7 +125,6 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
               ? const BorderRadius.all(Radius.circular(10))
               : const BorderRadius.all(Radius.circular(80)),
         ),
-
         border: OutlineInputBorder(
           borderSide: const BorderSide(
             style: BorderStyle.solid,
@@ -137,6 +145,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
               : const BorderRadius.all(Radius.circular(80)),
         ),
         filled: true,
+        fillColor: widget.backgroundColor,
         hintText: widget.hintText!,
         prefixIcon: widget.prefixIcon,
         suffixIcon: widget.suffixIcon,
@@ -151,10 +160,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
             .textTheme
             .bodyMedium
             ?.copyWith(color: appColors.inkLighter),
-        fillColor: Colors.transparent,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12),
-        // labelText: "Email",
+        contentPadding: widget.contentPadding,
         focusColor: Colors.black12,
       ),
       validator: widget.validator,

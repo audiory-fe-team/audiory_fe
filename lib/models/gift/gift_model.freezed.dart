@@ -113,9 +113,10 @@ class _$GiftCopyWithImpl<$Res, $Val extends Gift>
 }
 
 /// @nodoc
-abstract class _$$_GiftCopyWith<$Res> implements $GiftCopyWith<$Res> {
-  factory _$$_GiftCopyWith(_$_Gift value, $Res Function(_$_Gift) then) =
-      __$$_GiftCopyWithImpl<$Res>;
+abstract class _$$GiftImplCopyWith<$Res> implements $GiftCopyWith<$Res> {
+  factory _$$GiftImplCopyWith(
+          _$GiftImpl value, $Res Function(_$GiftImpl) then) =
+      __$$GiftImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -129,9 +130,10 @@ abstract class _$$_GiftCopyWith<$Res> implements $GiftCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_GiftCopyWithImpl<$Res> extends _$GiftCopyWithImpl<$Res, _$_Gift>
-    implements _$$_GiftCopyWith<$Res> {
-  __$$_GiftCopyWithImpl(_$_Gift _value, $Res Function(_$_Gift) _then)
+class __$$GiftImplCopyWithImpl<$Res>
+    extends _$GiftCopyWithImpl<$Res, _$GiftImpl>
+    implements _$$GiftImplCopyWith<$Res> {
+  __$$GiftImplCopyWithImpl(_$GiftImpl _value, $Res Function(_$GiftImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -145,7 +147,7 @@ class __$$_GiftCopyWithImpl<$Res> extends _$GiftCopyWithImpl<$Res, _$_Gift>
     Object? createdDate = freezed,
     Object? updatedDate = freezed,
   }) {
-    return _then(_$_Gift(
+    return _then(_$GiftImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -180,8 +182,8 @@ class __$$_GiftCopyWithImpl<$Res> extends _$GiftCopyWithImpl<$Res, _$_Gift>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Gift implements _Gift {
-  const _$_Gift(
+class _$GiftImpl implements _Gift {
+  const _$GiftImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'name') this.name = '',
       @JsonKey(name: 'description') this.description = '',
@@ -190,7 +192,8 @@ class _$_Gift implements _Gift {
       @JsonKey(name: 'created_date') this.createdDate,
       @JsonKey(name: 'updated_date') this.updatedDate});
 
-  factory _$_Gift.fromJson(Map<String, dynamic> json) => _$$_GiftFromJson(json);
+  factory _$GiftImpl.fromJson(Map<String, dynamic> json) =>
+      _$$GiftImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -227,7 +230,7 @@ class _$_Gift implements _Gift {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Gift &&
+            other is _$GiftImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
@@ -249,12 +252,12 @@ class _$_Gift implements _Gift {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_GiftCopyWith<_$_Gift> get copyWith =>
-      __$$_GiftCopyWithImpl<_$_Gift>(this, _$identity);
+  _$$GiftImplCopyWith<_$GiftImpl> get copyWith =>
+      __$$GiftImplCopyWithImpl<_$GiftImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_GiftToJson(
+    return _$$GiftImplToJson(
       this,
     );
   }
@@ -268,9 +271,9 @@ abstract class _Gift implements Gift {
       @JsonKey(name: 'image_url') final String? imageUrl,
       @JsonKey(name: 'price') final int? price,
       @JsonKey(name: 'created_date') final String? createdDate,
-      @JsonKey(name: 'updated_date') final String? updatedDate}) = _$_Gift;
+      @JsonKey(name: 'updated_date') final String? updatedDate}) = _$GiftImpl;
 
-  factory _Gift.fromJson(Map<String, dynamic> json) = _$_Gift.fromJson;
+  factory _Gift.fromJson(Map<String, dynamic> json) = _$GiftImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -297,5 +300,6 @@ abstract class _Gift implements Gift {
   String? get updatedDate;
   @override
   @JsonKey(ignore: true)
-  _$$_GiftCopyWith<_$_Gift> get copyWith => throw _privateConstructorUsedError;
+  _$$GiftImplCopyWith<_$GiftImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

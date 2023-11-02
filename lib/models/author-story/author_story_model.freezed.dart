@@ -107,11 +107,11 @@ class _$AuthorStoryCopyWithImpl<$Res, $Val extends AuthorStory>
 }
 
 /// @nodoc
-abstract class _$$_AuthorStoryCopyWith<$Res>
+abstract class _$$AuthorStoryImplCopyWith<$Res>
     implements $AuthorStoryCopyWith<$Res> {
-  factory _$$_AuthorStoryCopyWith(
-          _$_AuthorStory value, $Res Function(_$_AuthorStory) then) =
-      __$$_AuthorStoryCopyWithImpl<$Res>;
+  factory _$$AuthorStoryImplCopyWith(
+          _$AuthorStoryImpl value, $Res Function(_$AuthorStoryImpl) then) =
+      __$$AuthorStoryImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -124,11 +124,11 @@ abstract class _$$_AuthorStoryCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_AuthorStoryCopyWithImpl<$Res>
-    extends _$AuthorStoryCopyWithImpl<$Res, _$_AuthorStory>
-    implements _$$_AuthorStoryCopyWith<$Res> {
-  __$$_AuthorStoryCopyWithImpl(
-      _$_AuthorStory _value, $Res Function(_$_AuthorStory) _then)
+class __$$AuthorStoryImplCopyWithImpl<$Res>
+    extends _$AuthorStoryCopyWithImpl<$Res, _$AuthorStoryImpl>
+    implements _$$AuthorStoryImplCopyWith<$Res> {
+  __$$AuthorStoryImplCopyWithImpl(
+      _$AuthorStoryImpl _value, $Res Function(_$AuthorStoryImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -141,7 +141,7 @@ class __$$_AuthorStoryCopyWithImpl<$Res>
     Object? registrationTokens = freezed,
     Object? roleId = freezed,
   }) {
-    return _then(_$_AuthorStory(
+    return _then(_$AuthorStoryImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -172,8 +172,8 @@ class __$$_AuthorStoryCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_AuthorStory implements _AuthorStory {
-  const _$_AuthorStory(
+class _$AuthorStoryImpl implements _AuthorStory {
+  const _$AuthorStoryImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'full_name') this.fullName = '',
       @JsonKey(name: 'sex') this.sex = '',
@@ -181,8 +181,8 @@ class _$_AuthorStory implements _AuthorStory {
       @JsonKey(name: 'registration_tokens') this.registrationTokens = '',
       @JsonKey(name: 'role_id') this.roleId = ''});
 
-  factory _$_AuthorStory.fromJson(Map<String, dynamic> json) =>
-      _$$_AuthorStoryFromJson(json);
+  factory _$AuthorStoryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AuthorStoryImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -215,7 +215,7 @@ class _$_AuthorStory implements _AuthorStory {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_AuthorStory &&
+            other is _$AuthorStoryImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.fullName, fullName) ||
                 other.fullName == fullName) &&
@@ -235,12 +235,12 @@ class _$_AuthorStory implements _AuthorStory {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_AuthorStoryCopyWith<_$_AuthorStory> get copyWith =>
-      __$$_AuthorStoryCopyWithImpl<_$_AuthorStory>(this, _$identity);
+  _$$AuthorStoryImplCopyWith<_$AuthorStoryImpl> get copyWith =>
+      __$$AuthorStoryImplCopyWithImpl<_$AuthorStoryImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_AuthorStoryToJson(
+    return _$$AuthorStoryImplToJson(
       this,
     );
   }
@@ -253,10 +253,10 @@ abstract class _AuthorStory implements AuthorStory {
       @JsonKey(name: 'sex') final String? sex,
       @JsonKey(name: 'avatar_url') final String? avatarUrl,
       @JsonKey(name: 'registration_tokens') final String? registrationTokens,
-      @JsonKey(name: 'role_id') final String? roleId}) = _$_AuthorStory;
+      @JsonKey(name: 'role_id') final String? roleId}) = _$AuthorStoryImpl;
 
   factory _AuthorStory.fromJson(Map<String, dynamic> json) =
-      _$_AuthorStory.fromJson;
+      _$AuthorStoryImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -280,6 +280,6 @@ abstract class _AuthorStory implements AuthorStory {
   String? get roleId;
   @override
   @JsonKey(ignore: true)
-  _$$_AuthorStoryCopyWith<_$_AuthorStory> get copyWith =>
+  _$$AuthorStoryImplCopyWith<_$AuthorStoryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

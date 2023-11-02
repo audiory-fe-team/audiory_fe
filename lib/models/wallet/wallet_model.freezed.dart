@@ -111,9 +111,10 @@ class _$WalletCopyWithImpl<$Res, $Val extends Wallet>
 }
 
 /// @nodoc
-abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
-  factory _$$_WalletCopyWith(_$_Wallet value, $Res Function(_$_Wallet) then) =
-      __$$_WalletCopyWithImpl<$Res>;
+abstract class _$$WalletImplCopyWith<$Res> implements $WalletCopyWith<$Res> {
+  factory _$$WalletImplCopyWith(
+          _$WalletImpl value, $Res Function(_$WalletImpl) then) =
+      __$$WalletImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -128,10 +129,11 @@ abstract class _$$_WalletCopyWith<$Res> implements $WalletCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_WalletCopyWithImpl<$Res>
-    extends _$WalletCopyWithImpl<$Res, _$_Wallet>
-    implements _$$_WalletCopyWith<$Res> {
-  __$$_WalletCopyWithImpl(_$_Wallet _value, $Res Function(_$_Wallet) _then)
+class __$$WalletImplCopyWithImpl<$Res>
+    extends _$WalletCopyWithImpl<$Res, _$WalletImpl>
+    implements _$$WalletImplCopyWith<$Res> {
+  __$$WalletImplCopyWithImpl(
+      _$WalletImpl _value, $Res Function(_$WalletImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -143,7 +145,7 @@ class __$$_WalletCopyWithImpl<$Res>
     Object? coin = freezed,
     Object? balance = freezed,
   }) {
-    return _then(_$_Wallet(
+    return _then(_$WalletImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -170,16 +172,16 @@ class __$$_WalletCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Wallet implements _Wallet {
-  const _$_Wallet(
+class _$WalletImpl implements _Wallet {
+  const _$WalletImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'user_id') this.userId = '',
       @JsonKey(name: 'coin_id') this.coinId,
       @JsonKey(name: 'coin') this.coin,
       @JsonKey(name: 'balance') this.balance});
 
-  factory _$_Wallet.fromJson(Map<String, dynamic> json) =>
-      _$$_WalletFromJson(json);
+  factory _$WalletImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WalletImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -209,7 +211,7 @@ class _$_Wallet implements _Wallet {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Wallet &&
+            other is _$WalletImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.userId, userId) || other.userId == userId) &&
             const DeepCollectionEquality().equals(other.coinId, coinId) &&
@@ -230,12 +232,12 @@ class _$_Wallet implements _Wallet {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WalletCopyWith<_$_Wallet> get copyWith =>
-      __$$_WalletCopyWithImpl<_$_Wallet>(this, _$identity);
+  _$$WalletImplCopyWith<_$WalletImpl> get copyWith =>
+      __$$WalletImplCopyWithImpl<_$WalletImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WalletToJson(
+    return _$$WalletImplToJson(
       this,
     );
   }
@@ -247,9 +249,9 @@ abstract class _Wallet implements Wallet {
       @JsonKey(name: 'user_id') final String? userId,
       @JsonKey(name: 'coin_id') final dynamic coinId,
       @JsonKey(name: 'coin') final Coin? coin,
-      @JsonKey(name: 'balance') final dynamic balance}) = _$_Wallet;
+      @JsonKey(name: 'balance') final dynamic balance}) = _$WalletImpl;
 
-  factory _Wallet.fromJson(Map<String, dynamic> json) = _$_Wallet.fromJson;
+  factory _Wallet.fromJson(Map<String, dynamic> json) = _$WalletImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -270,6 +272,6 @@ abstract class _Wallet implements Wallet {
   dynamic get balance;
   @override
   @JsonKey(ignore: true)
-  _$$_WalletCopyWith<_$_Wallet> get copyWith =>
+  _$$WalletImplCopyWith<_$WalletImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

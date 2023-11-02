@@ -8,12 +8,8 @@ import 'package:audiory_v0/feat-read/screens/detail-story/detail_story_bottom_ba
 import 'package:audiory_v0/feat-read/screens/detail-story/detail_story_top_bar.dart';
 import 'package:audiory_v0/feat-read/screens/detail-story/story_chapter_tab.dart';
 import 'package:audiory_v0/feat-read/screens/detail-story/story_detail_tab.dart';
-import 'package:audiory_v0/feat-read/screens/detail-story/donate_gift_modal.dart';
-import 'package:audiory_v0/feat-read/widgets/chapter_item.dart';
-import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
-import 'package:audiory_v0/models/gift/gift_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/models/wallet/wallet_model.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
@@ -21,7 +17,6 @@ import 'package:audiory_v0/providers/connectivity_provider.dart';
 import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
-import 'package:audiory_v0/repositories/gift_repository.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
@@ -33,16 +28,12 @@ import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:number_paginator/number_paginator.dart';
-import 'package:readmore/readmore.dart';
+import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailStoryScreen extends HookConsumerWidget {
@@ -80,6 +71,20 @@ class DetailStoryScreen extends HookConsumerWidget {
     final tabState = useState(0);
     final storyOffline = useFuture<Story?>(
         Future<Story?>.value(isOffline ? storyDb.getStory(id) : null));
+    String formatNumber(num) {
+      num ??= 0;
+      if (num > 999 && num < 99999) {
+        return "${(num / 1000).toStringAsFixed(1)} K";
+      } else if (num > 99999 && num < 999999) {
+        return "${(num / 1000).toStringAsFixed(0)} K";
+      } else if (num > 999999 && num < 999999999) {
+        return "${(num / 1000000).toStringAsFixed(1)} M";
+      } else if (num > 999999999) {
+        return "${(num / 1000000000).toStringAsFixed(1)} B";
+      } else {
+        return num.toString();
+      }
+    }
 
     String handleCoins() {
       List<Wallet>? wallets = userQuery.data?.wallets;
@@ -122,6 +127,13 @@ class DetailStoryScreen extends HookConsumerWidget {
         try {
           await ChapterRepository()
               .buyChapter(storyQuery.data?.id, chapterId, body);
+
+          // ignore: use_build_context_synchronously
+          await AppSnackBar.buildTopSnackBar(
+              context, 'Mua chương thành công', null, SnackBarType.success);
+
+          storyQuery.refetch();
+          userQuery.refetch();
         } catch (e) {
           // ignore: use_build_context_synchronously
           await AppSnackBar.buildTopSnackBar(
@@ -129,12 +141,6 @@ class DetailStoryScreen extends HookConsumerWidget {
         }
         // ignore: use_build_context_synchronously
         context.pop();
-        storyQuery.refetch();
-        userQuery.refetch();
-
-        // ignore: use_build_context_synchronously
-        await AppSnackBar.buildTopSnackBar(
-            context, 'Mua chương thành công', null, SnackBarType.success);
       }
     }
 
@@ -356,24 +362,43 @@ class DetailStoryScreen extends HookConsumerWidget {
                         child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                                onTap: () async {
-                                  // context.go('/profile');
+                                onTap: () {
+                                  if (isOffline == false) {
+                                    context.push(
+                                        '/accountProfile/${story?.authorId}',
+                                        extra: {
+                                          'name': story?.author?.fullName,
+                                          'avatar': story?.author?.avatarUrl,
+                                        });
+                                  }
                                 },
                                 child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(16),
-                                          child: Skeleton.shade(
-                                            child: AppImage(
-                                              url: story?.author?.avatarUrl,
-                                              fit: BoxFit.fill,
-                                              width: 32,
-                                              height: 32,
-                                            ),
-                                          )),
+                                      Skeleton.shade(
+                                          child: GestureDetector(
+                                        child: Container(
+                                          width: 32,
+                                          height: 32,
+                                          decoration: isOffline
+                                              ? BoxDecoration(
+                                                  color:
+                                                      appColors.primaryLightest,
+                                                  borderRadius:
+                                                      BorderRadius.circular(28))
+                                              : ShapeDecoration(
+                                                  image: DecorationImage(
+                                                    image: NetworkImage(story
+                                                            ?.author
+                                                            ?.avatarUrl ??
+                                                        FALLBACK_IMG_URL),
+                                                    fit: BoxFit.fill,
+                                                  ),
+                                                  shape: const CircleBorder(),
+                                                ),
+                                        ),
+                                      )),
                                       const SizedBox(width: 8),
                                       Text(
                                         isLoading

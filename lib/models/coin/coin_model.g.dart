@@ -6,7 +6,7 @@ part of 'coin_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Coin _$$_CoinFromJson(Map<String, dynamic> json) => _$_Coin(
+_$CoinImpl _$$CoinImplFromJson(Map<String, dynamic> json) => _$CoinImpl(
       id: json['id'] as int,
       name: json['name'] as String? ?? '',
       value: json['value'],
@@ -15,7 +15,8 @@ _$_Coin _$$_CoinFromJson(Map<String, dynamic> json) => _$_Coin(
       updatedDate: json['updated_date'] as String? ?? '',
     );
 
-Map<String, dynamic> _$$_CoinToJson(_$_Coin instance) => <String, dynamic>{
+Map<String, dynamic> _$$CoinImplToJson(_$CoinImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'value': instance.value,

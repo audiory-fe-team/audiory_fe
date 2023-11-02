@@ -38,6 +38,7 @@ class Story with _$Story {
     @JsonKey(name: 'report_count') int? reportCount,
     @JsonKey(name: 'vote_count') int? voteCount,
     @JsonKey(name: 'read_count') int? readCount,
+    @JsonKey(name: 'comment_count') int? commentCount,
     @JsonKey(name: 'explicit_percentage') int? explicitPercentage,
     @JsonKey(name: 'created_date') String? createdDate,
     @JsonKey(name: 'updated_date') String? updatedDate,

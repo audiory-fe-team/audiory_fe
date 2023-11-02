@@ -6,7 +6,7 @@ part of 'tag_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Tag _$$_TagFromJson(Map<String, dynamic> json) => _$_Tag(
+_$TagImpl _$$TagImplFromJson(Map<String, dynamic> json) => _$TagImpl(
       id: json['id'] as String,
       createdDate: json['created_date'] as String? ?? '',
       isEnabled: json['is_enabled'] as bool?,
@@ -15,7 +15,7 @@ _$_Tag _$$_TagFromJson(Map<String, dynamic> json) => _$_Tag(
       worksTotal: json['works_total'] as int? ?? 0,
     );
 
-Map<String, dynamic> _$$_TagToJson(_$_Tag instance) => <String, dynamic>{
+Map<String, dynamic> _$$TagImplToJson(_$TagImpl instance) => <String, dynamic>{
       'id': instance.id,
       'created_date': instance.createdDate,
       'is_enabled': instance.isEnabled,

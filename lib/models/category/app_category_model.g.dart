@@ -6,8 +6,8 @@ part of 'app_category_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_AppCategory _$$_AppCategoryFromJson(Map<String, dynamic> json) =>
-    _$_AppCategory(
+_$AppCategoryImpl _$$AppCategoryImplFromJson(Map<String, dynamic> json) =>
+    _$AppCategoryImpl(
       id: json['id'] as String,
       name: json['name'] as String? ?? '',
       imageUrl: json['image_url'] as String? ?? '',
@@ -16,7 +16,7 @@ _$_AppCategory _$$_AppCategoryFromJson(Map<String, dynamic> json) =>
       isEnabled: json['is_enabled'] as bool?,
     );
 
-Map<String, dynamic> _$$_AppCategoryToJson(_$_AppCategory instance) =>
+Map<String, dynamic> _$$AppCategoryImplToJson(_$AppCategoryImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

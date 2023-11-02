@@ -6,8 +6,8 @@ part of 'chapter_version_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ChapterVersion _$$_ChapterVersionFromJson(Map<String, dynamic> json) =>
-    _$_ChapterVersion(
+_$ChapterVersionImpl _$$ChapterVersionImplFromJson(Map<String, dynamic> json) =>
+    _$ChapterVersionImpl(
       id: json['id'] as String? ?? '',
       chapterId: json['chapter_id'] as String? ?? '',
       versionName: json['version_name'] as String?,
@@ -18,7 +18,8 @@ _$_ChapterVersion _$$_ChapterVersionFromJson(Map<String, dynamic> json) =>
       timestamp: json['timestamp'] as String?,
     );
 
-Map<String, dynamic> _$$_ChapterVersionToJson(_$_ChapterVersion instance) =>
+Map<String, dynamic> _$$ChapterVersionImplToJson(
+        _$ChapterVersionImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'chapter_id': instance.chapterId,

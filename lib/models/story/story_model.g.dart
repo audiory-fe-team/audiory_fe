@@ -6,7 +6,7 @@ part of 'story_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Story _$$_StoryFromJson(Map<String, dynamic> json) => _$_Story(
+_$StoryImpl _$$StoryImplFromJson(Map<String, dynamic> json) => _$StoryImpl(
       id: json['id'] as String,
       authorId: json['author_id'] as String?,
       author: json['author'] == null
@@ -34,6 +34,7 @@ _$_Story _$$_StoryFromJson(Map<String, dynamic> json) => _$_Story(
       reportCount: json['report_count'] as int?,
       voteCount: json['vote_count'] as int?,
       readCount: json['read_count'] as int?,
+      commentCount: json['comment_count'] as int?,
       explicitPercentage: json['explicit_percentage'] as int?,
       createdDate: json['created_date'] as String?,
       updatedDate: json['updated_date'] as String?,
@@ -48,7 +49,8 @@ _$_Story _$$_StoryFromJson(Map<String, dynamic> json) => _$_Story(
           const [],
     );
 
-Map<String, dynamic> _$$_StoryToJson(_$_Story instance) => <String, dynamic>{
+Map<String, dynamic> _$$StoryImplToJson(_$StoryImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'author_id': instance.authorId,
       'author': instance.author?.toJson(),
@@ -72,6 +74,7 @@ Map<String, dynamic> _$$_StoryToJson(_$_Story instance) => <String, dynamic>{
       'report_count': instance.reportCount,
       'vote_count': instance.voteCount,
       'read_count': instance.readCount,
+      'comment_count': instance.commentCount,
       'explicit_percentage': instance.explicitPercentage,
       'created_date': instance.createdDate,
       'updated_date': instance.updatedDate,

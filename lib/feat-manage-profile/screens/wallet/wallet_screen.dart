@@ -38,8 +38,8 @@ class _WalletScreenState extends State<WalletScreen> {
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final transactionsQuery = useQuery(
-        ['transactions'], () => TransactionRepository.fetchMyTransactions());
+    final transactionsQuery = useQuery(['transactions'],
+        () => TransactionRepository.fetchMyTransactions(pageSize: 20));
     final userByIdQuery =
         useQuery(['user'], () => AuthRepository().getMyUserById());
     String formatDate(String? date) {
@@ -111,19 +111,15 @@ class _WalletScreenState extends State<WalletScreen> {
       TransactionType transactionType = TransactionType.values
           .byName(transaction.transactionType?.toUpperCase() ?? 'PURCHASE');
       return Container(
-        height: 75,
-        // padding: const EdgeInsets.symmetric(horizontal: 16),
-        // decoration: BoxDecoration(
-        //     color: appColors.skyLightest,
-        //     borderRadius: const BorderRadius.all(Radius.circular(16)),
-        //     boxShadow: [
-        //       BoxShadow(
-        //         color: appColors.skyBase.withOpacity(0.55),
-        //         spreadRadius: 3,
-        //         blurRadius: 6,
-        //         offset: const Offset(0, 3), // changes position of shadow
-        //       ),
-        //     ]),
+        width: containerSize,
+        decoration: BoxDecoration(
+            border: Border(
+          bottom: BorderSide(
+            width: 0.5,
+            color: appColors.skyBase,
+          ),
+        )),
+        height: 80,
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             mainAxisSize: MainAxisSize.max,
@@ -135,6 +131,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   height: containerSize * 0.15,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
+                      border: Border.all(color: appColors.skyBase),
                       borderRadius: BorderRadius.circular(50),
                       color: transactionType.displayBgColor.withOpacity(0.2)),
                   child: Transform.rotate(
@@ -142,6 +139,7 @@ class _WalletScreenState extends State<WalletScreen> {
                     child: Icon(
                       transactionType.displayIcon,
                       color: transactionType.displayIconColor,
+                      size: 30,
                     ),
                   ),
                 ),
@@ -170,16 +168,30 @@ class _WalletScreenState extends State<WalletScreen> {
                 width: containerSize * 0.25,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
                       '',
                       style: textTheme.titleLarge,
                     ),
-                    Text(
-                      '${transactionType.displayTrend} ${transaction.totalPrice} xu',
-                      style: textTheme.titleMedium
-                          ?.copyWith(color: appColors.inkDarkest),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            '${transactionType.displayTrend} ${transaction.totalPrice}',
+                            style: textTheme.titleLarge
+                                ?.copyWith(color: appColors.inkDarkest),
+                          ),
+                        ),
+                        Flexible(
+                          child: Image.asset(
+                              transactionType.isCoin
+                                  ? 'assets/images/coin.png'
+                                  : 'assets/images/diamond.png',
+                              width: 18),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -295,30 +307,34 @@ class _WalletScreenState extends State<WalletScreen> {
                         ),
                         //history of transactions
                         Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 16),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      'Lịch sử giao dịch',
-                                      style: textTheme.headlineMedium?.copyWith(
-                                          color: appColors.inkDarkest),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    child: Text(
-                                      'Xem thêm',
-                                      style: textTheme.bodyMedium?.copyWith(
-                                        color: appColors.primaryDark,
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Flexible(
+                                      child: Text(
+                                        'Lịch sử giao dịch',
+                                        style: textTheme.headlineMedium
+                                            ?.copyWith(
+                                                color: appColors.inkDarkest),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                    Flexible(
+                                      child: Text(
+                                        'Xem thêm',
+                                        style: textTheme.bodyMedium?.copyWith(
+                                          color: appColors.primaryDark,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               Container(
                                 margin:
@@ -343,9 +359,12 @@ class _WalletScreenState extends State<WalletScreen> {
                                             ? 1
                                             : -1;
                                       });
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0),
+                                      return Container(
+                                        // decoration: BoxDecoration(
+                                        //     color: index.isEven
+                                        //         ? appColors.primaryLightest
+                                        //             .withOpacity(0.5)
+                                        //         : Colors.transparent),
                                         child: transactionCard(transactionsQuery
                                             .data?[index] as Transaction),
                                       );
@@ -353,15 +372,6 @@ class _WalletScreenState extends State<WalletScreen> {
                                   ),
                                 ),
                               ),
-                              // Column(
-                              //   children: List.generate(
-                              //       4,
-                              //       (index) => Padding(
-                              //             padding: const EdgeInsets.symmetric(
-                              //                 vertical: 8.0),
-                              //             child: transactionCard(),
-                              //           )).toList(),
-                              // ),
                             ],
                           ),
                         )

@@ -5,6 +5,7 @@ class CoinPack {
   int? coinAmount;
   String? imageUrl;
   int? price;
+  int? priceAfterPromotion;
   String? createdDate;
   String? updatedDate;
 
@@ -14,7 +15,8 @@ class CoinPack {
       this.name,
       this.coinAmount,
       this.imageUrl,
-      this.price,
+      this.price = 0,
+      this.priceAfterPromotion = 0,
       this.createdDate,
       this.updatedDate});
 
@@ -25,6 +27,7 @@ class CoinPack {
     coinAmount = json['coin_amount'];
     imageUrl = json['image_url'];
     price = json['price'];
+    priceAfterPromotion = json['price_after_promotion'];
     createdDate = json['created_date'];
     updatedDate = json['updated_date'];
   }
@@ -37,6 +40,7 @@ class CoinPack {
     data['coin_amount'] = this.coinAmount;
     data['image_url'] = this.imageUrl;
     data['price'] = this.price;
+    data['price_after_promotion'] = this.priceAfterPromotion;
     data['created_date'] = this.createdDate;
     data['updated_date'] = this.updatedDate;
     return data;

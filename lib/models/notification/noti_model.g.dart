@@ -6,7 +6,7 @@ part of 'noti_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Noti _$$_NotiFromJson(Map<String, dynamic> json) => _$_Noti(
+_$NotiImpl _$$NotiImplFromJson(Map<String, dynamic> json) => _$NotiImpl(
       id: json['id'] as String,
       activity: Activity.fromJson(json['activity'] as Map<String, dynamic>),
       activityId: json['activity_id'] as String?,
@@ -14,7 +14,8 @@ _$_Noti _$$_NotiFromJson(Map<String, dynamic> json) => _$_Noti(
       isRead: json['is_read'] as bool?,
     );
 
-Map<String, dynamic> _$$_NotiToJson(_$_Noti instance) => <String, dynamic>{
+Map<String, dynamic> _$$NotiImplToJson(_$NotiImpl instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'activity': instance.activity.toJson(),
       'activity_id': instance.activityId,
