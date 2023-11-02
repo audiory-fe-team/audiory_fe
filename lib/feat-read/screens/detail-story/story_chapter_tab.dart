@@ -74,11 +74,8 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
                     widget.handleBuyChapter(
                         chapter, price, paywalledChapters.length);
                   },
-                  storyId: widget.story?.id ?? '',
                   chapter: chapter,
                   position: index + 1,
-                  title: chapter.title,
-                  time: chapter.createdDate ?? DateTime.now().toString(),
                   //ispaywalled
                 ),
               );

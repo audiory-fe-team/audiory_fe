@@ -13,6 +13,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import '../../../models/Profile.dart';
 import 'package:readmore/readmore.dart';
 import './donate_gift_modal.dart';
@@ -24,7 +25,7 @@ class StoryDetailTab extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final AppColors? appColors = Theme.of(context).extension<AppColors>();
     final textTheme = Theme.of(context).textTheme;
 
     final donatorsQuery = useQuery(['donators', story?.id],
@@ -311,32 +312,33 @@ class StoryDetailTab extends HookWidget {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: appColors.primaryLightest),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text('Giới thiệu', style: textTheme.headlineSmall),
-                  const SizedBox(
-                    height: 8,
-                  ),
-                  ReadMoreText(
-                    story?.description ?? '',
-                    trimLines: 4,
-                    colorClickableText: appColors.primaryBase,
-                    trimMode: TrimMode.Line,
-                    trimCollapsedText: ' Xem thêm',
-                    trimExpandedText: ' Ẩn bớt',
-                    style: textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w400,
-                        fontFamily: GoogleFonts.sourceSansPro().fontFamily),
-                    moreStyle: textTheme.titleMedium
-                        ?.copyWith(color: appColors.primaryBase),
-                  )
-                ])),
+        Skeleton.shade(
+            child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    color: appColors?.skyLightest),
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Giới thiệu', style: textTheme.headlineSmall),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      ReadMoreText(
+                        story?.description ?? '',
+                        trimLines: 4,
+                        colorClickableText: appColors?.primaryBase,
+                        trimMode: TrimMode.Line,
+                        trimCollapsedText: ' Xem thêm',
+                        trimExpandedText: ' Ẩn bớt',
+                        style: textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w400,
+                            fontFamily: GoogleFonts.sourceSansPro().fontFamily),
+                        moreStyle: textTheme.titleMedium
+                            ?.copyWith(color: appColors?.primaryBase),
+                      )
+                    ]))),
         const SizedBox(
           height: 24,
         ),
@@ -355,15 +357,15 @@ class StoryDetailTab extends HookWidget {
                   textStyle: Theme.of(context)
                       .textTheme
                       .titleMedium
-                      ?.copyWith(color: appColors.primaryBase),
+                      ?.copyWith(color: appColors?.primaryBase),
                   icon: Icon(
                     Icons.card_giftcard,
-                    color: appColors.primaryBase,
+                    color: appColors?.primaryBase,
                     size: 14,
                   ),
                   iconPosition: 'start',
-                  color: appColors.primaryBase,
-                  bgColor: appColors.primaryLightest,
+                  color: appColors?.primaryBase,
+                  bgColor: appColors?.primaryLightest,
                   onPressed: () => {
                         showModalBottomSheet(
                             context: context,
@@ -396,7 +398,7 @@ class StoryDetailTab extends HookWidget {
                 'assets/icons/right-arrow.svg',
                 width: 24,
                 height: 24,
-                color: appColors.inkDark,
+                color: appColors?.inkDark,
               ),
             ),
           ],

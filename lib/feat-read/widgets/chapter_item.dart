@@ -1,25 +1,21 @@
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_number.dart';
+import 'package:audiory_v0/utils/relative_time.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class ChapterItem extends StatelessWidget {
-  final String? storyId;
-  final Chapter? chapter;
+  final Chapter chapter;
 
   final bool? isPaid;
-  final String title;
   final int? position;
-  final String time;
   final Function(Chapter, int) onSelected; //chapterId, price,
   const ChapterItem(
       {super.key,
-      required this.title,
-      required this.time,
-      this.chapter,
+      required this.chapter,
       this.position = 0,
-      this.storyId,
       required this.onSelected,
       this.isPaid});
 
@@ -48,13 +44,13 @@ class ChapterItem extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        chapter?.price != 0
-            ? chapter?.isPaid == true
+        chapter.price != 0
+            ? chapter.isPaid == true
                 ? GoRouter.of(context)
-                    .push('/story/$storyId/chapter/${chapter?.id}')
-                : onSelected(chapter as Chapter, chapter?.price ?? 0)
+                    .push('/story/${chapter.storyId}/chapter/${chapter.id}')
+                : onSelected(chapter, chapter.price ?? 0)
             : GoRouter.of(context)
-                .push('/story/$storyId/chapter/${chapter?.id}');
+                .push('/story/${chapter.storyId}/chapter/${chapter.id}');
       },
       child: Container(
         width: double.maxFinite,
@@ -69,104 +65,82 @@ class ChapterItem extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            SizedBox(
-              width: (size.width - 32) / 2,
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Chương $position',
-                    style: Theme.of(context).textTheme.bodySmall,
+                    'Chương  $position:',
+                    style: Theme.of(context).textTheme.titleSmall,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 4),
                   Text(
-                    title,
+                    chapter.title,
                     style: Theme.of(context).textTheme.titleMedium,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
               ),
             ),
-            Flexible(
-                flex: 6,
-                child: chapter?.isPaywalled == false
-                    ? Text(
-                        formatDate(time),
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.labelLarge!.copyWith(
-                            fontStyle: FontStyle.italic,
-                            color: appColors.inkLighter),
-                      )
-                    : chapter?.isPaid == true
-                        ? Text(
-                            formatDate(time),
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(
-                                    fontStyle: FontStyle.italic,
-                                    color: appColors.inkLighter),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Flexible(
-                                flex: 3,
-                                child: GestureDetector(
-                                  child: Image.asset(
-                                    'assets/images/coin.png',
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
-                              ),
-                              Flexible(
-                                flex: 2,
-                                child: Text(
-                                  '${chapter?.price} xu',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .labelLarge!
-                                      .copyWith(color: appColors.inkLighter),
-                                ),
-                              ),
-                            ],
-                          )),
-            Flexible(
-              flex: 3,
-              child: chapter?.isPaywalled == true && chapter?.isPaid != true
-                  ? Align(
-                      alignment: Alignment.center,
-                      child: Icon(
-                        Icons.lock,
-                        color: appColors.inkLight,
-                        size: 16,
+            const SizedBox(width: 8),
+            if (chapter.price != 0)
+              Column(children: [
+                if (chapter.isPaid != true)
+                  Icon(
+                    Icons.lock,
+                    color: appColors.primaryBase,
+                    size: 16,
+                  ),
+                const SizedBox(height: 2),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      child: Image.asset(
+                        'assets/images/coin.png',
+                        width: 16,
+                        height: 16,
                       ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Flexible(
-                            flex: 2,
-                            child: Icon(
-                              Icons.remove_red_eye,
-                              size: 12,
-                              color: appColors.inkLighter,
-                            )),
-                        Flexible(
-                          flex: 6,
-                          child: Text(
-                            formatReadCount(chapter?.readCount ?? 0),
-                            style: Theme.of(context)
-                                .textTheme
-                                .labelLarge!
-                                .copyWith(color: appColors.inkLighter),
-                          ),
-                        ),
-                      ],
                     ),
-            ),
+                    const SizedBox(width: 2),
+                    Text(
+                      '${chapter.price} xu',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium!
+                          .copyWith(color: appColors.inkBase, fontSize: 12),
+                    ),
+                  ],
+                )
+              ]),
+            const SizedBox(width: 8),
+            Column(children: [
+              Text(
+                formatRelativeTime(chapter.updatedDate),
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    color: appColors.inkLight, fontStyle: FontStyle.italic),
+              ),
+              const SizedBox(height: 2),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.remove_red_eye,
+                    size: 12,
+                    color: appColors.secondaryBase,
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    formatNumber(chapter.readCount ?? 0),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleSmall
+                        ?.copyWith(color: appColors.inkLight),
+                  ),
+                ],
+              ),
+            ]),
           ],
         ),
       ),

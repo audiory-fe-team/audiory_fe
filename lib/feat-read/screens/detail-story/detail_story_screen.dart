@@ -22,6 +22,10 @@ import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
+import 'package:audiory_v0/utils/format_number.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
+import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
 import 'package:flutter/material.dart';
@@ -192,7 +196,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   )
                 ]),
                 const SizedBox(height: 4),
-                Text(formatNumber(story?.chapters?.length),
+                Text((formatNumber(story?.chapters?.length ?? 0)),
                     style: sharedNumberStyle)
               ],
             ),
@@ -232,7 +236,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   )
                 ]),
                 const SizedBox(height: 4),
-                Text(formatNumber(story?.commentCount),
+                Text(formatNumber(story?.voteCount ?? 0),
                     style: sharedNumberStyle)
               ],
             ),
@@ -252,7 +256,8 @@ class DetailStoryScreen extends HookConsumerWidget {
                   )
                 ]),
                 const SizedBox(height: 4),
-                Text(formatNumber(story?.voteCount), style: sharedNumberStyle)
+                Text(formatNumber(story?.voteCount ?? 0),
+                    style: sharedNumberStyle)
               ],
             ),
           ]));
@@ -274,60 +279,19 @@ class DetailStoryScreen extends HookConsumerWidget {
         children: [
           ClipRRect(
               borderRadius: BorderRadius.circular(8),
-              child: Skeleton.replace(
-                  width: 110,
-                  height: 165,
-                  child: Container(
+              child: Skeleton.shade(
+                child: AppImage(
+                    url: story?.coverUrl,
                     width: 110,
                     height: 165,
-                    decoration: isOffline
-                        ? BoxDecoration(
-                            color: appColors.primaryLightest,
-                          )
-                        : BoxDecoration(
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                  story?.coverUrl ?? FALLBACK_IMG_URL),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                  ))),
+                    fit: BoxFit.fill),
+              )),
           const SizedBox(height: 24),
           Text(
             story?.title ?? '',
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
-          story?.isPaywalled == true
-              ? Column(
-                  children: [
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 10),
-                      decoration: ShapeDecoration(
-                        color: appColors.primaryLightest,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                      child: Text(
-                        'Truyện trả phí ',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context)
-                            .textTheme
-                            .titleMedium!
-                            .copyWith(
-                                color: appColors.primaryBase,
-                                fontWeight: FontWeight.w600,
-                                overflow: TextOverflow.visible),
-                      ),
-                    ),
-                  ],
-                )
-              : const SizedBox(
-                  height: 0,
-                )
         ],
       );
     }
@@ -446,7 +410,34 @@ class DetailStoryScreen extends HookConsumerWidget {
                                       )
                                     ]))),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 12),
+                      story?.isPaywalled == true
+                          ? Column(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16, vertical: 8),
+                                  decoration: ShapeDecoration(
+                                    color: appColors.primaryLightest,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                  child: Text('Truyện trả phí ',
+                                      textAlign: TextAlign.center,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .titleMedium!
+                                          .copyWith(
+                                            color: appColors.inkBase,
+                                          )),
+                                ),
+                                const SizedBox(height: 12),
+                              ],
+                            )
+                          : const SizedBox(
+                              height: 0,
+                            ),
                       Skeletonizer(
                           enabled: isLoading,
                           child: interactionInfo(
@@ -457,52 +448,62 @@ class DetailStoryScreen extends HookConsumerWidget {
                           child: SizedBox(
                               width: double.infinity,
                               child: Wrap(
-                                alignment: WrapAlignment.center,
-                                spacing: 6,
-                                runSpacing: 6,
-                                children: ((isLoading
-                                            ? skeletonStory.tags
-                                            : story?.tags) ??
-                                        [])
-                                    .map((tag) => GestureDetector(
-                                        onTap: () {
-                                          GoRouter.of(context).go(
-                                              '/tag/${tag.id}?tagName=${tag.name}');
-                                        },
-                                        child: StoryTag(
-                                          label: tag.name ?? '',
-                                          selected: false,
-                                        )))
-                                    .toList(),
-                              ))),
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 12),
-                        padding: const EdgeInsets.symmetric(horizontal: 24),
-                        child: TabBar(
-                          onTap: (value) {
-                            if (tabState.value != value) tabState.value = value;
-                          },
-                          controller: tabController,
-                          labelColor: appColors.inkBase,
-                          unselectedLabelColor: appColors.inkLighter,
-                          labelPadding: const EdgeInsets.symmetric(vertical: 0),
-                          indicatorColor: appColors.primaryBase,
-                          indicatorWeight: 2.5,
-                          indicatorPadding:
-                              const EdgeInsets.symmetric(horizontal: 24),
-                          labelStyle: textTheme.headlineSmall,
-                          tabs: const [
-                            Tab(
-                              text: 'Chi tiết',
-                              height: 36,
+                                  alignment: WrapAlignment.center,
+                                  spacing: 6,
+                                  runSpacing: 6,
+                                  children: [
+                                    if (story?.isCompleted == true)
+                                      const StoryTag(
+                                        label: 'Hoàn thành',
+                                        selected: true,
+                                      ),
+                                    ...((isLoading
+                                                ? skeletonStory.tags
+                                                : story?.tags) ??
+                                            [])
+                                        .map((tag) => GestureDetector(
+                                            onTap: () {
+                                              GoRouter.of(context).go(
+                                                  '/tag/${tag.id}?tagName=${tag.name}');
+                                            },
+                                            child: StoryTag(
+                                              label: tag.name ?? '',
+                                              selected: false,
+                                            )))
+                                        .toList(),
+                                  ]))),
+                      Skeletonizer(
+                          enabled: isLoading,
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: 12),
+                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                            child: TabBar(
+                              onTap: (value) {
+                                if (tabState.value != value)
+                                  tabState.value = value;
+                              },
+                              controller: tabController,
+                              labelColor: appColors.inkBase,
+                              unselectedLabelColor: appColors.inkLighter,
+                              labelPadding:
+                                  const EdgeInsets.symmetric(vertical: 0),
+                              indicatorColor: appColors.primaryBase,
+                              indicatorWeight: 2.5,
+                              indicatorPadding:
+                                  const EdgeInsets.symmetric(horizontal: 24),
+                              labelStyle: textTheme.headlineSmall,
+                              tabs: const [
+                                Tab(
+                                  height: 36,
+                                  child: Text('Chi tiết'),
+                                ),
+                                Tab(
+                                  height: 36,
+                                  child: Text('Chương'),
+                                )
+                              ],
                             ),
-                            Tab(
-                              text: 'Chương',
-                              height: 36,
-                            )
-                          ],
-                        ),
-                      ),
+                          )),
                       const SizedBox(height: 4),
                       Builder(builder: (context) {
                         if (tabState.value == 0) {

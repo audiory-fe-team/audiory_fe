@@ -9,6 +9,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:fquery/fquery.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 final queryClient = QueryClient(
   defaultQueryOptions: DefaultQueryOptions(),
@@ -33,7 +34,8 @@ Future<void> main() async {
 
   runApp(QueryClientProvider(
     queryClient: queryClient,
-    child: ProviderScope(child: MyApp()),
+    child:
+        ProviderScope(child: SkeletonizerScope(enabled: true, child: MyApp())),
   ));
 }
 
@@ -42,14 +44,18 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final _themeNotifier = ref.watch(themeNotifierProvider);
 
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'Audiory app',
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: _themeNotifier.themeMode,
-      routerConfig: AppRoutes.routes,
-    );
+    return SkeletonizerConfig(
+        data: _themeNotifier.themeMode == ThemeMode.light
+            ? const SkeletonizerConfigData.light()
+            : const SkeletonizerConfigData.dark(),
+        child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          title: 'Audiory app',
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: _themeNotifier.themeMode,
+          routerConfig: AppRoutes.routes,
+        ));
   }
 }
 ///

@@ -11,6 +11,8 @@ class TapEffectWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(child: InkWell(onTap: () => onTap(), child: child));
+    return Material(
+        color: Colors.transparent,
+        child: InkWell(onTap: () => onTap(), child: child));
   }
 }

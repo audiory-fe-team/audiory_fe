@@ -443,7 +443,6 @@ class AppRoutes {
           //extra
           final extraMap = state.extra as Map<String, dynamic>;
           if (kDebugMode) {
-            print('storyId');
             print(extraMap['storyId'] == '' ? 'empty' : 'no');
           }
           final storyId = extraMap['storyId'] as String?;

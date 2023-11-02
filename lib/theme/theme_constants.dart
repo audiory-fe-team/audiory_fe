@@ -10,12 +10,12 @@ class ColorPaletteLight {
   static const Color skyBase = Color(0xFFCDCFD0);
   static const Color skyLight = Color(0xFFE3E5E5);
   static const Color skyLighter = Color(0xFFE3E5E5);
-  static const Color skyLightest = Color(0xFFF5F5F5);
+  static const Color skyLightest = Color.fromARGB(255, 239, 239, 239);
   static const Color skyDark = Color(0xFF979C9E);
   static const Color secondaryBase = Color(0xFFDB6244);
   static const Color secondaryLight = Color(0xFFE26D69);
   static const Color secondaryLighter = Color(0xFFE9918F);
-  static const Color secondaryLightest = Color(0xFFF4C8C7);
+  static const Color secondaryLightest = Color.fromARGB(255, 244, 216, 215);
   static const Color secondaryDark = Color(0xFFAF3A36);
   static const Color inkBase = Color(0xFF404446);
   static const Color inkLight = Color(0xFF6C7072);
@@ -24,8 +24,7 @@ class ColorPaletteLight {
   static const Color inkDarker = Color(0xFF202325);
   static const Color inkDarkest = Color(0xFF090A0A);
 
-  static const Color backgroundLight = Color.fromARGB(255, 251, 248, 248);
-  static const Color backgroundDark = Color(0xFF404446);
+  static const Color background = Color.fromARGB(255, 251, 248, 248);
 }
 
 class ColorPaletteDark {
@@ -42,7 +41,7 @@ class ColorPaletteDark {
   static const Color secondaryBase = Color(0xFFDB6244);
   static const Color secondaryLight = Color(0xFFE26D69);
   static const Color secondaryLighter = Color(0xFFE9918F);
-  static const Color secondaryLightest = Color(0xFFF4C8C7);
+  static const Color secondaryLightest = Color.fromARGB(255, 202, 84, 54);
   static const Color secondaryDark = Color(0xFFAF3A36);
   static const Color inkBase = Color(0xFFF5F5F5);
   static const Color inkLight = Color(0xFFE3E5E5);
@@ -51,8 +50,7 @@ class ColorPaletteDark {
   static const Color inkDarker = Color(0xFF202325);
   static const Color inkDarkest = Color(0xFF090A0A);
 
-  static const Color backgroundLight = Color.fromARGB(255, 251, 248, 248);
-  static const Color backgroundDark = Color(0xFF202325);
+  static const Color background = Color(0xFF202325);
 }
 
 @immutable
@@ -79,8 +77,7 @@ class AppColors extends ThemeExtension<AppColors> {
     required this.secondaryLighter,
     required this.secondaryLightest,
     required this.secondaryDark,
-    required this.backgroundLight,
-    required this.backgroundDark,
+    required this.background,
   });
 
   final Color primaryBase;
@@ -108,8 +105,7 @@ class AppColors extends ThemeExtension<AppColors> {
   final Color secondaryLightest;
   final Color secondaryDark;
 
-  final Color backgroundLight;
-  final Color backgroundDark;
+  final Color background;
 
   @override
   AppColors copyWith(
@@ -134,8 +130,7 @@ class AppColors extends ThemeExtension<AppColors> {
       Color? secondaryLighter,
       Color? secondaryLightest,
       Color? secondaryDark,
-      Color? backgroundLight,
-      Color? backgroundDark}) {
+      Color? background}) {
     return AppColors(
       primaryBase: primaryBase ?? this.primaryBase,
       primaryLight: primaryLight ?? this.primaryLight,
@@ -158,8 +153,7 @@ class AppColors extends ThemeExtension<AppColors> {
       inkDark: inkDark ?? this.inkDark,
       inkDarker: inkDarker ?? this.inkDarker,
       inkDarkest: inkDarkest ?? this.inkDarkest,
-      backgroundLight: backgroundLight ?? this.backgroundLight,
-      backgroundDark: backgroundDark ?? this.backgroundDark,
+      background: background ?? this.background,
     );
   }
 
@@ -190,19 +184,18 @@ class AppColors extends ThemeExtension<AppColors> {
       inkDark: ColorPaletteLight.inkDark,
       inkDarker: ColorPaletteLight.inkDarker,
       inkDarkest: ColorPaletteLight.inkDarkest,
-      backgroundLight: ColorPaletteLight.backgroundLight,
-      backgroundDark: ColorPaletteLight.backgroundDark,
+      background: ColorPaletteLight.background,
     );
   }
 }
 
 ThemeData lightTheme = ThemeData(
-  scaffoldBackgroundColor: ColorPaletteLight.backgroundLight,
+  scaffoldBackgroundColor: ColorPaletteLight.background,
   iconTheme: const IconThemeData(color: ColorPaletteLight.inkBase),
   bottomAppBarTheme:
       const BottomAppBarTheme(color: ColorPaletteLight.skyLightest),
   appBarTheme: const AppBarTheme(
-    backgroundColor: ColorPaletteLight.backgroundLight,
+    backgroundColor: ColorPaletteLight.background,
     iconTheme: IconThemeData(color: ColorPaletteLight.inkBase),
   ),
   // useMaterial3: true,
@@ -295,19 +288,18 @@ ThemeData lightTheme = ThemeData(
       inkDark: ColorPaletteLight.inkDark,
       inkDarker: ColorPaletteLight.inkDarker,
       inkDarkest: ColorPaletteLight.inkDarkest,
-      backgroundDark: ColorPaletteLight.backgroundDark,
-      backgroundLight: ColorPaletteLight.backgroundLight,
+      background: ColorPaletteLight.background,
     )
   ],
 );
 
 ThemeData darkTheme = ThemeData(
-  scaffoldBackgroundColor: ColorPaletteDark.backgroundDark,
+  scaffoldBackgroundColor: ColorPaletteDark.background,
   iconTheme: const IconThemeData(color: ColorPaletteDark.inkBase),
   bottomAppBarTheme:
       const BottomAppBarTheme(color: ColorPaletteDark.skyLightest),
   appBarTheme: const AppBarTheme(
-    backgroundColor: ColorPaletteDark.backgroundDark,
+    backgroundColor: ColorPaletteDark.background,
     iconTheme: IconThemeData(color: ColorPaletteDark.inkBase),
   ),
   // useMaterial3: true,
@@ -400,8 +392,7 @@ ThemeData darkTheme = ThemeData(
       inkDark: ColorPaletteDark.inkDark,
       inkDarker: ColorPaletteDark.inkDarker,
       inkDarkest: ColorPaletteDark.inkDarkest,
-      backgroundLight: ColorPaletteDark.backgroundLight,
-      backgroundDark: ColorPaletteDark.backgroundDark,
+      background: ColorPaletteDark.background,
     )
   ],
 );

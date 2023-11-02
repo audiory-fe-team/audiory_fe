@@ -92,6 +92,7 @@ class ChapterRepository {
             Chapter.fromJson(json.decode(responseBody)['data']);
         return chapter;
       } catch (error) {
+        print("egagag");
         print(error);
         throw (error);
       }

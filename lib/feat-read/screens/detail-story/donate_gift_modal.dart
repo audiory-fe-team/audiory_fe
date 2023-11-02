@@ -29,7 +29,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
         useQuery(['gifts'], () => GiftRepository().fetchAllGifts());
 
     var lists = giftsQuery.data ?? [];
-    lists.sort((a, b) => a.price!.compareTo(b.price ?? 0));
+    // lists.sort((a, b) => a.price?.compareTo(b.price ?? 0));
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;

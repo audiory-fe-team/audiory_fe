@@ -107,7 +107,6 @@ class CommentDetailScreen extends HookWidget {
                       CommentCard(
                         comment: comment,
                         isDetail: true,
-                        onLike: () => commentQuery.refetch(),
                       ),
                       const SizedBox(height: 12),
                       Container(

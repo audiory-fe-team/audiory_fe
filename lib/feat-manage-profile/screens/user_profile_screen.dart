@@ -8,6 +8,7 @@ import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -98,18 +99,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     Widget followingCard() {
       return Column(
         children: [
-          Container(
-            width: 85,
-            height: 85,
-            decoration: const ShapeDecoration(
-              image: DecorationImage(
-                image: NetworkImage(
-                    'https://res.cloudinary.com/ddvdxx85g/image/upload/v1678858100/samples/animals/cat.jpg'),
-                fit: BoxFit.fill,
-              ),
-              shape: CircleBorder(),
-            ),
-          ),
+          ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: AppImage(
+                  url: currentUser?.avatarUrl,
+                  width: 85,
+                  height: 85,
+                  fit: BoxFit.fill)),
           const SizedBox(
             height: 4,
           ),
@@ -390,6 +386,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 size: 20,
                               ),
                               // icon: const Icon(Icons.add),
+
                               onPressed: () {
                                 userByIdQuery.isError == true
                                     ? null
