@@ -1,3 +1,4 @@
+import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/enums/Sex.dart';
@@ -318,6 +319,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         style: textTheme.headlineMedium?.copyWith(color: appColors.inkBase),
       )),
       body: userInfo(),
+      floatingActionButton: const AudioBottomBar(),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 }

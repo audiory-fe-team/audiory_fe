@@ -18,15 +18,11 @@ class PositionAudio {
 }
 
 class ChapterAudioPlayer extends HookWidget {
-  final Chapter? chapter;
   final AudioPlayer player;
-  final Function? onPlayNextPara;
   final Function? onFirstPlay;
   final int selectedThemeOption;
   const ChapterAudioPlayer(
       {super.key,
-      required this.chapter,
-      this.onPlayNextPara,
       this.onFirstPlay,
       required this.player,
       required this.selectedThemeOption});
@@ -37,14 +33,6 @@ class ChapterAudioPlayer extends HookWidget {
     final isFirstPlay = useState(true);
     final bgColor = useState(appColors?.skyLightest);
     final textColor = useState(appColors?.inkLighter);
-    final positionAudioStream = useStream(
-        Rx.combineLatest3<Duration, Duration, Duration?, PositionAudio>(
-            player.positionStream,
-            player.bufferedPositionStream,
-            player.durationStream,
-            (position, bufferedPosition, duration) =>
-                PositionAudio(position, bufferedPosition, duration)));
-    final position = positionAudioStream.data;
 
     syncPreference() async {
       bgColor.value = THEME_OPTIONS[selectedThemeOption]['audioBackground'];
@@ -76,20 +64,32 @@ class ChapterAudioPlayer extends HookWidget {
                         .textTheme
                         .labelMedium!
                         .copyWith(fontStyle: FontStyle.italic))),
-            Skeleton.shade(
-                child: ProgressBar(
-              barHeight: 4,
-              baseBarColor: textColor.value,
-              bufferedBarColor: appColors?.primaryLightest,
-              progressBarColor: appColors?.primaryBase,
-              thumbColor: appColors?.primaryBase,
-              thumbRadius: 5,
-              timeLabelTextStyle: Theme.of(context).textTheme.labelLarge,
-              progress: position?.position ?? Duration.zero,
-              buffered: position?.bufferedPosition ?? Duration.zero,
-              total: position?.duration ?? Duration.zero,
-              onSeek: player.seek,
-            )),
+            StreamBuilder(
+              stream: Rx.combineLatest3<Duration, Duration, Duration?,
+                      PositionAudio>(
+                  player.positionStream,
+                  player.bufferedPositionStream,
+                  player.durationStream,
+                  (position, bufferedPosition, duration) =>
+                      PositionAudio(position, bufferedPosition, duration)),
+              builder: (context, snapshot) {
+                final position = snapshot.data;
+                return Skeleton.shade(
+                    child: ProgressBar(
+                  barHeight: 4,
+                  baseBarColor: textColor.value,
+                  bufferedBarColor: appColors?.primaryLightest,
+                  progressBarColor: appColors?.primaryBase,
+                  thumbColor: appColors?.primaryBase,
+                  thumbRadius: 5,
+                  timeLabelTextStyle: Theme.of(context).textTheme.labelLarge,
+                  progress: position?.position ?? Duration.zero,
+                  buffered: position?.bufferedPosition ?? Duration.zero,
+                  total: position?.duration ?? Duration.zero,
+                  onSeek: player.seek,
+                ));
+              },
+            ),
             Row(mainAxisSize: MainAxisSize.min, children: [
               IconButton(
                   onPressed: () {

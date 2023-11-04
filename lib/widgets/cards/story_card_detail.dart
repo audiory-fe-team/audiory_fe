@@ -4,6 +4,7 @@ import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/SearchStory.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -21,7 +22,7 @@ class StoryCardDetail extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final coverUrl = story?.coverUrl;
+    final coverUrl = story?.coverUrl ?? searchStory?.coverUrl ?? '';
     final storyId = story?.id ?? searchStory?.id ?? 'not-found';
     final title = story?.title ?? searchStory?.title ?? 'Tiêu đề truyện';
     final description =
@@ -58,14 +59,11 @@ class StoryCardDetail extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  ClipRRect(
-                      borderRadius: BorderRadius.circular(8),
-                      child: Skeleton.replace(
-                          width: 95,
-                          height: 135,
+                  Skeleton.shade(
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
                           child: AppImage(
                             url: coverUrl,
-                            fit: BoxFit.fill,
                             width: 95,
                             height: 135,
                           ))),
@@ -162,7 +160,7 @@ class StoryCardDetail extends StatelessWidget {
                                             width: 14,
                                             height: 14),
                                         const SizedBox(width: 3),
-                                        Text(voteCount.toString(),
+                                        Text(formatNumber(voteCount).toString(),
                                             style: textTheme.titleSmall
                                                 ?.copyWith(
                                                     fontStyle:
@@ -204,7 +202,7 @@ class StoryCardDetail extends StatelessWidget {
                                     SvgPicture.asset('assets/icons/eye.svg',
                                         width: 14, height: 14),
                                     const SizedBox(width: 8),
-                                    Text('$readCount',
+                                    Text(formatNumber(readCount),
                                         style: textTheme.titleSmall!.copyWith(
                                             fontStyle: FontStyle.italic)),
                                   ],

@@ -24,6 +24,9 @@ class Profile {
   final int? numberOfFollowing;
   final List<Profile>? followers;
   final int? reportCount;
+  final int? totalVote;
+  final int? totalRead;
+  final int? totalComment;
   final String? updatedDate;
   final String? username;
   final List<Story>? stories;
@@ -52,6 +55,9 @@ class Profile {
     this.followings,
     this.followers,
     this.reportCount,
+    this.totalComment,
+    this.totalRead,
+    this.totalVote,
     this.updatedDate,
     required this.username,
     this.stories,
@@ -95,6 +101,9 @@ class Profile {
       followings: followings,
       followers: followers,
       reportCount: json['report_count'],
+      totalComment: json['total_comment'],
+      totalRead: json['total_read'],
+      totalVote: json['total_vote'],
       updatedDate: json['updated_date'],
       username: json['username'],
       library:
@@ -127,6 +136,9 @@ class Profile {
       'followers': followers,
       'followings': followings,
       'report_count': reportCount,
+      'total_comment': totalComment,
+      'total_read': totalRead,
+      'total_vote': totalVote,
       'updated_date': updatedDate,
       'username': username,
       'library': library?.toJson(),

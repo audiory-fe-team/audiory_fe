@@ -4,10 +4,12 @@ import 'package:audiory_v0/feat-explore/models/ranking.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/screens/splash_screen/splash_screen.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class StoryRankCard extends StatelessWidget {
@@ -44,16 +46,13 @@ class StoryRankCard extends StatelessWidget {
         badgePath = 'assets/images/bronze_badge.png';
         break;
     }
-    return SizedBox(
-      width: 24,
-      height: 24,
-      child: Center(
-          child: Image.asset(
-        badgePath,
-        fit: BoxFit.fitWidth,
-        width: 24,
-      )),
-    );
+    return Center(
+        child: Image.asset(
+      badgePath,
+      fit: BoxFit.fitWidth,
+      width: 28,
+      height: 28,
+    ));
   }
 
   Widget getTitle(int order, String title, BuildContext context) {
@@ -71,42 +70,45 @@ class StoryRankCard extends StatelessWidget {
     LinearGradient gradient = const LinearGradient(colors: []);
     switch (order) {
       case 1:
-        gradient = LinearGradient(colors: [
-          const Color.fromARGB(255, 219, 168, 40),
-          Colors.yellow.shade400,
+        gradient = const LinearGradient(colors: [
+          Color.fromARGB(255, 219, 168, 40),
+          Color.fromARGB(255, 251, 231, 50),
         ]);
         break;
       case 2:
         gradient = const LinearGradient(colors: [
-          Color.fromRGBO(150, 138, 163, 1),
-          Color.fromRGBO(234, 235, 250, 1),
+          Color.fromARGB(255, 126, 114, 139),
+          Color.fromARGB(255, 199, 203, 252),
         ]);
         break;
       case 3:
         gradient = const LinearGradient(colors: [
-          Color.fromRGBO(112, 97, 73, 1),
-          Color.fromRGBO(223, 219, 214, 1),
+          Color.fromARGB(255, 94, 73, 39),
+          Color.fromARGB(255, 187, 163, 133),
         ]);
         break;
     }
-    return GradientText(title,
-        style: textTheme.titleMedium?.copyWith(overflow: TextOverflow.clip),
-        gradient: gradient);
+    return GradientText(
+      title,
+      style: textTheme.titleMedium?.copyWith(overflow: TextOverflow.ellipsis),
+      gradient: gradient,
+      maxLines: 2,
+    );
   }
 
   String getStatisticString(Story story, RankingMetric metric) {
     switch (metric) {
       case RankingMetric.total_read:
         {
-          return "${story.readCount ?? 0} lượt xem";
+          return "${formatNumber(story.totalRead ?? 0)} lượt xem";
         }
       case RankingMetric.total_vote:
         {
-          return "${story.readCount ?? 0} bình chọn";
+          return "${formatNumber(story.totalVote ?? 0)} bình chọn";
         }
       default:
         {
-          return "${story.readCount ?? 0} bình chọn";
+          return "${formatNumber(story.totalComment ?? 0)} bình luận";
         }
     }
   }
@@ -114,95 +116,101 @@ class StoryRankCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final appColors = Theme.of(context).extension<AppColors>();
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      width: double.infinity,
-      height: 107,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: AppImage(
-                  url: story.coverUrl,
-                  width: 75,
-                  height: 107,
-                  fit: BoxFit.fill)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Expanded(
-                    child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return GestureDetector(
+        onTap: () {
+          context.push('/story/${story.id}');
+        },
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12),
+          width: double.infinity,
+          height: 107,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: AppImage(
+                      url: story.coverUrl,
+                      width: 75,
+                      height: 107,
+                      fit: BoxFit.fill)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
                   children: [
-                    getTitle(order, story.title, context),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Skeleton.replace(
-                            width: 14,
-                            height: 14,
-                            child: SvgPicture.asset(
-                              'assets/icons/write.svg',
-                              width: 14,
-                            )),
-                        const SizedBox(width: 6),
-                        Text(
-                          story.author?.fullName ?? 'Ẩn danh',
-                          style: textTheme.titleSmall,
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        // Skeleton.replace(
-                        //     width: 14,
-                        //     height: 14,
-                        //     child: SvgPicture.asset(
-                        //       'assets/icons/eye.svg',
-                        //       width: 14,
-                        //       color: appColors.primaryBase,
-                        //     )),
-                        // const SizedBox(width: 6),
-                        Text(
-                          getStatisticString(story, metric),
-                          style: textTheme.titleSmall!.copyWith(
-                            fontStyle: FontStyle.italic,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      ],
-                    ),
-                    const Expanded(child: SizedBox()),
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
+                    Expanded(
+                        child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: (story.tags ?? [])
-                          .sublist(0, min(3, story.tags?.length ?? 0))
-                          .map((tag) => Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: StoryDetailTag(content: tag.name ?? '')))
-                          .toList(),
-                    ),
+                      children: [
+                        getTitle(order, story.title, context),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Skeleton.replace(
+                                width: 14,
+                                height: 14,
+                                child: SvgPicture.asset(
+                                  'assets/icons/write.svg',
+                                  width: 14,
+                                )),
+                            const SizedBox(width: 6),
+                            Text(
+                              story.author?.fullName ?? 'Ẩn danh',
+                              style: textTheme.titleSmall,
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            // Skeleton.replace(
+                            //     width: 14,
+                            //     height: 14,
+                            //     child: SvgPicture.asset(
+                            //       'assets/icons/eye.svg',
+                            //       width: 14,
+                            //       color: appColors.primaryBase,
+                            //     )),
+                            // const SizedBox(width: 6),
+                            Text(
+                              getStatisticString(story, metric),
+                              style: textTheme.titleSmall!.copyWith(
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.w600,
+                                  color: appColors?.primaryBase),
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          ],
+                        ),
+                        const Expanded(child: SizedBox()),
+                        Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: (story.tags ?? [])
+                              .sublist(0, min(3, story.tags?.length ?? 0))
+                              .map((tag) => Padding(
+                                  padding: const EdgeInsets.only(right: 8),
+                                  child:
+                                      StoryDetailTag(content: tag.name ?? '')))
+                              .toList(),
+                        ),
+                      ],
+                    )),
+                    const SizedBox(width: 12),
+                    getBadgeWidget(order, context),
                   ],
-                )),
-                const SizedBox(width: 12),
-                getBadgeWidget(order, context),
-              ],
-            ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        ));
   }
 }

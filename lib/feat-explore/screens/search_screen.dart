@@ -10,6 +10,7 @@ import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/utils/use_paging_controller.dart';
 import 'package:audiory_v0/widgets/cards/profile_card.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
+import 'package:audiory_v0/widgets/paginators/infinite_scroll_paginator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -166,68 +167,64 @@ class SearchScreen extends HookWidget {
                                                             ))))));
                           }
                           return Expanded(
-                              child: RefreshIndicator(
-                            onRefresh: () async {
-                              storiesPagingController.refresh();
-                            },
-                            child: CustomScrollView(
-                              slivers: [
-                                // const SliverToBoxAdapter(
-                                //     child: SizedBox(height: 12)),
-                                if (tabState.value == 0)
-                                  SliverToBoxAdapter(child: SearchFilterButton(
-                                    onTap: () {
-                                      showModalBottomSheet(
-                                        backgroundColor: Colors.transparent,
-                                        isScrollControlled: true,
-                                        context: context,
-                                        builder: (context) {
-                                          return SearchStoryFilter(
-                                            sortBy: sortBy.value,
-                                            category: category.value,
-                                            isMature: isMature.value,
-                                            isPaywalled: isPaywall.value,
-                                            tags: tags.value,
-                                            storyList: storiesPagingController
-                                                .itemList,
-                                            onSubmit: (
-                                                {categoryValue,
-                                                isMatureValue,
-                                                isPaywalledValue,
-                                                sortByValue,
-                                                tagsValue}) {
-                                              sortBy.value = sortByValue;
-                                              tags.value = tagsValue;
-                                              category.value = categoryValue;
-                                              isPaywall.value =
-                                                  isPaywalledValue;
-                                              isMature.value = isMatureValue;
+                            child: RefreshIndicator(
+                              onRefresh: () async {
+                                storiesPagingController.refresh();
+                              },
+                              child: AppInfiniteScrollList(
+                                  topItems: [
+                                    if (tabState.value == 0)
+                                      SearchFilterButton(
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                            backgroundColor: Colors.transparent,
+                                            isScrollControlled: true,
+                                            context: context,
+                                            builder: (context) {
+                                              return SearchStoryFilter(
+                                                sortBy: sortBy.value,
+                                                category: category.value,
+                                                isMature: isMature.value,
+                                                isPaywalled: isPaywall.value,
+                                                tags: tags.value,
+                                                storyList:
+                                                    storiesPagingController
+                                                        .itemList,
+                                                onSubmit: (
+                                                    {categoryValue,
+                                                    isMatureValue,
+                                                    isPaywalledValue,
+                                                    sortByValue,
+                                                    tagsValue}) {
+                                                  sortBy.value = sortByValue;
+                                                  tags.value = tagsValue;
+                                                  category.value =
+                                                      categoryValue;
+                                                  isPaywall.value =
+                                                      isPaywalledValue;
+                                                  isMature.value =
+                                                      isMatureValue;
 
-                                              //Reload:
-                                              storiesPagingController.refresh();
+                                                  //Reload:
+                                                  storiesPagingController
+                                                      .refresh();
+                                                },
+                                              );
                                             },
                                           );
                                         },
-                                      );
-                                    },
-                                  )),
-                                const SliverToBoxAdapter(
-                                    child: SizedBox(height: 12)),
-                                PagedSliverList<int, SearchStory>(
-                                    pagingController: storiesPagingController,
-                                    builderDelegate:
-                                        PagedChildBuilderDelegate<SearchStory>(
-                                            itemBuilder: (context, item,
-                                                    index) =>
-                                                Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            bottom: 16),
-                                                    child: StoryCardDetail(
-                                                        searchStory: item))))
-                              ],
+                                      ),
+                                    const SizedBox(height: 12),
+                                  ],
+                                  itemBuilder: (context, item, index) =>
+                                      Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 16),
+                                          child: StoryCardDetail(
+                                              searchStory: item)),
+                                  controller: storiesPagingController),
                             ),
-                          ));
+                          );
                         }),
                       ]);
                     }

@@ -1,6 +1,7 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_number.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -104,24 +105,27 @@ class HomeRankingCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 6),
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Skeleton.ignore(
-                            child: SvgPicture.asset(
-                          'assets/icons/heart.svg',
-                          width: 8,
-                          height: 8,
-                          color: appColors.skyDark,
-                        )),
+                            child: icon ??
+                                SvgPicture.asset(
+                                  'assets/icons/eye.svg',
+                                  width: 12,
+                                  height: 12,
+                                  color: appColors.skyDark,
+                                )),
                         const SizedBox(width: 2),
                         Text(
-                          (story.voteCount ?? 0).toString(),
-                          style: textTheme.labelLarge!.copyWith(
-                              color: appColors.skyDark,
+                          formatNumber(story.totalRead ?? 1000).toString(),
+                          style: textTheme.labelLarge?.copyWith(
+                              color: appColors.secondaryBase,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
                               fontStyle: FontStyle.italic),
                         ),
                       ],

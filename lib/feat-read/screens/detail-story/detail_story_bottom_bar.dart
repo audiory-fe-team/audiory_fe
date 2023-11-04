@@ -141,7 +141,7 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
               child: FilledButton(
                 onPressed: () {
                   context.push(
-                    '/story/${widget.storyId}/chapter/41ccaddf-3b96-11ee-8842-e0d4e8a18075',
+                    '/story/5fb70bf9-3f5b-4557-a4e1-0bf951486b7c/chapter/cfadac60-a197-f34c-2d24-e9e173dbd054',
                   );
                 },
                 style: ButtonStyle(

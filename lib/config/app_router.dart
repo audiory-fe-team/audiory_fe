@@ -22,6 +22,7 @@ import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_scree
 import 'package:audiory_v0/feat-manage-profile/screens/wallet/wallet_screen.dart';
 import 'package:audiory_v0/feat-read/screens/library/library_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading-list/reading_list_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
@@ -74,6 +75,9 @@ class AppRoutes {
           builder: (context, state, child) {
             return Scaffold(
               body: child,
+              floatingActionButton: const AudioBottomBar(),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.miniCenterFloat,
               bottomNavigationBar: const AppBottomNavigationBar(),
             );
           },

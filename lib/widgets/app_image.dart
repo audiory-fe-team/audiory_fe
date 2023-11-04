@@ -13,7 +13,7 @@ class AppImage extends StatelessWidget {
       this.url,
       this.width,
       this.height,
-      this.fit,
+      this.fit = BoxFit.fill,
       this.defaultUrl});
 
   @override

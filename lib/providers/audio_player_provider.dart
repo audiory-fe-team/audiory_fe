@@ -1,13 +1,11 @@
+import 'package:audiory_v0/providers/audio_player_notifier.dart';
 import 'package:just_audio/just_audio.dart';
 // ignore: depend_on_referenced_packages
 import 'package:riverpod/riverpod.dart';
 
-final audioPlayerProvider = StateProvider<AudioPlayer>((ref) {
-  final player = AudioPlayer();
-  ref.onDispose(() {
-    player.dispose();
-  });
-  return player;
+final audioPlayerProvider =
+    NotifierProvider<AudioPlayerNotifier, AudioPlayer>(() {
+  return AudioPlayerNotifier();
 });
 final audioPlayerStoryIdProvider = Provider<String?>((ref) {
   String? storyId;
@@ -17,13 +15,15 @@ final audioPlayerStoryIdProvider = Provider<String?>((ref) {
   return storyId;
 });
 
-final audioCurrentIndexProvider = Provider<int?>((ref) {
-  final audioPlayer = ref.watch(audioPlayerProvider);
-  int? currentIndex;
+class CurrentIndexNotifier extends StateNotifier<int?> {
+  CurrentIndexNotifier() : super(null);
 
-  audioPlayer.currentIndexStream.listen((index) {
-    currentIndex = index;
-  });
+  void updateIndex(int? index) {
+    state = index;
+  }
+}
 
-  return currentIndex;
+final currentIndexProvider =
+    StateNotifierProvider<CurrentIndexNotifier, int?>((ref) {
+  return CurrentIndexNotifier();
 });

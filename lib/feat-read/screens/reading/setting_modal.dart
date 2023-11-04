@@ -15,8 +15,8 @@ class SettingModel extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedOption = useState(0);
-    final fontSize = useState(18);
     final showCommentByParagraph = useState(false);
+    final setTimer = useState(false);
     final audioSpeed = useState<double>(1);
 
     final notifier = ref.watch(themeNotifierProvider);
@@ -25,6 +25,7 @@ class SettingModel extends HookConsumerWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     final sizeController = useTextEditingController(text: '18');
+    final timerController = useTextEditingController(text: '10');
 
     setPreference() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -32,10 +33,14 @@ class SettingModel extends HookConsumerWidget {
       await prefs.setBool(
           'showCommentByParagraph', showCommentByParagraph.value);
       await prefs.setInt('themeOption', selectedOption.value);
+      await prefs.setDouble('audioSpeed', audioSpeed.value);
       if (selectedOption.value <= 1) {
         notifier.setTheme(
             selectedOption.value == 1 ? ThemeMode.dark : ThemeMode.light);
         return;
+      }
+      if (setTimer.value) {
+        await prefs.setInt('timer', int.tryParse(timerController.text) ?? 10);
       }
     }
 
@@ -44,6 +49,7 @@ class SettingModel extends HookConsumerWidget {
 
       selectedOption.value = prefs.getInt('themeOption') ?? 0;
       sizeController.text = (prefs.getInt('fontSize') ?? 18).toString();
+      audioSpeed.value = prefs.getDouble('audioSpeed') ?? 1;
       showCommentByParagraph.value =
           prefs.getBool('showCommentByParagraph') ?? true;
     }
@@ -122,7 +128,6 @@ class SettingModel extends HookConsumerWidget {
                         style: Theme.of(context).textTheme.titleLarge,
                       )),
                   const SizedBox(height: 12),
-                  //Note:Background colors option
                   Row(
                     children: [
                       SizedBox(
@@ -159,13 +164,43 @@ class SettingModel extends HookConsumerWidget {
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  SizedBox(
-                      width: double.infinity,
-                      child: Text(
-                        'Hẹn giờ',
-                        style: Theme.of(context).textTheme.titleLarge,
-                      )),
+                  Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Hẹn giờ',
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Checkbox(
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                          value: setTimer.value,
+                          onChanged: (value) {
+                            setTimer.value = value ?? false;
+                          },
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4)),
+                          fillColor: MaterialStatePropertyAll(
+                            appColors.primaryBase,
+                          ),
+                        ),
+                      ]),
                   const SizedBox(height: 12),
+                  if (setTimer.value)
+                    SizedBox(
+                      width: 30,
+                      child: TextField(
+                        textAlign: TextAlign.center,
+                        keyboardType: TextInputType.number,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        controller: timerController,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(0),
+                          isDense: true,
+                        ),
+                      ),
+                    ),
                 ],
               ),
               const SizedBox(height: 16),
