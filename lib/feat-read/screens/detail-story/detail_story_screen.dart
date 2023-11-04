@@ -17,7 +17,6 @@ import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
-import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
@@ -64,6 +63,13 @@ class DetailStoryScreen extends HookConsumerWidget {
     final storyOffline = useFuture<Story?>(
         Future<Story?>.value(isOffline ? storyDb.getStory(id) : null));
 
+    String handleCoins() {
+      List<Wallet>? wallets = userQuery.data?.wallets;
+      String coin =
+          double.parse(wallets![0].balance.toString()).toStringAsFixed(0);
+      return coin;
+    }
+
     handleBuyStory() async {
       //check if paid chapters left >5 chapter
       try {
@@ -98,6 +104,13 @@ class DetailStoryScreen extends HookConsumerWidget {
         try {
           await ChapterRepository()
               .buyChapter(storyQuery.data?.id, chapterId, body);
+
+          // ignore: use_build_context_synchronously
+          await AppSnackBar.buildTopSnackBar(
+              context, 'Mua chương thành công', null, SnackBarType.success);
+
+          storyQuery.refetch();
+          userQuery.refetch();
         } catch (e) {
           // ignore: use_build_context_synchronously
           await AppSnackBar.buildTopSnackBar(
@@ -105,12 +118,6 @@ class DetailStoryScreen extends HookConsumerWidget {
         }
         // ignore: use_build_context_synchronously
         context.pop();
-        storyQuery.refetch();
-        userQuery.refetch();
-
-        // ignore: use_build_context_synchronously
-        await AppSnackBar.buildTopSnackBar(
-            context, 'Mua chương thành công', null, SnackBarType.success);
       }
     }
 
@@ -349,6 +356,14 @@ class DetailStoryScreen extends HookConsumerWidget {
                           child: InkWell(
                               onTap: () async {
                                 // context.go('/profile');
+                                if (isOffline == false) {
+                                  context.push(
+                                      '/accountProfile/${story?.authorId}',
+                                      extra: {
+                                        'name': story?.author?.fullName,
+                                        'avatar': story?.author?.avatarUrl,
+                                      });
+                                }
                               },
                               child: Row(
                                   mainAxisSize: MainAxisSize.min,

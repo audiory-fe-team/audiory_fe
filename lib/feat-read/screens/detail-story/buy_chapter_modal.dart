@@ -5,6 +5,7 @@ import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
+import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class BuyChapterModal extends StatefulHookWidget {
@@ -33,6 +34,9 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
     final userQuery = useQuery([
       'userById',
     ], () => AuthRepository().getMyUserById());
+
+    int totalBuyStory =
+        widget.paywalledChaptersCount! * (widget.chapter.price ?? 1);
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -59,10 +63,8 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                     child: Skeletonizer(
                   enabled: userQuery.isFetching,
                   child: Text(
-                    double.parse(
-                            userQuery.data?.wallets![0].balance.toString() ??
-                                '0')
-                        .toStringAsFixed(0),
+                    NumberFormat('###,000').format(double.parse(
+                        userQuery.data?.wallets![0].balance.toString() ?? '0')),
                     style: textTheme.titleMedium
                         ?.copyWith(color: appColors.inkBase),
                   ),
@@ -71,14 +73,14 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(widget.chapter.title, style: textTheme.titleLarge),
-                Text('Chương ${widget.chapter.position}',
-                    style: textTheme.titleLarge),
+                // Text('Chương ${widget.chapter.position}',
+                //     style: textTheme.titleLarge),
                 const SizedBox(
                   height: 8,
                 ),
@@ -98,7 +100,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                     Flexible(
                       flex: 2,
                       child: Text(
-                        '${widget.chapter.price}',
+                        '${widget.chapter.price} ',
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium!
@@ -129,7 +131,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                         width: size.width - 32,
                         child: AppIconButton(
                           title:
-                              'Mua cả truyện với ${(widget.paywalledChaptersCount! * (widget.chapter.price ?? 0) * 0.8).round()} xu',
+                              'Mua cả truyện với ${(totalBuyStory * 0.8).round()} xu ( tiết kiệm ${(totalBuyStory * 0.2).round()} xu)',
                           textStyle: textTheme.titleMedium
                               ?.copyWith(color: appColors.primaryBase),
                           isOutlined: true,

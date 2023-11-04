@@ -2,24 +2,37 @@ import 'package:audiory_v0/feat-manage-profile/models/CoinPack.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/purchase_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:coupon_uikit/coupon_uikit.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class CoinPackCard extends StatelessWidget {
+class CoinPackCard extends StatefulWidget {
   final CoinPack coinPack;
-  const CoinPackCard({Key? key, required this.coinPack}) : super(key: key);
+  final Function onSelected;
+  final bool? isSelected;
+  const CoinPackCard(
+      {Key? key,
+      required this.coinPack,
+      required this.onSelected,
+      this.isSelected = false})
+      : super(key: key);
 
+  @override
+  State<CoinPackCard> createState() => _CoinPackCardState();
+}
+
+class _CoinPackCardState extends State<CoinPackCard> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    Color primaryColor = appColors.primaryLightest;
-    Color secondaryColor = appColors.primaryBase;
+    int promotionPercentage = 1 -
+        (widget.coinPack.priceAfterPromotion! / (widget.coinPack.price ?? 1))
+            .floor();
     moveToMomo(url) async {
       print('MOVE TO MOMO');
       // check if spotify is installed
@@ -31,15 +44,8 @@ class CoinPackCard extends StatelessWidget {
       }
     }
 
-    convertThousands(num) {
-      if (num < 100) {
-        return double.parse(num.toString()).toStringAsFixed(0);
-      }
-      var formatter = NumberFormat('###,000');
-      return formatter.format(num);
-    }
-
-    handleCreatePurchase() async {
+    handleCreatePurchase(
+        {String coinPackId = '', int paymentMethodId = 1}) async {
       // if (kDebugMode) {
       //   print('COINPACK ID $selectedCoinPackId');
       //   print('METHOD ID $selectedPaymentMethodId');
@@ -49,8 +55,8 @@ class CoinPackCard extends StatelessWidget {
       //       context, 'Hãy chọn', null, SnackBarType.error);
       // } else {
       Map<String, dynamic> body = {};
-      body['coin_pack_id'] = '8bfd2f9c-4e29-11ee-977e-e0d4e8a18075';
-      body['payment_method_id'] = 1;
+      body['coin_pack_id'] = coinPackId;
+      body['payment_method_id'] = paymentMethodId;
 
       try {
         final newPurchase = await PurchaseRepository().createPurchase(body);
@@ -67,93 +73,85 @@ class CoinPackCard extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: () {
-        handleCreatePurchase();
-      },
-      child: CouponCard(
-        width: size.width,
-        height: 150,
-        backgroundColor: primaryColor,
-        curveAxis: Axis.vertical,
-        firstChild: Container(
-          decoration: BoxDecoration(
-            color: secondaryColor,
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '-10%',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Divider(color: Colors.white54, height: 0),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    'Giá hot',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
+        onTap: () {
+          print('alo');
+          // handleCreatePurchase();
+          widget.onSelected(widget.coinPack.id);
+        },
+        child: Container(
+          width: size.width,
+          height: 80,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: widget.isSelected == true
+              ? BoxDecoration(
+                  color: appColors.skyLightest,
+                  borderRadius: BorderRadius.circular(4),
+                  boxShadow: [
+                    BoxShadow(
+                      color: appColors.skyDark.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3), // changes position of shadow
                     ),
+                  ],
+                  border: Border.all(color: appColors.inkBase, width: 2))
+              : BoxDecoration(
+                  color: appColors.skyLightest,
+                  borderRadius: BorderRadius.circular(4),
+                  boxShadow: [
+                    BoxShadow(
+                      color: appColors.skyDark.withOpacity(0.5),
+                      spreadRadius: 2,
+                      blurRadius: 7,
+                      offset: const Offset(0, 3), // changes position of shadow
+                    ),
+                  ],
+                ),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            AppImage(
+              url: widget.coinPack.imageUrl,
+              width: size.width / 10,
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 8),
+              width: size.width / 2.1,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${widget.coinPack.coinAmount} xu',
+                    style: textTheme.headlineMedium,
+                    textAlign: TextAlign.start,
                   ),
-                ),
+                  promotionPercentage != 0
+                      ? Text(
+                          'Giảm ${promotionPercentage}%',
+                          textAlign: TextAlign.center,
+                          style: textTheme.titleSmall
+                              ?.copyWith(color: appColors.inkBase),
+                        )
+                      : SizedBox(
+                          height: 0,
+                        ),
+                ],
               ),
-            ],
-          ),
-        ),
-        secondChild: Container(
-          width: size.width - 32,
-          padding: const EdgeInsets.all(18),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Gói xu',
+            ),
+            Container(
+              width: size.width / 4,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(
+                  color: appColors.skyLight,
+                  borderRadius: BorderRadius.circular(40)),
+              child: Text(
+                '${NumberFormat('###,000').format(widget.coinPack.priceAfterPromotion)}đ',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54,
-                ),
+                style:
+                    textTheme.titleMedium?.copyWith(color: appColors.inkBase),
               ),
-              const SizedBox(height: 4),
-              Text(
-                '${coinPack.coinAmount}',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  color: secondaryColor,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              Text(
-                'Chỉ với ${convertThousands(coinPack.price)} đồng',
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: Colors.black45,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+            )
+          ]),
+        ));
   }
 }
