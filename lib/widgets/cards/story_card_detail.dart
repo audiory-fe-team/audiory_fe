@@ -63,8 +63,8 @@ class StoryCardDetail extends StatelessWidget {
                       child: Skeleton.replace(
                           width: 95,
                           height: 135,
-                          child: AppImage(
-                            url: coverUrl,
+                          child: Image.network(
+                            coverUrl == '' ? FALLBACK_IMG_URL : coverUrl ?? '',
                             fit: BoxFit.fill,
                             width: 95,
                             height: 135,

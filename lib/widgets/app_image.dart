@@ -1,3 +1,4 @@
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -18,9 +19,10 @@ class AppImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('url $url');
     if (url == null || url == '') {
       return Image.asset(
-        defaultUrl ?? 'assets/images/fallback_story_cover.png',
+        'assets/images/fallback_story_cover.png',
         width: width,
         height: height,
         fit: fit,
