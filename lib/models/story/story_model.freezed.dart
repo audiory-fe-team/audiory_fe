@@ -71,6 +71,12 @@ mixin _$Story {
   int? get voteCount => throw _privateConstructorUsedError;
   @JsonKey(name: 'read_count')
   int? get readCount => throw _privateConstructorUsedError;
+  @JsonKey(name: 'total_vote')
+  int? get totalVote => throw _privateConstructorUsedError;
+  @JsonKey(name: 'total_read')
+  int? get totalRead => throw _privateConstructorUsedError;
+  @JsonKey(name: 'total_comment')
+  int? get totalComment => throw _privateConstructorUsedError;
   @JsonKey(name: 'explicit_percentage')
   int? get explicitPercentage => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_date')
@@ -118,6 +124,9 @@ abstract class $StoryCopyWith<$Res> {
       @JsonKey(name: 'report_count') int? reportCount,
       @JsonKey(name: 'vote_count') int? voteCount,
       @JsonKey(name: 'read_count') int? readCount,
+      @JsonKey(name: 'total_vote') int? totalVote,
+      @JsonKey(name: 'total_read') int? totalRead,
+      @JsonKey(name: 'total_comment') int? totalComment,
       @JsonKey(name: 'explicit_percentage') int? explicitPercentage,
       @JsonKey(name: 'created_date') String? createdDate,
       @JsonKey(name: 'updated_date') String? updatedDate,
@@ -165,6 +174,9 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
     Object? reportCount = freezed,
     Object? voteCount = freezed,
     Object? readCount = freezed,
+    Object? totalVote = freezed,
+    Object? totalRead = freezed,
+    Object? totalComment = freezed,
     Object? explicitPercentage = freezed,
     Object? createdDate = freezed,
     Object? updatedDate = freezed,
@@ -265,6 +277,18 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
           ? _value.readCount
           : readCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      totalVote: freezed == totalVote
+          ? _value.totalVote
+          : totalVote // ignore: cast_nullable_to_non_nullable
+              as int?,
+      totalRead: freezed == totalRead
+          ? _value.totalRead
+          : totalRead // ignore: cast_nullable_to_non_nullable
+              as int?,
+      totalComment: freezed == totalComment
+          ? _value.totalComment
+          : totalComment // ignore: cast_nullable_to_non_nullable
+              as int?,
       explicitPercentage: freezed == explicitPercentage
           ? _value.explicitPercentage
           : explicitPercentage // ignore: cast_nullable_to_non_nullable
@@ -318,9 +342,10 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
 }
 
 /// @nodoc
-abstract class _$$_StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
-  factory _$$_StoryCopyWith(_$_Story value, $Res Function(_$_Story) then) =
-      __$$_StoryCopyWithImpl<$Res>;
+abstract class _$$StoryImplCopyWith<$Res> implements $StoryCopyWith<$Res> {
+  factory _$$StoryImplCopyWith(
+          _$StoryImpl value, $Res Function(_$StoryImpl) then) =
+      __$$StoryImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -347,6 +372,9 @@ abstract class _$$_StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
       @JsonKey(name: 'report_count') int? reportCount,
       @JsonKey(name: 'vote_count') int? voteCount,
       @JsonKey(name: 'read_count') int? readCount,
+      @JsonKey(name: 'total_vote') int? totalVote,
+      @JsonKey(name: 'total_read') int? totalRead,
+      @JsonKey(name: 'total_comment') int? totalComment,
       @JsonKey(name: 'explicit_percentage') int? explicitPercentage,
       @JsonKey(name: 'created_date') String? createdDate,
       @JsonKey(name: 'updated_date') String? updatedDate,
@@ -361,9 +389,11 @@ abstract class _$$_StoryCopyWith<$Res> implements $StoryCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
-    implements _$$_StoryCopyWith<$Res> {
-  __$$_StoryCopyWithImpl(_$_Story _value, $Res Function(_$_Story) _then)
+class __$$StoryImplCopyWithImpl<$Res>
+    extends _$StoryCopyWithImpl<$Res, _$StoryImpl>
+    implements _$$StoryImplCopyWith<$Res> {
+  __$$StoryImplCopyWithImpl(
+      _$StoryImpl _value, $Res Function(_$StoryImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -392,6 +422,9 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
     Object? reportCount = freezed,
     Object? voteCount = freezed,
     Object? readCount = freezed,
+    Object? totalVote = freezed,
+    Object? totalRead = freezed,
+    Object? totalComment = freezed,
     Object? explicitPercentage = freezed,
     Object? createdDate = freezed,
     Object? updatedDate = freezed,
@@ -399,7 +432,7 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
     Object? chapters = freezed,
     Object? tags = freezed,
   }) {
-    return _then(_$_Story(
+    return _then(_$StoryImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -492,6 +525,18 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
           ? _value.readCount
           : readCount // ignore: cast_nullable_to_non_nullable
               as int?,
+      totalVote: freezed == totalVote
+          ? _value.totalVote
+          : totalVote // ignore: cast_nullable_to_non_nullable
+              as int?,
+      totalRead: freezed == totalRead
+          ? _value.totalRead
+          : totalRead // ignore: cast_nullable_to_non_nullable
+              as int?,
+      totalComment: freezed == totalComment
+          ? _value.totalComment
+          : totalComment // ignore: cast_nullable_to_non_nullable
+              as int?,
       explicitPercentage: freezed == explicitPercentage
           ? _value.explicitPercentage
           : explicitPercentage // ignore: cast_nullable_to_non_nullable
@@ -522,8 +567,8 @@ class __$$_StoryCopyWithImpl<$Res> extends _$StoryCopyWithImpl<$Res, _$_Story>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Story with DiagnosticableTreeMixin implements _Story {
-  const _$_Story(
+class _$StoryImpl with DiagnosticableTreeMixin implements _Story {
+  const _$StoryImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'author_id') this.authorId,
       @JsonKey(name: 'author') this.author,
@@ -547,6 +592,9 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
       @JsonKey(name: 'report_count') this.reportCount,
       @JsonKey(name: 'vote_count') this.voteCount,
       @JsonKey(name: 'read_count') this.readCount,
+      @JsonKey(name: 'total_vote') this.totalVote,
+      @JsonKey(name: 'total_read') this.totalRead,
+      @JsonKey(name: 'total_comment') this.totalComment,
       @JsonKey(name: 'explicit_percentage') this.explicitPercentage,
       @JsonKey(name: 'created_date') this.createdDate,
       @JsonKey(name: 'updated_date') this.updatedDate,
@@ -556,8 +604,8 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
       : _chapters = chapters,
         _tags = tags;
 
-  factory _$_Story.fromJson(Map<String, dynamic> json) =>
-      _$$_StoryFromJson(json);
+  factory _$StoryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$StoryImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -634,6 +682,15 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
   @JsonKey(name: 'read_count')
   final int? readCount;
   @override
+  @JsonKey(name: 'total_vote')
+  final int? totalVote;
+  @override
+  @JsonKey(name: 'total_read')
+  final int? totalRead;
+  @override
+  @JsonKey(name: 'total_comment')
+  final int? totalComment;
+  @override
   @JsonKey(name: 'explicit_percentage')
   final int? explicitPercentage;
   @override
@@ -669,7 +726,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Story(id: $id, authorId: $authorId, author: $author, categoryId: $categoryId, category: $category, title: $title, description: $description, coverUrl: $coverUrl, isDraft: $isDraft, isMature: $isMature, isCompleted: $isCompleted, isCopyright: $isCopyright, isPaywalled: $isPaywalled, chapterPrice: $chapterPrice, coinCost: $coinCost, authorEarningPercentage: $authorEarningPercentage, paywallEffectiveDate: $paywallEffectiveDate, numFreeChapters: $numFreeChapters, publishedCount: $publishedCount, draftCount: $draftCount, reportCount: $reportCount, voteCount: $voteCount, readCount: $readCount, explicitPercentage: $explicitPercentage, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapters: $chapters, tags: $tags)';
+    return 'Story(id: $id, authorId: $authorId, author: $author, categoryId: $categoryId, category: $category, title: $title, description: $description, coverUrl: $coverUrl, isDraft: $isDraft, isMature: $isMature, isCompleted: $isCompleted, isCopyright: $isCopyright, isPaywalled: $isPaywalled, chapterPrice: $chapterPrice, coinCost: $coinCost, authorEarningPercentage: $authorEarningPercentage, paywallEffectiveDate: $paywallEffectiveDate, numFreeChapters: $numFreeChapters, publishedCount: $publishedCount, draftCount: $draftCount, reportCount: $reportCount, voteCount: $voteCount, readCount: $readCount, totalVote: $totalVote, totalRead: $totalRead, totalComment: $totalComment, explicitPercentage: $explicitPercentage, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapters: $chapters, tags: $tags)';
   }
 
   @override
@@ -701,6 +758,9 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
       ..add(DiagnosticsProperty('reportCount', reportCount))
       ..add(DiagnosticsProperty('voteCount', voteCount))
       ..add(DiagnosticsProperty('readCount', readCount))
+      ..add(DiagnosticsProperty('totalVote', totalVote))
+      ..add(DiagnosticsProperty('totalRead', totalRead))
+      ..add(DiagnosticsProperty('totalComment', totalComment))
       ..add(DiagnosticsProperty('explicitPercentage', explicitPercentage))
       ..add(DiagnosticsProperty('createdDate', createdDate))
       ..add(DiagnosticsProperty('updatedDate', updatedDate))
@@ -713,7 +773,7 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Story &&
+            other is _$StoryImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.authorId, authorId) ||
                 other.authorId == authorId) &&
@@ -757,6 +817,12 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
                 other.voteCount == voteCount) &&
             (identical(other.readCount, readCount) ||
                 other.readCount == readCount) &&
+            (identical(other.totalVote, totalVote) ||
+                other.totalVote == totalVote) &&
+            (identical(other.totalRead, totalRead) ||
+                other.totalRead == totalRead) &&
+            (identical(other.totalComment, totalComment) ||
+                other.totalComment == totalComment) &&
             (identical(other.explicitPercentage, explicitPercentage) ||
                 other.explicitPercentage == explicitPercentage) &&
             (identical(other.createdDate, createdDate) ||
@@ -796,6 +862,9 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
         reportCount,
         voteCount,
         readCount,
+        totalVote,
+        totalRead,
+        totalComment,
         explicitPercentage,
         createdDate,
         updatedDate,
@@ -807,12 +876,12 @@ class _$_Story with DiagnosticableTreeMixin implements _Story {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_StoryCopyWith<_$_Story> get copyWith =>
-      __$$_StoryCopyWithImpl<_$_Story>(this, _$identity);
+  _$$StoryImplCopyWith<_$StoryImpl> get copyWith =>
+      __$$StoryImplCopyWithImpl<_$StoryImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_StoryToJson(
+    return _$$StoryImplToJson(
       this,
     );
   }
@@ -845,14 +914,17 @@ abstract class _Story implements Story {
       @JsonKey(name: 'report_count') final int? reportCount,
       @JsonKey(name: 'vote_count') final int? voteCount,
       @JsonKey(name: 'read_count') final int? readCount,
+      @JsonKey(name: 'total_vote') final int? totalVote,
+      @JsonKey(name: 'total_read') final int? totalRead,
+      @JsonKey(name: 'total_comment') final int? totalComment,
       @JsonKey(name: 'explicit_percentage') final int? explicitPercentage,
       @JsonKey(name: 'created_date') final String? createdDate,
       @JsonKey(name: 'updated_date') final String? updatedDate,
       @JsonKey(name: 'is_enabled') final bool? isEnabled,
       @JsonKey(name: 'chapters') final List<Chapter>? chapters,
-      @JsonKey(name: 'tags') final List<Tag>? tags}) = _$_Story;
+      @JsonKey(name: 'tags') final List<Tag>? tags}) = _$StoryImpl;
 
-  factory _Story.fromJson(Map<String, dynamic> json) = _$_Story.fromJson;
+  factory _Story.fromJson(Map<String, dynamic> json) = _$StoryImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -926,6 +998,15 @@ abstract class _Story implements Story {
   @JsonKey(name: 'read_count')
   int? get readCount;
   @override
+  @JsonKey(name: 'total_vote')
+  int? get totalVote;
+  @override
+  @JsonKey(name: 'total_read')
+  int? get totalRead;
+  @override
+  @JsonKey(name: 'total_comment')
+  int? get totalComment;
+  @override
   @JsonKey(name: 'explicit_percentage')
   int? get explicitPercentage;
   @override
@@ -945,6 +1026,6 @@ abstract class _Story implements Story {
   List<Tag>? get tags;
   @override
   @JsonKey(ignore: true)
-  _$$_StoryCopyWith<_$_Story> get copyWith =>
+  _$$StoryImplCopyWith<_$StoryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -1,16 +1,12 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
-import 'package:audiory_v0/repositories/reading_list_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
-import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
-
-import '../../models/enums/SnackbarType.dart';
 
 class ReadingListCard extends StatelessWidget {
   final ReadingList readingList;

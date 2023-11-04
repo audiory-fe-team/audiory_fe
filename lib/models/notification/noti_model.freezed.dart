@@ -107,9 +107,10 @@ class _$NotiCopyWithImpl<$Res, $Val extends Noti>
 }
 
 /// @nodoc
-abstract class _$$_NotiCopyWith<$Res> implements $NotiCopyWith<$Res> {
-  factory _$$_NotiCopyWith(_$_Noti value, $Res Function(_$_Noti) then) =
-      __$$_NotiCopyWithImpl<$Res>;
+abstract class _$$NotiImplCopyWith<$Res> implements $NotiCopyWith<$Res> {
+  factory _$$NotiImplCopyWith(
+          _$NotiImpl value, $Res Function(_$NotiImpl) then) =
+      __$$NotiImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -124,9 +125,10 @@ abstract class _$$_NotiCopyWith<$Res> implements $NotiCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_NotiCopyWithImpl<$Res> extends _$NotiCopyWithImpl<$Res, _$_Noti>
-    implements _$$_NotiCopyWith<$Res> {
-  __$$_NotiCopyWithImpl(_$_Noti _value, $Res Function(_$_Noti) _then)
+class __$$NotiImplCopyWithImpl<$Res>
+    extends _$NotiCopyWithImpl<$Res, _$NotiImpl>
+    implements _$$NotiImplCopyWith<$Res> {
+  __$$NotiImplCopyWithImpl(_$NotiImpl _value, $Res Function(_$NotiImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -138,7 +140,7 @@ class __$$_NotiCopyWithImpl<$Res> extends _$NotiCopyWithImpl<$Res, _$_Noti>
     Object? content = freezed,
     Object? isRead = freezed,
   }) {
-    return _then(_$_Noti(
+    return _then(_$NotiImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -165,15 +167,16 @@ class __$$_NotiCopyWithImpl<$Res> extends _$NotiCopyWithImpl<$Res, _$_Noti>
 
 /// @nodoc
 @JsonSerializable()
-class _$_Noti implements _Noti {
-  const _$_Noti(
+class _$NotiImpl implements _Noti {
+  const _$NotiImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'activity') required this.activity,
       @JsonKey(name: 'activity_id') this.activityId,
       @JsonKey(name: 'content') this.content,
       @JsonKey(name: 'is_read') this.isRead});
 
-  factory _$_Noti.fromJson(Map<String, dynamic> json) => _$$_NotiFromJson(json);
+  factory _$NotiImpl.fromJson(Map<String, dynamic> json) =>
+      _$$NotiImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -203,7 +206,7 @@ class _$_Noti implements _Noti {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Noti &&
+            other is _$NotiImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.activity, activity) ||
                 other.activity == activity) &&
@@ -221,12 +224,12 @@ class _$_Noti implements _Noti {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_NotiCopyWith<_$_Noti> get copyWith =>
-      __$$_NotiCopyWithImpl<_$_Noti>(this, _$identity);
+  _$$NotiImplCopyWith<_$NotiImpl> get copyWith =>
+      __$$NotiImplCopyWithImpl<_$NotiImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_NotiToJson(
+    return _$$NotiImplToJson(
       this,
     );
   }
@@ -238,9 +241,9 @@ abstract class _Noti implements Noti {
       @JsonKey(name: 'activity') required final Activity activity,
       @JsonKey(name: 'activity_id') final String? activityId,
       @JsonKey(name: 'content') final String? content,
-      @JsonKey(name: 'is_read') final bool? isRead}) = _$_Noti;
+      @JsonKey(name: 'is_read') final bool? isRead}) = _$NotiImpl;
 
-  factory _Noti.fromJson(Map<String, dynamic> json) = _$_Noti.fromJson;
+  factory _Noti.fromJson(Map<String, dynamic> json) = _$NotiImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -261,5 +264,6 @@ abstract class _Noti implements Noti {
   bool? get isRead;
   @override
   @JsonKey(ignore: true)
-  _$$_NotiCopyWith<_$_Noti> get copyWith => throw _privateConstructorUsedError;
+  _$$NotiImplCopyWith<_$NotiImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

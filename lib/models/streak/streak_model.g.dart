@@ -6,13 +6,14 @@ part of 'streak_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_Streak _$$_StreakFromJson(Map<String, dynamic> json) => _$_Streak(
+_$StreakImpl _$$StreakImplFromJson(Map<String, dynamic> json) => _$StreakImpl(
       name: json['name'] as String,
       hasReceived: json['has_received'] as bool? ?? false,
       amount: json['amount'] as int? ?? 0,
     );
 
-Map<String, dynamic> _$$_StreakToJson(_$_Streak instance) => <String, dynamic>{
+Map<String, dynamic> _$$StreakImplToJson(_$StreakImpl instance) =>
+    <String, dynamic>{
       'name': instance.name,
       'has_received': instance.hasReceived,
       'amount': instance.amount,

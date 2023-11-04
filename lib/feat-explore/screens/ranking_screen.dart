@@ -115,7 +115,12 @@ class RankingScreen extends HookWidget {
               height: 8,
             ),
             Builder(builder: (_) {
-              if (type == RankingType.author) return AuthorRanking(time: time);
+              if (type == RankingType.author) {
+                return AuthorRanking(
+                  time: time,
+                  metric: metric,
+                );
+              }
               return StoryRanking(
                 metric: metric,
                 time: time,
@@ -325,12 +330,11 @@ class StoryRanking extends HookWidget {
 }
 
 class AuthorRanking extends HookWidget {
-  // final RankingMetric metric;
+  final RankingMetric metric;
   final RankingTimeRange time;
 
   const AuthorRanking(
-      {
-      // this.metric = RankingMetric.total_read,
+      {this.metric = RankingMetric.total_read,
       this.time = RankingTimeRange.all_time,
       super.key});
 
@@ -338,56 +342,54 @@ class AuthorRanking extends HookWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final page = useState(1);
-    final authorQuery = useQuery(["ranking", time, page.value.toString()], () {
+    final authorQuery =
+        useQuery(["ranking", time, metric, page.value.toString()], () {
       return RankingRepository()
-          .fetchRankingAuthors(time: time, page: page.value);
+          .fetchRankingAuthors(time: time, metric: metric, page: page.value);
     });
     return Expanded(
         child: Column(
       children: [
-        SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(children: [
-              // RankingDropdownWrapper(
-              //     icon: const Icon(Icons.troubleshoot_rounded, size: 16),
-              //     child: DropdownButton<RankingMetric>(
-              //         isDense: true,
-              //         value: metric,
-              //         iconSize: 16,
-              //         elevation: 4,
-              //         borderRadius: BorderRadius.circular(8),
-              //         style: textTheme.titleSmall!
-              //             .copyWith(fontWeight: FontWeight.w600),
-              //         items: const [
-              //           DropdownMenuItem(
-              //             value: RankingMetric.total_read,
-              //             child: Text('Lượt đọc'),
-              //           ),
-              //           // DropdownMenuItem(
-              //           //   value: RankingMetric.,
-              //           //   child: Text('Bình chọn'),
-              //           // ),
-              //           // DropdownMenuItem(
-              //           //   value: RankingMetric.gift,
-              //           //   child: Text('Tặng quà'),
-              //           // ),
-              //           // DropdownMenuItem(
-              //           //   value: RankingMetric.follower,
-              //           //   child: Text('Người theo dõi'),
-              //           // ),
-              //         ],
-              //         onChanged: (value) {
-              //           if (value != metric) {
-              //             GoRouter.of(context)
-              //                 .goNamed('ranking', queryParameters: {
-              //               "type":
-              //                   getValueString(RankingType.author.toString()),
-              //               "metric": getValueString(value.toString()),
-              //               "time": getValueString(time.toString()),
-              //             });
-              //           }
-              //         })),
-              // const SizedBox(width: 12),
+        Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              RankingDropdownWrapper(
+                  icon: const Icon(Icons.troubleshoot_rounded, size: 16),
+                  child: DropdownButton<RankingMetric>(
+                      isDense: true,
+                      value: metric,
+                      iconSize: 16,
+                      elevation: 4,
+                      borderRadius: BorderRadius.circular(8),
+                      style: textTheme.titleSmall!
+                          .copyWith(fontWeight: FontWeight.w600),
+                      items: const [
+                        DropdownMenuItem(
+                          value: RankingMetric.total_read,
+                          child: Text('Lượt đọc'),
+                        ),
+                        DropdownMenuItem(
+                          value: RankingMetric.total_vote,
+                          child: Text('Bình chọn'),
+                        ),
+                        DropdownMenuItem(
+                          value: RankingMetric.total_comment,
+                          child: Text('Bình luận'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != metric) {
+                          GoRouter.of(context)
+                              .goNamed('ranking', queryParameters: {
+                            "type":
+                                getValueString(RankingType.author.toString()),
+                            "metric": getValueString(value.toString()),
+                            "time": getValueString(time.toString()),
+                          });
+                        }
+                      })),
+              const SizedBox(width: 12),
               RankingDropdownWrapper(
                   icon: const Icon(Icons.schedule_rounded, size: 16),
                   child: DropdownButton<RankingTimeRange>(
@@ -426,13 +428,12 @@ class AuthorRanking extends HookWidget {
                               .goNamed('ranking', queryParameters: {
                             "type":
                                 getValueString(RankingType.author.toString()),
-                            // "metric": getValueString(metric.toString()),
+                            "metric": getValueString(metric.toString()),
                             "time": getValueString(value.toString()),
-                            // ...(category != null ? {"category": category} : {}),
                           });
                         }
                       })),
-            ])),
+            ]),
         const SizedBox(
           height: 24,
         ),
@@ -448,7 +449,7 @@ class AuthorRanking extends HookWidget {
                         int index = entry.key;
                         return AuthorRankCard(
                             author: author,
-                            // metric: metric,
+                            metric: metric,
                             order: (page.value - 1) * 10 + index + 1);
                       }).toList(),
                     )))),

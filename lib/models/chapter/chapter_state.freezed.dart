@@ -73,11 +73,11 @@ class _$ChapterStateCopyWithImpl<$Res, $Val extends ChapterState>
 }
 
 /// @nodoc
-abstract class _$$_ChapterStateCopyWith<$Res>
+abstract class _$$ChapterStateImplCopyWith<$Res>
     implements $ChapterStateCopyWith<$Res> {
-  factory _$$_ChapterStateCopyWith(
-          _$_ChapterState value, $Res Function(_$_ChapterState) then) =
-      __$$_ChapterStateCopyWithImpl<$Res>;
+  factory _$$ChapterStateImplCopyWith(
+          _$ChapterStateImpl value, $Res Function(_$ChapterStateImpl) then) =
+      __$$ChapterStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Chapter chapter, bool isLoading});
@@ -87,11 +87,11 @@ abstract class _$$_ChapterStateCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ChapterStateCopyWithImpl<$Res>
-    extends _$ChapterStateCopyWithImpl<$Res, _$_ChapterState>
-    implements _$$_ChapterStateCopyWith<$Res> {
-  __$$_ChapterStateCopyWithImpl(
-      _$_ChapterState _value, $Res Function(_$_ChapterState) _then)
+class __$$ChapterStateImplCopyWithImpl<$Res>
+    extends _$ChapterStateCopyWithImpl<$Res, _$ChapterStateImpl>
+    implements _$$ChapterStateImplCopyWith<$Res> {
+  __$$ChapterStateImplCopyWithImpl(
+      _$ChapterStateImpl _value, $Res Function(_$ChapterStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -100,7 +100,7 @@ class __$$_ChapterStateCopyWithImpl<$Res>
     Object? chapter = null,
     Object? isLoading = null,
   }) {
-    return _then(_$_ChapterState(
+    return _then(_$ChapterStateImpl(
       chapter: null == chapter
           ? _value.chapter
           : chapter // ignore: cast_nullable_to_non_nullable
@@ -115,8 +115,8 @@ class __$$_ChapterStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_ChapterState implements _ChapterState {
-  _$_ChapterState({this.chapter = const Chapter(), this.isLoading = true});
+class _$ChapterStateImpl implements _ChapterState {
+  _$ChapterStateImpl({this.chapter = const Chapter(), this.isLoading = true});
 
   @override
   @JsonKey()
@@ -134,7 +134,7 @@ class _$_ChapterState implements _ChapterState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ChapterState &&
+            other is _$ChapterStateImpl &&
             (identical(other.chapter, chapter) || other.chapter == chapter) &&
             (identical(other.isLoading, isLoading) ||
                 other.isLoading == isLoading));
@@ -146,13 +146,13 @@ class _$_ChapterState implements _ChapterState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ChapterStateCopyWith<_$_ChapterState> get copyWith =>
-      __$$_ChapterStateCopyWithImpl<_$_ChapterState>(this, _$identity);
+  _$$ChapterStateImplCopyWith<_$ChapterStateImpl> get copyWith =>
+      __$$ChapterStateImplCopyWithImpl<_$ChapterStateImpl>(this, _$identity);
 }
 
 abstract class _ChapterState implements ChapterState {
   factory _ChapterState({final Chapter chapter, final bool isLoading}) =
-      _$_ChapterState;
+      _$ChapterStateImpl;
 
   @override
   Chapter get chapter;
@@ -160,6 +160,6 @@ abstract class _ChapterState implements ChapterState {
   bool get isLoading;
   @override
   @JsonKey(ignore: true)
-  _$$_ChapterStateCopyWith<_$_ChapterState> get copyWith =>
+  _$$ChapterStateImplCopyWith<_$ChapterStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

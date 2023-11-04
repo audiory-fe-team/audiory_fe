@@ -56,7 +56,6 @@ class HomeScreen extends HookConsumerWidget {
         () => StoryRepostitory().fetchMyRecommendStories());
     final libraryQuery =
         useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
-    print('PAYWALLED ${paywalledStoriesQuery.data}');
     return Scaffold(
       appBar: const HomeTopBar(),
       body: RefreshIndicator(
@@ -417,11 +416,10 @@ class _HomeRankingListState extends State<HomeRankingList> {
                         order: index + 1,
                         story: story,
                         icon: InkWell(
-                          child: SvgPicture.asset(
-                            'assets/icons/heart.svg',
-                            width: 24,
-                            height: 24,
-                          ),
+                          child: SvgPicture.asset('assets/icons/eye.svg',
+                              width: 10,
+                              height: 10,
+                              color: appColors.secondaryBase),
                         ),
                       ),
                     );
@@ -449,7 +447,8 @@ class _HomeRankingListState extends State<HomeRankingList> {
                       'Xem thêm',
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
                             // decoration: TextDecoration.underline,
-                            color: appColors.primaryBase,
+                            color: appColors.inkBase,
+                            fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                     ),

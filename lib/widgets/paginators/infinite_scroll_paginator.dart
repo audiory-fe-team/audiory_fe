@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
@@ -23,7 +24,21 @@ class AppInfiniteScrollList<PageKeyType, ItemType> extends StatelessWidget {
           pagingController: controller,
           builderDelegate: PagedChildBuilderDelegate<ItemType>(
             itemBuilder: itemBuilder,
-            noItemsFoundIndicatorBuilder: noItemsFoundIndicatorBuilder,
+            noItemsFoundIndicatorBuilder: noItemsFoundIndicatorBuilder ??
+                (context) {
+                  return const Center(
+                      child: Column(children: [
+                    Icon(
+                      Icons.find_in_page_outlined,
+                      size: 36,
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Danh sách trống.\n Chúng tôi không tìm thấy gì, \nquay lại sau nhé',
+                      textAlign: TextAlign.center,
+                    )
+                  ]));
+                },
           )),
     ]);
   }

@@ -6,8 +6,8 @@ part of 'reading_list_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_ReadingList _$$_ReadingListFromJson(Map<String, dynamic> json) =>
-    _$_ReadingList(
+_$ReadingListImpl _$$ReadingListImplFromJson(Map<String, dynamic> json) =>
+    _$ReadingListImpl(
       id: json['id'] as String,
       name: json['name'] as String? ?? '',
       userId: json['user_id'] as String? ?? '',
@@ -22,7 +22,7 @@ _$_ReadingList _$$_ReadingListFromJson(Map<String, dynamic> json) =>
           const [],
     );
 
-Map<String, dynamic> _$$_ReadingListToJson(_$_ReadingList instance) =>
+Map<String, dynamic> _$$ReadingListImplToJson(_$ReadingListImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

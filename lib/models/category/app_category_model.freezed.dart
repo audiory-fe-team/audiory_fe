@@ -107,11 +107,11 @@ class _$AppCategoryCopyWithImpl<$Res, $Val extends AppCategory>
 }
 
 /// @nodoc
-abstract class _$$_AppCategoryCopyWith<$Res>
+abstract class _$$AppCategoryImplCopyWith<$Res>
     implements $AppCategoryCopyWith<$Res> {
-  factory _$$_AppCategoryCopyWith(
-          _$_AppCategory value, $Res Function(_$_AppCategory) then) =
-      __$$_AppCategoryCopyWithImpl<$Res>;
+  factory _$$AppCategoryImplCopyWith(
+          _$AppCategoryImpl value, $Res Function(_$AppCategoryImpl) then) =
+      __$$AppCategoryImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -124,11 +124,11 @@ abstract class _$$_AppCategoryCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_AppCategoryCopyWithImpl<$Res>
-    extends _$AppCategoryCopyWithImpl<$Res, _$_AppCategory>
-    implements _$$_AppCategoryCopyWith<$Res> {
-  __$$_AppCategoryCopyWithImpl(
-      _$_AppCategory _value, $Res Function(_$_AppCategory) _then)
+class __$$AppCategoryImplCopyWithImpl<$Res>
+    extends _$AppCategoryCopyWithImpl<$Res, _$AppCategoryImpl>
+    implements _$$AppCategoryImplCopyWith<$Res> {
+  __$$AppCategoryImplCopyWithImpl(
+      _$AppCategoryImpl _value, $Res Function(_$AppCategoryImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -141,7 +141,7 @@ class __$$_AppCategoryCopyWithImpl<$Res>
     Object? updatedDate = freezed,
     Object? isEnabled = freezed,
   }) {
-    return _then(_$_AppCategory(
+    return _then(_$AppCategoryImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -172,8 +172,8 @@ class __$$_AppCategoryCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_AppCategory implements _AppCategory {
-  const _$_AppCategory(
+class _$AppCategoryImpl implements _AppCategory {
+  const _$AppCategoryImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'name') this.name = '',
       @JsonKey(name: 'image_url') this.imageUrl = '',
@@ -181,8 +181,8 @@ class _$_AppCategory implements _AppCategory {
       @JsonKey(name: 'updated_date') this.updatedDate = '',
       @JsonKey(name: 'is_enabled') this.isEnabled});
 
-  factory _$_AppCategory.fromJson(Map<String, dynamic> json) =>
-      _$$_AppCategoryFromJson(json);
+  factory _$AppCategoryImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AppCategoryImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -215,7 +215,7 @@ class _$_AppCategory implements _AppCategory {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_AppCategory &&
+            other is _$AppCategoryImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.imageUrl, imageUrl) ||
@@ -236,12 +236,12 @@ class _$_AppCategory implements _AppCategory {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_AppCategoryCopyWith<_$_AppCategory> get copyWith =>
-      __$$_AppCategoryCopyWithImpl<_$_AppCategory>(this, _$identity);
+  _$$AppCategoryImplCopyWith<_$AppCategoryImpl> get copyWith =>
+      __$$AppCategoryImplCopyWithImpl<_$AppCategoryImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_AppCategoryToJson(
+    return _$$AppCategoryImplToJson(
       this,
     );
   }
@@ -254,10 +254,10 @@ abstract class _AppCategory implements AppCategory {
       @JsonKey(name: 'image_url') final String? imageUrl,
       @JsonKey(name: 'created_date') final String? createdDate,
       @JsonKey(name: 'updated_date') final String? updatedDate,
-      @JsonKey(name: 'is_enabled') final bool? isEnabled}) = _$_AppCategory;
+      @JsonKey(name: 'is_enabled') final bool? isEnabled}) = _$AppCategoryImpl;
 
   factory _AppCategory.fromJson(Map<String, dynamic> json) =
-      _$_AppCategory.fromJson;
+      _$AppCategoryImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -281,6 +281,6 @@ abstract class _AppCategory implements AppCategory {
   bool? get isEnabled;
   @override
   @JsonKey(ignore: true)
-  _$$_AppCategoryCopyWith<_$_AppCategory> get copyWith =>
+  _$$AppCategoryImplCopyWith<_$AppCategoryImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
