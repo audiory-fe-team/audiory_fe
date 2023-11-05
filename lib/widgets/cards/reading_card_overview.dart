@@ -1,3 +1,4 @@
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -28,22 +29,12 @@ class ReadingCardOverview extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Flexible(
-              flex: 2,
-              child: Skeleton.replace(
-                  height: 135,
-                  child: Container(
-                    width: 95,
-                    height: 135,
-                    decoration: ShapeDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(coverUrl ?? ''),
-                        fit: BoxFit.fill,
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                    ),
-                  )),
-            ),
+                flex: 2,
+                child: Skeleton.shade(
+                    child: ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: AppImage(url: coverUrl, width: 95, height: 135),
+                ))),
             Flexible(
               flex: 4,
               child: Column(

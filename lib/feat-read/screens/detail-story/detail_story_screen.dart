@@ -10,7 +10,6 @@ import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
-import 'package:audiory_v0/models/wallet/wallet_model.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
 import 'package:audiory_v0/providers/story_database.dart';
@@ -50,6 +49,8 @@ class DetailStoryScreen extends HookConsumerWidget {
 
     final libraryQuery =
         useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
+    final isAddedToLibrary = libraryQuery.data?.libraryStory
+        ?.any((element) => element.storyId == id);
 
     final storyQuery = useQuery(
         ['story', id], () => StoryRepostitory().fetchStoryById(id),
@@ -62,13 +63,6 @@ class DetailStoryScreen extends HookConsumerWidget {
     final tabState = useState(0);
     final storyOffline = useFuture<Story?>(
         Future<Story?>.value(isOffline ? storyDb.getStory(id) : null));
-
-    String handleCoins() {
-      List<Wallet>? wallets = userQuery.data?.wallets;
-      String coin =
-          double.parse(wallets![0].balance.toString()).toStringAsFixed(0);
-      return coin;
-    }
 
     handleBuyStory() async {
       //check if paid chapters left >5 chapter
@@ -443,7 +437,6 @@ class DetailStoryScreen extends HookConsumerWidget {
                                           [])
                                       .map((tag) => GestureDetector(
                                           onTap: () {
-                                            print("tag screen");
                                             context.push(
                                                 '/story/${story?.id}/tag/${tag.id}?tagName=${tag.name}');
                                           },
@@ -491,7 +484,9 @@ class DetailStoryScreen extends HookConsumerWidget {
                         return Skeletonizer(
                             enabled: isLoading,
                             child: StoryDetailTab(
-                                story: isLoading ? skeletonStory : story));
+                              story: isLoading ? skeletonStory : story,
+                              storyId: id,
+                            ));
                       }
                       return Skeletonizer(
                           enabled: isLoading,
@@ -506,17 +501,13 @@ class DetailStoryScreen extends HookConsumerWidget {
                   ],
                 ),
               ))),
-      bottomNavigationBar: Builder(builder: (context) {
-        final isAddedToLibrary = libraryQuery.data?.libraryStory
-            ?.any((element) => element.storyId == id);
-        return DetailStoryBottomBar(
-            storyId: id,
-            addToLibraryCallback: () => isAddedToLibrary == true
-                ? handleRemoveFromLibrary()
-                : handleAddToLibrary(),
-            downloadStoryCallback: () => handleDownloadStory(),
-            isAddedToLibrary: isAddedToLibrary ?? false);
-      }),
+      bottomNavigationBar: DetailStoryBottomBar(
+          storyId: id,
+          addToLibraryCallback: () => isAddedToLibrary == true
+              ? handleRemoveFromLibrary()
+              : handleAddToLibrary(),
+          downloadStoryCallback: () => handleDownloadStory(),
+          isAddedToLibrary: isAddedToLibrary ?? false),
       floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,

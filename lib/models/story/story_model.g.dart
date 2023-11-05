@@ -34,13 +34,10 @@ _$StoryImpl _$$StoryImplFromJson(Map<String, dynamic> json) => _$StoryImpl(
       reportCount: json['report_count'] as int?,
       voteCount: json['vote_count'] as int?,
       readCount: json['read_count'] as int?,
-<<<<<<< HEAD
+      commentCount: json['comment_count'] as int?,
       totalVote: json['total_vote'] as int?,
       totalRead: json['total_read'] as int?,
       totalComment: json['total_comment'] as int?,
-=======
-      commentCount: json['comment_count'] as int?,
->>>>>>> b9116ea07066983f61623ee605cffaf3bff64bac
       explicitPercentage: json['explicit_percentage'] as int?,
       createdDate: json['created_date'] as String?,
       updatedDate: json['updated_date'] as String?,
@@ -80,13 +77,10 @@ Map<String, dynamic> _$$StoryImplToJson(_$StoryImpl instance) =>
       'report_count': instance.reportCount,
       'vote_count': instance.voteCount,
       'read_count': instance.readCount,
-<<<<<<< HEAD
+      'comment_count': instance.commentCount,
       'total_vote': instance.totalVote,
       'total_read': instance.totalRead,
       'total_comment': instance.totalComment,
-=======
-      'comment_count': instance.commentCount,
->>>>>>> b9116ea07066983f61623ee605cffaf3bff64bac
       'explicit_percentage': instance.explicitPercentage,
       'created_date': instance.createdDate,
       'updated_date': instance.updatedDate,

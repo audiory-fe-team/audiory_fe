@@ -42,8 +42,8 @@ class OnlineReadingScreen extends HookConsumerWidget {
   OnlineReadingScreen(
       {super.key, required this.chapterId, this.showComment = false});
 
-  @override
   final localPlayer = AudioPlayer();
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
@@ -55,6 +55,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
     final fontSize = useState(18);
     final showCommentByParagraph = useState(true);
     final audioSpeed = useState<double>(1);
+    final isKaraoke = useState(true);
 
     final haveRead = useState(false);
     final hideBars = useState(false);
@@ -63,8 +64,8 @@ class OnlineReadingScreen extends HookConsumerWidget {
 
     final keyList = useState<List<GlobalKey>>([]);
     final scrollController = useScrollController();
-
     final playingState = useStream(localPlayer.playingStream);
+
     final curParaIndex = useState<int?>(null);
 
     final chapterQuery = useQuery(
@@ -104,7 +105,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
         Timer(Duration(milliseconds: milliseconds), () async {
           final SharedPreferences prefs = await SharedPreferences.getInstance();
           await prefs.remove('timer');
-          localPlayer.dispose();
+          localPlayer.stop();
         });
 
     useEffect(() {
@@ -129,19 +130,24 @@ class OnlineReadingScreen extends HookConsumerWidget {
                   title: storyQuery.data?.title ?? '',
                   extras: {
                     'position': chapterQuery.data?.position,
+                    'storyId': chapterQuery.data?.storyId,
+                    'chapterId': chapterId,
                   },
                   artist:
                       'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
                   album: storyQuery.data?.id));
         }).toList());
         localPlayer.setAudioSource(playlist);
+
         localPlayer.currentIndexStream.listen((currentParaIndex) {
           if (currentParaIndex == null) return;
           curParaIndex.value = currentParaIndex;
           final keyContext = keyList.value[currentParaIndex].currentContext;
           if (keyContext == null) return;
-          Scrollable.ensureVisible(keyContext,
-              duration: const Duration(seconds: 1), alignment: 0.5);
+          if (isKaraoke.value) {
+            Scrollable.ensureVisible(keyContext,
+                duration: const Duration(seconds: 1), alignment: 0.5);
+          }
 
           return;
         });
@@ -152,6 +158,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       fontSize.value = prefs.getInt('fontSize') ?? 18;
+      isKaraoke.value = prefs.getBool('isKaraoke') ?? true;
       audioSpeed.value = prefs.getDouble('audioSpeed') ?? 1;
       showCommentByParagraph.value =
           prefs.getBool('showCommentByParagraph') ?? true;
@@ -172,6 +179,11 @@ class OnlineReadingScreen extends HookConsumerWidget {
 
     useEffect(() {
       syncPreference();
+      return () {
+        if (!player.playing) {
+          localPlayer.stop();
+        }
+      };
     }, []);
 
     // useEffect(() {
@@ -204,9 +216,6 @@ class OnlineReadingScreen extends HookConsumerWidget {
               actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
           haveRead.value = true;
         }
-
-        // Record scroll position
-        // readingPosition.value = scrollController.offset.round();
       });
 
       return () async {
@@ -261,7 +270,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
                     ChapterAudioPlayer(
                       player: localPlayer,
                       onFirstPlay: () {
-                        player.dispose();
+                        player.stop();
                         ref
                             .read(audioPlayerProvider.notifier)
                             .setPlayer(localPlayer);

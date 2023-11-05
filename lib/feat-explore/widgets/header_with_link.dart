@@ -22,10 +22,9 @@ class HeaderWithLink extends StatelessWidget {
           Row(
             children: [
               icon != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(4),
-                      child:
-                          Skeleton.replace(width: 20, height: 20, child: icon!))
+                  ? Skeleton.shade(
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(4), child: icon!))
                   : const SizedBox(),
               SizedBox(width: icon != null ? 4 : 0),
               Text(title, style: Theme.of(context).textTheme.headlineMedium),

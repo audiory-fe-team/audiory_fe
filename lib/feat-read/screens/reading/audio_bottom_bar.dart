@@ -1,13 +1,12 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
-import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/providers/audio_player_provider.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class AudioBottomBar extends HookConsumerWidget {
   const AudioBottomBar({super.key});
@@ -24,9 +23,10 @@ class AudioBottomBar extends HookConsumerWidget {
 
     return Dismissible(
         key: UniqueKey(),
-        onDismissed: (direction) {
+        onDismissed: (direction) async {
           // Then show a snackbar.
-          player.dispose();
+          await player.dispose();
+          await ref.read(audioPlayerProvider.notifier).setPlayer(AudioPlayer());
 
           // AppSnackBar.buildTopSnackBar(
           //     context, 'Dừng phát audio', null, SnackBarType.error);
@@ -47,37 +47,49 @@ class AudioBottomBar extends HookConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
-                        child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      const SizedBox(width: 6),
-                      Expanded(
-                          child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                              player.sequenceState?.currentSource?.tag.title
-                                      .toString() ??
-                                  '',
-                              overflow: TextOverflow.ellipsis,
-                              style: textTheme.titleSmall
-                                  ?.copyWith(fontWeight: FontWeight.bold)),
-                          const SizedBox(height: 4),
-                          StreamBuilder(
-                              stream: player.sequenceStateStream,
-                              builder: (_, snapshot) {
-                                final playerState = snapshot.data;
-                                final currentParaIndex =
-                                    playerState?.currentIndex ?? 0;
-                                return Text(
-                                    'Chương ${player.sequenceState?.currentSource?.tag.extras['position']} - Đoạn ${currentParaIndex + 1}',
-                                    style: textTheme.labelLarge?.copyWith(
-                                      fontStyle: FontStyle.italic,
-                                    ));
-                              }),
-                        ],
-                      ))
-                    ])),
+                        child: GestureDetector(
+                            onTap: () {
+                              final storyId = player.sequenceState
+                                  ?.currentSource?.tag.extras['storyId'];
+                              final chapterId = player.sequenceState
+                                  ?.currentSource?.tag.extras['chapterId'];
+                              context
+                                  .push('/story/$storyId/chapter/$chapterId');
+                            },
+                            child:
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                              const SizedBox(width: 6),
+                              Expanded(
+                                  child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                      player.sequenceState?.currentSource?.tag
+                                              .title
+                                              .toString() ??
+                                          '',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.bold)),
+                                  const SizedBox(height: 4),
+                                  StreamBuilder(
+                                      stream: player.sequenceStateStream,
+                                      builder: (_, snapshot) {
+                                        final playerState = snapshot.data;
+                                        final currentParaIndex =
+                                            playerState?.currentIndex ?? 0;
+                                        return Text(
+                                            'Chương ${player.sequenceState?.currentSource?.tag.extras['position']} - Đoạn ${currentParaIndex + 1}',
+                                            style:
+                                                textTheme.labelLarge?.copyWith(
+                                              fontStyle: FontStyle.italic,
+                                            ));
+                                      }),
+                                ],
+                              ))
+                            ]))),
                     Row(
                       mainAxisSize: MainAxisSize.max,
                       children: [
@@ -106,7 +118,6 @@ class AudioBottomBar extends HookConsumerWidget {
                               } else {
                                 return GestureDetector(
                                   onTap: () {
-                                    print("pause");
                                     player.pause();
                                   },
                                   child: Icon(Icons.pause_rounded,

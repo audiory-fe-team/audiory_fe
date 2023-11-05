@@ -16,6 +16,7 @@ class SettingModel extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedOption = useState(0);
     final showCommentByParagraph = useState(false);
+    final isKaraoke = useState(true);
     final setTimer = useState(false);
     final audioSpeed = useState<double>(1);
 
@@ -32,6 +33,7 @@ class SettingModel extends HookConsumerWidget {
       await prefs.setInt('fontSize', int.tryParse(sizeController.text) ?? 18);
       await prefs.setBool(
           'showCommentByParagraph', showCommentByParagraph.value);
+      await prefs.setBool('isKaraoke', isKaraoke.value);
       await prefs.setInt('themeOption', selectedOption.value);
       await prefs.setDouble('audioSpeed', audioSpeed.value);
       if (selectedOption.value <= 1) {
@@ -52,6 +54,7 @@ class SettingModel extends HookConsumerWidget {
       audioSpeed.value = prefs.getDouble('audioSpeed') ?? 1;
       showCommentByParagraph.value =
           prefs.getBool('showCommentByParagraph') ?? true;
+      isKaraoke.value = prefs.getBool('isKaraoke') ?? true;
     }
 
     useEffect(() {
@@ -365,6 +368,29 @@ class SettingModel extends HookConsumerWidget {
                             value: showCommentByParagraph.value,
                             onChanged: (value) {
                               showCommentByParagraph.value = value ?? false;
+                            },
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)),
+                            fillColor: MaterialStatePropertyAll(
+                              appColors.primaryBase,
+                            ),
+                          ),
+                        ],
+                      )),
+                  Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Tự động cuộn theo audio',
+                              style: Theme.of(context).textTheme.bodyMedium),
+                          Checkbox(
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                            value: isKaraoke.value,
+                            onChanged: (value) {
+                              isKaraoke.value = value ?? false;
                             },
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(4)),
