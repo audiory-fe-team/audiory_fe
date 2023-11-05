@@ -152,13 +152,12 @@ class StoryRankCard extends StatelessWidget {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            Skeleton.replace(
-                                width: 14,
-                                height: 14,
+                            Skeleton.shade(
                                 child: SvgPicture.asset(
-                                  'assets/icons/write.svg',
-                                  width: 14,
-                                )),
+                              'assets/icons/write.svg',
+                              width: 14,
+                              height: 14,
+                            )),
                             const SizedBox(width: 6),
                             Text(
                               story.author?.fullName ?? 'Ẩn danh',

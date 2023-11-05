@@ -47,15 +47,15 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
           children: [
             GestureDetector(
               onTap: () {
-                if (widget.isAddedToLibrary) {
-                  AppSnackBar.buildTopSnackBar(
-                    context,
-                    'Đã lưu truyện',
-                    null,
-                    SnackBarType.info,
-                  );
-                  return;
-                }
+                // if (widget.isAddedToLibrary) {
+                //   AppSnackBar.buildTopSnackBar(
+                //     context,
+                //     'Đã lưu truyện',
+                //     null,
+                //     SnackBarType.info,
+                //   );
+                //   return;
+                // }
                 widget.addToLibraryCallback();
               },
               child: SizedBox(
@@ -73,7 +73,7 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
                     ),
                     Text(
                       'Lưu trữ',
-                      style: textTheme.labelLarge!.copyWith(
+                      style: textTheme.labelLarge?.copyWith(
                         color: widget.isAddedToLibrary
                             ? appColors.primaryBase
                             : appColors.skyBase,
@@ -90,19 +90,19 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
                 return GestureDetector(
                   onTap: () async {
                     final stories = await storyDb.getAllStories();
-                    if (stories.length >= LIBRARY_STORY_LIMIT) {
+                    if (isDownloaded == true) {
                       AppSnackBar.buildTopSnackBar(
                         context,
-                        'Giới hạn tải về là ${LIBRARY_STORY_LIMIT} truyện',
+                        'Đã tải truyện',
                         null,
                         SnackBarType.info,
                       );
                       return;
                     }
-                    if (isDownloaded == true) {
+                    if (stories.length >= LIBRARY_STORY_LIMIT) {
                       AppSnackBar.buildTopSnackBar(
                         context,
-                        'Đã tải truyện',
+                        'Giới hạn tải về là ${LIBRARY_STORY_LIMIT} truyện',
                         null,
                         SnackBarType.info,
                       );

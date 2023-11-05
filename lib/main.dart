@@ -5,6 +5,7 @@ import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 //auth
 import "package:firebase_core/firebase_core.dart";
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:fquery/fquery.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

@@ -25,11 +25,9 @@ class StoryCardOverView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Skeleton.replace(
-                    width: 95,
-                    height: 135,
+            Skeleton.shade(
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
                     child: AppImage(
                       url: coverUrl,
                       fit: BoxFit.fill,
