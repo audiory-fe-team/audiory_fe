@@ -40,10 +40,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> signInGoogle() async {
-    // await AuthRepository().signInWithGoogle();
     try {
       await AuthRepository().signInWithGoogle();
-
       // ignore: use_build_context_synchronously
       context.go('/');
     } catch (e) {

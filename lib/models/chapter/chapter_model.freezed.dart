@@ -34,7 +34,7 @@ mixin _$Chapter {
   @JsonKey(name: 'product_id')
   String? get productId => throw _privateConstructorUsedError;
   @JsonKey(name: 'title')
-  String get title => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_draft')
   bool? get isDraft => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_paywalled')
@@ -78,7 +78,7 @@ abstract class $ChapterCopyWith<$Res> {
       @JsonKey(name: 'current_version_id') String? currentVersionId,
       @JsonKey(name: 'position') int? position,
       @JsonKey(name: 'product_id') String? productId,
-      @JsonKey(name: 'title') String title,
+      @JsonKey(name: 'title') String? title,
       @JsonKey(name: 'is_draft') bool? isDraft,
       @JsonKey(name: 'is_paywalled') bool? isPaywalled,
       @JsonKey(name: 'is_paid') bool? isPaid,
@@ -112,7 +112,7 @@ class _$ChapterCopyWithImpl<$Res, $Val extends Chapter>
     Object? currentVersionId = freezed,
     Object? position = freezed,
     Object? productId = freezed,
-    Object? title = null,
+    Object? title = freezed,
     Object? isDraft = freezed,
     Object? isPaywalled = freezed,
     Object? isPaid = freezed,
@@ -148,10 +148,10 @@ class _$ChapterCopyWithImpl<$Res, $Val extends Chapter>
           ? _value.productId
           : productId // ignore: cast_nullable_to_non_nullable
               as String?,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       isDraft: freezed == isDraft
           ? _value.isDraft
           : isDraft // ignore: cast_nullable_to_non_nullable
@@ -221,7 +221,7 @@ abstract class _$$ChapterImplCopyWith<$Res> implements $ChapterCopyWith<$Res> {
       @JsonKey(name: 'current_version_id') String? currentVersionId,
       @JsonKey(name: 'position') int? position,
       @JsonKey(name: 'product_id') String? productId,
-      @JsonKey(name: 'title') String title,
+      @JsonKey(name: 'title') String? title,
       @JsonKey(name: 'is_draft') bool? isDraft,
       @JsonKey(name: 'is_paywalled') bool? isPaywalled,
       @JsonKey(name: 'is_paid') bool? isPaid,
@@ -253,7 +253,7 @@ class __$$ChapterImplCopyWithImpl<$Res>
     Object? currentVersionId = freezed,
     Object? position = freezed,
     Object? productId = freezed,
-    Object? title = null,
+    Object? title = freezed,
     Object? isDraft = freezed,
     Object? isPaywalled = freezed,
     Object? isPaid = freezed,
@@ -289,10 +289,10 @@ class __$$ChapterImplCopyWithImpl<$Res>
           ? _value.productId
           : productId // ignore: cast_nullable_to_non_nullable
               as String?,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       isDraft: freezed == isDraft
           ? _value.isDraft
           : isDraft // ignore: cast_nullable_to_non_nullable
@@ -398,7 +398,7 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
   final String? productId;
   @override
   @JsonKey(name: 'title')
-  final String title;
+  final String? title;
   @override
   @JsonKey(name: 'is_draft')
   final bool? isDraft;
@@ -561,7 +561,7 @@ abstract class _Chapter implements Chapter {
           @JsonKey(name: 'current_version_id') final String? currentVersionId,
           @JsonKey(name: 'position') final int? position,
           @JsonKey(name: 'product_id') final String? productId,
-          @JsonKey(name: 'title') final String title,
+          @JsonKey(name: 'title') final String? title,
           @JsonKey(name: 'is_draft') final bool? isDraft,
           @JsonKey(name: 'is_paywalled') final bool? isPaywalled,
           @JsonKey(name: 'is_paid') final bool? isPaid,
@@ -598,7 +598,7 @@ abstract class _Chapter implements Chapter {
   String? get productId;
   @override
   @JsonKey(name: 'title')
-  String get title;
+  String? get title;
   @override
   @JsonKey(name: 'is_draft')
   bool? get isDraft;

@@ -295,79 +295,46 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           style: Theme.of(context).textTheme.titleSmall,
                         ),
                         const SizedBox(height: 8),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                userByIdQuery.isError == true
-                                    ? null
-                                    : GoRouter.of(context)
-                                  ?..pushNamed('profileSettings', extra: {
-                                    'currentUser': userByIdQuery.data,
-                                    'userProfile': profileQuery.data
-                                  })
-                                  ..push('/wallet', extra: {
-                                    'currentUser': userByIdQuery.data,
-                                    'userProfile': profileQuery.data
-                                  });
-                              },
-                              child: SizedBox(
-                                width: size.width / 3.5,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Image.asset(
-                                      'assets/images/coin.png',
-                                      width: 24,
-                                      height: 24,
-                                    ),
-                                    Skeletonizer(
-                                      enabled: userByIdQuery.isFetching,
-                                      child: SizedBox(
-                                        width: 50,
-                                        child: Text(
-                                          " ${userByIdQuery.data?.wallets?.isNotEmpty == true ? roundBalance(userByIdQuery.data?.wallets![0].balance) : '_'}",
-                                          textAlign: TextAlign.center,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .headlineSmall,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                        GestureDetector(
+                          onTap: () {
+                            userByIdQuery.isError == true
+                                ? null
+                                : GoRouter.of(context)
+                              ?..pushNamed('profileSettings', extra: {
+                                'currentUser': userByIdQuery.data,
+                                'userProfile': profileQuery.data
+                              })
+                              ..push('/wallet', extra: {
+                                'currentUser': userByIdQuery.data,
+                                'userProfile': profileQuery.data
+                              });
+                          },
+                          child: SizedBox(
+                            width: 100,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Flexible(
+                                  child: Image.asset(
+                                    'assets/images/coin.png',
+                                    width: 30,
+                                    height: 30,
+                                  ),
                                 ),
-                              ),
-                            ),
-                            userByIdQuery.data?.wallets?.isNotEmpty == true
-                                ? SizedBox(
-                                    width: size.width / 4,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: [
-                                        GestureDetector(
-                                          child: Image.asset(
-                                            'assets/images/diamond.png',
-                                            width: 24,
-                                            height: 24,
-                                          ),
-                                        ),
-                                        Skeletonizer(
-                                          enabled: userByIdQuery.isFetching,
-                                          child: Text(
-                                            " ${userByIdQuery.data?.wallets?.isNotEmpty == true ? userByIdQuery.data?.wallets![1].balance : '_'}",
-                                            textAlign: TextAlign.center,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .headlineSmall,
-                                          ),
-                                        ),
-                                      ],
+                                Skeletonizer(
+                                  enabled: userByIdQuery.isFetching,
+                                  child: Flexible(
+                                    child: Text(
+                                      " ${userByIdQuery.data?.wallets?.isNotEmpty == true ? roundBalance(userByIdQuery.data?.wallets![0].balance) : '_'}",
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall,
                                     ),
-                                  )
-                                : const SizedBox(height: 0),
-                          ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 8),
 
@@ -425,19 +392,28 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 ),
                               ),
                             ),
-                            Skeletonizer(
-                              enabled: profileQuery.isFetching,
-                              child: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Text(
-                                  profileQuery.data?.description == null ||
-                                          profileQuery.data?.description == ''
-                                      ? 'Nhập gì đó về bạn'
-                                      : profileQuery.data?.description ?? '',
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
+                            profileQuery.data?.description == null ||
+                                    profileQuery.data?.description == ''
+                                ? SizedBox(
+                                    height: 0,
+                                  )
+                                : Skeletonizer(
+                                    enabled: profileQuery.isFetching,
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(12.0),
+                                      child: Text(
+                                        profileQuery.data?.description ==
+                                                    null ||
+                                                profileQuery
+                                                        .data?.description ==
+                                                    ''
+                                            ? 'Nhập gì đó về bạn'
+                                            : profileQuery.data?.description ??
+                                                '',
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
                             Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: size.width / 4),

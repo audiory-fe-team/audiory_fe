@@ -33,7 +33,6 @@ class StoryDetailTab extends HookWidget {
     final userQuery = useQuery([
       'userById',
     ], () => AuthRepository().getMyUserById());
-
     handleSendingGift(Gift gift, total) async {
       var totalCoinsOfUser = userQuery.data?.wallets![0].balance ?? 0;
       if (double.parse('${gift.price! * total}') >
@@ -319,7 +318,7 @@ class StoryDetailTab extends HookWidget {
                     borderRadius: BorderRadius.circular(8),
                     color: appColors?.skyLightest),
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text('Giới thiệu', style: textTheme.headlineSmall),
                       const SizedBox(
@@ -384,28 +383,28 @@ class StoryDetailTab extends HookWidget {
         ),
         donatorsView(donatorsQuery.data ?? []),
         const SizedBox(
-          height: 8,
+          height: 16,
         ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              'Bình luận nổi bật',
-              style: textTheme.headlineSmall,
-            ),
-            GestureDetector(
-              child: SvgPicture.asset(
-                'assets/icons/right-arrow.svg',
-                width: 24,
-                height: 24,
-                color: appColors?.inkDark,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(
-          height: 12,
-        ),
+        // Row(
+        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //   children: [
+        //     Text(
+        //       'Bình luận nổi bật',
+        //       style: textTheme.headlineSmall,
+        //     ),
+        //     GestureDetector(
+        //       child: SvgPicture.asset(
+        //         'assets/icons/right-arrow.svg',
+        //         width: 24,
+        //         height: 24,
+        //         color: appColors?.inkDark,
+        //       ),
+        //     ),
+        //   ],
+        // ),
+        // const SizedBox(
+        //   height: 12,
+        // ),
         // _commentList()
       ],
     );

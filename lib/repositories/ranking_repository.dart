@@ -35,9 +35,12 @@ class RankingRepository {
   }
 
   Future<List<Profile>> fetchRankingAuthors(
-      {required RankingTimeRange time, String? category, int? page}) async {
+      {required RankingTimeRange time,
+      required RankingMetric metric,
+      String? category,
+      int? page}) async {
     final url = Uri.parse("$storiesEndpoint/authors").replace(queryParameters: {
-      // 'sort_by': getValueString(metric.toString()),
+      'sort_by': getValueString(metric.toString()),
       'time_range': getValueString(time.toString()),
       // 'category': category,
       'page': (page ?? 1).toString(),

@@ -1,3 +1,4 @@
+import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -135,6 +136,9 @@ class EditAccountScreenState extends State<EditAccountScreen> {
         style: textTheme.headlineMedium?.copyWith(color: appColors.inkBase),
       )),
       body: userInfo(),
+      floatingActionButton: const AudioBottomBar(),
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterFloat,
     );
   }
 }

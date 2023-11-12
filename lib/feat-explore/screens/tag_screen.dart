@@ -5,6 +5,7 @@ import 'package:audiory_v0/models/SearchStory.dart';
 import 'package:audiory_v0/repositories/search_repository.dart';
 import 'package:audiory_v0/utils/use_paging_controller.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
+import 'package:audiory_v0/widgets/paginators/infinite_scroll_paginator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -59,50 +60,43 @@ class SearchTagScreen extends HookWidget {
                       onRefresh: () async {
                         storiesPagingController.refresh();
                       },
-                      child: CustomScrollView(
-                        slivers: [
-                          const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                          SliverToBoxAdapter(child: SearchFilterButton(
-                            onTap: () {
-                              showModalBottomSheet(
-                                backgroundColor: Colors.transparent,
-                                isScrollControlled: true,
-                                context: context,
-                                builder: (context) {
-                                  return CategorySearchFilter(
-                                    sortBy: sortBy.value,
-                                    isMature: isMature.value,
-                                    onSubmit: (
-                                        {categoryValue,
-                                        isMatureValue,
-                                        isPaywalledValue,
-                                        sortByValue,
-                                        tagsValue}) {
-                                      sortBy.value = sortByValue;
-                                      isPaywalledValue;
-                                      isMature.value = isMatureValue;
+                      child: AppInfiniteScrollList(
+                          topItems: [
+                            const SizedBox(height: 12),
+                            SearchFilterButton(
+                              onTap: () {
+                                showModalBottomSheet(
+                                  backgroundColor: Colors.transparent,
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (context) {
+                                    return CategorySearchFilter(
+                                      sortBy: sortBy.value,
+                                      isMature: isMature.value,
+                                      onSubmit: (
+                                          {categoryValue,
+                                          isMatureValue,
+                                          isPaywalledValue,
+                                          sortByValue,
+                                          tagsValue}) {
+                                        sortBy.value = sortByValue;
+                                        isPaywalledValue;
+                                        isMature.value = isMatureValue;
 
-                                      //Reload:
-                                      storiesPagingController.refresh();
-                                    },
-                                  );
-                                },
-                              );
-                            },
-                          )),
-                          const SliverToBoxAdapter(child: SizedBox(height: 12)),
-                          PagedSliverList<int, SearchStory>(
-                              pagingController: storiesPagingController,
-                              builderDelegate:
-                                  PagedChildBuilderDelegate<SearchStory>(
-                                      itemBuilder: (context, item, index) =>
-                                          Padding(
-                                              padding: const EdgeInsets.only(
-                                                  bottom: 16),
-                                              child: StoryCardDetail(
-                                                  searchStory: item))))
-                        ],
-                      ),
+                                        //Reload:
+                                        storiesPagingController.refresh();
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                          itemBuilder: (context, item, index) => Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: StoryCardDetail(searchStory: item)),
+                          controller: storiesPagingController),
                     ));
                   })))),
     );

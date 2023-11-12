@@ -76,7 +76,7 @@ class ChapterItem extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    chapter.title,
+                    chapter.title ?? '',
                     style: Theme.of(context).textTheme.titleMedium,
                     overflow: TextOverflow.ellipsis,
                   ),

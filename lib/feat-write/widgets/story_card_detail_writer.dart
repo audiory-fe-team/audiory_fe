@@ -1,3 +1,4 @@
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-write/provider/story_state_provider.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -8,7 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-class StoryCardDetailWriter extends ConsumerWidget {
+class StoryCardDetailWriter extends StatelessWidget {
   final Story? story;
   void _displaySnackBar(String? content, BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -16,7 +17,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       backgroundColor: appColors.primaryBase,
       duration: const Duration(seconds: 3),
-      content: Text(content as String),
+      content: Text(content ?? ""),
       action: SnackBarAction(
         textColor: appColors.skyBase,
         label: 'Undo',
@@ -25,7 +26,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
     ));
   }
 
-  showAlertDialog(BuildContext context, WidgetRef ref) async {
+  showAlertDialog(BuildContext context) async {
     // set up the buttons
     Widget cancelButton = TextButton(
       child: const Text("Hủy"),
@@ -68,7 +69,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
               return const Center(child: CircularProgressIndicator());
             });
 
-        ref.read(storyDataProvider.notifier).deleteStoryOfUser(story);
+        // ref.read(storyDataProvider.notifier).deleteStoryOfUser(story);
 
         // ignore: use_build_context_synchronously
         // context.pop();
@@ -121,12 +122,13 @@ class StoryCardDetailWriter extends ConsumerWidget {
 
   String formatDate(String? date) {
     //use package intl
-    DateTime dateTime = DateTime.parse(date as String);
+
+    DateTime dateTime = DateTime.parse(date ?? "");
     return DateFormat('dd/MM/yyyy').format(dateTime);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final Map<String, dynamic> storyStatus = getStoryStatus(context);
@@ -161,7 +163,9 @@ class StoryCardDetailWriter extends ConsumerWidget {
                   height: 135,
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      image: NetworkImage(story?.coverUrl ?? ''),
+                      image: NetworkImage(story?.coverUrl == ""
+                          ? FALLBACK_IMG_URL
+                          : story?.coverUrl ?? FALLBACK_IMG_URL),
                       fit: BoxFit.fill,
                     ),
                   ),
@@ -228,13 +232,13 @@ class StoryCardDetailWriter extends ConsumerWidget {
                                 SvgPicture.asset('assets/icons/write.svg',
                                     width: 14, height: 14),
                                 const SizedBox(width: 8),
-                                SizedBox(
-                                    width: 140,
-                                    child: Text(
-                                        'Cập nhật ${formatDate(story?.updatedDate)}',
-                                        style: textTheme.titleSmall!.copyWith(
-                                            fontStyle: FontStyle.italic,
-                                            overflow: TextOverflow.ellipsis))),
+                                // SizedBox(
+                                //     width: 140,
+                                //     child: Text(
+                                //         'Cập nhật ${story?.updatedDate != null ? formatDate(story?.updatedDate) : ''}',
+                                //         style: textTheme.titleSmall!.copyWith(
+                                //             fontStyle: FontStyle.italic,
+                                //             overflow: TextOverflow.ellipsis))),
                               ],
                             ),
                             const SizedBox(width: 6),
@@ -258,7 +262,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
                                     width: 14, height: 14),
                                 const SizedBox(width: 8),
                                 Text(
-                                    '${story?.chapters?.length ?? 'error'} chương + ${story?.draftCount} bản thảo',
+                                    '${story?.chapters?.length ?? '0'} chương + ${story?.draftCount} bản thảo',
                                     style: textTheme.titleSmall!
                                         .copyWith(fontStyle: FontStyle.italic)),
                               ],
@@ -277,7 +281,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
             children: [
               PopupMenuButton(
                   onSelected: (value) {
-                    _onSelectStoryAction(value, context, ref);
+                    _onSelectStoryAction(value, context);
                   },
                   icon: const Icon(Icons.more_vert),
                   itemBuilder: (context) => [
@@ -342,7 +346,7 @@ class StoryCardDetailWriter extends ConsumerWidget {
     );
   }
 
-  void _onSelectStoryAction(int value, BuildContext context, WidgetRef ref) {
+  void _onSelectStoryAction(int value, BuildContext context) {
     if (kDebugMode) {
       print('value $value');
     }
@@ -353,10 +357,10 @@ class StoryCardDetailWriter extends ConsumerWidget {
         break;
       case 1:
         context.pushNamed('previewChapter',
-            extra: {'storyId': story?.id, 'chapterId': null});
+            extra: {'storyId': story?.id, 'chapterId': ''});
         break;
       case 3:
-        showAlertDialog(context, ref);
+        showAlertDialog(context);
         break;
 
       default:

@@ -93,6 +93,7 @@ class ReadingListRepository {
   }
 
   static Future<ReadingList> addReadingList(body, formFile) async {
+    final dio = Dio();
     final url = Uri.parse('$readingListEndpoint/reading-lists');
 
     // Create headers with the JWT token if it's available
@@ -101,24 +102,41 @@ class ReadingListRepository {
       "Accept": "application/json",
     };
 
-    File file = File(formFile[0].path); //import dart:io
+    final Map<String, String> firstMap = body;
+    final Map<String, MultipartFile> secondeMap;
 
-    final request = http.MultipartRequest('POST', url)
-      ..fields.addAll(body)
-      ..files.add(await http.MultipartFile.fromPath(
-        'form_file',
-        file.path,
-      ));
-    request.headers.addAll(headers);
-
-    final response = await request.send();
-    final respStr = await response.stream.bytesToString();
-
-    if (response.statusCode == 200) {
-      final result = jsonDecode(respStr)['data'];
-      return ReadingList.fromJson(result);
+    if (formFile[0].runtimeType == String) {
+      secondeMap = {};
     } else {
-      throw Exception('Failed to load reading list');
+      File file = File(formFile[0].path); //import dart:io
+      secondeMap = {'form_file': await MultipartFile.fromFile(file.path)};
+    }
+
+    //merge 2 map
+    final Map<String, dynamic> finalMap = {};
+    finalMap.addAll(firstMap);
+    finalMap.addAll(secondeMap);
+
+    final FormData formData = FormData.fromMap(finalMap);
+
+    final response = await dio.put('$readingListEndpoint/reading-lists',
+        data: formData, options: Options(headers: headers));
+    final result = response.data; //do not have to json decode
+    // final request = http.MultipartRequest('POST', url)
+    //   ..fields.addAll(body)
+    //   ..files.add(await http.MultipartFile.fromPath(
+    //     'form_file',
+    //     file.path,
+    //   ));
+    // request.headers.addAll(headers);
+
+    // final response = await request.send();
+    // final respStr = await response.stream.bytesToString();
+
+    if (result['code'] == 200) {
+      return ReadingList.fromJson(result['data']);
+    } else {
+      throw Exception('Failed to edit reading list');
     }
   }
 

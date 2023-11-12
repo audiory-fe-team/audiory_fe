@@ -131,7 +131,7 @@ class AppCategoryStories extends HookWidget {
                   .map((story) => Padding(
                         padding: const EdgeInsets.only(right: 12),
                         child: StoryCardOverView(
-                            title: story.title,
+                            title: story.title ?? "",
                             coverUrl: story.coverUrl,
                             id: story.id),
                       ))

@@ -16,12 +16,12 @@ class ReadingScreenHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(children: [
-      Text('Chương :',
+      Text('Chương ${chapter.position}:',
           style: Theme.of(context)
               .textTheme
               .bodyLarge
               ?.copyWith(color: textColor)),
-      Text(chapter.title,
+      Text(chapter.title ?? "",
           style:
               Theme.of(context).textTheme.bodyLarge?.copyWith(color: textColor),
           softWrap: true),

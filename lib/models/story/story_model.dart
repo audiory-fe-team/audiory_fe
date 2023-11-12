@@ -20,7 +20,7 @@ class Story with _$Story {
     @JsonKey(name: 'author') AuthorStory? author,
     @JsonKey(name: 'category_id') String? categoryId, // Story position
     @JsonKey(name: 'category') AppCategory? category, // Story position
-    @Default('') @JsonKey(name: 'title') String title,
+    @Default('') @JsonKey(name: 'title') String? title,
     @JsonKey(name: 'description') String? description,
     @JsonKey(name: 'cover_url') String? coverUrl,
     @JsonKey(name: 'is_draft') bool? isDraft,
@@ -39,6 +39,9 @@ class Story with _$Story {
     @JsonKey(name: 'vote_count') int? voteCount,
     @JsonKey(name: 'read_count') int? readCount,
     @JsonKey(name: 'comment_count') int? commentCount,
+    @JsonKey(name: 'total_vote') int? totalVote,
+    @JsonKey(name: 'total_read') int? totalRead,
+    @JsonKey(name: 'total_comment') int? totalComment,
     @JsonKey(name: 'explicit_percentage') int? explicitPercentage,
     @JsonKey(name: 'created_date') String? createdDate,
     @JsonKey(name: 'updated_date') String? updatedDate,

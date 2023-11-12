@@ -14,12 +14,11 @@ class AppImage extends StatelessWidget {
       this.url,
       this.width,
       this.height,
-      this.fit,
+      this.fit = BoxFit.fill,
       this.defaultUrl});
 
   @override
   Widget build(BuildContext context) {
-    print('url $url');
     if (url == null || url == '') {
       return Image.asset(
         'assets/images/fallback_story_cover.png',

@@ -70,52 +70,81 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
         String title,
         String routerName,
       ) {
-        return Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Flexible(
-                  child: Text(
-                    title,
-                    style: textTheme.bodyMedium
-                        ?.copyWith(color: appColors.inkDark),
-                  ),
-                ),
-                Flexible(
-                  child: IconButton(
-                    onPressed: () {
-                      context.pushNamed(routerName, extra: {
-                        'currentUser': widget.currentUser,
-                        'userProfile': widget.userProfile
-                      });
-                    },
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: appColors.inkLighter,
-                      size: 14,
+        return GestureDetector(
+          onTap: () {
+            routerName == ''
+                ? null
+                : context.pushNamed(routerName, extra: {
+                    'currentUser': widget.currentUser,
+                    'userProfile': widget.userProfile
+                  });
+          },
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      // decoration: BoxDecoration(color: appColors.primaryBase),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 9.0),
+                        child: Text(
+                          title,
+                          style: textTheme.bodyMedium
+                              ?.copyWith(color: appColors.inkDark),
+                        ),
+                      ),
                     ),
                   ),
-                )
-              ],
-            ),
-            const Divider(
-              thickness: 1,
-            )
-          ],
+                  Flexible(
+                    child: IconButton(
+                      onPressed: () {
+                        context.pushNamed(routerName, extra: {
+                          'currentUser': widget.currentUser,
+                          'userProfile': widget.userProfile
+                        });
+                      },
+                      icon: Icon(
+                        Icons.arrow_forward_ios_outlined,
+                        color: appColors.inkLighter,
+                        size: 14,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
         );
       }
 
       return Column(
         children: [
           item('Hồ sơ', 'editProfile'),
+          const Divider(
+            thickness: 1,
+          ),
           sliderItem(),
           sliderItem(isDarkMode: true),
           item('Cài đặt tài khoản', 'editAccount'),
-          item('Bảo mật và an toàn', 'editProfile'),
+          const Divider(
+            thickness: 1,
+          ),
+          // item('Bảo mật và an toàn', 'editProfile'),
+          // const Divider(
+          //   thickness: 1,
+          // ),
           item('Ví của tôi', 'wallet'),
-          item('Về Audiory', 'editProfile'),
-          item('Hỗ trợ và tư vấn', 'editProfile'),
+          const Divider(
+            thickness: 1,
+          ),
+          item('Về Audiory', ''),
+          const Divider(
+            thickness: 1,
+          ),
+          // item('Hỗ trợ và tư vấn', ''),
         ],
       );
     }
@@ -160,29 +189,17 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
           'Cài đặt',
           style: textTheme.headlineMedium,
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: GestureDetector(
-              onTap: () {
-                GoRouter.of(context).push('/profileSettings/messages',
-                    extra: {'userId': widget.currentUser?.id});
-              },
-              child: const Icon(Icons.messenger_outline),
-            ),
-          )
-        ],
       ),
-      body: Center(
+      body: Container(
         child: SingleChildScrollView(
           child: Column(
               // crossAxisAlignment: CrossAxisAlignment.center,
-              // mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24.0),
-                  child: userInfo(),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(vertical: 24.0),
+                //   child: userInfo(),
+                // ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Container(

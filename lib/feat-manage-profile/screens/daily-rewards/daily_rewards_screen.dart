@@ -7,6 +7,7 @@ import 'package:audiory_v0/models/transaction/transaction_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/transaction_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -33,20 +34,23 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
     final transactionsQuery = useQuery(
         ['myDailyRewardTransactions'],
         () => TransactionRepository.fetchMyTransactions(
-            type: TransactionType.DAILY_REWARD));
+            type: TransactionType.DAILY_REWARD, pageSize: 10000));
 
     print(transactionsQuery.data);
     final userStreakQuery =
         useQuery(['userStreak'], () => AuthRepository().getMyStreak());
+    print('streak');
+    print(userStreakQuery.data);
     handleReceiveReward(bool isToday) async {
       try {
         await AuthRepository().receiveReward();
 
         AppSnackBar.buildTopSnackBar(
             context, 'Nhận thưởng thành công', null, SnackBarType.success);
+        userStreakQuery.refetch();
       } catch (e) {
         AppSnackBar.buildTopSnackBar(
-            context, 'Bạn đã nhận thưởng rồi', null, SnackBarType.info);
+            context, 'Bạn đã nhận cho hôm nay rồi', null, SnackBarType.info);
       }
     }
 
@@ -55,15 +59,11 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
       return newtime.toString();
     }
 
-    Widget transactionCard(Transaction transaction) {
+    Widget transactionCard(Transaction? transaction) {
       final containerSize = double.infinity - 32;
-      String formatDate(String? date) {
-        DateTime dateTime = DateTime.parse(date as String);
-        return DateFormat('dd/MM/yyyy').format(dateTime);
-      }
 
-      TransactionType transactionType = TransactionType.values
-          .byName(transaction.transactionType?.toUpperCase() ?? 'DAILY_REWARD');
+      TransactionType transactionType = TransactionType.values.byName(
+          transaction?.transactionType?.toUpperCase() ?? 'DAILY_REWARD');
       return SizedBox(
         height: 75,
         // padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -113,7 +113,7 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                           style: textTheme.titleMedium,
                         ),
                         Text(
-                          formatDate(transaction.createdDate),
+                          appFormatDate(transaction?.createdDate),
                           style: textTheme.bodyMedium
                               ?.copyWith(color: appColors.inkLight),
                         ),
@@ -131,7 +131,7 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                       style: textTheme.titleLarge,
                     ),
                     Text(
-                      '${transactionType.displayTrend} ${transaction.totalPrice} xu',
+                      '${transactionType.displayTrend} ${transaction?.totalPriceAfterCommission} xu',
                       style: textTheme.titleMedium
                           ?.copyWith(color: appColors.inkDarkest),
                     ),
@@ -178,10 +178,13 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                           style: textTheme.bodyMedium
                               ?.copyWith(color: appColors.inkBase),
                         ),
-                        Text(
-                          '800',
-                          style: textTheme.headlineLarge?.copyWith(
-                              color: appColors.inkBase, fontSize: 50),
+                        Skeletonizer(
+                          enabled: transactionsQuery.isFetching,
+                          child: Text(
+                            '${transactionsQuery.data?.length}',
+                            style: textTheme.headlineLarge?.copyWith(
+                                color: appColors.inkBase, fontSize: 50),
+                          ),
                         ),
                         Container(
                           margin: EdgeInsets.only(top: size.height * 0.08),
@@ -281,8 +284,8 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                                     return Padding(
                                       padding: const EdgeInsets.symmetric(
                                           vertical: 8.0),
-                                      child: transactionCard(transactionsQuery
-                                          .data?[i] as Transaction),
+                                      child: transactionCard(
+                                          transactionsQuery.data?[i]),
                                     );
                                   },
                                   // children: List.generate(

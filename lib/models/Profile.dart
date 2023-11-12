@@ -10,6 +10,7 @@ class Profile {
   final String? createdDate;
   final String? description;
   final String? dob;
+  final String? sex;
   final String? email;
   final String? facebookUrl;
   final String? firstName;
@@ -24,39 +25,45 @@ class Profile {
   final int? numberOfFollowing;
   final List<Profile>? followers;
   final int? reportCount;
+  final int? totalVote;
+  final int? totalRead;
+  final int? totalComment;
   final String? updatedDate;
   final String? username;
   final List<Story>? stories;
   final Library? library;
 
-  Profile({
-    this.avatarUrl,
-    this.backgroundUrl,
-    this.bankAccountNumber,
-    this.bankHolderName,
-    this.bankName,
-    this.createdDate,
-    this.description,
-    this.dob,
-    this.email,
-    this.facebookUrl,
-    this.firstName,
-    this.fullName,
-    required this.id,
-    this.isEnabled,
-    this.isOnline,
-    this.lastName,
-    this.totalDonation,
-    this.numberOfFollowers,
-    this.numberOfFollowing,
-    this.followings,
-    this.followers,
-    this.reportCount,
-    this.updatedDate,
-    required this.username,
-    this.stories,
-    this.library,
-  });
+  Profile(
+      {this.avatarUrl,
+      this.backgroundUrl,
+      this.bankAccountNumber,
+      this.bankHolderName,
+      this.bankName,
+      this.createdDate,
+      this.description,
+      this.dob,
+      this.email,
+      this.facebookUrl,
+      this.firstName,
+      this.fullName,
+      required this.id,
+      this.isEnabled,
+      this.isOnline,
+      this.lastName,
+      this.totalDonation,
+      this.numberOfFollowers,
+      this.numberOfFollowing,
+      this.followings,
+      this.followers,
+      this.reportCount,
+      this.totalComment,
+      this.totalRead,
+      this.totalVote,
+      this.updatedDate,
+      required this.username,
+      this.stories,
+      this.library,
+      this.sex});
 
   factory Profile.fromJson(Map<String, dynamic> json) {
     List<dynamic> storiesJson = json["stories"] ?? [];
@@ -81,6 +88,7 @@ class Profile {
       createdDate: json['created_date'],
       description: json['description'],
       dob: json['dob'],
+      sex: json['sex'],
       email: json['email'],
       facebookUrl: json['facebook_url'],
       firstName: json['first_name'],
@@ -95,6 +103,9 @@ class Profile {
       followings: followings,
       followers: followers,
       reportCount: json['report_count'],
+      totalComment: json['total_comment'],
+      totalRead: json['total_read'],
+      totalVote: json['total_vote'],
       updatedDate: json['updated_date'],
       username: json['username'],
       library:
@@ -113,6 +124,7 @@ class Profile {
       'created_date': createdDate,
       'description': description,
       'dob': dob,
+      'sex': sex,
       'email': email,
       'facebook_url': facebookUrl,
       'first_name': firstName,
@@ -127,6 +139,9 @@ class Profile {
       'followers': followers,
       'followings': followings,
       'report_count': reportCount,
+      'total_comment': totalComment,
+      'total_read': totalRead,
+      'total_vote': totalVote,
       'updated_date': updatedDate,
       'username': username,
       'library': library?.toJson(),

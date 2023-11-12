@@ -157,7 +157,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                 )),
           Container(
             margin: const EdgeInsets.only(left: 16),
-            // width: size.width - 120,
             constraints:
                 BoxConstraints(minWidth: 10, maxWidth: size.width - 120),
             decoration: BoxDecoration(
@@ -263,7 +262,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                         ?.copyWith(color: appColors.inkBase),
                   ),
                   Text(
-                    'Đang hoạt động',
+                    'Đang hoạt động ',
                     style: textTheme.bodySmall
                         ?.copyWith(color: appColors.inkLighter),
                   ),
@@ -305,17 +304,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
             ],
           ),
         ),
-        // Flexible(
-        //   child: ListView.builder(
-        //     controller: _controller,
-        //     itemCount: infiniteList.length,
-        //     itemBuilder: (context, index) {
-        //       return ListTile(
-        //         title: messageCard(content: infiniteList[index].content),
-        //       );
-        //     },
-        //   ),
-        // ),
         Align(
           alignment: Alignment.bottomCenter,
           child: DetailMessageBottomBar(sendMessageCallback: (content) {

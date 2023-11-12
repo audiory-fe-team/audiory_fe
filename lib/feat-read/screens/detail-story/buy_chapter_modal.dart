@@ -37,12 +37,14 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
 
     int totalBuyStory =
         widget.paywalledChaptersCount! * (widget.chapter.price ?? 1);
+
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
             width: size.width / 3.75,
+            height: 35,
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: appColors.skyLightest,
@@ -60,30 +62,33 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                   ),
                 )),
                 Flexible(
-                    child: Skeletonizer(
-                  enabled: userQuery.isFetching,
-                  child: Text(
-                    NumberFormat('###,000').format(double.parse(
-                        userQuery.data?.wallets![0].balance.toString() ?? '0')),
-                    style: textTheme.titleMedium
-                        ?.copyWith(color: appColors.inkBase),
+                  child: Skeletonizer(
+                    enabled: userQuery.isFetching,
+                    child: Text(
+                      ' 0' ?? '0',
+                      style: textTheme.titleLarge
+                          ?.copyWith(color: appColors.inkBase),
+                    ),
+                  ),
+                ),
+                Flexible(
+                    child: GestureDetector(
+                  onTap: () => {},
+                  child: const Icon(
+                    Icons.add,
+                    size: 22,
                   ),
                 )),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
+            padding: const EdgeInsets.symmetric(vertical: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(widget.chapter.title, style: textTheme.titleLarge),
-                // Text('Chương ${widget.chapter.position}',
-                //     style: textTheme.titleLarge),
-                const SizedBox(
-                  height: 8,
-                ),
+                Text(widget.chapter.title ?? '', style: textTheme.titleLarge),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [

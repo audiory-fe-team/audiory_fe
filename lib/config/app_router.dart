@@ -22,6 +22,7 @@ import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_scree
 import 'package:audiory_v0/feat-manage-profile/screens/wallet/wallet_screen.dart';
 import 'package:audiory_v0/feat-read/screens/library/library_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading-list/reading_list_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
@@ -43,6 +44,7 @@ import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/feat-auth/screens/login_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
 //auth
@@ -74,6 +76,9 @@ class AppRoutes {
           builder: (context, state, child) {
             return Scaffold(
               body: child,
+              floatingActionButton: const AudioBottomBar(),
+              floatingActionButtonLocation:
+                  FloatingActionButtonLocation.miniCenterFloat,
               bottomNavigationBar: const AppBottomNavigationBar(),
             );
           },
@@ -94,6 +99,7 @@ class AppRoutes {
                 },
                 routes: [
                   GoRoute(
+                      redirect: _redirect,
                       parentNavigatorKey: _shellNavigatorKey,
                       name: 'library',
                       path: 'library',
@@ -191,6 +197,7 @@ class AppRoutes {
                         ),
                       ]),
                   GoRoute(
+                      redirect: _redirect,
                       parentNavigatorKey: _shellNavigatorKey,
                       name: 'profile',
                       path: 'profile',
@@ -487,7 +494,7 @@ class AppRoutes {
         },
       ),
       GoRoute(
-        parentNavigatorKey: _rootNavigatorKey,
+        parentNavigatorKey: _shellNavigatorKey,
         name: 'accountProfile',
         path: '/accountProfile/:id',
         builder: (BuildContext context, GoRouterState state) {
@@ -510,10 +517,12 @@ class AppRoutes {
     ],
   );
 
-  static String? _redirect(BuildContext context, GoRouterState state) {
-    final User? user = AuthRepository().currentUser;
-    // return user != null ? null : context.namedLocation('/login');
-    return user != null
+  static Future<String?> _redirect(
+      BuildContext context, GoRouterState state) async {
+    final storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
+
+    return jwtToken != null
         ? null
         : Uri(
             path: '/login',

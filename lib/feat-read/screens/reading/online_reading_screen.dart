@@ -1,5 +1,7 @@
 // import 'package:audioplayers/audioplayers.dart';
 
+import 'dart:async';
+
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/constants/theme_options.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
@@ -15,6 +17,7 @@ import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import 'package:audiory_v0/providers/audio_player_provider.dart';
 import 'package:audiory_v0/repositories/activities_repository.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
+import 'package:audiory_v0/repositories/reading_progress_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
@@ -39,28 +42,30 @@ class OnlineReadingScreen extends HookConsumerWidget {
   OnlineReadingScreen(
       {super.key, required this.chapterId, this.showComment = false});
 
-  final localPlayer = AudioPlayer();
-
   @override
+  final localPlayer = AudioPlayer();
   Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     final bgColor = useState(appColors.background);
     final textColor = useState(appColors.inkBase);
+
     final selectedOption = useState(0);
     final fontSize = useState(18);
     final showCommentByParagraph = useState(true);
+    final audioSpeed = useState<double>(1);
+
     final haveRead = useState(false);
     final hideBars = useState(false);
+
     final player = ref.watch(audioPlayerProvider);
-    final curParaIndex = ref.watch(audioCurrentIndexProvider);
 
     final keyList = useState<List<GlobalKey>>([]);
     final scrollController = useScrollController();
 
-    final sequenceState = useStream(player.sequenceStateStream);
-    final playingState = useStream(player.playingStream);
+    final playingState = useStream(localPlayer.playingStream);
+    final curParaIndex = useState<int?>(null);
 
     final chapterQuery = useQuery(
       ['chapter', chapterId],
@@ -95,14 +100,59 @@ class OnlineReadingScreen extends HookConsumerWidget {
           });
     }
 
-    void handleFirstPlayAudio() {
-      ref.read(audioPlayerProvider.notifier).state = localPlayer;
-    }
+    Timer scheduleTimeout([int milliseconds = 10000]) =>
+        Timer(Duration(milliseconds: milliseconds), () async {
+          final SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.remove('timer');
+          localPlayer.dispose();
+        });
+
+    useEffect(() {
+      if (chapterQuery.data?.paragraphs?.isEmpty != false) return;
+      if (storyQuery.data == null) return;
+
+      if (localPlayer.sequence != null ||
+          localPlayer.sequence?.isEmpty == false) return;
+
+      try {
+        final playlist = ConcatenatingAudioSource(
+            children: (chapterQuery.data?.paragraphs ?? [])
+                .asMap()
+                .entries
+                .map((entry) {
+          int idx = entry.key;
+          Paragraph p = entry.value;
+          return AudioSource.uri(
+              Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audioUrl}'),
+              tag: MediaItem(
+                  id: p.id,
+                  title: storyQuery.data?.title ?? '',
+                  extras: {
+                    'position': chapterQuery.data?.position,
+                  },
+                  artist:
+                      'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
+                  album: storyQuery.data?.id));
+        }).toList());
+        localPlayer.setAudioSource(playlist);
+        localPlayer.currentIndexStream.listen((currentParaIndex) {
+          if (currentParaIndex == null) return;
+          curParaIndex.value = currentParaIndex;
+          final keyContext = keyList.value[currentParaIndex].currentContext;
+          if (keyContext == null) return;
+          Scrollable.ensureVisible(keyContext,
+              duration: const Duration(seconds: 1), alignment: 0.5);
+
+          return;
+        });
+      } catch (error) {}
+    }, [localPlayer, chapterQuery.data, storyQuery.data]);
 
     syncPreference() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       fontSize.value = prefs.getInt('fontSize') ?? 18;
+      audioSpeed.value = prefs.getDouble('audioSpeed') ?? 1;
       showCommentByParagraph.value =
           prefs.getBool('showCommentByParagraph') ?? true;
       final savedOption = prefs.getInt('themeOption') ?? 0;
@@ -112,52 +162,32 @@ class OnlineReadingScreen extends HookConsumerWidget {
           THEME_OPTIONS[savedOption]["bgColor"] ?? appColors.background;
       textColor.value =
           THEME_OPTIONS[savedOption]["textColor"] ?? appColors.inkBase;
+
+      final timerValue = prefs.getInt('timer');
+      if (timerValue != null) {
+        scheduleTimeout(timerValue);
+      }
+      localPlayer.setSpeed(audioSpeed.value);
     }
 
     useEffect(() {
       syncPreference();
     }, []);
 
-    useEffect(() {
-      final playlist = ConcatenatingAudioSource(
-          children: (chapterQuery.data?.paragraphs ?? [])
-              .asMap()
-              .entries
-              .map((entry) {
-        int idx = entry.key;
-        Paragraph p = entry.value;
-        return AudioSource.uri(
-            Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audioUrl}'),
-            tag: MediaItem(
-                id: p.id,
-                title: storyQuery.data?.title ?? '',
-                artist:
-                    'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
-                album: storyQuery.data?.id));
-      }).toList());
-      localPlayer.setAudioSource(playlist);
-    }, [localPlayer, chapterQuery.data]);
+    // useEffect(() {
+    //   print(curParaIndex);
+    //   if (curParaIndex == null) return;
+    //   final keyContext = keyList.value[curParaIndex].currentContext;
+    //   if (keyContext == null) return;
+    //   Scrollable.ensureVisible(keyContext,
+    //       duration: const Duration(seconds: 1), alignment: 0.5);
 
-    useEffect(() {
-      if (curParaIndex == null) return;
-      final keyContext = keyList.value[curParaIndex].currentContext;
-      if (keyContext == null) return;
-      Scrollable.ensureVisible(keyContext,
-          duration: const Duration(seconds: 1), alignment: 0.5);
-
-      return;
-    }, [curParaIndex]);
+    //   return;
+    // }, [curParaIndex]);
 
     useEffect(() {
       scrollController.addListener(() {
-        if (scrollController.position.atEdge) {
-          if (haveRead.value) return;
-          ActivitiesRepository.sendActivity(
-              actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
-          haveRead.value = true;
-        }
-      });
-      scrollController.addListener(() {
+        // Hide bar according to scroll direction
         if (scrollController.position.userScrollDirection ==
             ScrollDirection.forward) {
           if (hideBars.value) hideBars.value = false;
@@ -166,7 +196,29 @@ class OnlineReadingScreen extends HookConsumerWidget {
             ScrollDirection.reverse) {
           if (!hideBars.value) hideBars.value = true;
         }
+
+        // Send READ activity if scroll to bottom
+        if (scrollController.position.atEdge) {
+          if (haveRead.value) return;
+          ActivitiesRepository.sendActivity(
+              actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
+          haveRead.value = true;
+        }
+
+        // Record scroll position
+        // readingPosition.value = scrollController.offset.round();
       });
+
+      return () async {
+        // print('haha');
+        // print(readingPosition.value);
+        // if (chapterQuery.data?.storyId == null) return;
+        // await ReadingProgressRepository.updateProgress(
+        //     storyId: chapterQuery.data!.storyId!,
+        //     chapterId: chapterId,
+        //     paragraphId: '',
+        //     readingPosition: readingPosition.value);
+      };
     }, []);
 
     // useEffect(() {
@@ -205,21 +257,18 @@ class OnlineReadingScreen extends HookConsumerWidget {
                           : chapterQuery.data ?? skeletonChapter,
                     ),
                     const SizedBox(height: 24),
-                    StreamBuilder(
-                        stream: localPlayer.sequenceStream,
-                        builder: ((context, snapshot) {
-                          final a = snapshot.data;
-                          if (a == null || a.isEmpty) {
-                            return const SizedBox();
-                          }
-                          print(selectedOption.value);
-                          return ChapterAudioPlayer(
-                            chapter: chapterQuery.data,
-                            player: localPlayer,
-                            onFirstPlay: handleFirstPlayAudio,
-                            selectedThemeOption: selectedOption.value,
-                          );
-                        })),
+
+                    ChapterAudioPlayer(
+                      player: localPlayer,
+                      onFirstPlay: () {
+                        player.dispose();
+                        ref
+                            .read(audioPlayerProvider.notifier)
+                            .setPlayer(localPlayer);
+                      },
+                      selectedThemeOption: selectedOption.value,
+                    ),
+
                     const SizedBox(height: 24),
                     ...((chapterQuery.isFetching
                                     ? skeletonChapter
@@ -240,7 +289,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
                       return GestureDetector(
                           onTap: () {
                             if (playingState.data == true) {
-                              player.seek(null, index: index);
+                              localPlayer.seek(null, index: index);
                             }
                           },
                           child: SizedBox(
@@ -251,11 +300,12 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                   margin: const EdgeInsets.only(bottom: 16),
                                   padding: const EdgeInsets.only(
                                       bottom: 4, left: 4, right: 4, top: 4),
-                                  decoration: (curParaIndex == index)
+                                  decoration: (curParaIndex.value == index)
                                       ? BoxDecoration(
                                           borderRadius:
                                               BorderRadius.circular(8),
-                                          color: appColors.primaryLightest)
+                                          color: THEME_OPTIONS[selectedOption
+                                              .value]['audioBackground'])
                                       : const BoxDecoration(),
                                   child: Text(para.content ?? '',
                                       style: textTheme.bodyLarge?.copyWith(
@@ -265,7 +315,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                           color: textColor.value))),
                               if (showCommentByParagraph.value)
                                 Positioned(
-                                    bottom: 0,
+                                    bottom: -3,
                                     right: 0,
                                     child: IconButton(
                                         visualDensity: const VisualDensity(
@@ -274,14 +324,16 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                             handleOpenCommentPara(para.id),
                                         icon: Icon(Icons.mode_comment_outlined,
                                             size: 16,
-                                            color: appColors.primaryBase))),
+                                            color: THEME_OPTIONS[selectedOption
+                                                .value]['audioBackground']))),
                               if (showCommentByParagraph.value)
                                 Positioned(
-                                    bottom: 17,
+                                    bottom: 14,
                                     right: 18,
                                     child: Text('${para.commentCount}',
                                         style: textTheme.labelMedium?.copyWith(
-                                            color: appColors.primaryBase,
+                                            color: THEME_OPTIONS[selectedOption
+                                                .value]['audioBackground'],
                                             fontFamily:
                                                 GoogleFonts.sourceSansPro()
                                                     .fontFamily,
@@ -375,7 +427,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
               onChangeStyle: syncPreference,
               chapterId: chapterId,
             ),
-      floatingActionButton: AudioBottomBar(),
+      floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       drawer: ChapterDrawer(

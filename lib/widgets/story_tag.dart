@@ -25,7 +25,7 @@ class StoryTag extends StatelessWidget {
         label,
         textAlign: TextAlign.center,
         style: Theme.of(context).textTheme.titleSmall!.copyWith(
-            color: selected ? Colors.white : appColors.inkLight,
+            color: selected ? appColors.inkBase : appColors.inkLight,
             fontWeight: FontWeight.w400,
             overflow: TextOverflow.visible),
       ),

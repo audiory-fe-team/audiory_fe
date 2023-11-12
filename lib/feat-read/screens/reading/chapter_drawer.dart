@@ -104,7 +104,7 @@ class ChapterDrawer extends HookWidget {
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
                                       vertical: 10, horizontal: 12),
-                                  child: Text(chapter.title,
+                                  child: Text(chapter.title ?? '',
                                       overflow: TextOverflow.ellipsis,
                                       style: Theme.of(context)
                                           .textTheme

@@ -207,7 +207,6 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
               searchValue.value = value;
             },
             name: 'search',
-            initialValue: 'uu',
             backgroundColor: appColors.skyLighter.withOpacity(0.7),
             hintText: 'Tìm kiếm',
             suffixIcon: Icon(
