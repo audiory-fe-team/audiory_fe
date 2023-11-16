@@ -83,6 +83,20 @@ class StoryRepostitory {
     }
   }
 
+  Future<List<Story>> fetchSimilarStories(String storyId) async {
+    final url = Uri.parse(
+        '${dotenv.get('API_BASE_URL')}/stories/$storyId/recommendations');
+    final response = await http.get(url);
+    final responseBody = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      final List<dynamic> result = jsonDecode(responseBody)['data'];
+      return result.map((i) => Story.fromJson(i)).toList();
+    } else {
+      throw Exception('Failed to load recommend stories');
+    }
+  }
+
   Future<Story> fetchStoryById(String storyId) async {
     Map<String, String> headers = {
       "Content-type": "application/json",
@@ -177,7 +191,6 @@ class StoryRepostitory {
     const storage = FlutterSecureStorage();
 
     String? jwtToken = await storage.read(key: 'jwt');
-    print('jwt $jwtToken');
     if (jwtToken != null) {
       headers['Authorization'] = 'Bearer $jwtToken';
     }
@@ -185,8 +198,8 @@ class StoryRepostitory {
     final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
     if (kDebugMode) {
-      print('RES FOR PUBLISHED stories ');
-      print(' ${responseBody}');
+      // print('RES FOR PUBLISHED stories ');
+      // print(' ${responseBody}');
     }
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(responseBody)['data'];
@@ -347,11 +360,12 @@ class StoryRepostitory {
     }
   }
 
-  Future<List<Profile>> fetchTopDonators(storyId) async {
+  Future<List<Profile>> fetchTopDonators(String storyId) async {
     Map<String, String> headers = {
       "Content-type": "application/json",
       "Accept": "application/json",
     };
+    if (storyId == '') return [];
 
     final url = Uri.parse('${Endpoints().story}/$storyId/top-donators');
     final response = await http.get(url, headers: headers);

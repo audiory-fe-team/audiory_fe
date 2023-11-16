@@ -21,9 +21,8 @@ class WriterScreen extends StatefulHookWidget {
 
 class _WriterScreenState extends State<WriterScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
-  Widget _storiesList(
-    UseQueryResult<List<Story>?, dynamic> myStoriesQuery,
-  ) {
+  Widget _storiesList(UseQueryResult<List<Story>?, dynamic> myStoriesQuery,
+      List<Story>? filteredList) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -40,13 +39,13 @@ class _WriterScreenState extends State<WriterScreen> {
           child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true, //fix error
-              itemCount: myStoriesQuery.data?.length,
+              itemCount: filteredList?.length,
               itemBuilder: ((context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: Column(
                     children: [
-                      StoryCardDetailWriter(story: myStoriesQuery.data?[index]),
+                      StoryCardDetailWriter(story: filteredList?[index]),
                     ],
                   ),
                 );
@@ -61,7 +60,8 @@ class _WriterScreenState extends State<WriterScreen> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final myStoriesQuery = useQuery(
         ['myStories'], () => StoryRepostitory().fetchMyStories()); //userId=me
-
+    final filteredStories = (myStoriesQuery.data ?? []).where(
+        (element) => element.title?.toLowerCase().contains('a') ?? false);
     return Scaffold(
       appBar: CustomAppBar(
         height: 60,
@@ -103,7 +103,7 @@ class _WriterScreenState extends State<WriterScreen> {
                     ),
                   )),
               const SizedBox(height: 16),
-              // _storiesList(myStoriesQuery),
+              _storiesList(myStoriesQuery, filteredStories.toList()),
             ],
           ),
         ),

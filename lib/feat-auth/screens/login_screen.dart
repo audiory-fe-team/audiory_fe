@@ -182,16 +182,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ?.copyWith(color: const Color(0xff000000))),
                       Column(
                         children: <Widget>[
-                          // const AppTextInputField(
-                          //   name: 'emailOrUsername',
-                          //   hintText: 'Tên đăng nhập / Email',
-                          //   isRequired: true,
-                          // ),
-                          // const AppTextInputField(
-                          //   name: 'password',
-                          //   hintText: 'Mật khẩu',
-                          //   isRequired: true,
-                          // ),
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
@@ -319,60 +309,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ],
                       ),
                       Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.only(top: 16),
+                        child: AppIconButton(
+                          onPressed: () {
+                            signInGoogle();
+                          },
+                          title: 'Tiếp tục với Google',
+                          bgColor: appColors.secondaryLight,
+                          color: appColors.skyLightest,
+                        ),
+                      ),
+                      Container(
                           width: double.infinity,
                           margin: const EdgeInsets.symmetric(vertical: 8.0),
                           child: _linkToRegisterScreen(context)),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            const Divider(
-                              height: 1.0,
-                            ),
-                            SizedBox(
-                                height: 30,
-                                child: Text(
-                                  'Hoặc',
-                                  textAlign: TextAlign.right,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 10,
-                                        color: const Color(0xFF71727A),
-                                      ),
-                                )),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                CircularButton(
-                                    icon: FontAwesomeIcons.google,
-                                    size: 12.0,
-                                    color: Colors.white,
-                                    bgColor: Colors.black,
-                                    onPressed: () {
-                                      signInGoogle();
-                                    }),
-                                CircularButton(
-                                    icon: FontAwesomeIcons.apple,
-                                    size: 12.0,
-                                    color: Colors.white,
-                                    bgColor: Colors.red,
-                                    onPressed: () {}),
-                                CircularButton(
-                                    icon: FontAwesomeIcons.facebookF,
-                                    size: 12.0,
-                                    color: Colors.white,
-                                    bgColor: const Color(0xFF006FFD),
-                                    onPressed: () {}),
-                              ],
-                            )
-                          ],
-                        ),
-                      )
                     ],
                   )),
             ],

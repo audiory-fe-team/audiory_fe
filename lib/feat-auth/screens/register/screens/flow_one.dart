@@ -2,7 +2,6 @@ import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -27,6 +26,7 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
     minutes: 15,
     seconds: 0,
   );
+  final remainTime = 0;
 
   final _formKey = GlobalKey<FormBuilderState>();
   TextEditingController codeController = TextEditingController();
@@ -82,9 +82,8 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                           Center(
                             child: TimerCountdown(
                               onTick: (remainingTime) {
-                                setState(() {
-                                  countDownTime = remainingTime;
-                                });
+                                print('REMAINING ${remainingTime.inSeconds}');
+                                print('DURATION ${countDownTime.inSeconds}');
                               },
                               format: CountDownTimerFormat.minutesSeconds,
                               descriptionTextStyle:
@@ -232,29 +231,33 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                           ),
                           GestureDetector(
                             onTap: () async {
-                              if (const Duration(minutes: 15).inSeconds -
-                                      countDownTime.inSeconds >=
-                                  60) {
-                                final result = await AuthRepository()
-                                    .verifyEmail(
-                                        email: widget.signUpBody?['email']
-                                            as String);
-                                if (result == 200) {
-                                  // ignore: use_build_context_synchronously
-                                  AppSnackBar.buildTopSnackBar(
-                                      context,
-                                      'Gửi lại mã thành công',
-                                      null,
-                                      SnackBarType.error);
-                                } else {
-                                  // ignore: use_build_context_synchronously
-                                  AppSnackBar.buildTopSnackBar(
-                                      context,
-                                      'Đợi 1 phút để gửi lại mã',
-                                      null,
-                                      SnackBarType.error);
-                                }
-                              }
+                              print(
+                                  'COUNTDOWN TIME ${countDownTime.inSeconds}');
+                              print(
+                                  'DIFF ${Duration(minutes: 15).inSeconds - countDownTime.inSeconds}');
+                              // if (const Duration(minutes: 15).inSeconds -
+                              //         countDownTime.inSeconds >=
+                              //     60) {
+                              //   final result = await AuthRepository()
+                              //       .verifyEmail(
+                              //           email:
+                              //               widget.signUpBody?['email'] ?? '');
+                              //   if (result == 200) {
+                              //     // ignore: use_build_context_synchronously
+                              //     AppSnackBar.buildTopSnackBar(
+                              //         context,
+                              //         'Gửi lại mã thành công',
+                              //         null,
+                              //         SnackBarType.error);
+                              //   } else {
+                              //     // ignore: use_build_context_synchronously
+                              //     AppSnackBar.buildTopSnackBar(
+                              //         context,
+                              //         'Đợi 1 phút để gửi lại mã',
+                              //         null,
+                              //         SnackBarType.error);
+                              //   }
+                              // }
                             },
                             child: Center(
                                 child: Text('Gửi lại mã',

@@ -10,7 +10,6 @@ import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
-import 'package:audiory_v0/models/wallet/wallet_model.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
 import 'package:audiory_v0/providers/story_database.dart';
@@ -50,6 +49,8 @@ class DetailStoryScreen extends HookConsumerWidget {
 
     final libraryQuery =
         useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
+    final isAddedToLibrary = libraryQuery.data?.libraryStory
+        ?.any((element) => element.storyId == id);
 
     final storyQuery = useQuery(
         ['story', id], () => StoryRepostitory().fetchStoryById(id),
@@ -62,13 +63,6 @@ class DetailStoryScreen extends HookConsumerWidget {
     final tabState = useState(0);
     final storyOffline = useFuture<Story?>(
         Future<Story?>.value(isOffline ? storyDb.getStory(id) : null));
-
-    String handleCoins() {
-      List<Wallet>? wallets = userQuery.data?.wallets;
-      String coin =
-          double.parse(wallets![0].balance.toString()).toStringAsFixed(0);
-      return coin;
-    }
 
     handleBuyStory() async {
       //check if paid chapters left >5 chapter
@@ -90,6 +84,8 @@ class DetailStoryScreen extends HookConsumerWidget {
       String chapterId,
       int price,
     ) async {
+      print(chapterId);
+      print(price);
       var totalCoins = userQuery.data?.wallets?.isEmpty == true
           ? 0
           : userQuery.data?.wallets?[0].balance;
@@ -153,6 +149,8 @@ class DetailStoryScreen extends HookConsumerWidget {
       final sharedNumberStyle =
           textTheme.titleLarge!.copyWith(color: appColors.inkLight);
       final sharedHeaderStyle = textTheme.titleSmall;
+      final shareWidth = MediaQuery.of(context).size.width <= 360 ? 10.0 : 16.0;
+      final shareDivider = const SizedBox(width: 4);
       return IntrinsicHeight(
           child: Row(
               mainAxisSize: MainAxisSize.max,
@@ -164,9 +162,9 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Skeleton.shade(
                       child: Image.asset(
                     'assets/images/chapter_colored.png',
-                    width: 16,
+                    width: shareWidth,
                   )),
-                  const SizedBox(width: 4),
+                  shareDivider,
                   Text(
                     'Chương',
                     style: sharedHeaderStyle,
@@ -184,7 +182,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Skeleton.shade(
                       child: Image.asset(
                     'assets/images/view_colored.png',
-                    width: 16,
+                    width: shareWidth,
                   )),
                   const SizedBox(width: 4),
                   Text(
@@ -204,7 +202,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Skeleton.shade(
                       child: Image.asset(
                     'assets/images/comment_colored.png',
-                    width: 16,
+                    width: shareWidth,
                   )),
                   const SizedBox(width: 4),
                   Text(
@@ -224,7 +222,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Skeleton.shade(
                       child: Image.asset(
                     'assets/images/vote_colored.png',
-                    width: 16,
+                    width: shareWidth,
                   )),
                   const SizedBox(width: 4),
                   Text(
@@ -355,7 +353,6 @@ class DetailStoryScreen extends HookConsumerWidget {
                           color: Colors.transparent,
                           child: InkWell(
                               onTap: () async {
-                                // context.go('/profile');
                                 if (isOffline == false) {
                                   context.push(
                                       '/accountProfile/${story?.authorId}',
@@ -364,6 +361,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                                         'avatar': story?.author?.avatarUrl,
                                       });
                                 }
+                                ;
                               },
                               child: Row(
                                   mainAxisSize: MainAxisSize.min,
@@ -443,7 +441,6 @@ class DetailStoryScreen extends HookConsumerWidget {
                                           [])
                                       .map((tag) => GestureDetector(
                                           onTap: () {
-                                            print("tag screen");
                                             context.push(
                                                 '/story/${story?.id}/tag/${tag.id}?tagName=${tag.name}');
                                           },
@@ -491,7 +488,9 @@ class DetailStoryScreen extends HookConsumerWidget {
                         return Skeletonizer(
                             enabled: isLoading,
                             child: StoryDetailTab(
-                                story: isLoading ? skeletonStory : story));
+                              story: isLoading ? skeletonStory : story,
+                              storyId: id,
+                            ));
                       }
                       return Skeletonizer(
                           enabled: isLoading,
@@ -506,17 +505,13 @@ class DetailStoryScreen extends HookConsumerWidget {
                   ],
                 ),
               ))),
-      bottomNavigationBar: Builder(builder: (context) {
-        final isAddedToLibrary = libraryQuery.data?.libraryStory
-            ?.any((element) => element.storyId == id);
-        return DetailStoryBottomBar(
-            storyId: id,
-            addToLibraryCallback: () => isAddedToLibrary == true
-                ? handleRemoveFromLibrary()
-                : handleAddToLibrary(),
-            downloadStoryCallback: () => handleDownloadStory(),
-            isAddedToLibrary: isAddedToLibrary ?? false);
-      }),
+      bottomNavigationBar: DetailStoryBottomBar(
+          storyId: id,
+          addToLibraryCallback: () => isAddedToLibrary == true
+              ? handleRemoveFromLibrary()
+              : handleAddToLibrary(),
+          downloadStoryCallback: () => handleDownloadStory(),
+          isAddedToLibrary: isAddedToLibrary ?? false),
       floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,

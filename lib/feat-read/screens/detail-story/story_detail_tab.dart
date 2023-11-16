@@ -1,3 +1,5 @@
+import 'package:audiory_v0/constants/skeletons.dart';
+import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/gift/gift_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
@@ -20,19 +22,27 @@ import './donate_gift_modal.dart';
 
 class StoryDetailTab extends HookWidget {
   final Story? story;
+  final String storyId;
 
-  const StoryDetailTab({super.key, required this.story});
+  const StoryDetailTab({super.key, required this.story, required this.storyId});
 
   @override
   Widget build(BuildContext context) {
     final AppColors? appColors = Theme.of(context).extension<AppColors>();
     final textTheme = Theme.of(context).textTheme;
 
-    final donatorsQuery = useQuery(['donators', story?.id],
-        () => StoryRepostitory().fetchTopDonators(story?.id));
+    final donatorsQuery = useQuery(
+      ['donators', storyId],
+      () => StoryRepostitory().fetchTopDonators(storyId),
+    );
     final userQuery = useQuery([
       'userById',
     ], () => AuthRepository().getMyUserById());
+    final similarStories = useQuery(
+      ['similarStories', storyId],
+      () => StoryRepostitory().fetchSimilarStories(storyId),
+    );
+
     handleSendingGift(Gift gift, total) async {
       var totalCoinsOfUser = userQuery.data?.wallets![0].balance ?? 0;
       if (double.parse('${gift.price! * total}') >
@@ -64,8 +74,7 @@ class StoryDetailTab extends HookWidget {
 
     Widget donatorsView(List<Profile> donators) {
       final list = donators;
-      final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-      final textTheme = Theme.of(context).textTheme;
+
       //if top donators<3 => column only
       //if top donators>=3 => column(row for top3 and column for others)
       Widget getBadgeWidget(int order) {
@@ -77,17 +86,17 @@ class StoryDetailTab extends HookWidget {
                   child: Text(order.toString(),
                       style: Theme.of(context).textTheme.headlineMedium)));
         }
-        Color bgBadgeColor = appColors.skyLight;
-        Color color = appColors.skyLight;
+        Color? bgBadgeColor = appColors?.skyLight;
+        Color? color = appColors?.skyLight;
         switch (order) {
           case 1:
-            bgBadgeColor = appColors.secondaryBase;
+            bgBadgeColor = appColors?.secondaryBase;
             break;
           case 2:
-            bgBadgeColor = appColors.primaryLight;
+            bgBadgeColor = appColors?.primaryLight;
             break;
           case 3:
-            color = appColors.inkBase;
+            color = appColors?.inkBase;
             break;
         }
 
@@ -107,7 +116,7 @@ class StoryDetailTab extends HookWidget {
 
       Widget topThreeDonatorCard(Profile? donator, int order) {
         double defaultContainerSize = 110;
-        Color defaultColor = appColors.skyLight;
+        Color defaultColor = appColors?.skyLight ?? Colors.transparent;
         switch (order) {
           case 2:
             defaultContainerSize = 90;
@@ -175,7 +184,7 @@ class StoryDetailTab extends HookWidget {
                 child: Text(
                   '${donator?.totalDonation ?? ''} điểm',
                   style:
-                      textTheme.bodyMedium?.copyWith(color: appColors.skyDark),
+                      textTheme.bodyMedium?.copyWith(color: appColors?.skyDark),
                 ),
               ),
             ],
@@ -244,7 +253,7 @@ class StoryDetailTab extends HookWidget {
                 child: Text(
                   '${donator?.totalDonation ?? ''} điểm',
                   style:
-                      textTheme.titleLarge?.copyWith(color: appColors.skyDark),
+                      textTheme.titleLarge?.copyWith(color: appColors?.skyDark),
                 ),
               ),
             ],
@@ -258,9 +267,11 @@ class StoryDetailTab extends HookWidget {
       // }
 
       return list.isEmpty
-          ? const Center(
-              child: Text('Chưa có người ủng hộ'),
-            )
+          ? const Padding(
+              padding: EdgeInsets.symmetric(vertical: 48),
+              child: Center(
+                child: Text('Chưa có người ủng hộ'),
+              ))
           : list.length < 3
               ? Container(
                   margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -313,6 +324,7 @@ class StoryDetailTab extends HookWidget {
       children: [
         Skeleton.shade(
             child: Container(
+                width: double.infinity,
                 padding: const EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
@@ -341,7 +353,6 @@ class StoryDetailTab extends HookWidget {
         const SizedBox(
           height: 24,
         ),
-
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -383,29 +394,29 @@ class StoryDetailTab extends HookWidget {
         ),
         donatorsView(donatorsQuery.data ?? []),
         const SizedBox(
-          height: 16,
+          height: 8,
         ),
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //   children: [
-        //     Text(
-        //       'Bình luận nổi bật',
-        //       style: textTheme.headlineSmall,
-        //     ),
-        //     GestureDetector(
-        //       child: SvgPicture.asset(
-        //         'assets/icons/right-arrow.svg',
-        //         width: 24,
-        //         height: 24,
-        //         color: appColors?.inkDark,
-        //       ),
-        //     ),
-        //   ],
-        // ),
-        // const SizedBox(
-        //   height: 12,
-        // ),
-        // _commentList()
+        Row(
+          children: [
+            Text(
+              'Truyện tương tự',
+              style: textTheme.headlineSmall,
+            ),
+          ],
+        ),
+        const SizedBox(
+          height: 12,
+        ),
+        Skeletonizer(
+            enabled: similarStories.isFetching,
+            child: StoryScrollList(
+              storyList: similarStories.isFetching
+                  ? skeletonStories
+                  : similarStories.data,
+            )),
+        const SizedBox(
+          height: 48,
+        ),
       ],
     );
   }

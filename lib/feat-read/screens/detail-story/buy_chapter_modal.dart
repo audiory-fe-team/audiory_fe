@@ -65,7 +65,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                   child: Skeletonizer(
                     enabled: userQuery.isFetching,
                     child: Text(
-                      ' 0' ?? '0',
+                      '${userQuery.data?.wallets?[0].balance}' ?? '0',
                       style: textTheme.titleLarge
                           ?.copyWith(color: appColors.inkBase),
                     ),

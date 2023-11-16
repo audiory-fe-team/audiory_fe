@@ -11,28 +11,33 @@ class LibraryRepository {
   static final libraryEndpoint = "${dotenv.get('API_BASE_URL')}/libraries";
 
   static Future<Library> fetchMyLibrary({int pageSize = 10}) async {
-    const storage = FlutterSecureStorage();
-    String? jwtToken = await storage.read(key: 'jwt');
-    final url = Uri.parse('$libraryEndpoint/me')
-        .replace(queryParameters: {'pageSize': pageSize});
+    try {
+      const storage = FlutterSecureStorage();
+      String? jwtToken = await storage.read(key: 'jwt');
 
-    // Create headers with the JWT token if it's available
-    Map<String, String> headers = {
-      "Content-type": "application/json",
-      "Accept": "application/json",
-    };
+      final url = Uri.parse('$libraryEndpoint/me')
+          .replace(queryParameters: {'page_size': pageSize.toString()});
 
-    if (jwtToken != null) {
-      headers['Authorization'] = 'Bearer $jwtToken';
-    }
+      // Create headers with the JWT token if it's available
+      Map<String, String> headers = {
+        "Content-type": "application/json",
+        "Accept": "application/json",
+      };
 
-    final response = await http.get(url, headers: headers);
-    final responseBody = utf8.decode(response.bodyBytes);
+      if (jwtToken != null) {
+        headers['Authorization'] = 'Bearer $jwtToken';
+      }
 
-    if (response.statusCode == 200) {
-      final result = jsonDecode(responseBody)['data'];
-      return Library.fromJson(result);
-    } else {
+      final response = await http.get(url, headers: headers);
+      final responseBody = utf8.decode(response.bodyBytes);
+      if (response.statusCode == 200) {
+        final result = jsonDecode(responseBody)['data'];
+        return Library.fromJson(result);
+      } else {
+        throw Exception('Failed to load library');
+      }
+    } catch (e) {
+      print(e.toString());
       throw Exception('Failed to load library');
     }
   }

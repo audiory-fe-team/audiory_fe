@@ -31,6 +31,7 @@ android {
     namespace "com.example.audiory_v0"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
+   
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8

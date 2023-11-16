@@ -28,6 +28,12 @@ class AppImage extends StatelessWidget {
       );
     }
     return FadeInImage.memoryNetwork(
+      imageErrorBuilder: (context, error, stackTrace) => Image.asset(
+        'assets/images/fallback_story_cover.png',
+        width: width,
+        height: height,
+        fit: fit,
+      ),
       placeholder: kTransparentImage,
       image: url!,
       width: width,

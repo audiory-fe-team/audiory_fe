@@ -29,7 +29,6 @@ class ConversationRepository {
     final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
-      print('response ${response.body}');
       final List result = json.decode(responseBody)['data'];
       return result.map((i) => Conversation.fromJson(i)).toList();
     } else {

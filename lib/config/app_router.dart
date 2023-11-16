@@ -16,6 +16,8 @@ import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart'
 import 'package:audiory_v0/feat-manage-profile/screens/edit_email_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/messages/detail_conversation_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/messages/messages_list_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/block_account_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/mute_accounts_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_screen.dart';
@@ -196,6 +198,28 @@ class AppRoutes {
                           },
                         ),
                       ]),
+                  GoRoute(
+                    parentNavigatorKey: _rootNavigatorKey,
+                    name: 'accountProfile',
+                    path: 'accountProfile/:id',
+                    builder: (BuildContext context, GoRouterState state) {
+                      final id = state.pathParameters['id'];
+                      print('id ${id}');
+                      final extraMap = state.extra as Map<String, dynamic>;
+                      final name = extraMap['name'] ?? '';
+                      final avatar = extraMap['avatar'] ?? '';
+
+                      if (id == null || id == '' || id == 'not-found') {
+                        return const NotFoundScreen();
+                      }
+                      // return UserProfileScreen();
+                      return AppProfileScreen(
+                        id: id,
+                        name: name,
+                        avatar: avatar,
+                      );
+                    },
+                  ),
                   GoRoute(
                       redirect: _redirect,
                       parentNavigatorKey: _shellNavigatorKey,
@@ -381,6 +405,18 @@ class AppRoutes {
                 ]),
           ]),
       GoRoute(
+          name: 'muteAccounts',
+          path: '/muteAccounts',
+          builder: (BuildContext context, GoRouterState state) {
+            return const MuteAccountsScreen();
+          }),
+      GoRoute(
+          name: 'blockAccounts',
+          path: '/blockAccounts',
+          builder: (BuildContext context, GoRouterState state) {
+            return const BlockAccounts();
+          }),
+      GoRoute(
         name: 'wallet',
         path: '/wallet',
         builder: (BuildContext context, GoRouterState state) {
@@ -491,27 +527,6 @@ class AppRoutes {
               //extra
               story: story,
               chapterId: chapterId);
-        },
-      ),
-      GoRoute(
-        parentNavigatorKey: _shellNavigatorKey,
-        name: 'accountProfile',
-        path: '/accountProfile/:id',
-        builder: (BuildContext context, GoRouterState state) {
-          final id = state.pathParameters['id'];
-          print('ID $id');
-          final extraMap = state.extra as Map<String, dynamic>;
-          final name = extraMap['name'] ?? '';
-          final avatar = extraMap['avatar'] ?? '';
-          print('alo');
-          if (id == null || id == '' || id == 'not-found') {
-            return const NotFoundScreen();
-          }
-          return AppProfileScreen(
-            name: name,
-            avatar: avatar,
-            id: id,
-          );
         },
       ),
     ],

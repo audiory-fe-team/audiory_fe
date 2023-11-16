@@ -35,28 +35,33 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
       Widget sliderItem({bool isDarkMode = false}) {
         return Column(
           children: [
-            FormBuilderSwitch(
-              decoration: const InputDecoration(border: InputBorder.none),
-              initialValue: false,
-              activeColor: appColors.primaryBase,
-              name: 'isNotified',
-              onChanged: (value) {
-                isDarkMode
-                    ? notifier.setTheme(
-                        value == true ? ThemeMode.dark : ThemeMode.light)
-                    : null;
-              },
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isDarkMode ? 'Chế độ ban đêm' : 'Thông báo',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: appColors.inkBase),
-                  ),
-                ],
+            Container(
+              height: 50,
+              // decoration: BoxDecoration(color: appColors.secondaryLighter),
+              child: FormBuilderSwitch(
+                decoration: const InputDecoration(border: InputBorder.none),
+                initialValue: false,
+                activeColor: appColors.primaryBase,
+                name: 'isNotified',
+                onChanged: (value) {
+                  isDarkMode
+                      ? notifier.setTheme(
+                          value == true ? ThemeMode.dark : ThemeMode.light)
+                      : null;
+                },
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      isDarkMode ? 'Chế độ ban đêm' : 'Thông báo',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: appColors.inkBase),
+                    ),
+                  ],
+                ),
               ),
             ),
             const Divider(
@@ -66,18 +71,17 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
         );
       }
 
-      Widget item(
-        String title,
-        String routerName,
-      ) {
+      Widget item(String title, String routerName, {bool? isPrivacy = false}) {
         return GestureDetector(
           onTap: () {
             routerName == ''
                 ? null
-                : context.pushNamed(routerName, extra: {
-                    'currentUser': widget.currentUser,
-                    'userProfile': widget.userProfile
-                  });
+                : isPrivacy == true
+                    ? context.pushNamed(routerName)
+                    : context.pushNamed(routerName, extra: {
+                        'currentUser': widget.currentUser,
+                        'userProfile': widget.userProfile
+                      });
           },
           child: Column(
             children: [
@@ -140,10 +144,22 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
           const Divider(
             thickness: 1,
           ),
-          item('Về Audiory', ''),
-          const Divider(
-            thickness: 1,
+
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            width: double.infinity,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                'BẢO MẬT VÀ AN TOÀN',
+                style: textTheme.headlineMedium
+                    ?.copyWith(color: appColors.inkLight),
+              ),
+            ]),
           ),
+          item('Danh sách ngừng tương tác', 'muteAccounts', isPrivacy: true),
+          item('Các tài khoản bị chặn', 'blockAccounts', isPrivacy: true),
+          item('Về Audiory', ''),
           // item('Hỗ trợ và tư vấn', ''),
         ],
       );

@@ -27,6 +27,11 @@ class Profile {
   final int? reportCount;
   final int? totalVote;
   final int? totalRead;
+  final int? levelId;
+  final int? authorLevelId;
+  final bool? isAuthorFlairSelected;
+  final bool? isFollowed;
+  final bool? isNotified;
   final int? totalComment;
   final String? updatedDate;
   final String? username;
@@ -59,6 +64,11 @@ class Profile {
       this.totalComment,
       this.totalRead,
       this.totalVote,
+      this.levelId = 1,
+      this.authorLevelId = 1,
+      this.isAuthorFlairSelected = false,
+      this.isFollowed = false,
+      this.isNotified = false,
       this.updatedDate,
       required this.username,
       this.stories,
@@ -106,6 +116,11 @@ class Profile {
       totalComment: json['total_comment'],
       totalRead: json['total_read'],
       totalVote: json['total_vote'],
+      levelId: json['level_id'],
+      authorLevelId: json['author_level_id'],
+      isAuthorFlairSelected: json['is_author_flair_selected'],
+      isFollowed: json['is_followed'],
+      isNotified: json['is_notified'],
       updatedDate: json['updated_date'],
       username: json['username'],
       library:
@@ -142,6 +157,11 @@ class Profile {
       'total_comment': totalComment,
       'total_read': totalRead,
       'total_vote': totalVote,
+      'level_id': levelId,
+      'author_level_id': authorLevelId,
+      'is_author_flair_selected': isAuthorFlairSelected,
+      'is_followed': isFollowed,
+      'is_notified': isNotified,
       'updated_date': updatedDate,
       'username': username,
       'library': library?.toJson(),

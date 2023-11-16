@@ -174,7 +174,7 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          'Tổng xu',
+                          'Tổng xu đã nhận',
                           style: textTheme.bodyMedium
                               ?.copyWith(color: appColors.inkBase),
                         ),

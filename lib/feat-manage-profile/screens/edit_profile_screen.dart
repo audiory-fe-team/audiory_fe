@@ -229,7 +229,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         name: 'facebook_url',
                         initialValue: profileQuery.data?.facebookUrl == ''
                             ? null
-                            : profileQuery.data?.facebookUrl,
+                            : profileQuery.data?.facebookUrl ?? '',
                         label: 'Trang facebook',
                         hintText: 'https://www.facebook.com',
                       ),
@@ -242,7 +242,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         hintText: 'Đôi ba dòng về bạn',
                         initialValue: profileQuery.data?.description == ''
                             ? null
-                            : profileQuery.data?.description,
+                            : profileQuery.data?.description ?? '',
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

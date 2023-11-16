@@ -69,7 +69,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     connectWebsocket();
     try {
       _controller.addListener(() {
-        print('listen');
         scollListener();
       });
     } catch (e) {
@@ -89,7 +88,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
   connectWebsocket() async {
     final jwtToken = await storage.read(key: 'jwt');
     wsUri = Uri.parse(
-        'ws://${dotenv.get('HOST')}/messages/${widget.userId}?token=$jwtToken');
+        'wss://${dotenv.get('HOST')}/messages/${widget.userId}?token=$jwtToken');
 
     channel = WebSocketChannel.connect(wsUri);
   }
@@ -101,22 +100,26 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
       });
     }
 
-    print('ID ${widget.conversation?.id}');
+    // print('ID ${widget.conversation?.id}');
 
     Map<String, dynamic> message = {
       'receiver_id': widget.conversation?.receiverId ?? '',
-      'conversation_id': widget.conversation?.id,
       'content': content,
       'sender_id': widget.userId
     };
+    if (widget.conversation?.id != null) {
+      message['conversation_id'] = widget.conversation?.id ?? '';
+    }
     var actualBody = jsonEncode(message);
     setState(() {
       messages.insert(0, Message.fromJson(message));
     });
     channel?.sink.add(actualBody);
+    widget.refetchCallBack;
   }
 
   Future<void> fetchMessages(int offset) async {
+    print(widget.conversation?.id);
     try {
       final newItems = await ConversationRepository()
           .fetchMessagesByConversationId(
@@ -136,7 +139,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final conversationQuery = useQuery(
-        ['conversation'],
+        ['conversation', widget.conversation?.id],
         () => ConversationRepository().fetchConversationById(
             conversationId: widget.conversation?.id, offset: 1, limit: 10));
 
@@ -286,7 +289,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                   if (snapshot.hasData) {
                     var decodedJson = utf8.decode(snapshot.data);
                     print('SNAPSHOT DATA ${decodedJson}');
-                    print('LIST');
                     print('${messages.length}');
 
                     print('MESSAGE LIST $messages');

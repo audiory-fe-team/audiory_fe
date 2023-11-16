@@ -63,7 +63,7 @@ class LibraryScreen extends HookWidget {
                                             width: 2))),
                                 child: Text(
                                   tabName,
-                                  style: textTheme.titleLarge,
+                                  style: textTheme.titleMedium,
                                 )));
                       }).toList(),
                     ),

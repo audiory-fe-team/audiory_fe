@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -227,6 +226,8 @@ class _WalletScreenState extends State<WalletScreen> {
       );
     }
 
+    print(userByIdQuery.data?.wallets);
+
     return Scaffold(
       backgroundColor: appColors.inkDark,
       appBar: CustomAppBar(
@@ -281,7 +282,10 @@ class _WalletScreenState extends State<WalletScreen> {
                                     color: appColors.primaryLightest),
                               ),
                               Text(
-                                '${formatNumberWithSeperator(userByIdQuery.data?.wallets?[0].balance ?? 0)}',
+                                formatNumberWithSeperator(userByIdQuery
+                                        .data!.wallets!.isNotEmpty
+                                    ? userByIdQuery.data?.wallets![0].balance
+                                    : 0),
                                 style: textTheme.headlineLarge?.copyWith(
                                     color: appColors.primaryLightest,
                                     fontSize: 50),
@@ -298,7 +302,10 @@ class _WalletScreenState extends State<WalletScreen> {
                                     color: appColors.primaryLightest),
                               ),
                               Text(
-                                '${formatNumberWithSeperator(userByIdQuery.data?.wallets?[1].balance ?? 0)}',
+                                formatNumberWithSeperator(userByIdQuery
+                                        .data!.wallets!.isNotEmpty
+                                    ? userByIdQuery.data?.wallets![1].balance
+                                    : 0),
                                 style: textTheme.headlineLarge?.copyWith(
                                     color: appColors.primaryLightest,
                                     fontSize: 50),
