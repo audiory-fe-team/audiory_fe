@@ -72,14 +72,15 @@ class CommentScreen extends HookWidget {
         return;
       }
       isCommenting.value = true;
-      await CommentRepository.createComment(
+      final response = await CommentRepository.createComment(
           chapterId: chapterId,
           paraId: paraId ?? paragraphs[paragraphs.length - 1].id,
           text: controller.text);
       isCommenting.value = false;
 
       controller.text = "";
-      commentsPagingController.refresh();
+      commentsPagingController.appendLastPage([response]);
+      // commentsPagingController.refresh();
     }
 
     return Column(mainAxisSize: MainAxisSize.min, children: [

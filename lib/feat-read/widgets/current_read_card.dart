@@ -1,23 +1,40 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/LibraryStory.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/providers/chapter_database.dart';
+import 'package:audiory_v0/providers/notification_service.dart';
+import 'package:audiory_v0/providers/story_database.dart';
+import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
 
-class CurrentReadCard extends StatelessWidget {
+class CurrentReadCard extends HookWidget {
   final LibraryStory? libStory;
   final Story? story;
   final Function(String) onDeleteStory;
   final bool? isEditable;
-  const CurrentReadCard(
+
+  CurrentReadCard(
       {super.key,
       this.story,
       required this.onDeleteStory,
       this.libStory,
       this.isEditable = true});
+
+  Dio dio = Dio();
+  final storyDb = StoryDatabase();
+  final chapterDb = ChapterDatabase();
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +49,47 @@ class CurrentReadCard extends StatelessWidget {
     final authorName = libStory?.story.author?.fullName ??
         story?.author?.fullName ??
         'Tiêu đề truyện';
+    final downloadProgress = useState<double?>(null);
+
+    handleDownloadStory() async {
+      downloadProgress.value = 0;
+      try {
+        final wholeStory = await LibraryRepository.downloadStory(storyId);
+        var directory = await getApplicationDocumentsDirectory();
+
+        // Save to offline database
+        final noContentStory = wholeStory.copyWith(
+            chapters: wholeStory.chapters
+                ?.map((e) => e.copyWith(paragraphs: []))
+                .toList());
+        await storyDb.saveStory(noContentStory);
+
+        await Future.forEach<Chapter>(wholeStory.chapters ?? [],
+            (chapter) async {
+          await chapterDb.saveChapters(chapter);
+          await Future.forEach<Paragraph>(chapter.paragraphs ?? [],
+              (para) async {
+            if (para.audioUrl == '' || para.audioUrl == null) return;
+            try {
+              print('${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}');
+              await dio.download(
+                  '${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}',
+                  "${directory.path}/${para.audioUrl}",
+                  onReceiveProgress: (rec, total) {});
+            } catch (error) {}
+          });
+          downloadProgress.value =
+              ((chapter.position ?? 1) / (wholeStory.chapters?.length ?? 1));
+        });
+
+        AppSnackBar.buildTopSnackBar(
+            context, 'Tải truyện thành công', null, SnackBarType.success);
+      } catch (error) {
+        AppSnackBar.buildTopSnackBar(
+            context, error.toString(), null, SnackBarType.warning);
+      }
+      downloadProgress.value = null;
+    }
 
     return GestureDetector(
         onTap: () {
@@ -115,6 +173,17 @@ class CurrentReadCard extends StatelessWidget {
                             ],
                           ),
                         ),
+                        if (downloadProgress.value != null) ...[
+                          const Text('Đang tải xuống'),
+                          const SizedBox(height: 2),
+                          ClipRRect(
+                              borderRadius: BorderRadius.circular(4),
+                              child: LinearProgressIndicator(
+                                value: downloadProgress.value!,
+                                color: appColors.primaryBase,
+                                backgroundColor: appColors.skyLightest,
+                              )),
+                        ],
                         if (libStory != null)
                           SizedBox(
                             width: double.infinity,
@@ -162,6 +231,9 @@ class CurrentReadCard extends StatelessWidget {
                                     size: 18, color: appColors.skyDark)),
                             onSelected: (value) {
                               if (value == "notification") {}
+                              if (value == "download") {
+                                handleDownloadStory();
+                              }
                               if (value == "delete") {
                                 onDeleteStory(storyId);
                               }
@@ -181,6 +253,21 @@ class CurrentReadCard extends StatelessWidget {
                                             const SizedBox(width: 4),
                                             Text(
                                               'Bật thông báo',
+                                              style: textTheme.titleMedium,
+                                            )
+                                          ])),
+                                  PopupMenuItem(
+                                      height: 36,
+                                      value: 'download',
+                                      child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.download_rounded,
+                                                size: 18,
+                                                color: appColors.inkLighter),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Tải truyện xuống',
                                               style: textTheme.titleMedium,
                                             )
                                           ])),

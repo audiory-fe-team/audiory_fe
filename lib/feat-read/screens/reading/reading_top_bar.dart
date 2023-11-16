@@ -1,15 +1,16 @@
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 
-class ReadingTopBar extends StatelessWidget implements PreferredSizeWidget {
-  final String? storyName;
-  final String? storyId;
+class ReadingTopBar extends HookWidget implements PreferredSizeWidget {
+  final String storyId;
   const ReadingTopBar({
     super.key,
-    this.storyName = '',
-    this.storyId = '',
+    required this.storyId,
   });
 
   @override
@@ -17,36 +18,50 @@ class ReadingTopBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final storyQuery = useQuery(
+      ['story', storyId],
+      () => StoryRepostitory().fetchStoryById(storyId),
+    );
     return SafeArea(
         child: Material(
-            elevation: 2,
+            color: Colors.transparent,
             child: Container(
                 height: 58,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                // padding: const EdgeInsets.symmetric(horizontal: 16),
                 width: double.infinity,
+                decoration: const BoxDecoration(
+                  border: Border(
+                    bottom: BorderSide(
+                      color: Color.fromARGB(255, 172, 136, 28),
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                ),
                 child: Row(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      TapEffectWrapper(
-                          onTap: () {
-                            if (storyId != null) {
-                              GoRouter.of(context).go('/story/${storyId}');
-                            }
-                          },
-                          child: SvgPicture.asset('assets/icons/left-arrow.svg',
-                              width: 20, height: 20)),
+                      IconButton(
+                        onPressed: () {
+                          if (GoRouter.of(context).canPop()) {
+                            GoRouter.of(context).pop();
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.arrow_back,
+                          size: 24,
+                        ),
+                      ),
                       const SizedBox(width: 4),
                       Expanded(
-                          child: Text(storyName ?? '',
+                          child: Text(storyQuery.data?.title ?? '',
                               textAlign: TextAlign.left,
                               overflow: TextOverflow.ellipsis,
                               style:
                                   Theme.of(context).textTheme.headlineSmall)),
                       const SizedBox(width: 4),
-                      SvgPicture.asset('assets/icons/more-vertical.svg',
-                          width: 20, height: 20),
                     ]))));
   }
 }

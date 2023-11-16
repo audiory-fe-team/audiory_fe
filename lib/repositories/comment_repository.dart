@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class CommentRepository {
   static final commentsEndpoint = "${dotenv.get('API_BASE_URL')}/comments";
 
-  static Future<dynamic> createComment(
+  static Future<Comment> createComment(
       {required String chapterId,
       required String paraId,
       String? parentId,
@@ -37,9 +37,10 @@ class CommentRepository {
           if (userId != null) 'user_id': userId,
         }),
         headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
-      return true;
+      return Comment.fromJson(jsonDecode(responseBody)['data']);
     } else {
       throw Exception('Failed to create comment');
     }

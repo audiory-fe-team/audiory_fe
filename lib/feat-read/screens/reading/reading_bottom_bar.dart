@@ -46,6 +46,8 @@ class ReadingBottomBar extends HookWidget {
 
     void handleOpenSetting() {
       settingOpen.value = true;
+      final _scaffoldKey = new GlobalKey<ScaffoldState>();
+
       showModalBottomSheet(
           isScrollControlled: true,
           useSafeArea: true,
@@ -58,12 +60,14 @@ class ReadingBottomBar extends HookWidget {
           )),
           context: context,
           builder: (BuildContext context) {
-            return Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: SettingModel(
-                  onChangeStyle: onChangeStyle,
-                ));
+            return Scaffold(
+                key: _scaffoldKey,
+                body: Padding(
+                    padding: EdgeInsets.only(
+                        bottom: MediaQuery.of(context).viewInsets.bottom),
+                    child: SettingModel(
+                      onChangeStyle: onChangeStyle,
+                    )));
           }).whenComplete(() {
         settingOpen.value = false;
       });

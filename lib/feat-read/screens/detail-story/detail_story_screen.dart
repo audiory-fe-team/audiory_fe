@@ -9,6 +9,7 @@ import 'package:audiory_v0/feat-read/screens/detail-story/story_detail_tab.dart'
 import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
@@ -23,11 +24,14 @@ import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailStoryScreen extends HookConsumerWidget {
@@ -38,6 +42,7 @@ class DetailStoryScreen extends HookConsumerWidget {
 
   final storyDb = StoryDatabase();
   final chapterDb = ChapterDatabase();
+  Dio dio = Dio();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -295,6 +300,38 @@ class DetailStoryScreen extends HookConsumerWidget {
     }
 
     Future<void> handleDownloadStory() async {
+      try {
+        final wholeStory = await LibraryRepository.downloadStory(id);
+        var directory = await getApplicationDocumentsDirectory();
+
+        // Save to offline database
+        final noContentStory = wholeStory.copyWith(
+            chapters: wholeStory.chapters
+                ?.map((e) => e.copyWith(paragraphs: []))
+                .toList());
+        await storyDb.saveStory(noContentStory);
+
+        await Future.forEach<Chapter>(wholeStory.chapters ?? [],
+            (chapter) async {
+          await chapterDb.saveChapters(chapter);
+          await Future.forEach<Paragraph>(chapter.paragraphs ?? [],
+              (para) async {
+            if (para.audioUrl == '' || para.audioUrl == null) return;
+            print('${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}');
+            await dio.download(
+                '${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}',
+                "${directory.path}/${para.audioUrl}",
+                onReceiveProgress: (rec, total) {});
+          });
+        });
+
+        AppSnackBar.buildTopSnackBar(
+            context, 'Tải truyện thành công', null, SnackBarType.success);
+      } catch (error) {
+        print(error.toString());
+        AppSnackBar.buildTopSnackBar(
+            context, error.toString(), null, SnackBarType.warning);
+      }
       try {
         final wholeStory = await LibraryRepository.downloadStory(id);
 

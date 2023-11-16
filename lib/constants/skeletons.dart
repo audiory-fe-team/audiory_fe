@@ -1,5 +1,6 @@
 import 'package:audiory_v0/models/Comment.dart';
 import 'package:audiory_v0/models/Profile.dart';
+import 'package:audiory_v0/models/SearchStory.dart';
 import 'package:audiory_v0/models/activity/activity_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/notification/noti_model.dart';
@@ -30,6 +31,29 @@ final skeletonStories = [
   Story(id: '3', title: generateFakeString(25), chapters: []),
   Story(id: '4', title: generateFakeString(23), chapters: []),
   Story(id: '5', title: generateFakeString(33), chapters: []),
+];
+
+final skeletonSearchStories = [
+  SearchStory(
+    id: '1',
+    title: generateFakeString(20),
+  ),
+  SearchStory(
+    id: '2',
+    title: generateFakeString(15),
+  ),
+  SearchStory(
+    id: '3',
+    title: generateFakeString(25),
+  ),
+  SearchStory(
+    id: '4',
+    title: generateFakeString(23),
+  ),
+  SearchStory(
+    id: '5',
+    title: generateFakeString(33),
+  ),
 ];
 final skeletonProfiles = [
   Profile(

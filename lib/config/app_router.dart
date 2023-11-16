@@ -262,12 +262,17 @@ class AppRoutes {
               name: 'chapter_detail',
               builder: (BuildContext context, GoRouterState state) {
                 String? chapterId = state.pathParameters["chapterId"];
+                String? storyId = state.pathParameters["storyId"];
 
-                if (chapterId == null || chapterId == '') {
+                if (chapterId == null ||
+                    chapterId == '' ||
+                    storyId == null ||
+                    storyId == '') {
                   return const NotFoundScreen();
                 }
                 return ReadingScreen(
                   chapterId: chapterId,
+                  storyId: storyId,
                 );
               },
             )

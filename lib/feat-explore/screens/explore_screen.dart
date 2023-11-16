@@ -1,10 +1,13 @@
 import 'dart:math';
 
+import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/explore_top_bar.dart';
+import 'package:audiory_v0/models/SearchStory.dart';
 import 'package:audiory_v0/models/category/app_category_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/category_repository.dart';
+import 'package:audiory_v0/repositories/search_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_outlined_button.dart';
@@ -20,6 +23,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class ExploreScreen extends StatelessWidget {
   const ExploreScreen({super.key});
@@ -35,21 +39,11 @@ class ExploreScreen extends StatelessWidget {
             const SizedBox(height: 24),
             AppCategoryCarousel(),
             const SizedBox(height: 24),
-            HeaderWithLink(
-                icon: Image.asset(
-                  "assets/images/home_trend.png",
-                  width: 24,
-                ),
-                title: 'Thịnh hành',
-                link: ''),
-            const SizedBox(height: 12),
-            // StoryScrollList(storyList: STORIES),
-            const SizedBox(height: 24),
             // const AuthorRecommendation(),
             const SizedBox(height: 24),
-            const AppCategoryStories(categoryId: 1),
+            const AppCategoryStories(categoryName: 'Bí ẩn'),
             const SizedBox(height: 24),
-            const AppCategoryStories(categoryId: 2),
+            const AppCategoryStories(categoryName: 'Phiêu lưu'),
           ])),
     );
   }
@@ -85,60 +79,69 @@ class ExploreScreen extends StatelessWidget {
 // }
 
 class AppCategoryStories extends HookWidget {
-  final int categoryId;
+  final String categoryName;
 
-  const AppCategoryStories({super.key, required this.categoryId});
+  const AppCategoryStories({super.key, required this.categoryName});
 
   @override
   Widget build(
     BuildContext context,
   ) {
-    final storyList =
-        useQuery(['story_all'], () => StoryRepostitory().fetchStories());
+    final storyList = useQuery(
+        ['story', 'category', categoryName],
+        () => SearchRepository.searchCategoryStories(
+            category: categoryName, offset: 0, limit: 10));
 
-    if (storyList.isLoading) {
-      return const Text('Loading...');
-    }
     if (storyList.isError) {
-      return const Text('Oops something happen');
+      return const Text('Có lỗi xảy ra, thử lại sau');
     }
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const HeaderWithLink(title: 'Bí ẩn', link: ''),
-        const SizedBox(height: 12),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: storyList.data!.sublist(0, 1).asMap().entries.map((entry) {
-            Story story = entry.value;
-            return Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: StoryCardDetail(
-                  story: story,
-                ));
-          }).toList(),
-        ),
-        SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: (storyList.data ?? [])
-                  .map((story) => Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: StoryCardOverView(
-                            title: story.title,
-                            coverUrl: story.coverUrl,
-                            id: story.id),
-                      ))
-                  .toList(),
-            ))
-      ],
-    );
+    if (storyList.data?.isEmpty == true) {
+      return const Text('Danh sách trống');
+    }
+
+    return Skeletonizer(
+        enabled: storyList.isFetching,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            HeaderWithLink(title: categoryName, link: ''),
+            const SizedBox(height: 12),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: (storyList.data ?? skeletonSearchStories)
+                  .sublist(0, 1)
+                  .asMap()
+                  .entries
+                  .map((entry) {
+                SearchStory story = entry.value;
+                return Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: StoryCardDetail(
+                      searchStory: story,
+                    ));
+              }).toList(),
+            ),
+            SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: (storyList.data ?? skeletonSearchStories)
+                      .map((story) => Padding(
+                            padding: const EdgeInsets.only(right: 12),
+                            child: StoryCardOverView(
+                                title: story.title,
+                                coverUrl: story.coverUrl,
+                                id: story.id),
+                          ))
+                      .toList(),
+                ))
+          ],
+        ));
   }
 }
 

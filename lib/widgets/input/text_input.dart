@@ -21,6 +21,7 @@ class AppTextInputField extends StatefulWidget {
   final bool? isDisabled;
   final int? maxLengthCharacters;
   final int? minLines;
+  final int? maxLines;
 
   //label
   final String? label;
@@ -57,6 +58,7 @@ class AppTextInputField extends StatefulWidget {
     this.hintText = '',
     this.isTextArea = false,
     this.minLines = 1,
+    this.maxLines = 1,
     this.hintTextStyle,
     this.prefixIcon,
     this.suffixIcon,
@@ -111,7 +113,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
       name: widget.name,
       initialValue: widget.initialValue!,
       minLines: widget.minLines!,
-      maxLines: widget.minLines!, //dynamic height
+      maxLines: widget.maxLines!, //dynamic height
       maxLength: widget.maxLengthCharacters,
       cursorColor: appColors.primaryBase,
       decoration: InputDecoration(
