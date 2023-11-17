@@ -1,15 +1,18 @@
+import 'dart:math';
+
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/enums/TransactionType.dart';
 import 'package:audiory_v0/models/transaction/transaction_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/transaction_repository.dart';
+import 'package:audiory_v0/utils/format_date.dart';
+import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -24,14 +27,6 @@ class WalletScreen extends StatefulHookWidget {
 }
 
 class _WalletScreenState extends State<WalletScreen> {
-  convertThousands(num) {
-    if (num < 100) {
-      return '${double.parse(num.toString()).toStringAsFixed(0)}';
-    }
-    var formatter = NumberFormat('#,##,000');
-    return formatter.format(num);
-  }
-
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -39,17 +34,45 @@ class _WalletScreenState extends State<WalletScreen> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final transactionsQuery = useQuery(['transactions'],
-        () => TransactionRepository.fetchMyTransactions(pageSize: 20));
+        () => TransactionRepository.fetchMyTransactions(pageSize: 1000));
     final userByIdQuery =
         useQuery(['user'], () => AuthRepository().getMyUserById());
-    String formatDate(String? date) {
-      DateTime dateTime = DateTime.parse(date as String);
-      return DateFormat('dd/MM/yyyy').format(dateTime);
-    }
 
     validFormatDateForParsing(String? date) {
+      //for sort by date
       DateTime? newtime = DateFormat("yyyy-MM-dd").parse(date as String);
       return newtime.toString();
+    }
+
+    countTotal(
+        List<Transaction> transactionList, List<TransactionType> listType) {
+      double total = 0;
+
+      var filteredList = transactionList
+          .where((element) =>
+              countDifference(
+                  DateTime.now(),
+                  DateTime.parse(
+                      element.createdDate ?? DateTime.now().toString())) <=
+              30)
+          .toList()
+          .where((element) => listType.contains(
+              TransactionType.values.byName(element.transactionType ?? '')))
+          .toList();
+      for (var element in filteredList) {
+        print('total');
+        print(element.totalPriceAfterCommission);
+        print(element.totalPrice);
+        if (TransactionType.values.byName(element.transactionType ?? '') ==
+            TransactionType.GIFT_SENT) {
+          print('PRICE ${element.totalPrice}');
+          total = total + element.totalPrice;
+        } else {
+          total = total + element.totalPriceAfterCommission;
+        }
+      }
+
+      return total;
     }
 
     //spending statistics
@@ -84,7 +107,7 @@ class _WalletScreenState extends State<WalletScreen> {
                         left: 3.0,
                       ),
                       child: Text(
-                        '${convertThousands(total)}',
+                        formatNumberWithSeperator(total),
                         style: textTheme.headlineMedium?.copyWith(
                             color: isUpward
                                 ? appColors.primaryDark
@@ -157,7 +180,7 @@ class _WalletScreenState extends State<WalletScreen> {
                           style: textTheme.titleMedium,
                         ),
                         Text(
-                          formatDate(transaction.createdDate),
+                          appFormatDateWithHHmm(transaction.createdDate),
                           style: textTheme.bodyMedium
                               ?.copyWith(color: appColors.inkLight),
                         ),
@@ -178,10 +201,13 @@ class _WalletScreenState extends State<WalletScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Flexible(
-                          child: Text(
-                            '${transactionType.displayTrend} ${transaction.totalPrice}',
-                            style: textTheme.titleLarge
-                                ?.copyWith(color: appColors.inkDarkest),
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 4.0),
+                            child: Text(
+                              '${transactionType.displayTrend} ${transaction.totalPrice}',
+                              style: textTheme.titleLarge
+                                  ?.copyWith(color: appColors.inkDarkest),
+                            ),
                           ),
                         ),
                         Flexible(
@@ -199,6 +225,8 @@ class _WalletScreenState extends State<WalletScreen> {
             ]),
       );
     }
+
+    print(userByIdQuery.data?.wallets);
 
     return Scaffold(
       backgroundColor: appColors.inkDark,
@@ -237,74 +265,130 @@ class _WalletScreenState extends State<WalletScreen> {
                       topRight: Radius.circular(25),
                     )),
               ),
+              Container(
+                margin: EdgeInsets.only(top: size.height * 0.01),
+                height: size.height * 0.5,
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Flexible(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Tổng xu',
+                                style: textTheme.bodyMedium?.copyWith(
+                                    color: appColors.primaryLightest),
+                              ),
+                              Text(
+                                formatNumberWithSeperator(userByIdQuery
+                                        .data!.wallets!.isNotEmpty
+                                    ? userByIdQuery.data?.wallets![0].balance
+                                    : 0),
+                                style: textTheme.headlineLarge?.copyWith(
+                                    color: appColors.primaryLightest,
+                                    fontSize: 50),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Flexible(
+                          child: Column(
+                            children: [
+                              Text(
+                                'Kim cương',
+                                style: textTheme.bodyMedium?.copyWith(
+                                    color: appColors.primaryLightest),
+                              ),
+                              Text(
+                                formatNumberWithSeperator(userByIdQuery
+                                        .data!.wallets!.isNotEmpty
+                                    ? userByIdQuery.data?.wallets![1].balance
+                                    : 0),
+                                style: textTheme.headlineLarge?.copyWith(
+                                    color: appColors.primaryLightest,
+                                    fontSize: 50),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    AppIconButton(
+                      onPressed: () {
+                        //get all coin packs and get all payment methods
+                        //then create a purchase
+
+                        context.pushNamed('newPurchase',
+                            extra: {'currentUser': widget.currentUser});
+                      },
+                      icon: const Icon(Icons.add),
+                      iconPosition: 'start',
+                      title: 'Nạp thêm xu',
+                      isOutlined: true,
+                      color: appColors.primaryLightest,
+                      bgColor: appColors.inkDark,
+                    ),
+                    //stats container
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 36, vertical: 40),
+                      height: size.height * 0.1,
+                      decoration: BoxDecoration(
+                          color: appColors.primaryLightest,
+                          boxShadow: [
+                            BoxShadow(
+                              color: appColors.inkBase.withOpacity(0.2),
+                              spreadRadius: 5,
+                              blurRadius: 15,
+                              offset: const Offset(
+                                  0, 3), // changes position of shadow
+                            ),
+                          ],
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(17))),
+                      child: Skeletonizer(
+                        enabled: transactionsQuery.isFetching,
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              spendingStats(
+                                  countTotal(transactionsQuery.data ?? [],
+                                      [TransactionType.PURCHASE]),
+                                  'Đã nạp trong 30 ngày',
+                                  true),
+                              SizedBox(
+                                width: 2,
+                                child: VerticalDivider(
+                                  thickness: 1,
+                                  color: appColors.skyBase,
+                                  indent: size.height * 0.025,
+                                  endIndent: size.height * 0.025,
+                                ),
+                              ),
+                              spendingStats(
+                                  countTotal(transactionsQuery.data ?? [], [
+                                    TransactionType.GIFT_SENT,
+                                    TransactionType.CHAPTER_BOUGHT
+                                  ]),
+                                  'Đã sử dụng',
+                                  false)
+                            ]),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               Padding(
-                padding: EdgeInsets.only(top: size.height * 0.04),
+                padding: EdgeInsets.only(top: size.height * 0.35),
                 child: SizedBox(
                   height: size.height,
                   child: SingleChildScrollView(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(
-                          'Tổng xu',
-                          style: textTheme.bodyMedium
-                              ?.copyWith(color: appColors.primaryLightest),
-                        ),
-                        Text(
-                          '${convertThousands(userByIdQuery.data?.wallets?[0].balance ?? 0)}',
-                          style: textTheme.headlineLarge?.copyWith(
-                              color: appColors.primaryLightest, fontSize: 50),
-                        ),
-                        AppIconButton(
-                          onPressed: () {
-                            //get all coin packs and get all payment methods
-                            //then create a purchase
-
-                            context.pushNamed('newPurchase',
-                                extra: {'currentUser': widget.currentUser});
-                          },
-                          icon: const Icon(Icons.add),
-                          iconPosition: 'start',
-                          title: 'Nạp thêm xu',
-                          isOutlined: true,
-                          color: appColors.primaryLightest,
-                          bgColor: appColors.inkDark,
-                        ),
-                        //stats container
-                        Container(
-                          margin: const EdgeInsets.symmetric(
-                              horizontal: 36, vertical: 32),
-                          height: size.height * 0.1,
-                          decoration: BoxDecoration(
-                              color: appColors.primaryLightest,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: appColors.inkBase.withOpacity(0.2),
-                                  spreadRadius: 5,
-                                  blurRadius: 15,
-                                  offset: const Offset(
-                                      0, 3), // changes position of shadow
-                                ),
-                              ],
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(17))),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              mainAxisSize: MainAxisSize.max,
-                              children: [
-                                spendingStats(1000, 'Đã nạp trong tuần', true),
-                                SizedBox(
-                                  width: 2,
-                                  child: VerticalDivider(
-                                    thickness: 1,
-                                    color: appColors.skyBase,
-                                    indent: size.height * 0.025,
-                                    endIndent: size.height * 0.025,
-                                  ),
-                                ),
-                                spendingStats(100, 'Đã sử dụng', false)
-                              ]),
-                        ),
                         //history of transactions
                         Container(
                           child: Column(
@@ -337,38 +421,44 @@ class _WalletScreenState extends State<WalletScreen> {
                                 ),
                               ),
                               Container(
-                                margin:
-                                    const EdgeInsets.symmetric(vertical: 16),
-                                height: size.height * 0.41,
+                                margin: const EdgeInsets.only(bottom: 22),
+                                height: size.height * 0.47,
                                 child: Skeletonizer(
                                   enabled: transactionsQuery.isFetching,
-                                  child: ListView(
-                                    scrollDirection: Axis.vertical,
-                                    shrinkWrap: true,
-                                    children: List.generate(
-                                        transactionsQuery.data?.length ?? 0,
-                                        (index) {
-                                      transactionsQuery.data?.sort((a, b) {
-                                        //sorting in ascending order
-                                        return DateTime.parse(
-                                                    validFormatDateForParsing(
-                                                        a.createdDate))
-                                                .isBefore(DateTime.parse(
-                                                    validFormatDateForParsing(
-                                                        b.createdDate)))
-                                            ? 1
-                                            : -1;
-                                      });
-                                      return Container(
-                                        // decoration: BoxDecoration(
-                                        //     color: index.isEven
-                                        //         ? appColors.primaryLightest
-                                        //             .withOpacity(0.5)
-                                        //         : Colors.transparent),
-                                        child: transactionCard(transactionsQuery
-                                            .data?[index] as Transaction),
-                                      );
-                                    }).toList(),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 6.0),
+                                    child: ListView(
+                                      scrollDirection: Axis.vertical,
+                                      shrinkWrap: true,
+                                      children: List.generate(
+                                          min(
+                                              transactionsQuery.data?.length ??
+                                                  0,
+                                              20), (index) {
+                                        transactionsQuery.data?.sort((a, b) {
+                                          //sorting in ascending order
+                                          return DateTime.parse(
+                                                      validFormatDateForParsing(
+                                                          a.createdDate))
+                                                  .isBefore(DateTime.parse(
+                                                      validFormatDateForParsing(
+                                                          b.createdDate)))
+                                              ? 1
+                                              : -1;
+                                        });
+                                        return Container(
+                                          // decoration: BoxDecoration(
+                                          //     color: index.isEven
+                                          //         ? appColors.primaryLightest
+                                          //             .withOpacity(0.5)
+                                          //         : Colors.transparent),
+                                          child: transactionCard(
+                                              transactionsQuery.data?[index]
+                                                  as Transaction),
+                                        );
+                                      }).toList(),
+                                    ),
                                   ),
                                 ),
                               ),

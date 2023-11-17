@@ -20,7 +20,7 @@ class Story with _$Story {
     @JsonKey(name: 'author') AuthorStory? author,
     @JsonKey(name: 'category_id') String? categoryId, // Story position
     @JsonKey(name: 'category') AppCategory? category, // Story position
-    @Default('') @JsonKey(name: 'title') String title,
+    @Default('') @JsonKey(name: 'title') String? title,
     @JsonKey(name: 'description') String? description,
     @JsonKey(name: 'cover_url') String? coverUrl,
     @JsonKey(name: 'is_draft') bool? isDraft,

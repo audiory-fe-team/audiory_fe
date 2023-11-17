@@ -10,6 +10,7 @@ class Profile {
   final String? createdDate;
   final String? description;
   final String? dob;
+  final String? sex;
   final String? email;
   final String? facebookUrl;
   final String? firstName;
@@ -26,43 +27,53 @@ class Profile {
   final int? reportCount;
   final int? totalVote;
   final int? totalRead;
+  final int? levelId;
+  final int? authorLevelId;
+  final bool? isAuthorFlairSelected;
+  final bool? isFollowed;
+  final bool? isNotified;
   final int? totalComment;
   final String? updatedDate;
   final String? username;
   final List<Story>? stories;
   final Library? library;
 
-  Profile({
-    this.avatarUrl,
-    this.backgroundUrl,
-    this.bankAccountNumber,
-    this.bankHolderName,
-    this.bankName,
-    this.createdDate,
-    this.description,
-    this.dob,
-    this.email,
-    this.facebookUrl,
-    this.firstName,
-    this.fullName,
-    required this.id,
-    this.isEnabled,
-    this.isOnline,
-    this.lastName,
-    this.totalDonation,
-    this.numberOfFollowers,
-    this.numberOfFollowing,
-    this.followings,
-    this.followers,
-    this.reportCount,
-    this.totalComment,
-    this.totalRead,
-    this.totalVote,
-    this.updatedDate,
-    required this.username,
-    this.stories,
-    this.library,
-  });
+  Profile(
+      {this.avatarUrl,
+      this.backgroundUrl,
+      this.bankAccountNumber,
+      this.bankHolderName,
+      this.bankName,
+      this.createdDate,
+      this.description,
+      this.dob,
+      this.email,
+      this.facebookUrl,
+      this.firstName,
+      this.fullName,
+      required this.id,
+      this.isEnabled,
+      this.isOnline,
+      this.lastName,
+      this.totalDonation,
+      this.numberOfFollowers,
+      this.numberOfFollowing,
+      this.followings,
+      this.followers,
+      this.reportCount,
+      this.totalComment,
+      this.totalRead,
+      this.totalVote,
+      this.levelId = 1,
+      this.authorLevelId = 1,
+      this.isAuthorFlairSelected = false,
+      this.isFollowed = false,
+      this.isNotified = false,
+      this.updatedDate,
+      required this.username,
+      this.stories,
+      this.library,
+      this.sex});
 
   factory Profile.fromJson(Map<String, dynamic> json) {
     List<dynamic> storiesJson = json["stories"] ?? [];
@@ -87,6 +98,7 @@ class Profile {
       createdDate: json['created_date'],
       description: json['description'],
       dob: json['dob'],
+      sex: json['sex'],
       email: json['email'],
       facebookUrl: json['facebook_url'],
       firstName: json['first_name'],
@@ -104,6 +116,11 @@ class Profile {
       totalComment: json['total_comment'],
       totalRead: json['total_read'],
       totalVote: json['total_vote'],
+      levelId: json['level_id'],
+      authorLevelId: json['author_level_id'],
+      isAuthorFlairSelected: json['is_author_flair_selected'],
+      isFollowed: json['is_followed'],
+      isNotified: json['is_notified'],
       updatedDate: json['updated_date'],
       username: json['username'],
       library:
@@ -122,6 +139,7 @@ class Profile {
       'created_date': createdDate,
       'description': description,
       'dob': dob,
+      'sex': sex,
       'email': email,
       'facebook_url': facebookUrl,
       'first_name': firstName,
@@ -139,6 +157,11 @@ class Profile {
       'total_comment': totalComment,
       'total_read': totalRead,
       'total_vote': totalVote,
+      'level_id': levelId,
+      'author_level_id': authorLevelId,
+      'is_author_flair_selected': isAuthorFlairSelected,
+      'is_followed': isFollowed,
+      'is_notified': isNotified,
       'updated_date': updatedDate,
       'username': username,
       'library': library?.toJson(),

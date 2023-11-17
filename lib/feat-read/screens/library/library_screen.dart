@@ -63,7 +63,7 @@ class LibraryScreen extends HookWidget {
                                             width: 2))),
                                 child: Text(
                                   tabName,
-                                  style: textTheme.titleLarge,
+                                  style: textTheme.titleMedium,
                                 )));
                       }).toList(),
                     ),
@@ -112,14 +112,14 @@ class ReadingLists extends HookWidget {
       try {
         readingList = await ReadingListRepository.addReadingList(
             body, _formKey.currentState?.fields['photo']?.value);
+        await AppSnackBar.buildTopSnackBar(
+            context, 'Tạo thành công', null, SnackBarType.success);
+        readingListQuery.refetch();
       } catch (error) {
         // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Tạo thất bại', null, SnackBarType.error);
       }
-      readingListQuery.refetch();
-      await AppSnackBar.buildTopSnackBar(
-          context, 'Tạo thành công', null, SnackBarType.success);
     }
 
     handleDeleteReadingList(String readingListId) async {
@@ -219,6 +219,7 @@ class ReadingLists extends HookWidget {
                                         SizedBox(
                                           width: size.width / 4,
                                           child: FormBuilderImagePicker(
+                                              initialValue: [],
                                               previewAutoSizeWidth: true,
                                               maxImages: 1,
                                               backgroundColor:

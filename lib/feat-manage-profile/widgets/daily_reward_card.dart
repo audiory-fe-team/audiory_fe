@@ -20,9 +20,11 @@ class _DailyRewardCardState extends State<DailyRewardCard> {
     Size size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    String name = widget.streak.name;
+    bool isToday = widget.streak.isToday;
+    String name = isToday ? 'Hôm nay' : widget.streak.name;
     int amount = widget.streak.amount ?? 0;
     bool hasReceived = widget.streak.hasReceived;
+
     bool isLast = widget.streak.name.split(' ')[1] == '7' ? true : false;
     bool isGifted = widget.streak.name.split(' ')[1] == '3' ||
             widget.streak.name.split(' ')[1] == '7'
@@ -34,7 +36,7 @@ class _DailyRewardCardState extends State<DailyRewardCard> {
         setState(() {
           hasReceived = true;
         });
-        widget.handleReceive(true);
+        widget.handleReceive(isToday);
       },
       child: SizedBox(
         width: isLast ? size.width / 2.4 : size.width / 4.8,

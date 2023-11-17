@@ -21,7 +21,7 @@ class ReadingScreenHeader extends StatelessWidget {
               .textTheme
               .bodyLarge
               ?.copyWith(color: textColor)),
-      Text(chapter.title,
+      Text(chapter.title ?? "",
           style:
               Theme.of(context).textTheme.bodyLarge?.copyWith(color: textColor),
           softWrap: true),

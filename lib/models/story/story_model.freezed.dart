@@ -36,7 +36,7 @@ mixin _$Story {
   AppCategory? get category =>
       throw _privateConstructorUsedError; // Story position
   @JsonKey(name: 'title')
-  String get title => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
   @JsonKey(name: 'description')
   String? get description => throw _privateConstructorUsedError;
   @JsonKey(name: 'cover_url')
@@ -108,7 +108,7 @@ abstract class $StoryCopyWith<$Res> {
       @JsonKey(name: 'author') AuthorStory? author,
       @JsonKey(name: 'category_id') String? categoryId,
       @JsonKey(name: 'category') AppCategory? category,
-      @JsonKey(name: 'title') String title,
+      @JsonKey(name: 'title') String? title,
       @JsonKey(name: 'description') String? description,
       @JsonKey(name: 'cover_url') String? coverUrl,
       @JsonKey(name: 'is_draft') bool? isDraft,
@@ -159,7 +159,7 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
     Object? author = freezed,
     Object? categoryId = freezed,
     Object? category = freezed,
-    Object? title = null,
+    Object? title = freezed,
     Object? description = freezed,
     Object? coverUrl = freezed,
     Object? isDraft = freezed,
@@ -209,10 +209,10 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as AppCategory?,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -362,7 +362,7 @@ abstract class _$$StoryImplCopyWith<$Res> implements $StoryCopyWith<$Res> {
       @JsonKey(name: 'author') AuthorStory? author,
       @JsonKey(name: 'category_id') String? categoryId,
       @JsonKey(name: 'category') AppCategory? category,
-      @JsonKey(name: 'title') String title,
+      @JsonKey(name: 'title') String? title,
       @JsonKey(name: 'description') String? description,
       @JsonKey(name: 'cover_url') String? coverUrl,
       @JsonKey(name: 'is_draft') bool? isDraft,
@@ -413,7 +413,7 @@ class __$$StoryImplCopyWithImpl<$Res>
     Object? author = freezed,
     Object? categoryId = freezed,
     Object? category = freezed,
-    Object? title = null,
+    Object? title = freezed,
     Object? description = freezed,
     Object? coverUrl = freezed,
     Object? isDraft = freezed,
@@ -463,10 +463,10 @@ class __$$StoryImplCopyWithImpl<$Res>
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as AppCategory?,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -644,7 +644,7 @@ class _$StoryImpl with DiagnosticableTreeMixin implements _Story {
 // Story position
   @override
   @JsonKey(name: 'title')
-  final String title;
+  final String? title;
   @override
   @JsonKey(name: 'description')
   final String? description;
@@ -916,7 +916,7 @@ abstract class _Story implements Story {
       @JsonKey(name: 'author') final AuthorStory? author,
       @JsonKey(name: 'category_id') final String? categoryId,
       @JsonKey(name: 'category') final AppCategory? category,
-      @JsonKey(name: 'title') final String title,
+      @JsonKey(name: 'title') final String? title,
       @JsonKey(name: 'description') final String? description,
       @JsonKey(name: 'cover_url') final String? coverUrl,
       @JsonKey(name: 'is_draft') final bool? isDraft,
@@ -968,7 +968,7 @@ abstract class _Story implements Story {
   AppCategory? get category;
   @override // Story position
   @JsonKey(name: 'title')
-  String get title;
+  String? get title;
   @override
   @JsonKey(name: 'description')
   String? get description;

@@ -1,10 +1,8 @@
-import 'dart:convert';
-
+import 'package:audiory_v0/repositories/conversation_repository.dart';
 import 'package:audiory_v0/repositories/notification_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
@@ -22,6 +20,7 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final size = MediaQuery.of(context).size;
     final myInfoQuery =
         useQuery(['myInfo'], () => AuthRepository().getMyUserById());
     Widget userInfo(UseQueryResult<AuthUser, dynamic> myInfoQuery) {
@@ -38,11 +37,10 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
                   onTap: () async {
                     context.push('/profile');
                   },
-                  child: AppImage(
-                      url: myInfoQuery.data?.avatarUrl,
-                      width: 40,
-                      height: 40,
-                      fit: BoxFit.fill),
+                  child: AppAvatarImage(
+                    url: myInfoQuery.data?.avatarUrl,
+                    size: 40,
+                  ),
                 ),
               ),
             ),
@@ -61,14 +59,17 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
               ),
               Skeletonizer(
                 enabled: myInfoQuery.isFetching,
-                child: Text(
-                  myInfoQuery.data?.username ?? 'Người dùng',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                child: SizedBox(
+                  width: size.width / 2,
+                  child: Text(
+                    myInfoQuery.data?.username ?? 'Người dùng',
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.left,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                  textAlign: TextAlign.left,
-                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -110,6 +111,45 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
                             visualDensity: const VisualDensity(
                                 horizontal: -4, vertical: -4),
                             onPressed: () {
+                              myInfoQuery.data == null
+                                  ? null
+                                  : GoRouter.of(context).push(
+                                      '/profileSettings/messages',
+                                      extra: {'userId': myInfoQuery.data?.id});
+                            },
+                            icon:
+                                const Icon(Icons.messenger_outline, size: 20)),
+                        FutureBuilder(
+                            future: ConversationRepository()
+                                .fetchAllConversations(offset: 0, limit: 100),
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData &&
+                                  snapshot.data?.isNotEmpty == true &&
+                                  snapshot.data!
+                                          .where((e) =>
+                                              e.lastMessage?.isRead == false)
+                                          .length >
+                                      0) {
+                                return Positioned(
+                                    top: 5,
+                                    right: 5,
+                                    child: Container(
+                                      width: 8,
+                                      height: 8,
+                                      decoration: ShapeDecoration(
+                                          color: appColors.secondaryBase,
+                                          shape: const CircleBorder()),
+                                    ));
+                              }
+                              return const SizedBox();
+                            })
+                      ]),
+                      Stack(children: [
+                        IconButton(
+                            padding: EdgeInsets.zero,
+                            visualDensity: const VisualDensity(
+                                horizontal: -4, vertical: -4),
+                            onPressed: () {
                               GoRouter.of(context).push('/notification');
                             },
                             icon: const Icon(Icons.notifications_outlined,
@@ -124,11 +164,12 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
                                     top: 5,
                                     right: 7,
                                     child: Container(
-                                      width: 6,
-                                      height: 6,
+                                      width: 8,
+                                      height: 8,
                                       decoration: ShapeDecoration(
-                                          color: appColors.secondaryBase,
-                                          shape: const CircleBorder()),
+                                        color: appColors.secondaryBase,
+                                        shape: const CircleBorder(),
+                                      ),
                                     ));
                               }
                               return const SizedBox();

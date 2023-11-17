@@ -12,6 +12,7 @@ class Streak with _$Streak {
 
     @JsonKey(name: 'name') required String name,
     @Default(false) @JsonKey(name: 'has_received') bool hasReceived,
+    @Default(false) @JsonKey(name: 'is_today') bool isToday,
     @Default(0) @JsonKey(name: 'amount') int? amount,
   }) = _Streak;
 

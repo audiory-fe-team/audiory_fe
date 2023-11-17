@@ -89,6 +89,8 @@ class DetailStoryScreen extends HookConsumerWidget {
       String chapterId,
       int price,
     ) async {
+      print(chapterId);
+      print(price);
       var totalCoins = userQuery.data?.wallets?.isEmpty == true
           ? 0
           : userQuery.data?.wallets?[0].balance;
@@ -152,6 +154,8 @@ class DetailStoryScreen extends HookConsumerWidget {
       final sharedNumberStyle =
           textTheme.titleLarge!.copyWith(color: appColors.inkLight);
       final sharedHeaderStyle = textTheme.titleSmall;
+      final shareWidth = MediaQuery.of(context).size.width <= 360 ? 10.0 : 16.0;
+      final shareDivider = const SizedBox(width: 4);
       return IntrinsicHeight(
           child: Row(
               mainAxisSize: MainAxisSize.max,
@@ -163,9 +167,9 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Skeleton.shade(
                       child: Image.asset(
                     'assets/images/chapter_colored.png',
-                    width: 16,
+                    width: shareWidth,
                   )),
-                  const SizedBox(width: 4),
+                  shareDivider,
                   Text(
                     'Chương',
                     style: sharedHeaderStyle,
@@ -183,7 +187,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Skeleton.shade(
                       child: Image.asset(
                     'assets/images/view_colored.png',
-                    width: 16,
+                    width: shareWidth,
                   )),
                   const SizedBox(width: 4),
                   Text(
@@ -203,7 +207,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Skeleton.shade(
                       child: Image.asset(
                     'assets/images/comment_colored.png',
-                    width: 16,
+                    width: shareWidth,
                   )),
                   const SizedBox(width: 4),
                   Text(
@@ -223,7 +227,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                   Skeleton.shade(
                       child: Image.asset(
                     'assets/images/vote_colored.png',
-                    width: 16,
+                    width: shareWidth,
                   )),
                   const SizedBox(width: 4),
                   Text(
@@ -386,7 +390,6 @@ class DetailStoryScreen extends HookConsumerWidget {
                           color: Colors.transparent,
                           child: InkWell(
                               onTap: () async {
-                                // context.go('/profile');
                                 if (isOffline == false) {
                                   context.push(
                                       '/accountProfile/${story?.authorId}',
@@ -395,6 +398,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                                         'avatar': story?.author?.avatarUrl,
                                       });
                                 }
+                                ;
                               },
                               child: Row(
                                   mainAxisSize: MainAxisSize.min,

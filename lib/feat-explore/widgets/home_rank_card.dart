@@ -96,7 +96,7 @@ class HomeRankingCard extends StatelessWidget {
                     SizedBox(
                       width: double.infinity,
                       child: Text(
-                        story.title,
+                        story.title ?? '',
                         style: const TextStyle(
                           overflow: TextOverflow.ellipsis,
                           color: Colors.black,

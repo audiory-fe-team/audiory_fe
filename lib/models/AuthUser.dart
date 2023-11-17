@@ -15,6 +15,8 @@ class AuthUser {
   String? updatedDate;
   int? numOfFollowers;
   int? numOfFollowing;
+  int? levelId;
+  int? authorLevelId;
   List<Wallet>? wallets;
 
   AuthUser(
@@ -32,6 +34,8 @@ class AuthUser {
       this.updatedDate,
       this.numOfFollowers = 0,
       this.numOfFollowing = 0,
+      this.levelId = 1,
+      this.authorLevelId = 1,
       this.wallets});
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
@@ -53,6 +57,8 @@ class AuthUser {
       updatedDate: json['updated_date'],
       numOfFollowers: json['number_of_followers'],
       numOfFollowing: json['number_of_following'],
+      levelId: json['level_id'],
+      authorLevelId: json['author_level_id'],
       wallets: wallets,
     );
   }
@@ -70,6 +76,8 @@ class AuthUser {
     data['is_online'] = isOnline;
     data['number_of_followers'] = numOfFollowers;
     data['number_of_following'] = numOfFollowing;
+    data['level_id'] = levelId;
+    data['author_level_id'] = authorLevelId;
     data['created_date'] = createdDate;
     data['updated_date'] = updatedDate;
     data['wallets'] = wallets;

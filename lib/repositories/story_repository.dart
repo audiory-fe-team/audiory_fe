@@ -171,7 +171,8 @@ class StoryRepostitory {
     if (jwtToken != null) {
       headers['Authorization'] = 'Bearer $jwtToken';
     }
-    final url = Uri.parse('${Endpoints().user}/me/stories');
+    final url =
+        Uri.parse('${Endpoints().user}/me/stories?page=1&page_size=100');
     final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {

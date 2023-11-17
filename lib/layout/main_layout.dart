@@ -12,7 +12,7 @@ class AppMainLayout extends StatefulWidget {
 
 class _AppMainLayoutState extends State<AppMainLayout> {
   String _currentPage = "Home";
-  List<String> pageKeys = ["Home", "Explore", "Library", 'Writer', "Profile"];
+  List<String> pageKeys = ["Home", "Explore", "Library", "Writer", "Profile"];
   Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
     "Home": GlobalKey<NavigatorState>(),
     "Explore": GlobalKey<NavigatorState>(),

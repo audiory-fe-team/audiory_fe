@@ -34,40 +34,32 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
         color: Colors.white,
         bgColor: appColors.primaryBase,
         onPressed: () async {
-          try {
-            final result =
-                await AuthRepository().verifyEmail(email: emailController.text);
-            if (result == 200) {
-              Map<String, String> body = {
-                'email': emailController.text,
-                'password': passwordController.text,
-                'username': usernameController.text,
-              };
-              // ignore: use_build_context_synchronously
-              context.push('/flowOne',
-                  extra: {'signUpBody': body}); //allow back button
-              // ignore: use_build_context_synchronously
-              AppSnackBar.buildSnackbar(context,
-                  'Đã gửi thành công mã xác nhận', null, SnackBarType.success);
-            } else {
-              // ignore: use_build_context_synchronously
-              AppSnackBar.buildSnackbar(
-                  context, 'Email đã được sử dụng', null, SnackBarType.error);
-            }
+          // try {
+          //   final result =
+          //       await AuthRepository().verifyEmail(email: emailController.text);
+          //   if (result == 200) {
+          Map<String, String> body = {
+            'email': emailController.text,
+            'password': passwordController.text,
+            'username': usernameController.text,
+          };
+          // ignore: use_build_context_synchronously
+          context.push('/flowOne',
+              extra: {'signUpBody': body}); //allow back button
+          // ignore: use_build_context_synchronously
+          AppSnackBar.buildSnackbar(context, 'Đã gửi thành công mã xác nhận',
+              null, SnackBarType.success);
+          // } else {
+          //   // ignore: use_build_context_synchronously
+          //   AppSnackBar.buildSnackbar(
+          //       context, 'Email đã được sử dụng', null, SnackBarType.error);
+          // }
 
-            // Map<String, String> body = {
-            //   'email': emailController.text,
-            //   'password': passwordController.text,
-            //   'username': usernameController.text,
-            // };
-            // // ignore: use_build_context_synchronously
-            // context.push('/flowOne',
-            //     extra: {'signUpBody': body}); //allow back button
-          } on Exception catch (e) {
-            if (kDebugMode) {
-              print(e);
-            }
-          }
+          // } on Exception catch (e) {
+          //   if (kDebugMode) {
+          //     print(e);
+          //   }
+          // }
         });
   }
 
