@@ -435,9 +435,9 @@ class _CommentCardState extends State<CommentCard> {
                                                                     color: _formKey.currentState?.validate() ==
                                                                             true
                                                                         ? appColors
-                                                                            ?.primaryBase
+                                                                            .primaryBase
                                                                         : appColors
-                                                                            ?.inkLighter),
+                                                                            .inkLighter),
                                                               ),
                                                             )
                                                           ],

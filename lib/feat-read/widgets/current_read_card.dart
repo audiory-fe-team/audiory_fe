@@ -1,11 +1,9 @@
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/LibraryStory.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
-import 'package:audiory_v0/providers/notification_service.dart';
 import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -32,7 +30,7 @@ class CurrentReadCard extends HookWidget {
       this.libStory,
       this.isEditable = true});
 
-  Dio dio = Dio();
+  final Dio dio = Dio();
   final storyDb = StoryDatabase();
   final chapterDb = ChapterDatabase();
 
@@ -71,7 +69,6 @@ class CurrentReadCard extends HookWidget {
               (para) async {
             if (para.audioUrl == '' || para.audioUrl == null) return;
             try {
-              print('${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}');
               await dio.download(
                   '${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}',
                   "${directory.path}/${para.audioUrl}",
@@ -184,7 +181,7 @@ class CurrentReadCard extends HookWidget {
                                 backgroundColor: appColors.skyLightest,
                               )),
                         ],
-                        if (libStory != null)
+                        if (libStory?.readingProgress != null)
                           SizedBox(
                             width: double.infinity,
                             child: Column(
@@ -192,14 +189,23 @@ class CurrentReadCard extends HookWidget {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: Text(
-                                    'Đã đọc: 34/56 chương',
-                                    style: textTheme.labelLarge
-                                        ?.copyWith(fontStyle: FontStyle.italic),
-                                  ),
-                                ),
+                                libStory?.readingProgress?.chapterId == null
+                                    ? SizedBox(
+                                        width: double.infinity,
+                                        child: Text(
+                                          'Đã đọc: 0/ chương',
+                                          style: textTheme.labelLarge?.copyWith(
+                                              fontStyle: FontStyle.italic),
+                                        ),
+                                      )
+                                    : SizedBox(
+                                        width: double.infinity,
+                                        child: Text(
+                                          'Đã đọc: 34/56 chương',
+                                          style: textTheme.labelLarge?.copyWith(
+                                              fontStyle: FontStyle.italic),
+                                        ),
+                                      ),
                                 const SizedBox(height: 4),
                                 ClipRRect(
                                   borderRadius: const BorderRadius.all(
@@ -217,83 +223,103 @@ class CurrentReadCard extends HookWidget {
                       ],
                     )),
               ),
-              Column(mainAxisSize: MainAxisSize.max, children: [
-                isEditable == true
-                    ? Container(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: PopupMenuButton(
-                            shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(8.0))),
-                            child: Container(
-                                padding: const EdgeInsets.all(8),
-                                child: Icon(Icons.more_vert_rounded,
-                                    size: 18, color: appColors.skyDark)),
-                            onSelected: (value) {
-                              if (value == "notification") {}
-                              if (value == "download") {
-                                handleDownloadStory();
-                              }
-                              if (value == "delete") {
-                                onDeleteStory(storyId);
-                              }
-                            },
-                            itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                      height: 36,
-                                      value: 'notification',
-                                      child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                                Icons
-                                                    .notifications_active_rounded,
-                                                size: 18,
-                                                color: appColors.inkLighter),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'Bật thông báo',
-                                              style: textTheme.titleMedium,
-                                            )
-                                          ])),
-                                  PopupMenuItem(
-                                      height: 36,
-                                      value: 'download',
-                                      child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.download_rounded,
-                                                size: 18,
-                                                color: appColors.inkLighter),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'Tải truyện xuống',
-                                              style: textTheme.titleMedium,
-                                            )
-                                          ])),
-                                  PopupMenuItem(
-                                      height: 36,
-                                      value: 'delete',
-                                      child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(Icons.delete_outline_rounded,
-                                                size: 18,
-                                                color: appColors.secondaryBase),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'Xóa truyện',
-                                              style: textTheme.titleMedium
-                                                  ?.copyWith(
-                                                      color: appColors
-                                                          .secondaryBase),
-                                            )
-                                          ])),
-                                ]))
-                    : const SizedBox(
-                        height: 0,
-                      ),
-              ]),
+              Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                        onTap: () {
+                          // handleTurnNotification();
+                        },
+                        child: Icon(Icons.notifications_active_rounded,
+                            size: 18, color: appColors.inkLighter)),
+
+                    IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.download_rounded,
+                            size: 18, color: appColors.inkLighter)),
+                    GestureDetector(
+                        onTap: () {
+                          // handleTurnNotification();
+                        },
+                        child: Icon(Icons.delete_outline_rounded,
+                            size: 18, color: appColors.secondaryBase)),
+                    // isEditable == true
+                    //     ? Container(
+                    //         padding: const EdgeInsets.only(top: 20),
+                    //         child: PopupMenuButton(
+                    //             shape: const RoundedRectangleBorder(
+                    //                 borderRadius:
+                    //                     BorderRadius.all(Radius.circular(8.0))),
+                    //             child: Container(
+                    //                 padding: const EdgeInsets.all(8),
+                    //                 child: Icon(Icons.more_vert_rounded,
+                    //                     size: 18, color: appColors.skyDark)),
+                    //             onSelected: (value) {
+                    //               if (value == "notification") {}
+                    //               if (value == "download") {
+                    //                 handleDownloadStory();
+                    //               }
+                    //               if (value == "delete") {
+                    //                 onDeleteStory(storyId);
+                    //               }
+                    //             },
+                    //             itemBuilder: (context) => [
+                    //                   PopupMenuItem(
+                    //                       height: 36,
+                    //                       value: 'notification',
+                    //                       child: Row(
+                    //                           mainAxisSize: MainAxisSize.min,
+                    //                           children: [
+                    //                             Icon(
+                    //                                 Icons
+                    //                                     .notifications_active_rounded,
+                    //                                 size: 18,
+                    //                                 color: appColors.inkLighter),
+                    //                             const SizedBox(width: 4),
+                    //                             Text(
+                    //                               'Bật thông báo',
+                    //                               style: textTheme.titleMedium,
+                    //                             )
+                    //                           ])),
+                    //                   PopupMenuItem(
+                    //                       height: 36,
+                    //                       value: 'download',
+                    //                       child: Row(
+                    //                           mainAxisSize: MainAxisSize.min,
+                    //                           children: [
+                    //                             Icon(Icons.download_rounded,
+                    //                                 size: 18,
+                    //                                 color: appColors.inkLighter),
+                    //                             const SizedBox(width: 4),
+                    //                             Text(
+                    //                               'Tải truyện xuống',
+                    //                               style: textTheme.titleMedium,
+                    //                             )
+                    //                           ])),
+                    //                   PopupMenuItem(
+                    //                       height: 36,
+                    //                       value: 'delete',
+                    //                       child: Row(
+                    //                           mainAxisSize: MainAxisSize.min,
+                    //                           children: [
+                    //                             Icon(Icons.delete_outline_rounded,
+                    //                                 size: 18,
+                    //                                 color: appColors.secondaryBase),
+                    //                             const SizedBox(width: 4),
+                    //                             Text(
+                    //                               'Xóa truyện',
+                    //                               style: textTheme.titleMedium
+                    //                                   ?.copyWith(
+                    //                                       color: appColors
+                    //                                           .secondaryBase),
+                    //                             )
+                    //                           ])),
+                    //                 ]))
+                    //     : const SizedBox(
+                    //         height: 0,
+                    //       ),
+                  ]),
             ],
           ),
         ));
