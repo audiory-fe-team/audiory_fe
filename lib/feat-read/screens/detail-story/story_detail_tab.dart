@@ -330,7 +330,7 @@ class StoryDetailTab extends HookWidget {
                     borderRadius: BorderRadius.circular(8),
                     color: appColors?.skyLightest),
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text('Giới thiệu', style: textTheme.headlineSmall),
                       const SizedBox(

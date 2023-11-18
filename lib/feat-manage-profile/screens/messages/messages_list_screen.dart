@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -54,6 +55,10 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
       DateTime dateTime = DateTime.parse(date ?? DateTime.now().toString());
       return DateFormat('HH:mm').format(dateTime);
     }
+
+    useEffect(() {
+      conversationsQuery.refetch();
+    }, []);
 
     Widget recentContacts({List<dynamic>? list = const []}) {
       Widget contactCard() {
@@ -207,7 +212,6 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
               searchValue.value = value;
             },
             name: 'search',
-            initialValue: 'uu',
             backgroundColor: appColors.skyLighter.withOpacity(0.7),
             hintText: 'Tìm kiếm',
             suffixIcon: Icon(

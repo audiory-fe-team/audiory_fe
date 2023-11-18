@@ -55,7 +55,7 @@ class AppSnackBar {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
       elevation: 10,
-      margin: EdgeInsets.only(left: 8, right: 8, bottom: size.height - 200),
+      margin: EdgeInsets.only(left: 8, right: 8, bottom: size.height - 150),
       dismissDirection: DismissDirection.up,
 
       backgroundColor: typeOfSnackbar.displayBgColor,

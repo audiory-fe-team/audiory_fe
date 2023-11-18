@@ -82,11 +82,14 @@ class AuthRepository extends ChangeNotifier {
 
       var uri = Uri.parse('${Endpoints().user}/me');
       var res = await http.get(uri, headers: header2);
+      print('RES FOR LOGIN ${res}');
+      print('RES FOR LOGIN ${res.statusCode}');
       if (res.statusCode == 200) {
         storage.write(key: 'currentUser', value: res.body.toString());
         return res;
       }
     } on Exception catch (err) {
+      print(err);
       if (kDebugMode) {
         print(err);
       }
@@ -267,10 +270,14 @@ class AuthRepository extends ChangeNotifier {
 
           if (kDebugMode) {
             print('response body');
-            print(response.body);
+            print(header);
+            print(body);
+
+            print(utf8.decode(response.bodyBytes));
           }
 
           if (response.statusCode == 200) {
+            print('RES FOR GG ${response}');
             final token = jsonDecode(response.body)['data'];
             //save token
             const storage = FlutterSecureStorage();
@@ -283,57 +290,29 @@ class AuthRepository extends ChangeNotifier {
     return null;
   }
 
-  Future<void> getUserDetails(AuthProvider authProvider) async {
-    var client = http.Client();
-    const storage = FlutterSecureStorage();
-    String? value = await storage.read(key: 'jwt');
-    if (value != null) {
-      var headers = <String, String>{
-        'Authorization': 'Bearer $value',
-        'Content-Type': 'application/json; charset=UTF-8'
-      };
-      var uri = Uri.parse('${Endpoints().user}/me');
-      var response = await client.get(uri, headers: headers);
-
-      if (response.statusCode == 200) {
-        var json = response.body;
-        storage.write(key: 'currentUser', value: response.body.toString());
-        authProvider = AuthProvider();
-        authProvider
-            .setUserDetails(AuthUser.fromJson(jsonDecode(json)['data']));
-      }
-    }
-  }
-
   //get user profile
-  Future<void> getUserProfile(String userId) async {
+  Future<Profile?> getOtherUserProfile(String userId) async {
+    var url = Uri.parse('${Endpoints().user}/$userId/profile');
     try {
       const storage = FlutterSecureStorage();
       String? value = await storage.read(key: 'jwt');
+
       if (value != null) {
         var headers = <String, String>{
-          // 'Authorization': 'Bearer $value',
-          'Content-Type': 'application/json; charset=UTF-8'
+          'Authorization': 'Bearer $value',
+          'Accept': 'application/json'
         };
-        var response = await _dioClient.get(
-            '${Endpoints().user}/$userId/profile',
-            options: Options(headers: headers));
-
+        final response = await http.get(url, headers: headers);
+        final responseBody = utf8.decode(response.bodyBytes);
         if (response.statusCode == 200) {
-          final result = response.data['data'];
-          final userProfile = AuthUser.fromJson(result);
-          final authProvider = AuthProvider();
-          authProvider.setUserDetails(userProfile);
+          final result = jsonDecode(responseBody)['data'];
+          return Profile.fromJson(result);
+        } else {
+          return null;
         }
       }
-    } on DioException catch (e) {
-      final errorMessage = DioExceptions.fromDioError(e);
-      if (kDebugMode) {
-        print(errorMessage);
-      }
-
-      rethrow;
-    }
+    } on DioException catch (e) {}
+    return null;
   }
 
   Future<Profile> getMyInfo() async {

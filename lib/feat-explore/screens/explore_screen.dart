@@ -93,8 +93,10 @@ class AppCategoryStories extends HookWidget {
   Widget build(
     BuildContext context,
   ) {
-    final storyList =
-        useQuery(['story_all'], () => StoryRepostitory().fetchStories());
+    final storyList = useQuery(
+      ['story_all'],
+      () => StoryRepostitory().fetchStories(),
+    );
 
     if (storyList.isLoading) {
       return const Text('Loading...');
@@ -131,7 +133,7 @@ class AppCategoryStories extends HookWidget {
                   .map((story) => Padding(
                         padding: const EdgeInsets.only(right: 12),
                         child: StoryCardOverView(
-                            title: story.title,
+                            title: story.title ?? "",
                             coverUrl: story.coverUrl,
                             id: story.id),
                       ))

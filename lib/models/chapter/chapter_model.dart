@@ -25,7 +25,7 @@ class Chapter with _$Chapter {
     @JsonKey(name: 'current_version_id') String? currentVersionId,
     @JsonKey(name: 'position') int? position, // chapter position
     @JsonKey(name: 'product_id') String? productId,
-    @Default('') @JsonKey(name: 'title') String title,
+    @Default('') @JsonKey(name: 'title') String? title,
     @JsonKey(name: 'is_draft') bool? isDraft,
     @JsonKey(name: 'is_paywalled') bool? isPaywalled,
     @JsonKey(name: 'is_paid') bool? isPaid,

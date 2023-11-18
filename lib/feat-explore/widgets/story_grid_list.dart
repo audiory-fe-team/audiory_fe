@@ -27,7 +27,7 @@ class StoryGridList extends StatelessWidget {
               children: list
                   .map((e) => ExpandedStoryCard(
                         id: e.id,
-                        title: e.title,
+                        title: e.title ?? '',
                         coverUrl: e.coverUrl,
                       ))
                   .toList()))

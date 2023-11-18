@@ -20,9 +20,11 @@ class WriterScreen extends StatefulHookWidget {
 }
 
 class _WriterScreenState extends State<WriterScreen> {
-  Widget _storiesList(
-    UseQueryResult<List<Story>?, dynamic> myStoriesQuery,
-  ) {
+  UseQueryResult? result;
+
+  final _formKey = GlobalKey<FormBuilderState>();
+  Widget _storiesList(UseQueryResult<List<Story>?, dynamic> myStoriesQuery,
+      List<Story>? filteredList) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.start,
@@ -34,20 +36,23 @@ class _WriterScreenState extends State<WriterScreen> {
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
-        ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true, //fix error
-            itemCount: myStoriesQuery.data?.length,
-            itemBuilder: ((context, index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
-                child: Column(
-                  children: [
-                    StoryCardDetailWriter(story: myStoriesQuery.data?[index]),
-                  ],
-                ),
-              );
-            })),
+        Skeletonizer(
+          enabled: myStoriesQuery.isFetching,
+          child: ListView.builder(
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true, //fix error
+              itemCount: filteredList?.length,
+              itemBuilder: ((context, index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 16.0),
+                  child: Column(
+                    children: [
+                      StoryCardDetailWriter(story: filteredList?[index]),
+                    ],
+                  ),
+                );
+              })),
+        )
       ],
     );
   }
@@ -57,7 +62,14 @@ class _WriterScreenState extends State<WriterScreen> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final myStoriesQuery = useQuery(
         ['myStories'], () => StoryRepostitory().fetchMyStories()); //userId=me
-    // ref.invalidate(storyOfUserProvider);
+    final filteredStories = (myStoriesQuery.data ?? []).where(
+        (element) => element.title?.toLowerCase().contains('a') ?? false);
+
+    if (myStoriesQuery != result) {
+      setState(() {
+        result = myStoriesQuery;
+      });
+    }
     return Scaffold(
       appBar: CustomAppBar(
         height: 60,
@@ -84,16 +96,22 @@ class _WriterScreenState extends State<WriterScreen> {
           child: Column(
             children: [
               FormBuilder(
+                  key: _formKey,
+                  onChanged: () {
+                    setState(() {
+                      _formKey.currentState?.save();
+                    });
+                  },
                   child: AppTextInputField(
-                name: 'title',
-                hintText: 'Tác phẩm',
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: appColors.skyDark,
-                ),
-              )),
+                    name: 'search',
+                    hintText: 'Tác phẩm',
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: appColors.skyDark,
+                    ),
+                  )),
               const SizedBox(height: 16),
-              _storiesList(myStoriesQuery),
+              _storiesList(myStoriesQuery, filteredStories.toList()),
             ],
           ),
         ),

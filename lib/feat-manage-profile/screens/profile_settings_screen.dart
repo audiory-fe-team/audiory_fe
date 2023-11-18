@@ -35,28 +35,33 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
       Widget sliderItem({bool isDarkMode = false}) {
         return Column(
           children: [
-            FormBuilderSwitch(
-              decoration: const InputDecoration(border: InputBorder.none),
-              initialValue: false,
-              activeColor: appColors.primaryBase,
-              name: 'isNotified',
-              onChanged: (value) {
-                isDarkMode
-                    ? notifier.setTheme(
-                        value == true ? ThemeMode.dark : ThemeMode.light)
-                    : null;
-              },
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    isDarkMode ? 'Chế độ ban đêm' : 'Thông báo',
-                    style: Theme.of(context)
-                        .textTheme
-                        .bodyMedium
-                        ?.copyWith(color: appColors.inkBase),
-                  ),
-                ],
+            Container(
+              height: 50,
+              // decoration: BoxDecoration(color: appColors.secondaryLighter),
+              child: FormBuilderSwitch(
+                decoration: const InputDecoration(border: InputBorder.none),
+                initialValue: false,
+                activeColor: appColors.primaryBase,
+                name: 'isNotified',
+                onChanged: (value) {
+                  isDarkMode
+                      ? notifier.setTheme(
+                          value == true ? ThemeMode.dark : ThemeMode.light)
+                      : null;
+                },
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      isDarkMode ? 'Chế độ ban đêm' : 'Thông báo',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: appColors.inkBase),
+                    ),
+                  ],
+                ),
               ),
             ),
             const Divider(
@@ -66,56 +71,100 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
         );
       }
 
-      Widget item(
-        String title,
-        String routerName,
-      ) {
-        return Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Flexible(
-                  child: Text(
-                    title,
-                    style: textTheme.bodyMedium
-                        ?.copyWith(color: appColors.inkDark),
-                  ),
-                ),
-                Flexible(
-                  child: IconButton(
-                    onPressed: () {
-                      context.pushNamed(routerName, extra: {
+      Widget item(String title, String routerName, {bool? isPrivacy = false}) {
+        return GestureDetector(
+          onTap: () {
+            routerName == ''
+                ? null
+                : isPrivacy == true
+                    ? context.pushNamed(routerName,
+                        extra: {'userId': widget.currentUser?.id})
+                    : context.pushNamed(routerName, extra: {
                         'currentUser': widget.currentUser,
                         'userProfile': widget.userProfile
                       });
-                    },
-                    icon: Icon(
-                      Icons.arrow_forward_ios_outlined,
-                      color: appColors.inkLighter,
-                      size: 14,
+          },
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Expanded(
+                    flex: 5,
+                    child: Container(
+                      // decoration: BoxDecoration(color: appColors.primaryBase),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 9.0),
+                        child: Text(
+                          title,
+                          style: textTheme.bodyMedium
+                              ?.copyWith(color: appColors.inkDark),
+                        ),
+                      ),
                     ),
                   ),
-                )
-              ],
-            ),
-            const Divider(
-              thickness: 1,
-            )
-          ],
+                  Flexible(
+                    child: IconButton(
+                      onPressed: () {
+                        context.pushNamed(routerName, extra: {
+                          'currentUser': widget.currentUser,
+                          'userProfile': widget.userProfile
+                        });
+                      },
+                      icon: Icon(
+                        Icons.arrow_forward_ios_outlined,
+                        color: appColors.inkLighter,
+                        size: 14,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ],
+          ),
         );
       }
 
       return Column(
         children: [
           item('Hồ sơ', 'editProfile'),
+          const Divider(
+            thickness: 1,
+          ),
           sliderItem(),
           sliderItem(isDarkMode: true),
           item('Cài đặt tài khoản', 'editAccount'),
-          item('Bảo mật và an toàn', 'editProfile'),
+          const Divider(
+            thickness: 1,
+          ),
+          // item('Bảo mật và an toàn', 'editProfile'),
+          // const Divider(
+          //   thickness: 1,
+          // ),
           item('Ví của tôi', 'wallet'),
-          item('Về Audiory', 'editProfile'),
-          item('Hỗ trợ và tư vấn', 'editProfile'),
+
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            width: double.infinity,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                'BẢO MẬT VÀ AN TOÀN',
+                style: textTheme.headlineMedium
+                    ?.copyWith(color: appColors.inkLight),
+              ),
+            ]),
+          ),
+          item('Danh sách ngừng tương tác', 'muteAccounts', isPrivacy: true),
+          const Divider(
+            thickness: 1,
+          ),
+          item('Các tài khoản bị chặn', 'blockAccounts', isPrivacy: true),
+          const Divider(
+            thickness: 1,
+          ),
+          item('Về Audiory', ''),
+          // item('Hỗ trợ và tư vấn', ''),
         ],
       );
     }
@@ -160,29 +209,17 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
           'Cài đặt',
           style: textTheme.headlineMedium,
         ),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(right: 16),
-            child: GestureDetector(
-              onTap: () {
-                GoRouter.of(context).push('/profileSettings/messages',
-                    extra: {'userId': widget.currentUser?.id});
-              },
-              child: const Icon(Icons.messenger_outline),
-            ),
-          )
-        ],
       ),
-      body: Center(
+      body: Container(
         child: SingleChildScrollView(
           child: Column(
               // crossAxisAlignment: CrossAxisAlignment.center,
-              // mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24.0),
-                  child: userInfo(),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(vertical: 24.0),
+                //   child: userInfo(),
+                // ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Container(

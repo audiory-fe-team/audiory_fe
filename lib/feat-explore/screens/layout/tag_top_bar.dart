@@ -42,7 +42,7 @@ class TagTopBar extends HookWidget implements PreferredSizeWidget {
                         width: 20, height: 20)),
                 const SizedBox(width: 4),
                 Expanded(
-                    child: Text('Truyen gắn thẻ $tagName',
+                    child: Text('Truyện gắn thẻ $tagName',
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.headlineSmall))

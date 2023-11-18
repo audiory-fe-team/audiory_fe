@@ -93,7 +93,10 @@ class NotificationCard extends StatelessWidget {
                   color: appColors.primaryLightest,
                   image: DecorationImage(
                     image: NetworkImage(
-                        noti?.activity.user?.avatarUrl ?? FALLBACK_IMG_URL),
+                      noti?.activity.user?.avatarUrl ?? FALLBACK_IMG_URL,
+                    ),
+                    onError: (exception, stackTrace) =>
+                        Image.network(FALLBACK_BACKGROUND_URL),
                     fit: BoxFit.fill,
                   ),
                   shape: const CircleBorder(),

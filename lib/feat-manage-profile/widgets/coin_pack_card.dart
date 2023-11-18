@@ -34,6 +34,7 @@ class _CoinPackCardState extends State<CoinPackCard> {
         (widget.coinPack.priceAfterPromotion! / (widget.coinPack.price ?? 1))
             .floor();
     moveToMomo(url) async {
+      print('PAYURL ${url}');
       print('MOVE TO MOMO');
       // check if spotify is installed
       if (await canLaunchUrl(Uri.parse(url))) {
@@ -54,9 +55,10 @@ class _CoinPackCardState extends State<CoinPackCard> {
       //   AppSnackBar.buildTopSnackBar(
       //       context, 'Hãy chọn', null, SnackBarType.error);
       // } else {
+      print('coin ${coinPackId}');
       Map<String, dynamic> body = {};
       body['coin_pack_id'] = coinPackId;
-      body['payment_method_id'] = paymentMethodId;
+      body['payment_method_id'] = 1;
 
       try {
         final newPurchase = await PurchaseRepository().createPurchase(body);
@@ -75,7 +77,7 @@ class _CoinPackCardState extends State<CoinPackCard> {
     return GestureDetector(
         onTap: () {
           print('alo');
-          // handleCreatePurchase();
+          handleCreatePurchase(coinPackId: widget.coinPack.id ?? '');
           widget.onSelected(widget.coinPack.id);
         },
         child: Container(
@@ -115,7 +117,7 @@ class _CoinPackCardState extends State<CoinPackCard> {
             ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 8),
-              width: size.width / 2.1,
+              width: size.width / 2.3,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,7 +141,6 @@ class _CoinPackCardState extends State<CoinPackCard> {
               ),
             ),
             Container(
-              width: size.width / 4,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               decoration: BoxDecoration(
                   color: appColors.skyLight,

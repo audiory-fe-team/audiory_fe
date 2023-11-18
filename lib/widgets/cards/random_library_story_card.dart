@@ -84,7 +84,7 @@ class RandomLibraryStoryCardState extends State<RandomLibraryStoryCard> {
             const Padding(padding: EdgeInsets.symmetric(vertical: 4.0)),
             Center(
               child: Text(
-                widget.story.story.title,
+                widget.story.story.title ?? "",
                 textAlign: TextAlign.center,
                 style: textTheme.bodyMedium?.copyWith(color: appColors.inkBase),
                 maxLines: 2,

@@ -66,6 +66,7 @@ class ChapterRepository {
 
     final response =
         await http.post(url, headers: header, body: jsonEncode(body));
+    print('chapter buy ${utf8.decode(response.bodyBytes)}');
     if (response.statusCode == 200) {
     } else {
       throw Exception('Failed to buy chapter');

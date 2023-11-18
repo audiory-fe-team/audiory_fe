@@ -1,3 +1,8 @@
+import 'package:audiory_v0/feat-explore/screens/explore_screen.dart';
+import 'package:audiory_v0/feat-explore/screens/home_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
+import 'package:audiory_v0/feat-read/screens/library/library_screen.dart';
+import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/app_bar_navigator.dart';
 import 'package:audiory_v0/layout/tab_navigator.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -11,8 +16,16 @@ class AppMainLayout extends StatefulWidget {
 }
 
 class _AppMainLayoutState extends State<AppMainLayout> {
+  List<Widget> pages = [
+    const HomeScreen(),
+    const ExploreScreen(),
+    const LibraryScreen(),
+    const WriterScreen(),
+    const UserProfileScreen(),
+  ];
   String _currentPage = "Home";
-  List<String> pageKeys = ["Home", "Explore", "Library", 'Writer', "Profile"];
+
+  List<String> pageKeys = ["Home", "Explore", "Library", "Writer", "Profile"];
   Map<String, GlobalKey<NavigatorState>> _navigatorKeys = {
     "Home": GlobalKey<NavigatorState>(),
     "Explore": GlobalKey<NavigatorState>(),
@@ -29,6 +42,15 @@ class _AppMainLayoutState extends State<AppMainLayout> {
   };
 
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    setState(() {
+      _selectedIndex = 0;
+    });
+    super.initState();
+  }
 
   void _selectTab(String tabItem, int index) {
     if (tabItem == _currentPage) {
@@ -61,13 +83,10 @@ class _AppMainLayoutState extends State<AppMainLayout> {
         child: Scaffold(
           // appBar: _buildOffstageNavigatorAppBar(_currentPage)
           //     as PreferredSizeWidget,
-          body: Stack(children: <Widget>[
-            _buildOffstageNavigator("Home"),
-            _buildOffstageNavigator("Explore"),
-            _buildOffstageNavigator("Library"),
-            _buildOffstageNavigator("Writer"),
-            _buildOffstageNavigator("Profile"),
-          ]),
+          body: IndexedStack(
+            index: _selectedIndex,
+            children: pages,
+          ),
           bottomNavigationBar: BottomNavigationBar(
             type: BottomNavigationBarType.fixed,
             items: const <BottomNavigationBarItem>[
@@ -95,7 +114,10 @@ class _AppMainLayoutState extends State<AppMainLayout> {
             currentIndex: _selectedIndex,
             selectedItemColor: appColors.primaryBase,
             onTap: (int index) {
-              _selectTab(pageKeys[index], index);
+              setState(() {
+                _selectedIndex = index;
+              });
+              // _selectTab(pageKeys[index], index);
             },
             // selectedLabelStyle: Theme.of(context).textTheme.labelLarge,
             unselectedLabelStyle: const TextStyle(),
@@ -111,13 +133,6 @@ class _AppMainLayoutState extends State<AppMainLayout> {
         navigatorKey: _navigatorKeys[tabItem] as GlobalKey<NavigatorState>,
         tabItem: tabItem,
       ),
-    );
-  }
-
-  Widget _buildOffstageNavigatorAppBar(String tabItem) {
-    return AppBarNavigator(
-      navigatorKey: _appBarNavigatorKeys[tabItem] as GlobalKey<NavigatorState>,
-      tabItem: tabItem,
     );
   }
 }

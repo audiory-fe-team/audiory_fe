@@ -1,6 +1,5 @@
 // import 'package:audioplayers/audioplayers.dart';
 
-import 'package:audiory_v0/feat-read/screens/reading/new.dart';
 import 'package:audiory_v0/feat-read/screens/reading/offline_reading_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/online_reading_screen.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';

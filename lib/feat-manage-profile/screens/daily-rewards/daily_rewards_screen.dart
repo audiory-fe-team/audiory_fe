@@ -7,6 +7,7 @@ import 'package:audiory_v0/models/transaction/transaction_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/transaction_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -33,20 +34,23 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
     final transactionsQuery = useQuery(
         ['myDailyRewardTransactions'],
         () => TransactionRepository.fetchMyTransactions(
-            type: TransactionType.DAILY_REWARD));
+            type: TransactionType.DAILY_REWARD, pageSize: 10000));
 
     print(transactionsQuery.data);
     final userStreakQuery =
         useQuery(['userStreak'], () => AuthRepository().getMyStreak());
+    print('streak');
+    print(userStreakQuery.data);
     handleReceiveReward(bool isToday) async {
       try {
         await AuthRepository().receiveReward();
 
         AppSnackBar.buildTopSnackBar(
             context, 'Nhận thưởng thành công', null, SnackBarType.success);
+        userStreakQuery.refetch();
       } catch (e) {
         AppSnackBar.buildTopSnackBar(
-            context, 'Bạn đã nhận thưởng rồi', null, SnackBarType.info);
+            context, 'Bạn đã nhận cho hôm nay rồi', null, SnackBarType.info);
       }
     }
 
@@ -55,15 +59,11 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
       return newtime.toString();
     }
 
-    Widget transactionCard(Transaction transaction) {
+    Widget transactionCard(Transaction? transaction) {
       final containerSize = double.infinity - 32;
-      String formatDate(String? date) {
-        DateTime dateTime = DateTime.parse(date as String);
-        return DateFormat('dd/MM/yyyy').format(dateTime);
-      }
 
-      TransactionType transactionType = TransactionType.values
-          .byName(transaction.transactionType?.toUpperCase() ?? 'DAILY_REWARD');
+      TransactionType transactionType = TransactionType.values.byName(
+          transaction?.transactionType?.toUpperCase() ?? 'DAILY_REWARD');
       return SizedBox(
         height: 75,
         // padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -113,7 +113,7 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                           style: textTheme.titleMedium,
                         ),
                         Text(
-                          formatDate(transaction.createdDate),
+                          appFormatDate(transaction?.createdDate),
                           style: textTheme.bodyMedium
                               ?.copyWith(color: appColors.inkLight),
                         ),
@@ -131,7 +131,7 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                       style: textTheme.titleLarge,
                     ),
                     Text(
-                      '${transactionType.displayTrend} ${transaction.totalPrice} xu',
+                      '${transactionType.displayTrend} ${transaction?.totalPriceAfterCommission} xu',
                       style: textTheme.titleMedium
                           ?.copyWith(color: appColors.inkDarkest),
                     ),
@@ -140,6 +140,16 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
               ),
             ]),
       );
+    }
+
+    countTotalReceived() {
+      num total = 0;
+      transactionsQuery.data?.forEach((element) {
+        total = (total) + (element.totalPrice ?? 0);
+        print(total);
+      });
+
+      return total;
     }
 
     return Scaffold(
@@ -155,16 +165,16 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
             child: Stack(
           alignment: AlignmentDirectional.topCenter,
           children: [
-            Container(
-              margin: EdgeInsets.only(top: size.height * 0.2),
-              height: size.height * 0.65,
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  )),
-            ),
+            // Container(
+            //   margin: EdgeInsets.only(top: size.height * 0.2),
+            //   height: size.height * 0.65,
+            //   decoration: const BoxDecoration(
+            //       color: Colors.white,
+            //       borderRadius: BorderRadius.only(
+            //         topLeft: Radius.circular(20),
+            //         topRight: Radius.circular(20),
+            //       )),
+            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
               child: SizedBox(
@@ -174,14 +184,17 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Text(
-                          'Tổng xu',
+                          'Tổng xu đã nhận',
                           style: textTheme.bodyMedium
                               ?.copyWith(color: appColors.inkBase),
                         ),
-                        Text(
-                          '800',
-                          style: textTheme.headlineLarge?.copyWith(
-                              color: appColors.inkBase, fontSize: 50),
+                        Skeletonizer(
+                          enabled: transactionsQuery.isFetching,
+                          child: Text(
+                            '${countTotalReceived().toString()}',
+                            style: textTheme.headlineLarge?.copyWith(
+                                color: appColors.inkBase, fontSize: 50),
+                          ),
                         ),
                         Container(
                           margin: EdgeInsets.only(top: size.height * 0.08),
@@ -244,73 +257,78 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                         const SizedBox(
                           height: 16,
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    'Lịch sử nhận thưởng ${transactionsQuery.data?.length}',
-                                    style: textTheme.headlineSmall
-                                        ?.copyWith(color: appColors.inkDarkest),
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Text(
-                                    'Xem thêm',
-                                    style: textTheme.bodyMedium?.copyWith(
-                                      color: appColors.primaryDark,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: 16),
-                              height: size.height * 0.41,
-                              child: Skeletonizer(
-                                enabled: transactionsQuery.isFetching,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.vertical,
-                                  itemCount:
-                                      transactionsQuery.data?.length ?? 0,
-                                  itemBuilder: (context, i) {
-                                    print(transactionsQuery.data?[i]);
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: transactionCard(transactionsQuery
-                                          .data?[i] as Transaction),
-                                    );
-                                  },
-                                  // children: List.generate(
-                                  //     transactionsQuery.data?.length ?? 0,
-                                  //     (index) {
-                                  //   transactionsQuery.data?.sort((a, b) {
-                                  //     //sorting in ascending order
-                                  //     return DateTime.parse(
-                                  //                 validFormatDateForParsing(
-                                  //                     a.createdDate))
-                                  //             .isBefore(DateTime.parse(
-                                  //                 validFormatDateForParsing(
-                                  //                     b.createdDate)))
-                                  //         ? 1
-                                  //         : -1;
-                                  //   });
-                                  //   return Padding(
-                                  //     padding: const EdgeInsets.symmetric(
-                                  //         vertical: 8.0),
-                                  //     child: transactionCard(transactionsQuery
-                                  //         .data?[index] as Transaction),
-                                  //   );
-                                  // }).toList(),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
+                        // Skeletonizer(
+                        //   enabled: transactionsQuery.isFetching,
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       Row(
+                        //         mainAxisAlignment:
+                        //             MainAxisAlignment.spaceBetween,
+                        //         children: [
+                        //           Flexible(
+                        //             child: Text(
+                        //               'Lịch sử nhận thưởng ${transactionsQuery.data?.length}',
+                        //               style: textTheme.headlineSmall?.copyWith(
+                        //                   color: appColors.inkDarkest),
+                        //             ),
+                        //           ),
+                        //           Flexible(
+                        //             child: Text(
+                        //               'Xem thêm',
+                        //               style: textTheme.bodyMedium?.copyWith(
+                        //                 color: appColors.primaryDark,
+                        //               ),
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //       Container(
+                        //         margin:
+                        //             const EdgeInsets.symmetric(vertical: 16),
+                        //         height: size.height * 0.41,
+                        //         child: Skeletonizer(
+                        //           enabled: transactionsQuery.isFetching,
+                        //           child: ListView.builder(
+                        //             scrollDirection: Axis.vertical,
+                        //             itemCount:
+                        //                 transactionsQuery.data?.length ?? 0,
+                        //             itemBuilder: (context, i) {
+                        //               print(transactionsQuery.data?[i]);
+                        //               return Padding(
+                        //                 padding: const EdgeInsets.symmetric(
+                        //                     vertical: 8.0),
+                        //                 child: transactionCard(
+                        //                     transactionsQuery.data?[i]),
+                        //               );
+                        //             },
+                        //             // children: List.generate(
+                        //             //     transactionsQuery.data?.length ?? 0,
+                        //             //     (index) {
+                        //             //   transactionsQuery.data?.sort((a, b) {
+                        //             //     //sorting in ascending order
+                        //             //     return DateTime.parse(
+                        //             //                 validFormatDateForParsing(
+                        //             //                     a.createdDate))
+                        //             //             .isBefore(DateTime.parse(
+                        //             //                 validFormatDateForParsing(
+                        //             //                     b.createdDate)))
+                        //             //         ? 1
+                        //             //         : -1;
+                        //             //   });
+                        //             //   return Padding(
+                        //             //     padding: const EdgeInsets.symmetric(
+                        //             //         vertical: 8.0),
+                        //             //     child: transactionCard(transactionsQuery
+                        //             //         .data?[index] as Transaction),
+                        //             //   );
+                        //             // }).toList(),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // )
                       ]),
                 ),
               ),

@@ -23,7 +23,7 @@ class _DetailMessageBottomBarState extends State<DetailMessageBottomBar> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(color: appColors.skyLightest.withOpacity(0.9)),
+      decoration: BoxDecoration(color: Colors.transparent),
       width: double.infinity,
       height: 90,
       child: Row(

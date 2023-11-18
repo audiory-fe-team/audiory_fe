@@ -61,7 +61,7 @@ class StoryRankCard extends StatelessWidget {
 
     if (order > 3) {
       return Text(
-        story.title,
+        story.title ?? "",
         style: textTheme.titleMedium?.copyWith(color: appColors.inkBase),
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
@@ -148,7 +148,7 @@ class StoryRankCard extends StatelessWidget {
                         child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        getTitle(order, story.title, context),
+                        getTitle(order, story.title ?? "", context),
                         const SizedBox(height: 8),
                         Row(
                           children: [

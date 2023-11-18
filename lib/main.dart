@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audiory_v0/config/app_router.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
@@ -15,6 +17,16 @@ import 'package:skeletonizer/skeletonizer.dart';
 final queryClient = QueryClient(
   defaultQueryOptions: DefaultQueryOptions(),
 );
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
@@ -33,6 +45,7 @@ Future<void> main() async {
     ),
   );
 
+  HttpOverrides.global = MyHttpOverrides();
   runApp(QueryClientProvider(
     queryClient: queryClient,
     child:

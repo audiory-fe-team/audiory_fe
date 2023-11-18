@@ -27,6 +27,8 @@ mixin _$Streak {
   String get name => throw _privateConstructorUsedError;
   @JsonKey(name: 'has_received')
   bool get hasReceived => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_today')
+  bool get isToday => throw _privateConstructorUsedError;
   @JsonKey(name: 'amount')
   int? get amount => throw _privateConstructorUsedError;
 
@@ -43,6 +45,7 @@ abstract class $StreakCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'name') String name,
       @JsonKey(name: 'has_received') bool hasReceived,
+      @JsonKey(name: 'is_today') bool isToday,
       @JsonKey(name: 'amount') int? amount});
 }
 
@@ -61,6 +64,7 @@ class _$StreakCopyWithImpl<$Res, $Val extends Streak>
   $Res call({
     Object? name = null,
     Object? hasReceived = null,
+    Object? isToday = null,
     Object? amount = freezed,
   }) {
     return _then(_value.copyWith(
@@ -71,6 +75,10 @@ class _$StreakCopyWithImpl<$Res, $Val extends Streak>
       hasReceived: null == hasReceived
           ? _value.hasReceived
           : hasReceived // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isToday: null == isToday
+          ? _value.isToday
+          : isToday // ignore: cast_nullable_to_non_nullable
               as bool,
       amount: freezed == amount
           ? _value.amount
@@ -90,6 +98,7 @@ abstract class _$$StreakImplCopyWith<$Res> implements $StreakCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'name') String name,
       @JsonKey(name: 'has_received') bool hasReceived,
+      @JsonKey(name: 'is_today') bool isToday,
       @JsonKey(name: 'amount') int? amount});
 }
 
@@ -106,6 +115,7 @@ class __$$StreakImplCopyWithImpl<$Res>
   $Res call({
     Object? name = null,
     Object? hasReceived = null,
+    Object? isToday = null,
     Object? amount = freezed,
   }) {
     return _then(_$StreakImpl(
@@ -116,6 +126,10 @@ class __$$StreakImplCopyWithImpl<$Res>
       hasReceived: null == hasReceived
           ? _value.hasReceived
           : hasReceived // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isToday: null == isToday
+          ? _value.isToday
+          : isToday // ignore: cast_nullable_to_non_nullable
               as bool,
       amount: freezed == amount
           ? _value.amount
@@ -131,6 +145,7 @@ class _$StreakImpl implements _Streak {
   const _$StreakImpl(
       {@JsonKey(name: 'name') required this.name,
       @JsonKey(name: 'has_received') this.hasReceived = false,
+      @JsonKey(name: 'is_today') this.isToday = false,
       @JsonKey(name: 'amount') this.amount = 0});
 
   factory _$StreakImpl.fromJson(Map<String, dynamic> json) =>
@@ -146,12 +161,15 @@ class _$StreakImpl implements _Streak {
   @JsonKey(name: 'has_received')
   final bool hasReceived;
   @override
+  @JsonKey(name: 'is_today')
+  final bool isToday;
+  @override
   @JsonKey(name: 'amount')
   final int? amount;
 
   @override
   String toString() {
-    return 'Streak(name: $name, hasReceived: $hasReceived, amount: $amount)';
+    return 'Streak(name: $name, hasReceived: $hasReceived, isToday: $isToday, amount: $amount)';
   }
 
   @override
@@ -162,12 +180,14 @@ class _$StreakImpl implements _Streak {
             (identical(other.name, name) || other.name == name) &&
             (identical(other.hasReceived, hasReceived) ||
                 other.hasReceived == hasReceived) &&
+            (identical(other.isToday, isToday) || other.isToday == isToday) &&
             (identical(other.amount, amount) || other.amount == amount));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, name, hasReceived, amount);
+  int get hashCode =>
+      Object.hash(runtimeType, name, hasReceived, isToday, amount);
 
   @JsonKey(ignore: true)
   @override
@@ -187,6 +207,7 @@ abstract class _Streak implements Streak {
   const factory _Streak(
       {@JsonKey(name: 'name') required final String name,
       @JsonKey(name: 'has_received') final bool hasReceived,
+      @JsonKey(name: 'is_today') final bool isToday,
       @JsonKey(name: 'amount') final int? amount}) = _$StreakImpl;
 
   factory _Streak.fromJson(Map<String, dynamic> json) = _$StreakImpl.fromJson;
@@ -199,6 +220,9 @@ abstract class _Streak implements Streak {
   @override
   @JsonKey(name: 'has_received')
   bool get hasReceived;
+  @override
+  @JsonKey(name: 'is_today')
+  bool get isToday;
   @override
   @JsonKey(name: 'amount')
   int? get amount;

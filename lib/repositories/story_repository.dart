@@ -36,7 +36,6 @@ class StoryRepostitory {
         final List<dynamic> result = jsonDecode(responseBody)['data'];
         return result.map((i) => Story.fromJson(i)).toList();
       } catch (error) {
-        print(error);
         throw (error);
       }
     } else {
@@ -47,16 +46,13 @@ class StoryRepostitory {
   Future<List<Story>> fetchMyPaywalledStories() async {
     final storage = FlutterSecureStorage();
     final jwtToken = await storage.read(key: 'jwt');
-    print('jwt $jwtToken');
     final userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
-    print('USERID $userId');
     final url = Uri.parse(
         '${dotenv.get('API_BASE_URL')}/users/$userId/recommendations/paywalled');
 
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
 
-    print('paywalled $responseBody');
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(responseBody)['data'];
       return result.map((i) => Story.fromJson(i)).toList();
@@ -134,12 +130,6 @@ class StoryRepostitory {
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
 
-    if (kDebugMode) {
-      print('res');
-      print(response.body);
-      print(jsonDecode(response.body)['data']);
-    }
-
     if (response.statusCode == 200) {
       final result = jsonDecode(responseBody)['data'];
       return result.map((i) => Chapter.fromJson(i)).toList();
@@ -171,7 +161,8 @@ class StoryRepostitory {
     if (jwtToken != null) {
       headers['Authorization'] = 'Bearer $jwtToken';
     }
-    final url = Uri.parse('${Endpoints().user}/me/stories');
+    final url =
+        Uri.parse('${Endpoints().user}/me/stories?page=1&page_size=100');
     final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
