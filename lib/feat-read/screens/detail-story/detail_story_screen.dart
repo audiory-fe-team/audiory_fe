@@ -32,9 +32,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailStoryScreen extends HookConsumerWidget {
   final String id;
+  final bool? hasDownload;
 
   @override
-  DetailStoryScreen({this.id = '', super.key});
+  DetailStoryScreen({this.id = '', super.key, this.hasDownload = false});
 
   final storyDb = StoryDatabase();
   final chapterDb = ChapterDatabase();
@@ -506,6 +507,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                 ),
               ))),
       bottomNavigationBar: DetailStoryBottomBar(
+          hasDownload: hasDownload,
           storyId: id,
           addToLibraryCallback: () => isAddedToLibrary == true
               ? handleRemoveFromLibrary()

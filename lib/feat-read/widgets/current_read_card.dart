@@ -35,7 +35,8 @@ class CurrentReadCard extends StatelessWidget {
 
     return GestureDetector(
         onTap: () {
-          GoRouter.of(context).push("/story/$storyId");
+          GoRouter.of(context)
+              .push("/story/$storyId", extra: {'hasDownLoad': true});
         },
         child: Container(
           width: double.infinity,

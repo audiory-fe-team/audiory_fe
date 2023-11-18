@@ -262,10 +262,19 @@ class AppRoutes {
           name: 'story_detail',
           builder: (BuildContext context, GoRouterState state) {
             final storyId = state.pathParameters['storyId'];
+            var hasDownload = false;
+            if (state.extra != null) {
+              final extraMap = state.extra as Map<dynamic, dynamic>;
+              hasDownload = extraMap['hasDownload'] ?? true;
+            }
+
+            print(hasDownload);
+
             if (storyId == null || storyId == '' || storyId == 'not-found') {
               return const NotFoundScreen();
             }
             return DetailStoryScreen(
+              hasDownload: hasDownload,
               id: storyId,
             );
           },
@@ -408,13 +417,17 @@ class AppRoutes {
           name: 'muteAccounts',
           path: '/muteAccounts',
           builder: (BuildContext context, GoRouterState state) {
-            return const MuteAccountsScreen();
+            final extraMap = state.extra as Map<String, dynamic>;
+            final userId = extraMap['userId'] ?? null;
+            return MuteAccountsScreen(userId: userId);
           }),
       GoRoute(
           name: 'blockAccounts',
           path: '/blockAccounts',
           builder: (BuildContext context, GoRouterState state) {
-            return const BlockAccounts();
+            final extraMap = state.extra as Map<String, dynamic>;
+            final userId = extraMap['userId'] ?? null;
+            return BlockAccountsScreen(userId: userId);
           }),
       GoRoute(
         name: 'wallet',

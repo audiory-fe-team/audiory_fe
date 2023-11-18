@@ -77,7 +77,8 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
             routerName == ''
                 ? null
                 : isPrivacy == true
-                    ? context.pushNamed(routerName)
+                    ? context.pushNamed(routerName,
+                        extra: {'userId': widget.currentUser?.id})
                     : context.pushNamed(routerName, extra: {
                         'currentUser': widget.currentUser,
                         'userProfile': widget.userProfile
@@ -141,9 +142,6 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
           //   thickness: 1,
           // ),
           item('Ví của tôi', 'wallet'),
-          const Divider(
-            thickness: 1,
-          ),
 
           Container(
             padding: EdgeInsets.symmetric(vertical: 16),
@@ -158,7 +156,13 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
             ]),
           ),
           item('Danh sách ngừng tương tác', 'muteAccounts', isPrivacy: true),
+          const Divider(
+            thickness: 1,
+          ),
           item('Các tài khoản bị chặn', 'blockAccounts', isPrivacy: true),
+          const Divider(
+            thickness: 1,
+          ),
           item('Về Audiory', ''),
           // item('Hỗ trợ và tư vấn', ''),
         ],

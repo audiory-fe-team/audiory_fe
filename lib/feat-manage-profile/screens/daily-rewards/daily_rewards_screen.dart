@@ -142,6 +142,16 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
       );
     }
 
+    countTotalReceived() {
+      num total = 0;
+      transactionsQuery.data?.forEach((element) {
+        total = (total) + (element.totalPrice ?? 0);
+        print(total);
+      });
+
+      return total;
+    }
+
     return Scaffold(
       backgroundColor: appColors.primaryLightest,
       appBar: CustomAppBar(
@@ -155,16 +165,16 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
             child: Stack(
           alignment: AlignmentDirectional.topCenter,
           children: [
-            Container(
-              margin: EdgeInsets.only(top: size.height * 0.2),
-              height: size.height * 0.65,
-              decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  )),
-            ),
+            // Container(
+            //   margin: EdgeInsets.only(top: size.height * 0.2),
+            //   height: size.height * 0.65,
+            //   decoration: const BoxDecoration(
+            //       color: Colors.white,
+            //       borderRadius: BorderRadius.only(
+            //         topLeft: Radius.circular(20),
+            //         topRight: Radius.circular(20),
+            //       )),
+            // ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
               child: SizedBox(
@@ -181,7 +191,7 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                         Skeletonizer(
                           enabled: transactionsQuery.isFetching,
                           child: Text(
-                            '${transactionsQuery.data?.length}',
+                            '${countTotalReceived().toString()}',
                             style: textTheme.headlineLarge?.copyWith(
                                 color: appColors.inkBase, fontSize: 50),
                           ),
@@ -247,73 +257,78 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                         const SizedBox(
                           height: 16,
                         ),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    'Lịch sử nhận thưởng ${transactionsQuery.data?.length}',
-                                    style: textTheme.headlineSmall
-                                        ?.copyWith(color: appColors.inkDarkest),
-                                  ),
-                                ),
-                                Flexible(
-                                  child: Text(
-                                    'Xem thêm',
-                                    style: textTheme.bodyMedium?.copyWith(
-                                      color: appColors.primaryDark,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Container(
-                              margin: const EdgeInsets.symmetric(vertical: 16),
-                              height: size.height * 0.41,
-                              child: Skeletonizer(
-                                enabled: transactionsQuery.isFetching,
-                                child: ListView.builder(
-                                  scrollDirection: Axis.vertical,
-                                  itemCount:
-                                      transactionsQuery.data?.length ?? 0,
-                                  itemBuilder: (context, i) {
-                                    print(transactionsQuery.data?[i]);
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 8.0),
-                                      child: transactionCard(
-                                          transactionsQuery.data?[i]),
-                                    );
-                                  },
-                                  // children: List.generate(
-                                  //     transactionsQuery.data?.length ?? 0,
-                                  //     (index) {
-                                  //   transactionsQuery.data?.sort((a, b) {
-                                  //     //sorting in ascending order
-                                  //     return DateTime.parse(
-                                  //                 validFormatDateForParsing(
-                                  //                     a.createdDate))
-                                  //             .isBefore(DateTime.parse(
-                                  //                 validFormatDateForParsing(
-                                  //                     b.createdDate)))
-                                  //         ? 1
-                                  //         : -1;
-                                  //   });
-                                  //   return Padding(
-                                  //     padding: const EdgeInsets.symmetric(
-                                  //         vertical: 8.0),
-                                  //     child: transactionCard(transactionsQuery
-                                  //         .data?[index] as Transaction),
-                                  //   );
-                                  // }).toList(),
-                                ),
-                              ),
-                            ),
-                          ],
-                        )
+                        // Skeletonizer(
+                        //   enabled: transactionsQuery.isFetching,
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       Row(
+                        //         mainAxisAlignment:
+                        //             MainAxisAlignment.spaceBetween,
+                        //         children: [
+                        //           Flexible(
+                        //             child: Text(
+                        //               'Lịch sử nhận thưởng ${transactionsQuery.data?.length}',
+                        //               style: textTheme.headlineSmall?.copyWith(
+                        //                   color: appColors.inkDarkest),
+                        //             ),
+                        //           ),
+                        //           Flexible(
+                        //             child: Text(
+                        //               'Xem thêm',
+                        //               style: textTheme.bodyMedium?.copyWith(
+                        //                 color: appColors.primaryDark,
+                        //               ),
+                        //             ),
+                        //           ),
+                        //         ],
+                        //       ),
+                        //       Container(
+                        //         margin:
+                        //             const EdgeInsets.symmetric(vertical: 16),
+                        //         height: size.height * 0.41,
+                        //         child: Skeletonizer(
+                        //           enabled: transactionsQuery.isFetching,
+                        //           child: ListView.builder(
+                        //             scrollDirection: Axis.vertical,
+                        //             itemCount:
+                        //                 transactionsQuery.data?.length ?? 0,
+                        //             itemBuilder: (context, i) {
+                        //               print(transactionsQuery.data?[i]);
+                        //               return Padding(
+                        //                 padding: const EdgeInsets.symmetric(
+                        //                     vertical: 8.0),
+                        //                 child: transactionCard(
+                        //                     transactionsQuery.data?[i]),
+                        //               );
+                        //             },
+                        //             // children: List.generate(
+                        //             //     transactionsQuery.data?.length ?? 0,
+                        //             //     (index) {
+                        //             //   transactionsQuery.data?.sort((a, b) {
+                        //             //     //sorting in ascending order
+                        //             //     return DateTime.parse(
+                        //             //                 validFormatDateForParsing(
+                        //             //                     a.createdDate))
+                        //             //             .isBefore(DateTime.parse(
+                        //             //                 validFormatDateForParsing(
+                        //             //                     b.createdDate)))
+                        //             //         ? 1
+                        //             //         : -1;
+                        //             //   });
+                        //             //   return Padding(
+                        //             //     padding: const EdgeInsets.symmetric(
+                        //             //         vertical: 8.0),
+                        //             //     child: transactionCard(transactionsQuery
+                        //             //         .data?[index] as Transaction),
+                        //             //   );
+                        //             // }).toList(),
+                        //           ),
+                        //         ),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // )
                       ]),
                 ),
               ),

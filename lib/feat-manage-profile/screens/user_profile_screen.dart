@@ -15,6 +15,7 @@ import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -313,20 +314,20 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 const SizedBox(height: 8),
                                 GestureDetector(
                                   onTap: () {
-                                    userByIdQuery.isError == true
-                                        ? null
-                                        : GoRouter.of(context)
-                                      ?..pushNamed('profileSettings', extra: {
-                                        'currentUser': userByIdQuery.data,
-                                        'userProfile': profileQuery.data
-                                      })
-                                      ..push('/wallet', extra: {
-                                        'currentUser': userByIdQuery.data,
-                                        'userProfile': profileQuery.data
-                                      });
+                                    // userByIdQuery.isError == true
+                                    //     ? null
+                                    //     : GoRouter.of(context)
+                                    //   ?..pushNamed('profileSettings', extra: {
+                                    //     'currentUser': userByIdQuery.data,
+                                    //     'userProfile': profileQuery.data
+                                    //   })
+                                    //   ..push('/wallet', extra: {
+                                    //     'currentUser': userByIdQuery.data,
+                                    //     'userProfile': profileQuery.data
+                                    //   });
                                   },
-                                  child: SizedBox(
-                                    width: 100,
+                                  child: Container(
+                                    width: 130,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
@@ -349,6 +350,17 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                             ),
                                           ),
                                         ),
+                                        Flexible(
+                                            child: GestureDetector(
+                                          child: const Icon(Icons.add),
+                                          onTap: () {
+                                            context.pushNamed('newPurchase',
+                                                extra: {
+                                                  'currentUser':
+                                                      userByIdQuery.data
+                                                });
+                                          },
+                                        )),
                                       ],
                                     ),
                                   ),
@@ -460,7 +472,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                       setState(() {
                                         if (tabState != value) tabState = value;
                                       });
-                                      ;
                                     },
                                     controller: tabController,
                                     labelColor: appColors.primaryBase,
@@ -499,9 +510,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                   } else {
                                     return Text('notification');
                                   }
-                                  return Skeletonizer(
-                                      enabled: false,
-                                      child: introView([], [], []));
+                                  // return Skeletonizer(
+                                  //   enabled: ,
+                                  //     child: introView([], [], []));
                                 }),
                               ],
                             ),
@@ -573,16 +584,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final userByIdQuery =
-        useQuery(['user'], () => AuthRepository().getMyUserById());
+    final userByIdQuery = useQuery(
+        ['user', currentUser?.id], () => AuthRepository().getMyUserById(),
+        refetchOnMount: RefetchOnMount.stale,
+        staleDuration: const Duration(minutes: 5));
     final profileQuery = useQuery(
-        ['profile'], () => AuthRepository().getMyInfo()); // include followers
-    final publishedStoriesQuery = useQuery(
-        ['publishedStories'],
-        () =>
-            StoryRepostitory().fetchPublishedStoriesByUserId('me')); //userId=me
+        ['profile'], () => AuthRepository().getMyInfo(),
+        refetchOnMount: RefetchOnMount.stale,
+        staleDuration: const Duration(minutes: 5)); // include followers
+    final publishedStoriesQuery = useQuery(['publishedStories'],
+        () => StoryRepostitory().fetchPublishedStoriesByUserId('me'),
+        refetchOnMount: RefetchOnMount.stale,
+        staleDuration: const Duration(minutes: 5)); //userId=me
     final readingStoriesQuery = useQuery(['readingStories'],
-        () => StoryRepostitory().fetchReadingStoriesByUserId('me'));
+        () => StoryRepostitory().fetchReadingStoriesByUserId('me'),
+        refetchOnMount: RefetchOnMount.stale,
+        staleDuration: const Duration(minutes: 5));
 
     return SafeArea(
       child: Scaffold(
@@ -591,6 +608,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         body: RefreshIndicator(
           onRefresh: () async {
             profileQuery.refetch();
+            userByIdQuery.refetch();
+            readingStoriesQuery.refetch();
           },
           child: userProfileInfo(userByIdQuery, profileQuery,
               publishedStoriesQuery, readingStoriesQuery),

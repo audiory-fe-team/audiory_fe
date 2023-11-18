@@ -93,8 +93,10 @@ class AppCategoryStories extends HookWidget {
   Widget build(
     BuildContext context,
   ) {
-    final storyList =
-        useQuery(['story_all'], () => StoryRepostitory().fetchStories());
+    final storyList = useQuery(
+      ['story_all'],
+      () => StoryRepostitory().fetchStories(),
+    );
 
     if (storyList.isLoading) {
       return const Text('Loading...');

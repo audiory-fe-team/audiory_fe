@@ -78,7 +78,8 @@ class SlidableStoryCardDetail extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: GestureDetector(
             onTap: () {
-              GoRouter.of(context).push("/story/$storyId");
+              GoRouter.of(context)
+                  .push("/story/$storyId", extra: {'hasDownload': true});
             },
             child: Container(
               width: double.infinity,

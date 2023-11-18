@@ -20,6 +20,8 @@ class WriterScreen extends StatefulHookWidget {
 }
 
 class _WriterScreenState extends State<WriterScreen> {
+  UseQueryResult? result;
+
   final _formKey = GlobalKey<FormBuilderState>();
   Widget _storiesList(UseQueryResult<List<Story>?, dynamic> myStoriesQuery,
       List<Story>? filteredList) {
@@ -62,6 +64,12 @@ class _WriterScreenState extends State<WriterScreen> {
         ['myStories'], () => StoryRepostitory().fetchMyStories()); //userId=me
     final filteredStories = (myStoriesQuery.data ?? []).where(
         (element) => element.title?.toLowerCase().contains('a') ?? false);
+
+    if (myStoriesQuery != result) {
+      setState(() {
+        result = myStoriesQuery;
+      });
+    }
     return Scaffold(
       appBar: CustomAppBar(
         height: 60,

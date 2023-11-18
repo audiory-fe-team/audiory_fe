@@ -654,7 +654,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                           context: context,
                           type: QuickAlertType.confirm,
                           title:
-                              'Xác nhận dừng tường tác người dùng ${widget.name == '' ? 'này' : widget.name}?',
+                              'Xác nhận dừng tương tác người dùng ${widget.name == '' ? 'này' : widget.name}?',
                           titleAlignment: TextAlign.center,
                           confirmBtnText: 'Xác nhận',
                           cancelBtnText: 'Hủy',

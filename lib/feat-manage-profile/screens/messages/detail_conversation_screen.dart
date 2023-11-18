@@ -224,7 +224,8 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
             bool isMe = messageItem?.senderId == widget.userId;
 
             return Padding(
-              padding: const EdgeInsets.only(bottom: 16.0, left: 16, right: 16),
+              padding: const EdgeInsets.only(
+                  bottom: 4.0, left: 16, right: 16, top: 16),
               child: messageCard(
                   content: messageContent,
                   isMe: isMe,
@@ -279,31 +280,37 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
         ],
       ),
       body: Stack(children: [
-        Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              StreamBuilder(
-                stream: channel?.stream,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    var decodedJson = utf8.decode(snapshot.data);
-                    print('SNAPSHOT DATA ${decodedJson}');
-                    print('${messages.length}');
+        Container(
+          height: size.height,
+          child: Padding(
+            padding: const EdgeInsets.only(bottom: 90.0),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  StreamBuilder(
+                    stream: channel?.stream,
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        var decodedJson = utf8.decode(snapshot.data);
+                        print('SNAPSHOT DATA ${decodedJson}');
+                        print('${messages.length}');
 
-                    print('MESSAGE LIST $messages');
-                    messages.insert(
-                        0, Message.fromJson(jsonDecode(decodedJson)));
-                    widget.refetchCallBack;
-                  } else {
-                    print('SNAPSHOT ERROR');
-                    print('${snapshot.error}');
-                  }
+                        print('MESSAGE LIST $messages');
+                        messages.insert(
+                            0, Message.fromJson(jsonDecode(decodedJson)));
+                        widget.refetchCallBack;
+                      } else {
+                        print('SNAPSHOT ERROR');
+                        print('${snapshot.error}');
+                      }
 
-                  return getMessageList();
-                },
-              )
-            ],
+                      return getMessageList();
+                    },
+                  )
+                ],
+              ),
+            ),
           ),
         ),
         Align(
