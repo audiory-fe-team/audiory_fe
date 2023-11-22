@@ -146,8 +146,19 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                           },
                         ),
                       )
-                    : const SizedBox(
-                        height: 0,
+                    : SizedBox(
+                        width: size.width - 32,
+                        child: AppIconButton(
+                          title:
+                              'Mua cả truyện với ${(totalBuyStory).round()} xu',
+                          textStyle: textTheme.titleMedium
+                              ?.copyWith(color: appColors.primaryBase),
+                          isOutlined: true,
+                          bgColor: appColors.skyLightest,
+                          onPressed: () {
+                            widget.handleBuyStory();
+                          },
+                        ),
                       )
               ],
             ),

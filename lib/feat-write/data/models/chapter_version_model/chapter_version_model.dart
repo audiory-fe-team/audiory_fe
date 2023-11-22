@@ -9,12 +9,12 @@ class ChapterVersion with _$ChapterVersion {
   const factory ChapterVersion({
     //add the code in analysis_options.yaml to ignore the JsonKey warning
     @Default('') @JsonKey(name: 'id') String id,
-    @Default('') @JsonKey(name: 'chapter_id') String chapterId,
-    @JsonKey(name: 'version_name') String? versionName,
-    @JsonKey(name: 'banner_url') String? bannerUrl,
-    @Default('') @JsonKey(name: 'title') String title,
-    @JsonKey(name: 'rich_text') String? richText, //for json
-    @JsonKey(name: 'content') String? content, //for raw content
+    @Default('') @JsonKey(name: 'chapter_id') String? chapterId,
+    @Default('') @JsonKey(name: 'version_name') String? versionName,
+    @Default('') @JsonKey(name: 'banner_url') String? bannerUrl,
+    @Default('') @JsonKey(name: 'title') String? title,
+    @Default('') @JsonKey(name: 'rich_text') String? richText, //for json
+    @Default('') @JsonKey(name: 'content') String? content, //for raw content
     @JsonKey(name: 'timestamp') String? timestamp,
   }) = _ChapterVersion;
 

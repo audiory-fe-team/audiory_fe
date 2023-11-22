@@ -281,30 +281,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             )),
                             child: Column(
                               children: [
-                                Skeletonizer(
-                                    enabled: profileQuery.isFetching,
-                                    child: AppAvatarImage(
-                                      hasLevel: true,
-                                      levelId: userByIdQuery.data?.levelId ?? 1,
-                                      hasAuthorLevel: true,
-                                      authorLevelId:
-                                          userByIdQuery.data?.authorLevelId ??
-                                              1,
-                                      size: userByIdQuery.data?.levelId != null
-                                          ? 93
-                                          : 88,
-                                      url: profileQuery.data?.avatarUrl,
-                                    )),
+                                AppAvatarImage(
+                                  hasLevel: true,
+                                  levelId: userByIdQuery.data?.levelId ?? 1,
+                                  hasAuthorLevel: true,
+                                  authorLevelId:
+                                      userByIdQuery.data?.authorLevelId ?? 1,
+                                  size: userByIdQuery.data?.levelId != null
+                                      ? 93
+                                      : 88,
+                                  url: profileQuery.data?.avatarUrl,
+                                ),
                                 const SizedBox(height: 8),
-                                Skeletonizer(
-                                  enabled: profileQuery.isFetching,
-                                  child: Text(
-                                    userByIdQuery.data?.fullName ?? 'Họ và tên',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
-                                  ),
+                                Text(
+                                  userByIdQuery.data?.fullName ?? 'Họ và tên',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
                                 ),
                                 Text(
                                   '@${profileQuery.data?.username ?? 'Tên đăng nhập'}',

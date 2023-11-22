@@ -108,7 +108,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                   child: Wrap(
                     direction: Axis.horizontal,
                     alignment: WrapAlignment.start,
-                    spacing: 4,
+                    spacing: 0,
                     runSpacing: 12,
                     children: lists
                         .map((option) => GestureDetector(
@@ -160,8 +160,9 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                                   children: [
                                     InkWell(
                                         onTap: () {
-                                          int curVal =
-                                              int.parse(sizeController.text);
+                                          int? curVal = int.tryParse(
+                                                  sizeController.text) ??
+                                              0;
                                           if (curVal <= 1) return;
                                           sizeController.text =
                                               (curVal - 1).toString();

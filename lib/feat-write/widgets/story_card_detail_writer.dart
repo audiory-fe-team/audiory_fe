@@ -120,6 +120,17 @@ class StoryCardDetailWriter extends StatelessWidget {
     return map;
   }
 
+  Map<String, dynamic> getPaywalledStatus(context) {
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    Map<String, dynamic> map = {
+      'status': 'Truyện trả phí',
+      'color': appColors.secondaryBase,
+    };
+
+    return map;
+  }
+
   String formatDate(String? date) {
     //use package intl
 
@@ -132,216 +143,234 @@ class StoryCardDetailWriter extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final Map<String, dynamic> storyStatus = getStoryStatus(context);
+    final Map<String, dynamic> paywalledStatus = getPaywalledStatus(context);
 
     final popupMenuItem = ['edit', 'share', 'preview', 'delete'];
     final String selectedValue = popupMenuItem[0];
 
-    return Container(
-      width: double.infinity,
-      height: 135,
-      decoration: ShapeDecoration(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Container(
-            clipBehavior: Clip.antiAlias,
-            decoration: ShapeDecoration(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  width: 95,
-                  height: 135,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(story?.coverUrl == ""
-                          ? FALLBACK_IMG_URL
-                          : story?.coverUrl ?? FALLBACK_IMG_URL),
-                      fit: BoxFit.fill,
+    return GestureDetector(
+      onTap: () {
+        context.pushNamed('composeStory', extra: {'storyId': story?.id});
+      },
+      child: Container(
+        width: double.infinity,
+        height: 135,
+        decoration: ShapeDecoration(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              clipBehavior: Clip.antiAlias,
+              decoration: ShapeDecoration(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 95,
+                    height: 135,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(story?.coverUrl == ""
+                            ? FALLBACK_IMG_URL
+                            : story?.coverUrl ?? FALLBACK_IMG_URL),
+                        fit: BoxFit.fill,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                '#${storyStatus['status']}',
+                                style: textTheme.titleMedium!.merge(TextStyle(
+                                    overflow: TextOverflow.ellipsis,
+                                    color: storyStatus['color'])),
+                              ),
+                            ),
+                            // story?.isPaywalled == true
+                            //     ? Flexible(
+                            //         child: Text(
+                            //           '#${paywalledStatus['status']}',
+                            //           style: textTheme.titleMedium!.merge(
+                            //               TextStyle(
+                            //                   overflow: TextOverflow.ellipsis,
+                            //                   color: paywalledStatus['color'])),
+                            //         ),
+                            //       )
+                            //     : const SizedBox(
+                            //         height: 0,
+                            //       )
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Text(
+                            story?.title ?? '',
+                            style: textTheme.titleLarge!.merge(const TextStyle(
+                                overflow: TextOverflow.ellipsis)),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset('assets/icons/chapter.svg',
+                                      width: 14, height: 14),
+                                  const SizedBox(width: 8),
+                                  Text('${story?.publishedCount ?? '0'} chương',
+                                      style: textTheme.titleSmall!.copyWith(
+                                          fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                              const SizedBox(width: 6),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        SizedBox(
+                          width: double.infinity,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset('assets/icons/chapter.svg',
+                                      width: 14, height: 14),
+                                  const SizedBox(width: 8),
+                                  Text('${story?.draftCount ?? 0} bản thảo',
+                                      style: textTheme.titleSmall!.copyWith(
+                                          fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Wrap(
               children: [
-                SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: Text(
-                          '#${storyStatus['status']}',
-                          style: textTheme.titleMedium!.merge(TextStyle(
-                              overflow: TextOverflow.ellipsis,
-                              color: storyStatus['color'])),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Text(
-                          story?.title ?? '',
-                          style: textTheme.titleLarge!.merge(
-                              const TextStyle(overflow: TextOverflow.ellipsis)),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                SizedBox(
-                  width: double.infinity,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset('assets/icons/write.svg',
-                                    width: 14, height: 14),
-                                const SizedBox(width: 8),
-                                // SizedBox(
-                                //     width: 140,
-                                //     child: Text(
-                                //         'Cập nhật ${story?.updatedDate != null ? formatDate(story?.updatedDate) : ''}',
-                                //         style: textTheme.titleSmall!.copyWith(
-                                //             fontStyle: FontStyle.italic,
-                                //             overflow: TextOverflow.ellipsis))),
-                              ],
-                            ),
-                            const SizedBox(width: 6),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                SvgPicture.asset('assets/icons/chapter.svg',
-                                    width: 14, height: 14),
-                                const SizedBox(width: 8),
-                                Text(
-                                    '${story?.chapters?.length ?? '0'} chương + ${story?.draftCount} bản thảo',
-                                    style: textTheme.titleSmall!
-                                        .copyWith(fontStyle: FontStyle.italic)),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                    ],
-                  ),
-                ),
+                PopupMenuButton(
+                    onSelected: (value) {
+                      _onSelectStoryAction(value, context);
+                    },
+                    icon: const Icon(Icons.more_vert),
+                    itemBuilder: (context) => [
+                          const PopupMenuItem(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              value: 0,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.edit),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text('Chỉnh sửa'),
+                                ],
+                              )),
+                          const PopupMenuItem(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              value: 1,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.remove_red_eye_rounded),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text('Xem trước'),
+                                ],
+                              )),
+                          PopupMenuItem(
+                              enabled: story?.isDraft == false,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              value: 2,
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.ios_share_rounded),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text('Chia sẻ'),
+                                ],
+                              )),
+                          const PopupMenuItem(
+                              padding: EdgeInsets.symmetric(horizontal: 20),
+                              value: 3,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Icon(Icons.delete),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text('Xóa'),
+                                ],
+                              )),
+                        ]),
               ],
             ),
-          ),
-          Wrap(
-            children: [
-              PopupMenuButton(
-                  onSelected: (value) {
-                    _onSelectStoryAction(value, context);
-                  },
-                  icon: const Icon(Icons.more_vert),
-                  itemBuilder: (context) => [
-                        const PopupMenuItem(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            value: 0,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(Icons.edit),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text('Chỉnh sửa'),
-                              ],
-                            )),
-                        const PopupMenuItem(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            value: 1,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(Icons.remove_red_eye_rounded),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text('Xem trước'),
-                              ],
-                            )),
-                        PopupMenuItem(
-                            enabled: story?.isDraft == false,
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            value: 2,
-                            child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(Icons.ios_share_rounded),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text('Chia sẻ'),
-                              ],
-                            )),
-                        const PopupMenuItem(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            value: 3,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Icon(Icons.delete),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                Text('Xóa'),
-                              ],
-                            )),
-                      ]),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -239,6 +239,7 @@ class AppRoutes {
                         ),
                       ]),
                   GoRoute(
+                    redirect: _redirect,
                     parentNavigatorKey: _shellNavigatorKey,
                     name: 'writer',
                     path: 'writer',
@@ -493,6 +494,7 @@ class AppRoutes {
         ],
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'composeStory',
         path: '/composeStory',
         builder: (BuildContext context, GoRouterState state) {
@@ -508,6 +510,7 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'previewChapter',
         path: '/previewChapter',
         builder: (BuildContext context, GoRouterState state) {
@@ -526,6 +529,7 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'composeChapter',
         path: '/composeChapter',
         builder: (BuildContext context, GoRouterState state) {

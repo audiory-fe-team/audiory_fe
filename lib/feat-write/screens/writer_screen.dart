@@ -1,3 +1,4 @@
+import 'package:audiory_v0/feat-write/screens/layout/writer_app_bar.dart';
 import 'package:audiory_v0/feat-write/widgets/story_card_detail_writer.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
@@ -32,9 +33,12 @@ class _WriterScreenState extends State<WriterScreen> {
         Skeletonizer(
           enabled: myStoriesQuery.isFetching,
           child: Text(
-            '${myStoriesQuery.data?.length} tác phẩm',
+            '${filteredList?.length} tác phẩm',
             style: Theme.of(context).textTheme.titleMedium,
           ),
+        ),
+        const SizedBox(
+          height: 8,
         ),
         Skeletonizer(
           enabled: myStoriesQuery.isFetching,
@@ -61,9 +65,15 @@ class _WriterScreenState extends State<WriterScreen> {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final myStoriesQuery = useQuery(
-        ['myStories'], () => StoryRepostitory().fetchMyStories()); //userId=me
-    final filteredStories = (myStoriesQuery.data ?? []).where(
-        (element) => element.title?.toLowerCase().contains('a') ?? false);
+        ['myStories'], () => StoryRepostitory().fetchMyStories(),
+        refetchOnMount: RefetchOnMount.stale,
+        staleDuration: const Duration(minutes: 5)); //userId=me
+    final filteredStories = _formKey.currentState?.fields['search']?.value == ''
+        ? (myStoriesQuery.data ?? [])
+        : (myStoriesQuery.data ?? []).where((element) =>
+            element.title?.toLowerCase().contains(
+                _formKey.currentState?.fields['search']?.value ?? '') ??
+            false);
 
     if (myStoriesQuery != result) {
       setState(() {
@@ -71,24 +81,7 @@ class _WriterScreenState extends State<WriterScreen> {
       });
     }
     return Scaffold(
-      appBar: CustomAppBar(
-        height: 60,
-        title: Text(
-          'Tác phẩm',
-          style: Theme.of(context)
-              .textTheme
-              .titleLarge
-              ?.copyWith(color: appColors.inkBase),
-        ),
-        actions: [
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.bar_chart_outlined,
-                size: 30,
-              ))
-        ],
-      ),
+      appBar: WriterCustomAppBar(),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Container(
@@ -123,7 +116,7 @@ class _WriterScreenState extends State<WriterScreen> {
         onPressed: () {
           context.pushNamed('composeStory', extra: {'storyId': ''});
         },
-        icon: const Icon(Icons.edit_outlined),
+        icon: const Icon(Icons.edit),
         iconPosition: 'start',
       ),
     );

@@ -64,12 +64,15 @@ class StoryRepostitory {
   Future<List<Story>> fetchMyRecommendStories() async {
     final storage = FlutterSecureStorage();
     final jwtToken = await storage.read(key: 'jwt');
-    final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
+    final userId = jwtToken != null
+        ? JwtDecoder.decode(jwtToken ?? '')['user_id']
+        : 'default';
     final url = Uri.parse(
         '${dotenv.get('API_BASE_URL')}/users/$userId/recommendations');
 
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
+    print(response);
 
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(responseBody)['data'];
@@ -125,13 +128,24 @@ class StoryRepostitory {
     if (storyId == null) {
       return null;
     }
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
 
     final url = Uri.parse('$storiesEndpoint/$storyId/chapters');
-    final response = await http.get(url);
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
+    print(responseBody);
 
     if (response.statusCode == 200) {
-      final result = jsonDecode(responseBody)['data'];
+      print(response.statusCode);
+      final List<dynamic> result = jsonDecode(responseBody)['data'];
       return result.map((i) => Chapter.fromJson(i)).toList();
     } else {
       return null;
