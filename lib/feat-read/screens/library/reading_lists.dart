@@ -14,7 +14,11 @@ class ReadingLists extends HookWidget {
     final AppColors? appColors = Theme.of(context).extension<AppColors>();
     final textTheme = Theme.of(context).textTheme;
     final readingListQuery = useQuery(
-        ['readingList'], () => ReadingListRepository.fetchMyReadingList());
+      ['readingList'],
+      () => ReadingListRepository.fetchMyReadingList(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
+    );
 
     return Expanded(
         child: Skeletonizer(
@@ -36,23 +40,21 @@ class ReadingLists extends HookWidget {
                                     color: appColors?.skyLightest,
                                     borderRadius: BorderRadius.circular(28)),
                                 child: Material(
-                                    color: Colors.transparent,
+                                    // color: Colors.transparent,
                                     child: InkWell(
                                         child: Row(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
-                                          Text('Tạo danh sách đọc',
-                                              style: textTheme.titleMedium
-                                                  ?.copyWith(
-                                                      color:
-                                                          appColors?.inkLight)),
-                                          const SizedBox(
-                                            width: 4,
-                                          ),
-                                          Icon(Icons.add_rounded,
-                                              size: 14,
-                                              color: appColors?.inkBase),
-                                        ])))))
+                                      Text('Tạo danh sách đọc',
+                                          style: textTheme.titleMedium
+                                              ?.copyWith(
+                                                  color: appColors?.inkLight)),
+                                      const SizedBox(
+                                        width: 4,
+                                      ),
+                                      Icon(Icons.add_rounded,
+                                          size: 14, color: appColors?.inkBase),
+                                    ])))))
                       ]),
                   const SizedBox(height: 16),
                   ...(readingListQuery.data ?? [])

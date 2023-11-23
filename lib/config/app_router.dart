@@ -33,8 +33,6 @@ import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
-import 'package:audiory_v0/models/author-story/author_story_model.dart';
-import 'package:audiory_v0/models/conversation/conversation_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/feat-auth/screens/register/register_screen.dart';
 import 'package:audiory_v0/feat-auth/screens/register/screens/flow_four.dart';
@@ -42,7 +40,6 @@ import 'package:audiory_v0/feat-auth/screens/register/screens/flow_two.dart';
 import 'package:audiory_v0/feat-auth/screens/register/screens/flow_three.dart';
 import 'package:audiory_v0/feat-auth/screens/register/screens/flow_one.dart';
 
-import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/feat-auth/screens/login_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +47,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 
 //auth
-import "package:firebase_auth/firebase_auth.dart";
 
 import '../feat-read/screens/detail-story/detail_story_screen.dart';
 import '../models/Profile.dart';
@@ -291,6 +287,8 @@ class AppRoutes {
                 String? chapterId = state.pathParameters["chapterId"];
                 String? storyId = state.pathParameters["storyId"];
 
+                final offsetString = state.queryParameters["offset"];
+
                 if (chapterId == null ||
                     chapterId == '' ||
                     storyId == null ||
@@ -300,6 +298,8 @@ class AppRoutes {
                 return ReadingScreen(
                   chapterId: chapterId,
                   storyId: storyId,
+                  initialOffset:
+                      offsetString == null ? null : int.parse(offsetString),
                 );
               },
             )

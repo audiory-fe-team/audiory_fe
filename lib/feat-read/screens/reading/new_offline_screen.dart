@@ -91,52 +91,52 @@ class OfflineReadingScreen extends HookConsumerWidget {
           localPlayer.stop();
         });
 
-    handleSetPlaylist(Chapter? chapter, Story? story) async {
-      final directory = await getApplicationDocumentsDirectory();
-      final playlist = ConcatenatingAudioSource(
-          children: (chapter?.paragraphs ?? []).asMap().entries.map((entry) {
-        int idx = entry.key;
-        Paragraph p = entry.value;
-        String filepath = "${directory.path}/${p.audioUrl}";
+    // handleSetPlaylist(Chapter? chapter, Story? story) async {
+    //   final directory = await getApplicationDocumentsDirectory();
+    //   final playlist = ConcatenatingAudioSource(
+    //       children: (chapter?.paragraphs ?? []).asMap().entries.map((entry) {
+    //     int idx = entry.key;
+    //     Paragraph p = entry.value;
+    //     String filepath = "${directory.path}/${p.audioUrl}";
 
-        return AudioSource.file(filepath,
-            tag: MediaItem(
-              id: p.id,
-              title: story?.title ?? '',
-              extras: {
-                'position': chapter?.position,
-                'storyId': storyId,
-                'chapterId': chapterId,
-              },
-              artist: 'Chương ${chapter?.position} - Đoạn ${idx + 1}',
-            ));
-      }).toList());
-      localPlayer.setAudioSource(playlist);
+    //     return AudioSource.file(filepath,
+    //         tag: MediaItem(
+    //           id: p.id,
+    //           title: story?.title ?? '',
+    //           extras: {
+    //             'position': chapter?.position,
+    //             'storyId': storyId,
+    //             'chapterId': chapterId,
+    //           },
+    //           artist: 'Chương ${chapter?.position} - Đoạn ${idx + 1}',
+    //         ));
+    //   }).toList());
+    //   localPlayer.setAudioSource(playlist);
 
-      localPlayer.currentIndexStream.listen((currentParaIndex) {
-        if (currentParaIndex == null) return;
-        curParaIndex.value = currentParaIndex;
-        final keyContext = keyList.value[currentParaIndex].currentContext;
-        if (keyContext == null) return;
-        if (isKaraoke.value) {
-          Scrollable.ensureVisible(keyContext,
-              duration: const Duration(seconds: 1), alignment: 0.5);
-        }
+    //   localPlayer.currentIndexStream.listen((currentParaIndex) {
+    //     if (currentParaIndex == null) return;
+    //     curParaIndex.value = currentParaIndex;
+    //     final keyContext = keyList.value[currentParaIndex].currentContext;
+    //     if (keyContext == null) return;
+    //     if (isKaraoke.value) {
+    //       Scrollable.ensureVisible(keyContext,
+    //           duration: const Duration(seconds: 1), alignment: 0.5);
+    //     }
 
-        return;
-      });
-    }
+    //     return;
+    //   });
+    // }
 
-    useEffect(() {
-      if (chapter.data?.paragraphs?.isEmpty != false) return;
-      if (story.data == null) return;
+    // useEffect(() {
+    //   if (chapter.data?.paragraphs?.isEmpty != false) return;
+    //   if (story.data == null) return;
 
-      if (localPlayer.sequence != null ||
-          localPlayer.sequence?.isEmpty == false) return;
-      try {
-        handleSetPlaylist(chapter.data, story.data);
-      } catch (error) {}
-    }, [localPlayer, chapter.data, story.data]);
+    //   if (localPlayer.sequence != null ||
+    //       localPlayer.sequence?.isEmpty == false) return;
+    //   try {
+    //     handleSetPlaylist(chapter.data, story.data);
+    //   } catch (error) {}
+    // }, [localPlayer, chapter.data, story.data]);
 
     syncPreference() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();

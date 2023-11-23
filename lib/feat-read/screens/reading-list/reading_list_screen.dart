@@ -25,14 +25,26 @@ class ReadingListScreen extends HookWidget {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final listStoriesQuery = useQuery(['readingList', 'stories', id],
-        () => ReadingListRepository.fetchReadingListStoriesById(id));
+    final listStoriesQuery = useQuery(
+      ['readingList', 'stories', id],
+      () => ReadingListRepository.fetchReadingListStoriesById(id),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
+    );
 
     final readingListQuery = useQuery(
-        ['readingList'], () => ReadingListRepository.fetchMyReadingList());
+      ['readingList'],
+      () => ReadingListRepository.fetchMyReadingList(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
+    );
 
-    final libraryQuery =
-        useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
+    final libraryQuery = useQuery(
+      ['library'],
+      () => LibraryRepository.fetchMyLibrary(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
+    );
 
     final readingListName =
         readingListQuery.data?.firstWhere((element) => element.id == id).name;

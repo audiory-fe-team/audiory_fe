@@ -16,11 +16,13 @@ class OfflineReadingScreen extends ConsumerStatefulWidget {
   final String chapterId;
   final String storyId;
   final bool? showComment;
+  final int? initialOffset;
 
   OfflineReadingScreen({
     Key? key,
     required this.chapterId,
     required this.storyId,
+    this.initialOffset,
     this.showComment = false,
   }) : super(key: key);
 
@@ -48,6 +50,7 @@ class _OfflineReadingScreenState extends ConsumerState<OfflineReadingScreen> {
     fontSize = ValueNotifier<int>(18);
     showCommentByParagraph = ValueNotifier<bool>(true);
     hideBars = ValueNotifier<bool>(false);
+    bgColor = ValueNotifier(Colors.white);
 
     scrollController.addListener(() {
       if (scrollController.position.userScrollDirection ==
@@ -132,12 +135,12 @@ class _OfflineReadingScreenState extends ConsumerState<OfflineReadingScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: hideBars.value
-          ? null
-          : ReadingBottomBar(
-              onChangeStyle: changeStyle,
-              chapterId: widget.chapterId,
-            ),
+      // bottomNavigationBar: hideBars.value
+      //     ? null
+      //     : ReadingBottomBar(
+      //         onChangeStyle: changeStyle,
+      //         chapterId: widget.chapterId,
+      //       ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       resizeToAvoidBottomInset: true,

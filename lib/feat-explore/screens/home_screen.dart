@@ -50,12 +50,24 @@ class HomeScreen extends HookConsumerWidget {
               ])));
     }
 
-    final paywalledStoriesQuery = useQuery(['myPaywalledStories'],
-        () => StoryRepostitory().fetchMyPaywalledStories());
-    final recommendStoriesQuery = useQuery(['recommendStories'],
-        () => StoryRepostitory().fetchMyRecommendStories());
-    final libraryQuery =
-        useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
+    final paywalledStoriesQuery = useQuery(
+      ['myPaywalledStories'],
+      () => StoryRepostitory().fetchMyPaywalledStories(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
+    );
+    final recommendStoriesQuery = useQuery(
+      ['recommendStories'],
+      () => StoryRepostitory().fetchMyRecommendStories(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
+    );
+    final libraryQuery = useQuery(
+      ['library'],
+      () => LibraryRepository.fetchMyLibrary(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
+    );
     return Scaffold(
       appBar: const HomeTopBar(),
       body: RefreshIndicator(
@@ -281,12 +293,12 @@ class HomeRankingList extends StatefulWidget {
 
 class _HomeRankingListState extends State<HomeRankingList> {
   String? selectedCategory;
-  Future<List<AppCategory>> categoryFuture =
-      CategoryRepository().fetchCategory();
+  Future<List<AppCategory>>? categoryFuture;
 
   @override
   void initState() {
     super.initState();
+    categoryFuture = CategoryRepository().fetchCategory();
   }
 
   @override

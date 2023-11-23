@@ -52,8 +52,12 @@ class DetailStoryScreen extends HookConsumerWidget {
 
     final tabController = useTabController(initialLength: 2);
 
-    final libraryQuery =
-        useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
+    final libraryQuery = useQuery(
+      ['library'],
+      () => LibraryRepository.fetchMyLibrary(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 30),
+    );
     final isAddedToLibrary = libraryQuery.data?.libraryStory
         ?.any((element) => element.storyId == id);
 
@@ -303,63 +307,32 @@ class DetailStoryScreen extends HookConsumerWidget {
       }
     }
 
-    Future<void> handleDownloadStory() async {
-      try {
-        final wholeStory = await LibraryRepository.downloadStory(id);
-        var directory = await getApplicationDocumentsDirectory();
-
-        // Save to offline database
-        final noContentStory = wholeStory.copyWith(
-            chapters: wholeStory.chapters
-                ?.map((e) => e.copyWith(paragraphs: []))
-                .toList());
-        await storyDb.saveStory(noContentStory);
-
-        await Future.forEach<Chapter>(wholeStory.chapters ?? [],
-            (chapter) async {
-          await chapterDb.saveChapters(chapter);
-          await Future.forEach<Paragraph>(chapter.paragraphs ?? [],
-              (para) async {
-            if (para.audioUrl == '' || para.audioUrl == null) return;
-            print('${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}');
-            await dio.download(
-                '${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}',
-                "${directory.path}/${para.audioUrl}",
-                onReceiveProgress: (rec, total) {});
-          });
-        });
-
-        AppSnackBar.buildTopSnackBar(
-            context, 'Tải truyện thành công', null, SnackBarType.success);
-      } catch (error) {
-        print(error.toString());
-        AppSnackBar.buildTopSnackBar(
-            context, error.toString(), null, SnackBarType.warning);
-      }
-      try {
-        final wholeStory = await LibraryRepository.downloadStory(id);
-
-        // Save to offline database
-        final noContentStory = wholeStory.copyWith(
-            chapters: wholeStory.chapters
-                ?.map((e) => e.copyWith(paragraphs: []))
-                .toList());
-        await storyDb.saveStory(noContentStory);
-
-        await Future.forEach(wholeStory.chapters ?? [], (element) async {
-          await chapterDb.saveChapters(element);
-        });
-
-        AppSnackBar.buildTopSnackBar(
-            context, 'Tải truyện thành công', null, SnackBarType.success);
-      } catch (error) {
-        AppSnackBar.buildTopSnackBar(
-            context, error.toString(), null, SnackBarType.warning);
-      }
-    }
-
     final isLoading = isOffline ? false : storyQuery.isFetching;
     final story = isOffline ? storyOffline.data : storyQuery.data;
+    final isContinueReading = story?.readingProgress?.chapterId != null;
+
+    handleReading() {
+      if (story == null) return;
+      if (story.chapters == null || story.chapters?.isNotEmpty != true) return;
+      if (isContinueReading) {
+        final chapterId = story.readingProgress!.chapterId;
+        final readingPosition = story.readingProgress!.readingPosition;
+        if (chapterId == null) {
+          context.push('/story/$id/chapter/${story.chapters![0].id}');
+          return;
+        }
+        if (readingPosition == null) {
+          context.push('/story/$id/chapter/$chapterId');
+          return;
+        }
+        context.push(
+          '/story/$id/chapter/$chapterId?offset=${readingPosition.toString()}',
+        );
+        return;
+      } else {
+        context.push('/story/$id/chapter/${story.chapters![0].id}');
+      }
+    }
 
     return Scaffold(
       appBar: DetailStoryTopBar(story: story),
@@ -479,7 +452,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                                       .map((tag) => GestureDetector(
                                           onTap: () {
                                             context.push(
-                                                '/story/${story?.id}/tag/${tag.id}?tagName=${tag.name}');
+                                                '/story/$id/tag/${tag.id}?tagName=${tag.name}');
                                           },
                                           child: StoryTag(
                                             label: tag.name ?? '',
@@ -544,10 +517,15 @@ class DetailStoryScreen extends HookConsumerWidget {
               ))),
       bottomNavigationBar: DetailStoryBottomBar(
           storyId: id,
+          onRead: () => handleReading(),
+          isContinueReading: isContinueReading,
+          continueChapter: isContinueReading
+              ? story?.readingProgress?.chapterPosition
+              : null,
           addToLibraryCallback: () => isAddedToLibrary == true
               ? handleRemoveFromLibrary()
               : handleAddToLibrary(),
-          downloadStoryCallback: () => handleDownloadStory(),
+          // downloadStoryCallback: () => handleDownloadStory(),
           isAddedToLibrary: isAddedToLibrary ?? false),
       floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:

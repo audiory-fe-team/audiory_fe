@@ -10,7 +10,6 @@ import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_drawer.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_navigate_button.dart';
-import 'package:audiory_v0/feat-read/screens/reading/comment_section.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen_header.dart';
 import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_top_bar.dart';
@@ -21,7 +20,6 @@ import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/reading_progress_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/theme/theme_manager.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -40,11 +38,13 @@ class OnlineReadingScreen extends HookConsumerWidget {
   final String chapterId;
   final String storyId;
   final bool? showComment;
+  final int? initialOffset;
 
   OnlineReadingScreen(
       {super.key,
       required this.chapterId,
       required this.storyId,
+      this.initialOffset,
       this.showComment = false});
 
   final localPlayer = AudioPlayer();
@@ -68,7 +68,9 @@ class OnlineReadingScreen extends HookConsumerWidget {
     final player = ref.watch(audioPlayerProvider);
 
     final keyList = useState<List<GlobalKey>>([]);
-    final scrollController = useScrollController();
+    final scrollController = useScrollController(
+        keys: [chapterId],
+        initialScrollOffset: (initialOffset ?? 0).toDouble());
     final playingState = useStream(localPlayer.playingStream);
 
     final curParaIndex = useState<int?>(null);
@@ -76,13 +78,16 @@ class OnlineReadingScreen extends HookConsumerWidget {
     final chapterQuery = useQuery(
       ['chapter', chapterId],
       () => ChapterRepository().fetchChapterDetail(chapterId),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
     );
 
     final storyQuery = useQuery(
-        ['story', chapterQuery.data?.storyId],
-        () =>
-            StoryRepostitory().fetchStoryById(chapterQuery.data?.storyId ?? ''),
-        enabled: chapterQuery.data?.storyId != null);
+      ['story', storyId],
+      () => StoryRepostitory().fetchStoryById(storyId),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
+    );
 
     void handleOpenCommentPara(String paraId) {
       showModalBottomSheet(
@@ -107,60 +112,14 @@ class OnlineReadingScreen extends HookConsumerWidget {
           });
     }
 
-    Timer scheduleTimeout([int milliseconds = 10000]) =>
-        Timer(Duration(milliseconds: milliseconds), () async {
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.remove('timer');
-          localPlayer.stop();
-        });
+    // Timer scheduleTimeout([int milliseconds = 10000]) =>
+    //     Timer(Duration(milliseconds: milliseconds), () async {
+    //       final SharedPreferences prefs = await SharedPreferences.getInstance();
+    //       await prefs.remove('timer');
+    //       localPlayer.stop();
+    //     });
 
-    useEffect(() {
-      if (chapterQuery.data?.paragraphs?.isEmpty != false) return;
-      if (storyQuery.data == null) return;
-
-      if (localPlayer.sequence != null ||
-          localPlayer.sequence?.isEmpty == false) return;
-
-      try {
-        final playlist = ConcatenatingAudioSource(
-            children: (chapterQuery.data?.paragraphs ?? [])
-                .asMap()
-                .entries
-                .map((entry) {
-          int idx = entry.key;
-          Paragraph p = entry.value;
-          return AudioSource.uri(
-              Uri.parse('${dotenv.get("AUDIO_BASE_URL")}${p.audioUrl}'),
-              tag: MediaItem(
-                  id: p.id,
-                  title: storyQuery.data?.title ?? '',
-                  extras: {
-                    'position': chapterQuery.data?.position,
-                    'storyId': chapterQuery.data?.storyId,
-                    'chapterId': chapterId,
-                  },
-                  artist:
-                      'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
-                  album: storyQuery.data?.id));
-        }).toList());
-        localPlayer.setAudioSource(playlist);
-
-        localPlayer.currentIndexStream.listen((currentParaIndex) {
-          if (currentParaIndex == null) return;
-          curParaIndex.value = currentParaIndex;
-          final keyContext = keyList.value[currentParaIndex].currentContext;
-          if (keyContext == null) return;
-          if (isKaraoke.value) {
-            Scrollable.ensureVisible(keyContext,
-                duration: const Duration(seconds: 1), alignment: 0.5);
-          }
-
-          return;
-        });
-      } catch (error) {}
-    }, [localPlayer, chapterQuery.data, storyQuery.data]);
-
-    syncPreference() async {
+    Future syncPreference() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       fontSize.value = prefs.getInt('fontSize') ?? 18;
@@ -178,10 +137,67 @@ class OnlineReadingScreen extends HookConsumerWidget {
 
       final timerValue = prefs.getInt('timer');
       if (timerValue != null) {
-        scheduleTimeout(timerValue);
+        // scheduleTimeout(timerValue);
       }
       localPlayer.setSpeed(audioSpeed.value);
     }
+
+    useEffect(() {
+      if (chapterQuery.data?.paragraphs?.isEmpty != false) return;
+      if (storyQuery.data == null) return;
+
+      if (localPlayer.sequence != null ||
+          localPlayer.sequence?.isEmpty == false) return;
+      final currentVoice = 0;
+
+      try {
+        final playlist = ConcatenatingAudioSource(
+            children: (chapterQuery.data?.paragraphs ?? [])
+                .where((element) =>
+                    element.audios != null &&
+                    element.audios?.isNotEmpty == true)
+                .toList()
+                .asMap()
+                .entries
+                .map((entry) {
+          int idx = entry.key;
+          Paragraph p = entry.value;
+          print(
+              '${dotenv.get("AUDIO_BASE_URL")}${p.audios?[currentVoice].url}');
+          return AudioSource.uri(
+              Uri.parse(
+                  '${dotenv.get("AUDIO_BASE_URL")}${p.audios?[currentVoice].url}'),
+              tag: MediaItem(
+                  id: p.id,
+                  title: storyQuery.data?.title ?? '',
+                  extras: {
+                    'position': chapterQuery.data?.position,
+                    'storyId': storyId,
+                    'chapterId': chapterId,
+                  },
+                  artist:
+                      'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
+                  album: storyQuery.data?.id));
+        }).toList());
+        localPlayer.setAudioSource(playlist);
+
+        localPlayer.currentIndexStream.listen((currentParaIndex) {
+          if (currentParaIndex == null) return;
+          curParaIndex.value = currentParaIndex;
+          if (keyList.value.isNotEmpty != true) return;
+          final keyContext = keyList.value[currentParaIndex].currentContext;
+          if (keyContext == null) return;
+          if (isKaraoke.value) {
+            Scrollable.ensureVisible(keyContext,
+                duration: const Duration(seconds: 1), alignment: 0.5);
+          }
+
+          return;
+        });
+      } catch (error) {
+        print('Error set playlist');
+      }
+    }, [localPlayer, chapterQuery.data, storyQuery.data]);
 
     useEffect(() {
       syncPreference();
@@ -194,6 +210,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
 
     useEffect(() {
       scrollController.addListener(() {
+        if (!scrollController.hasClients) return;
         // Hide bar according to scroll direction
         if (scrollController.position.userScrollDirection ==
             ScrollDirection.forward) {
@@ -202,28 +219,31 @@ class OnlineReadingScreen extends HookConsumerWidget {
         if (scrollController.position.userScrollDirection ==
             ScrollDirection.reverse) {
           if (!hideBars.value) hideBars.value = true;
-        }
-
-        // Send READ activity if scroll to bottom
-        if (scrollController.position.atEdge) {
           if (haveRead.value) return;
+
+          final offset = scrollController.offset.floor();
+          ReadingProgressRepository.updateProgress(
+              storyId: storyId, chapterId: chapterId, readingPosition: offset);
+
           ActivitiesRepository.sendActivity(
               actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
           haveRead.value = true;
         }
       });
 
-      return () async {
-        // print('haha');
-        // print(readingPosition.value);
-        // if (chapterQuery.data?.storyId == null) return;
-        // await ReadingProgressRepository.updateProgress(
-        //     storyId: chapterQuery.data!.storyId!,
-        //     chapterId: chapterId,
-        //     paragraphId: '',
-        //     readingPosition: readingPosition.value);
+      final timer = Timer.periodic(const Duration(seconds: 60), (Timer t) {
+        if (scrollController.hasClients) {
+          final offset = scrollController.offset.floor();
+          ReadingProgressRepository.updateProgress(
+              storyId: storyId, chapterId: chapterId, readingPosition: offset);
+        }
+      });
+
+      return () {
+        timer.cancel();
+        // scrollController.dispose();
       };
-    }, []);
+    }, [chapterId]);
 
     // useEffect(() {
     //   if (showComment == true) {
@@ -454,14 +474,14 @@ class OnlineReadingScreen extends HookConsumerWidget {
           : ReadingBottomBar(
               onChangeStyle: syncPreference,
               chapterId: chapterId,
+              isVoted: chapterQuery.data?.isVoted ?? false,
             ),
       floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       drawer: ChapterDrawer(
         currentChapterId: chapterId,
-        // story: storyQuery.data,
-        storyId: chapterQuery.data?.storyId ?? '',
+        storyId: storyId,
       ),
       resizeToAvoidBottomInset: true,
     );

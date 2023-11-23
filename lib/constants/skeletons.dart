@@ -72,11 +72,11 @@ final skeletonChapter = Chapter(
     paragraphs: [
       Paragraph(
           id: '1',
-          chapterId: '1',
+          chapterVersionId: '1',
           order: 1,
           content: generateFakeString(2000),
           commentCount: 100,
-          audioUrl: generateFakeString(50))
+          audios: [])
     ]);
 
 final skeletonComments = [

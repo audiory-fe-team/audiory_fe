@@ -12,11 +12,13 @@ class ReadingScreen extends ConsumerWidget {
   final String chapterId;
   final String storyId;
   final bool? showComment;
+  final int? initialOffset;
 
   ReadingScreen(
       {super.key,
       required this.chapterId,
       required this.storyId,
+      this.initialOffset,
       this.showComment = false});
 
   final player = AudioPlayer();
@@ -26,9 +28,13 @@ class ReadingScreen extends ConsumerWidget {
     final isOffline = ref.read(isOfflineProvider);
 
     if (isOffline == true) {
-      return OfflineReadingScreen(chapterId: chapterId, storyId: storyId);
+      return OfflineReadingScreen(
+          chapterId: chapterId, storyId: storyId, initialOffset: initialOffset);
     }
     return OnlineReadingScreen(
-        chapterId: chapterId, storyId: storyId, showComment: showComment);
+        chapterId: chapterId,
+        storyId: storyId,
+        showComment: showComment,
+        initialOffset: initialOffset);
   }
 }

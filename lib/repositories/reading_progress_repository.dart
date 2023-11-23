@@ -13,7 +13,7 @@ class ReadingProgressRepository {
   static Future<dynamic> updateProgress(
       {required String storyId,
       required String chapterId,
-      required String paragraphId,
+      // required String paragraphId,
       required int readingPosition}) async {
     final url = Uri.parse('$readingProgressEndpoint/$storyId');
     const storage = FlutterSecureStorage();
@@ -32,7 +32,7 @@ class ReadingProgressRepository {
     final response = await http.put(url,
         body: jsonEncode({
           'chapter_id': chapterId,
-          'is_completed': true,
+          'is_completed': false,
           'reading_position': readingPosition,
         }),
         headers: headers);

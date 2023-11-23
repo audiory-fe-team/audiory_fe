@@ -25,16 +25,16 @@ mixin _$Paragraph {
 //field key : camelCase
   @JsonKey(name: 'id')
   String get id => throw _privateConstructorUsedError;
-  @JsonKey(name: 'chapter_id')
-  String get chapterId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'chapter_version_id')
+  String get chapterVersionId => throw _privateConstructorUsedError;
   @JsonKey(name: 'order')
   int? get order => throw _privateConstructorUsedError;
   @JsonKey(name: 'content')
   String? get content => throw _privateConstructorUsedError;
   @JsonKey(name: 'comment_count')
   int? get commentCount => throw _privateConstructorUsedError;
-  @JsonKey(name: 'audio_url')
-  String? get audioUrl => throw _privateConstructorUsedError;
+  @JsonKey(name: 'audios')
+  List<ParaAudio>? get audios => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -49,11 +49,11 @@ abstract class $ParagraphCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'id') String id,
-      @JsonKey(name: 'chapter_id') String chapterId,
+      @JsonKey(name: 'chapter_version_id') String chapterVersionId,
       @JsonKey(name: 'order') int? order,
       @JsonKey(name: 'content') String? content,
       @JsonKey(name: 'comment_count') int? commentCount,
-      @JsonKey(name: 'audio_url') String? audioUrl});
+      @JsonKey(name: 'audios') List<ParaAudio>? audios});
 }
 
 /// @nodoc
@@ -70,20 +70,20 @@ class _$ParagraphCopyWithImpl<$Res, $Val extends Paragraph>
   @override
   $Res call({
     Object? id = null,
-    Object? chapterId = null,
+    Object? chapterVersionId = null,
     Object? order = freezed,
     Object? content = freezed,
     Object? commentCount = freezed,
-    Object? audioUrl = freezed,
+    Object? audios = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      chapterId: null == chapterId
-          ? _value.chapterId
-          : chapterId // ignore: cast_nullable_to_non_nullable
+      chapterVersionId: null == chapterVersionId
+          ? _value.chapterVersionId
+          : chapterVersionId // ignore: cast_nullable_to_non_nullable
               as String,
       order: freezed == order
           ? _value.order
@@ -97,10 +97,10 @@ class _$ParagraphCopyWithImpl<$Res, $Val extends Paragraph>
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int?,
-      audioUrl: freezed == audioUrl
-          ? _value.audioUrl
-          : audioUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
+      audios: freezed == audios
+          ? _value.audios
+          : audios // ignore: cast_nullable_to_non_nullable
+              as List<ParaAudio>?,
     ) as $Val);
   }
 }
@@ -115,11 +115,11 @@ abstract class _$$ParagraphImplCopyWith<$Res>
   @useResult
   $Res call(
       {@JsonKey(name: 'id') String id,
-      @JsonKey(name: 'chapter_id') String chapterId,
+      @JsonKey(name: 'chapter_version_id') String chapterVersionId,
       @JsonKey(name: 'order') int? order,
       @JsonKey(name: 'content') String? content,
       @JsonKey(name: 'comment_count') int? commentCount,
-      @JsonKey(name: 'audio_url') String? audioUrl});
+      @JsonKey(name: 'audios') List<ParaAudio>? audios});
 }
 
 /// @nodoc
@@ -134,20 +134,20 @@ class __$$ParagraphImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? chapterId = null,
+    Object? chapterVersionId = null,
     Object? order = freezed,
     Object? content = freezed,
     Object? commentCount = freezed,
-    Object? audioUrl = freezed,
+    Object? audios = freezed,
   }) {
     return _then(_$ParagraphImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      chapterId: null == chapterId
-          ? _value.chapterId
-          : chapterId // ignore: cast_nullable_to_non_nullable
+      chapterVersionId: null == chapterVersionId
+          ? _value.chapterVersionId
+          : chapterVersionId // ignore: cast_nullable_to_non_nullable
               as String,
       order: freezed == order
           ? _value.order
@@ -161,10 +161,10 @@ class __$$ParagraphImplCopyWithImpl<$Res>
           ? _value.commentCount
           : commentCount // ignore: cast_nullable_to_non_nullable
               as int?,
-      audioUrl: freezed == audioUrl
-          ? _value.audioUrl
-          : audioUrl // ignore: cast_nullable_to_non_nullable
-              as String?,
+      audios: freezed == audios
+          ? _value._audios
+          : audios // ignore: cast_nullable_to_non_nullable
+              as List<ParaAudio>?,
     ));
   }
 }
@@ -174,11 +174,12 @@ class __$$ParagraphImplCopyWithImpl<$Res>
 class _$ParagraphImpl implements _Paragraph {
   const _$ParagraphImpl(
       {@JsonKey(name: 'id') required this.id,
-      @JsonKey(name: 'chapter_id') required this.chapterId,
+      @JsonKey(name: 'chapter_version_id') required this.chapterVersionId,
       @JsonKey(name: 'order') this.order = 0,
       @JsonKey(name: 'content') this.content = '',
       @JsonKey(name: 'comment_count') this.commentCount = 0,
-      @JsonKey(name: 'audio_url') this.audioUrl = ''});
+      @JsonKey(name: 'audios') final List<ParaAudio>? audios = const []})
+      : _audios = audios;
 
   factory _$ParagraphImpl.fromJson(Map<String, dynamic> json) =>
       _$$ParagraphImplFromJson(json);
@@ -190,8 +191,8 @@ class _$ParagraphImpl implements _Paragraph {
   @JsonKey(name: 'id')
   final String id;
   @override
-  @JsonKey(name: 'chapter_id')
-  final String chapterId;
+  @JsonKey(name: 'chapter_version_id')
+  final String chapterVersionId;
   @override
   @JsonKey(name: 'order')
   final int? order;
@@ -201,13 +202,20 @@ class _$ParagraphImpl implements _Paragraph {
   @override
   @JsonKey(name: 'comment_count')
   final int? commentCount;
+  final List<ParaAudio>? _audios;
   @override
-  @JsonKey(name: 'audio_url')
-  final String? audioUrl;
+  @JsonKey(name: 'audios')
+  List<ParaAudio>? get audios {
+    final value = _audios;
+    if (value == null) return null;
+    if (_audios is EqualUnmodifiableListView) return _audios;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'Paragraph(id: $id, chapterId: $chapterId, order: $order, content: $content, commentCount: $commentCount, audioUrl: $audioUrl)';
+    return 'Paragraph(id: $id, chapterVersionId: $chapterVersionId, order: $order, content: $content, commentCount: $commentCount, audios: $audios)';
   }
 
   @override
@@ -216,20 +224,19 @@ class _$ParagraphImpl implements _Paragraph {
         (other.runtimeType == runtimeType &&
             other is _$ParagraphImpl &&
             (identical(other.id, id) || other.id == id) &&
-            (identical(other.chapterId, chapterId) ||
-                other.chapterId == chapterId) &&
+            (identical(other.chapterVersionId, chapterVersionId) ||
+                other.chapterVersionId == chapterVersionId) &&
             (identical(other.order, order) || other.order == order) &&
             (identical(other.content, content) || other.content == content) &&
             (identical(other.commentCount, commentCount) ||
                 other.commentCount == commentCount) &&
-            (identical(other.audioUrl, audioUrl) ||
-                other.audioUrl == audioUrl));
+            const DeepCollectionEquality().equals(other._audios, _audios));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, chapterId, order, content, commentCount, audioUrl);
+  int get hashCode => Object.hash(runtimeType, id, chapterVersionId, order,
+      content, commentCount, const DeepCollectionEquality().hash(_audios));
 
   @JsonKey(ignore: true)
   @override
@@ -247,12 +254,14 @@ class _$ParagraphImpl implements _Paragraph {
 
 abstract class _Paragraph implements Paragraph {
   const factory _Paragraph(
-      {@JsonKey(name: 'id') required final String id,
-      @JsonKey(name: 'chapter_id') required final String chapterId,
-      @JsonKey(name: 'order') final int? order,
-      @JsonKey(name: 'content') final String? content,
-      @JsonKey(name: 'comment_count') final int? commentCount,
-      @JsonKey(name: 'audio_url') final String? audioUrl}) = _$ParagraphImpl;
+          {@JsonKey(name: 'id') required final String id,
+          @JsonKey(name: 'chapter_version_id')
+          required final String chapterVersionId,
+          @JsonKey(name: 'order') final int? order,
+          @JsonKey(name: 'content') final String? content,
+          @JsonKey(name: 'comment_count') final int? commentCount,
+          @JsonKey(name: 'audios') final List<ParaAudio>? audios}) =
+      _$ParagraphImpl;
 
   factory _Paragraph.fromJson(Map<String, dynamic> json) =
       _$ParagraphImpl.fromJson;
@@ -263,8 +272,8 @@ abstract class _Paragraph implements Paragraph {
   @JsonKey(name: 'id')
   String get id;
   @override
-  @JsonKey(name: 'chapter_id')
-  String get chapterId;
+  @JsonKey(name: 'chapter_version_id')
+  String get chapterVersionId;
   @override
   @JsonKey(name: 'order')
   int? get order;
@@ -275,8 +284,8 @@ abstract class _Paragraph implements Paragraph {
   @JsonKey(name: 'comment_count')
   int? get commentCount;
   @override
-  @JsonKey(name: 'audio_url')
-  String? get audioUrl;
+  @JsonKey(name: 'audios')
+  List<ParaAudio>? get audios;
   @override
   @JsonKey(ignore: true)
   _$$ParagraphImplCopyWith<_$ParagraphImpl> get copyWith =>

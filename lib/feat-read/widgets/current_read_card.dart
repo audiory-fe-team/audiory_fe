@@ -49,7 +49,69 @@ class CurrentReadCard extends HookWidget {
         'Tiêu đề truyện';
     final downloadProgress = useState<double?>(null);
 
+    //   Future<void> handleDownloadStory() async {
+    //   try {
+    //     final wholeStory = await LibraryRepository.downloadStory(id);
+    //     var directory = await getApplicationDocumentsDirectory();
+
+    //     // Save to offline database
+    //     final noContentStory = wholeStory.copyWith(
+    //         chapters: wholeStory.chapters
+    //             ?.map((e) => e.copyWith(paragraphs: []))
+    //             .toList());
+    //     await storyDb.saveStory(noContentStory);
+
+    //     await Future.forEach<Chapter>(wholeStory.chapters ?? [],
+    //         (chapter) async {
+    //       await chapterDb.saveChapters(chapter);
+    //       await Future.forEach<Paragraph>(chapter.paragraphs ?? [],
+    //           (para) async {
+    //         if (para.audioUrl == '' || para.audioUrl == null) return;
+    //         print('${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}');
+    //         await dio.download(
+    //             '${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}',
+    //             "${directory.path}/${para.audioUrl}",
+    //             onReceiveProgress: (rec, total) {});
+    //       });
+    //     });
+
+    //     AppSnackBar.buildTopSnackBar(
+    //         context, 'Tải truyện thành công', null, SnackBarType.success);
+    //   } catch (error) {
+    //     print(error.toString());
+    //     AppSnackBar.buildTopSnackBar(
+    //         context, error.toString(), null, SnackBarType.warning);
+    //   }
+    //   try {
+    //     final wholeStory = await LibraryRepository.downloadStory(id);
+
+    //     // Save to offline database
+    //     final noContentStory = wholeStory.copyWith(
+    //         chapters: wholeStory.chapters
+    //             ?.map((e) => e.copyWith(paragraphs: []))
+    //             .toList());
+    //     await storyDb.saveStory(noContentStory);
+
+    //     await Future.forEach(wholeStory.chapters ?? [], (element) async {
+    //       await chapterDb.saveChapters(element);
+    //     });
+
+    //     AppSnackBar.buildTopSnackBar(
+    //         context, 'Tải truyện thành công', null, SnackBarType.success);
+    //   } catch (error) {
+    //     AppSnackBar.buildTopSnackBar(
+    //         context, error.toString(), null, SnackBarType.warning);
+    //   }
+    // }
+
     handleDownloadStory() async {
+      final storyInDb = await storyDb.getStory(storyId);
+      if (storyInDb != null) {
+        AppSnackBar.buildTopSnackBar(
+            context, 'Bạn đã tải truyện này rồi', null, SnackBarType.info);
+        return;
+      }
+
       downloadProgress.value = 0;
       try {
         final wholeStory = await LibraryRepository.downloadStory(storyId);
@@ -67,12 +129,14 @@ class CurrentReadCard extends HookWidget {
           await chapterDb.saveChapters(chapter);
           await Future.forEach<Paragraph>(chapter.paragraphs ?? [],
               (para) async {
-            if (para.audioUrl == '' || para.audioUrl == null) return;
+            if (para.audios == null || para.audios!.isEmpty) return;
             try {
-              await dio.download(
-                  '${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}',
-                  "${directory.path}/${para.audioUrl}",
-                  onReceiveProgress: (rec, total) {});
+              para.audios?.forEach((element) async {
+                await dio.download(
+                    '${dotenv.get("AUDIO_BASE_URL")}${element.url}',
+                    "${directory.path}/${element.url}",
+                    onReceiveProgress: (rec, total) {});
+              });
             } catch (error) {}
           });
           downloadProgress.value =
@@ -223,103 +287,155 @@ class CurrentReadCard extends HookWidget {
                       ],
                     )),
               ),
-              Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    GestureDetector(
-                        onTap: () {
-                          // handleTurnNotification();
-                        },
-                        child: Icon(Icons.notifications_active_rounded,
-                            size: 18, color: appColors.inkLighter)),
+              // Column(
+              //     mainAxisSize: MainAxisSize.min,
+              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //     // mainAxisAlignment: MainAxisAlignment.start,
+              //     children: [
+              //       const SizedBox(height: 8),
+              //       SizedBox(
+              //           height: 32,
+              //           width: 32,
+              //           child: IconButton(
+              //               visualDensity: VisualDensity.compact,
+              //               padding: EdgeInsets.zero,
+              //               onPressed: () {},
+              //               icon: Icon(Icons.notifications_active_rounded,
+              //                   size: 18, color: appColors.skyBase))),
+              //       FutureBuilder(
+              //           future: storyDb.getStory(storyId),
+              //           builder: (context, snapshot) {
+              //             final isDownloaded = snapshot.data != null;
+              //             return SizedBox(
+              //                 height: 32,
+              //                 width: 32,
+              //                 child: IconButton(
+              //                     visualDensity: VisualDensity.compact,
+              //                     padding: EdgeInsets.zero,
+              //                     onPressed: () {
+              //                       handleDownloadStory(isDownloaded);
+              //                     },
+              //                     icon: Icon(
+              //                         isDownloaded
+              //                             ? Icons.download_done_rounded
+              //                             : Icons.download_rounded,
+              //                         size: 18,
+              //                         color: isDownloaded
+              //                             ? appColors.primaryBase
+              //                             : appColors.skyBase)));
+              //           }),
+              //       SizedBox(
+              //           height: 32,
+              //           width: 32,
+              //           child: IconButton(
+              //               visualDensity: VisualDensity.compact,
+              //               onPressed: () {},
+              //               padding: EdgeInsets.zero,
+              //               icon: Icon(Icons.delete_rounded,
+              //                   size: 18, color: appColors.secondaryLightest))),
+              //       const SizedBox(height: 8),
+              //     ]),
+              isEditable == true
+                  ? Container(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Column(children: [
+                        PopupMenuButton(
+                            shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(8.0))),
+                            child: Container(
+                                padding: const EdgeInsets.all(8),
+                                child: Icon(Icons.more_vert_rounded,
+                                    size: 18, color: appColors.skyDark)),
+                            onSelected: (value) {
+                              if (value == "notification") {}
+                              if (value == "download") {
+                                handleDownloadStory();
+                              }
+                              if (value == "delete") {
+                                onDeleteStory(storyId);
+                              }
+                            },
+                            itemBuilder: (context) => [
+                                  PopupMenuItem(
+                                      height: 36,
+                                      value: 'notification',
+                                      child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                                Icons
+                                                    .notifications_active_rounded,
+                                                size: 18,
+                                                color: appColors.inkLighter),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Bật thông báo',
+                                              style: textTheme.titleMedium,
+                                            )
+                                          ])),
+                                  PopupMenuItem(
+                                      height: 36,
+                                      value: 'download',
+                                      child: FutureBuilder(
+                                          future: storyDb.getStory(storyId),
+                                          builder: (context, snapshot) {
+                                            final isDownloaded =
+                                                snapshot.data != null;
 
-                    IconButton(
-                        onPressed: () {},
-                        icon: Icon(Icons.download_rounded,
-                            size: 18, color: appColors.inkLighter)),
-                    GestureDetector(
-                        onTap: () {
-                          // handleTurnNotification();
-                        },
-                        child: Icon(Icons.delete_outline_rounded,
-                            size: 18, color: appColors.secondaryBase)),
-                    // isEditable == true
-                    //     ? Container(
-                    //         padding: const EdgeInsets.only(top: 20),
-                    //         child: PopupMenuButton(
-                    //             shape: const RoundedRectangleBorder(
-                    //                 borderRadius:
-                    //                     BorderRadius.all(Radius.circular(8.0))),
-                    //             child: Container(
-                    //                 padding: const EdgeInsets.all(8),
-                    //                 child: Icon(Icons.more_vert_rounded,
-                    //                     size: 18, color: appColors.skyDark)),
-                    //             onSelected: (value) {
-                    //               if (value == "notification") {}
-                    //               if (value == "download") {
-                    //                 handleDownloadStory();
-                    //               }
-                    //               if (value == "delete") {
-                    //                 onDeleteStory(storyId);
-                    //               }
-                    //             },
-                    //             itemBuilder: (context) => [
-                    //                   PopupMenuItem(
-                    //                       height: 36,
-                    //                       value: 'notification',
-                    //                       child: Row(
-                    //                           mainAxisSize: MainAxisSize.min,
-                    //                           children: [
-                    //                             Icon(
-                    //                                 Icons
-                    //                                     .notifications_active_rounded,
-                    //                                 size: 18,
-                    //                                 color: appColors.inkLighter),
-                    //                             const SizedBox(width: 4),
-                    //                             Text(
-                    //                               'Bật thông báo',
-                    //                               style: textTheme.titleMedium,
-                    //                             )
-                    //                           ])),
-                    //                   PopupMenuItem(
-                    //                       height: 36,
-                    //                       value: 'download',
-                    //                       child: Row(
-                    //                           mainAxisSize: MainAxisSize.min,
-                    //                           children: [
-                    //                             Icon(Icons.download_rounded,
-                    //                                 size: 18,
-                    //                                 color: appColors.inkLighter),
-                    //                             const SizedBox(width: 4),
-                    //                             Text(
-                    //                               'Tải truyện xuống',
-                    //                               style: textTheme.titleMedium,
-                    //                             )
-                    //                           ])),
-                    //                   PopupMenuItem(
-                    //                       height: 36,
-                    //                       value: 'delete',
-                    //                       child: Row(
-                    //                           mainAxisSize: MainAxisSize.min,
-                    //                           children: [
-                    //                             Icon(Icons.delete_outline_rounded,
-                    //                                 size: 18,
-                    //                                 color: appColors.secondaryBase),
-                    //                             const SizedBox(width: 4),
-                    //                             Text(
-                    //                               'Xóa truyện',
-                    //                               style: textTheme.titleMedium
-                    //                                   ?.copyWith(
-                    //                                       color: appColors
-                    //                                           .secondaryBase),
-                    //                             )
-                    //                           ])),
-                    //                 ]))
-                    //     : const SizedBox(
-                    //         height: 0,
-                    //       ),
-                  ]),
+                                            return Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(
+                                                      isDownloaded
+                                                          ? Icons
+                                                              .download_done_rounded
+                                                          : Icons
+                                                              .download_rounded,
+                                                      size: 18,
+                                                      color: isDownloaded
+                                                          ? appColors
+                                                              .primaryBase
+                                                          : appColors
+                                                              .inkLighter),
+                                                  const SizedBox(width: 4),
+                                                  Text(
+                                                    isDownloaded
+                                                        ? 'Đã tải xuống'
+                                                        : 'Tải truyện xuống',
+                                                    style: textTheme.titleMedium
+                                                        ?.copyWith(
+                                                            color: isDownloaded
+                                                                ? appColors
+                                                                    .primaryBase
+                                                                : appColors
+                                                                    .inkLighter),
+                                                  )
+                                                ]);
+                                          })),
+                                  PopupMenuItem(
+                                      height: 36,
+                                      value: 'delete',
+                                      child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(Icons.delete_outline_rounded,
+                                                size: 18,
+                                                color: appColors.secondaryBase),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              'Xóa truyện',
+                                              style: textTheme.titleMedium
+                                                  ?.copyWith(
+                                                      color: appColors
+                                                          .secondaryBase),
+                                            )
+                                          ])),
+                                ])
+                      ]))
+                  : const SizedBox(
+                      height: 0,
+                    ),
             ],
           ),
         ));

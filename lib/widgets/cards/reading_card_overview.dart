@@ -19,7 +19,7 @@ class ReadingCardOverview extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return GestureDetector(
       onTap: () {
-        GoRouter.of(context).push("/story/" + id);
+        GoRouter.of(context).push("/story/$id");
       },
       child: SizedBox(
         width: MediaQuery.of(context).size.width - 32,
