@@ -1,5 +1,6 @@
 import 'package:audiory_v0/models/paragraph/para_audio_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'paragraph_model.freezed.dart';
 part 'paragraph_model.g.dart';
 
@@ -11,7 +12,8 @@ class Paragraph with _$Paragraph {
     //field key : camelCase
 
     @JsonKey(name: 'id') required String id,
-    @JsonKey(name: 'chapter_version_id') required String chapterVersionId,
+    @Default('') @JsonKey(name: 'chapter_id') String? chapterId,
+    @Default('') @JsonKey(name: 'chapter_version_id') String? chapterVersionId,
     @Default(0) @JsonKey(name: 'order') int? order,
     @Default('') @JsonKey(name: 'content') String? content,
     @Default(0) @JsonKey(name: 'comment_count') int? commentCount,

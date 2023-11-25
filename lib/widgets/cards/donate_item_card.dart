@@ -27,8 +27,14 @@ class DonateItemCard extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: ClipRRect(
-        child: Lottie.network(gift.imageUrl ?? 'assets/gifs/gif-rose.json',
-            width: 70, height: 70),
+        child: Lottie.network(gift.imageUrl ?? '',
+            errorBuilder: (context, error, stackTrace) => LottieBuilder.asset(
+                  'assets/gifs/gif-rose.json',
+                  width: 70,
+                  height: 70,
+                ),
+            width: 70,
+            height: 70),
       ),
     );
   }

@@ -30,7 +30,7 @@ class StoryCardOverView extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                     child: AppImage(
                       url: coverUrl,
-                      fit: BoxFit.fill,
+                      fit: BoxFit.cover,
                       width: 95,
                       height: 135,
                     ))),

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:audiory_v0/core/network/constant/endpoints.dart';
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/criteria/criteria_model.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -64,12 +65,15 @@ class StoryRepostitory {
   Future<List<Story>> fetchMyRecommendStories() async {
     final storage = FlutterSecureStorage();
     final jwtToken = await storage.read(key: 'jwt');
-    final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
+    final userId = jwtToken != null
+        ? JwtDecoder.decode(jwtToken ?? '')['user_id']
+        : 'default';
     final url = Uri.parse(
         '${dotenv.get('API_BASE_URL')}/users/$userId/recommendations');
 
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
+    print(response);
 
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(responseBody)['data'];
@@ -121,17 +125,138 @@ class StoryRepostitory {
     }
   }
 
+  Future<List<Criteria>?> assessCriteria(String storyId) async {
+    final url = Uri.parse('$storiesEndpoint/$storyId/paywalled/assessment');
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    final response = await http.get(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+    print(jsonDecode(responseBody)['message']);
+
+    if (response.statusCode == 200) {
+      try {
+        final List<dynamic> result = jsonDecode(responseBody)['message'];
+        return result.map((i) => Criteria.fromJson(i)).toList();
+      } catch (error) {
+        print(error);
+        throw (error);
+      }
+    } else {
+      throw Exception('Failed to load stories');
+    }
+  }
+
+  Future<dynamic> deleteStory(String storyId) async {
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    final url = Uri.parse('$storiesEndpoint/$storyId');
+    final response = await http.delete(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      try {
+        final result = jsonDecode(responseBody)['data'];
+        return response.statusCode;
+      } catch (error) {
+        print(error);
+        throw (error);
+      }
+    } else {
+      throw Exception('Failed to load stories');
+    }
+  }
+
+  Future<dynamic> unPublishStory(String storyId) async {
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    final url = Uri.parse('$storiesEndpoint/unpublish/$storyId');
+    try {
+      final response = await http.post(url, headers: headers);
+      final responseBody = utf8.decode(response.bodyBytes);
+      if (response.statusCode == 200) {
+        final result = jsonDecode(responseBody)['data'];
+        return response.statusCode;
+      }
+    } catch (e) {
+      print('errror $e');
+    }
+  }
+
+  Future<dynamic> paywallStory(String storyId, int chapterPrice) async {
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    final url = Uri.parse('$storiesEndpoint/$storyId/paywalled/apply');
+    final response = await http.post(url,
+        headers: headers, body: jsonEncode({'chapter_price': chapterPrice}));
+    final responseBody = utf8.decode(response.bodyBytes);
+    print(responseBody);
+    if (response.statusCode == 200) {
+      try {
+        final result = jsonDecode(responseBody)['data'];
+        return response.statusCode;
+      } catch (error) {
+        print(error);
+        throw (error);
+      }
+    } else {
+      throw Exception('Failed to load stories');
+    }
+  }
+
   Future<List<Chapter>?> fetchAllChaptersStoryById(String? storyId) async {
     if (storyId == null) {
       return null;
     }
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
 
     final url = Uri.parse('$storiesEndpoint/$storyId/chapters');
-    final response = await http.get(url);
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
+    print(responseBody);
 
     if (response.statusCode == 200) {
-      final result = jsonDecode(responseBody)['data'];
+      print(response.statusCode);
+      final List<dynamic> result = jsonDecode(responseBody)['data'];
       return result.map((i) => Chapter.fromJson(i)).toList();
     } else {
       return null;
@@ -277,14 +402,6 @@ class StoryRepostitory {
       }
       return null;
     }
-
-    // if (kDebugMode) {
-    //   print('res');
-    //   print(response);
-    //   print(response.headers);
-    //   print(response.requestOptions);
-    //   print(response.statusCode);
-    // }
   }
 
   Future<Story?> createStory(body, formFile) async {
@@ -294,8 +411,16 @@ class StoryRepostitory {
       "Content-type": "multipart/form-data",
       "Accept": "application/json",
     };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    if (jwtToken != null) {
+      header['Authorization'] = 'Bearer $jwtToken';
+    }
 
-    final request = http.MultipartRequest('POST', url)
+    final request = http.MultipartRequest(
+      'POST',
+      url,
+    )
       ..fields.addAll(body)
       ..files.add(await http.MultipartFile.fromPath(
         'form_file',

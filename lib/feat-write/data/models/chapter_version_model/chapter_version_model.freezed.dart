@@ -24,13 +24,13 @@ mixin _$ChapterVersion {
   @JsonKey(name: 'id')
   String get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'chapter_id')
-  String get chapterId => throw _privateConstructorUsedError;
+  String? get chapterId => throw _privateConstructorUsedError;
   @JsonKey(name: 'version_name')
   String? get versionName => throw _privateConstructorUsedError;
   @JsonKey(name: 'banner_url')
   String? get bannerUrl => throw _privateConstructorUsedError;
   @JsonKey(name: 'title')
-  String get title => throw _privateConstructorUsedError;
+  String? get title => throw _privateConstructorUsedError;
   @JsonKey(name: 'rich_text')
   String? get richText => throw _privateConstructorUsedError; //for json
   @JsonKey(name: 'content')
@@ -52,10 +52,10 @@ abstract class $ChapterVersionCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'id') String id,
-      @JsonKey(name: 'chapter_id') String chapterId,
+      @JsonKey(name: 'chapter_id') String? chapterId,
       @JsonKey(name: 'version_name') String? versionName,
       @JsonKey(name: 'banner_url') String? bannerUrl,
-      @JsonKey(name: 'title') String title,
+      @JsonKey(name: 'title') String? title,
       @JsonKey(name: 'rich_text') String? richText,
       @JsonKey(name: 'content') String? content,
       @JsonKey(name: 'timestamp') String? timestamp});
@@ -75,10 +75,10 @@ class _$ChapterVersionCopyWithImpl<$Res, $Val extends ChapterVersion>
   @override
   $Res call({
     Object? id = null,
-    Object? chapterId = null,
+    Object? chapterId = freezed,
     Object? versionName = freezed,
     Object? bannerUrl = freezed,
-    Object? title = null,
+    Object? title = freezed,
     Object? richText = freezed,
     Object? content = freezed,
     Object? timestamp = freezed,
@@ -88,10 +88,10 @@ class _$ChapterVersionCopyWithImpl<$Res, $Val extends ChapterVersion>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      chapterId: null == chapterId
+      chapterId: freezed == chapterId
           ? _value.chapterId
           : chapterId // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       versionName: freezed == versionName
           ? _value.versionName
           : versionName // ignore: cast_nullable_to_non_nullable
@@ -100,10 +100,10 @@ class _$ChapterVersionCopyWithImpl<$Res, $Val extends ChapterVersion>
           ? _value.bannerUrl
           : bannerUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       richText: freezed == richText
           ? _value.richText
           : richText // ignore: cast_nullable_to_non_nullable
@@ -130,10 +130,10 @@ abstract class _$$ChapterVersionImplCopyWith<$Res>
   @useResult
   $Res call(
       {@JsonKey(name: 'id') String id,
-      @JsonKey(name: 'chapter_id') String chapterId,
+      @JsonKey(name: 'chapter_id') String? chapterId,
       @JsonKey(name: 'version_name') String? versionName,
       @JsonKey(name: 'banner_url') String? bannerUrl,
-      @JsonKey(name: 'title') String title,
+      @JsonKey(name: 'title') String? title,
       @JsonKey(name: 'rich_text') String? richText,
       @JsonKey(name: 'content') String? content,
       @JsonKey(name: 'timestamp') String? timestamp});
@@ -151,10 +151,10 @@ class __$$ChapterVersionImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? chapterId = null,
+    Object? chapterId = freezed,
     Object? versionName = freezed,
     Object? bannerUrl = freezed,
-    Object? title = null,
+    Object? title = freezed,
     Object? richText = freezed,
     Object? content = freezed,
     Object? timestamp = freezed,
@@ -164,10 +164,10 @@ class __$$ChapterVersionImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      chapterId: null == chapterId
+      chapterId: freezed == chapterId
           ? _value.chapterId
           : chapterId // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       versionName: freezed == versionName
           ? _value.versionName
           : versionName // ignore: cast_nullable_to_non_nullable
@@ -176,10 +176,10 @@ class __$$ChapterVersionImplCopyWithImpl<$Res>
           ? _value.bannerUrl
           : bannerUrl // ignore: cast_nullable_to_non_nullable
               as String?,
-      title: null == title
+      title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
       richText: freezed == richText
           ? _value.richText
           : richText // ignore: cast_nullable_to_non_nullable
@@ -204,11 +204,11 @@ class _$ChapterVersionImpl
   const _$ChapterVersionImpl(
       {@JsonKey(name: 'id') this.id = '',
       @JsonKey(name: 'chapter_id') this.chapterId = '',
-      @JsonKey(name: 'version_name') this.versionName,
-      @JsonKey(name: 'banner_url') this.bannerUrl,
+      @JsonKey(name: 'version_name') this.versionName = '',
+      @JsonKey(name: 'banner_url') this.bannerUrl = '',
       @JsonKey(name: 'title') this.title = '',
-      @JsonKey(name: 'rich_text') this.richText,
-      @JsonKey(name: 'content') this.content,
+      @JsonKey(name: 'rich_text') this.richText = '',
+      @JsonKey(name: 'content') this.content = '',
       @JsonKey(name: 'timestamp') this.timestamp});
 
   factory _$ChapterVersionImpl.fromJson(Map<String, dynamic> json) =>
@@ -220,7 +220,7 @@ class _$ChapterVersionImpl
   final String id;
   @override
   @JsonKey(name: 'chapter_id')
-  final String chapterId;
+  final String? chapterId;
   @override
   @JsonKey(name: 'version_name')
   final String? versionName;
@@ -229,7 +229,7 @@ class _$ChapterVersionImpl
   final String? bannerUrl;
   @override
   @JsonKey(name: 'title')
-  final String title;
+  final String? title;
   @override
   @JsonKey(name: 'rich_text')
   final String? richText;
@@ -305,10 +305,10 @@ class _$ChapterVersionImpl
 abstract class _ChapterVersion implements ChapterVersion {
   const factory _ChapterVersion(
           {@JsonKey(name: 'id') final String id,
-          @JsonKey(name: 'chapter_id') final String chapterId,
+          @JsonKey(name: 'chapter_id') final String? chapterId,
           @JsonKey(name: 'version_name') final String? versionName,
           @JsonKey(name: 'banner_url') final String? bannerUrl,
-          @JsonKey(name: 'title') final String title,
+          @JsonKey(name: 'title') final String? title,
           @JsonKey(name: 'rich_text') final String? richText,
           @JsonKey(name: 'content') final String? content,
           @JsonKey(name: 'timestamp') final String? timestamp}) =
@@ -322,7 +322,7 @@ abstract class _ChapterVersion implements ChapterVersion {
   String get id;
   @override
   @JsonKey(name: 'chapter_id')
-  String get chapterId;
+  String? get chapterId;
   @override
   @JsonKey(name: 'version_name')
   String? get versionName;
@@ -331,7 +331,7 @@ abstract class _ChapterVersion implements ChapterVersion {
   String? get bannerUrl;
   @override
   @JsonKey(name: 'title')
-  String get title;
+  String? get title;
   @override
   @JsonKey(name: 'rich_text')
   String? get richText;

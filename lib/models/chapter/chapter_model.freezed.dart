@@ -29,10 +29,10 @@ mixin _$Chapter {
   String? get storyId => throw _privateConstructorUsedError;
   @JsonKey(name: 'current_version_id')
   String? get currentVersionId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'published_version_id')
+  String? get publishedVersionId => throw _privateConstructorUsedError;
   @JsonKey(name: 'position')
   int? get position => throw _privateConstructorUsedError; // chapter position
-  @JsonKey(name: 'product_id')
-  String? get productId => throw _privateConstructorUsedError;
   @JsonKey(name: 'title')
   String? get title => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_draft')
@@ -57,8 +57,9 @@ mixin _$Chapter {
   String? get updatedDate => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_enabled')
   bool? get isEnabled => throw _privateConstructorUsedError;
-  @JsonKey(name: 'chapter_version')
-  String? get chapterVersion => throw _privateConstructorUsedError;
+  @JsonKey(name: 'current_chapter_version')
+  ChapterVersion? get currentChapterVerion =>
+      throw _privateConstructorUsedError;
   @JsonKey(name: 'paragraphs')
   List<Paragraph>? get paragraphs => throw _privateConstructorUsedError;
 
@@ -76,8 +77,8 @@ abstract class $ChapterCopyWith<$Res> {
       {@JsonKey(name: 'id') String id,
       @JsonKey(name: 'story_id') String? storyId,
       @JsonKey(name: 'current_version_id') String? currentVersionId,
+      @JsonKey(name: 'published_version_id') String? publishedVersionId,
       @JsonKey(name: 'position') int? position,
-      @JsonKey(name: 'product_id') String? productId,
       @JsonKey(name: 'title') String? title,
       @JsonKey(name: 'is_draft') bool? isDraft,
       @JsonKey(name: 'is_paywalled') bool? isPaywalled,
@@ -90,8 +91,11 @@ abstract class $ChapterCopyWith<$Res> {
       @JsonKey(name: 'created_date') String? createdDate,
       @JsonKey(name: 'updated_date') String? updatedDate,
       @JsonKey(name: 'is_enabled') bool? isEnabled,
-      @JsonKey(name: 'chapter_version') String? chapterVersion,
+      @JsonKey(name: 'current_chapter_version')
+      ChapterVersion? currentChapterVerion,
       @JsonKey(name: 'paragraphs') List<Paragraph>? paragraphs});
+
+  $ChapterVersionCopyWith<$Res>? get currentChapterVerion;
 }
 
 /// @nodoc
@@ -110,8 +114,8 @@ class _$ChapterCopyWithImpl<$Res, $Val extends Chapter>
     Object? id = null,
     Object? storyId = freezed,
     Object? currentVersionId = freezed,
+    Object? publishedVersionId = freezed,
     Object? position = freezed,
-    Object? productId = freezed,
     Object? title = freezed,
     Object? isDraft = freezed,
     Object? isPaywalled = freezed,
@@ -124,7 +128,7 @@ class _$ChapterCopyWithImpl<$Res, $Val extends Chapter>
     Object? createdDate = freezed,
     Object? updatedDate = freezed,
     Object? isEnabled = freezed,
-    Object? chapterVersion = freezed,
+    Object? currentChapterVerion = freezed,
     Object? paragraphs = freezed,
   }) {
     return _then(_value.copyWith(
@@ -140,14 +144,14 @@ class _$ChapterCopyWithImpl<$Res, $Val extends Chapter>
           ? _value.currentVersionId
           : currentVersionId // ignore: cast_nullable_to_non_nullable
               as String?,
+      publishedVersionId: freezed == publishedVersionId
+          ? _value.publishedVersionId
+          : publishedVersionId // ignore: cast_nullable_to_non_nullable
+              as String?,
       position: freezed == position
           ? _value.position
           : position // ignore: cast_nullable_to_non_nullable
               as int?,
-      productId: freezed == productId
-          ? _value.productId
-          : productId // ignore: cast_nullable_to_non_nullable
-              as String?,
       title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -196,15 +200,27 @@ class _$ChapterCopyWithImpl<$Res, $Val extends Chapter>
           ? _value.isEnabled
           : isEnabled // ignore: cast_nullable_to_non_nullable
               as bool?,
-      chapterVersion: freezed == chapterVersion
-          ? _value.chapterVersion
-          : chapterVersion // ignore: cast_nullable_to_non_nullable
-              as String?,
+      currentChapterVerion: freezed == currentChapterVerion
+          ? _value.currentChapterVerion
+          : currentChapterVerion // ignore: cast_nullable_to_non_nullable
+              as ChapterVersion?,
       paragraphs: freezed == paragraphs
           ? _value.paragraphs
           : paragraphs // ignore: cast_nullable_to_non_nullable
               as List<Paragraph>?,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ChapterVersionCopyWith<$Res>? get currentChapterVerion {
+    if (_value.currentChapterVerion == null) {
+      return null;
+    }
+
+    return $ChapterVersionCopyWith<$Res>(_value.currentChapterVerion!, (value) {
+      return _then(_value.copyWith(currentChapterVerion: value) as $Val);
+    });
   }
 }
 
@@ -219,8 +235,8 @@ abstract class _$$ChapterImplCopyWith<$Res> implements $ChapterCopyWith<$Res> {
       {@JsonKey(name: 'id') String id,
       @JsonKey(name: 'story_id') String? storyId,
       @JsonKey(name: 'current_version_id') String? currentVersionId,
+      @JsonKey(name: 'published_version_id') String? publishedVersionId,
       @JsonKey(name: 'position') int? position,
-      @JsonKey(name: 'product_id') String? productId,
       @JsonKey(name: 'title') String? title,
       @JsonKey(name: 'is_draft') bool? isDraft,
       @JsonKey(name: 'is_paywalled') bool? isPaywalled,
@@ -233,8 +249,12 @@ abstract class _$$ChapterImplCopyWith<$Res> implements $ChapterCopyWith<$Res> {
       @JsonKey(name: 'created_date') String? createdDate,
       @JsonKey(name: 'updated_date') String? updatedDate,
       @JsonKey(name: 'is_enabled') bool? isEnabled,
-      @JsonKey(name: 'chapter_version') String? chapterVersion,
+      @JsonKey(name: 'current_chapter_version')
+      ChapterVersion? currentChapterVerion,
       @JsonKey(name: 'paragraphs') List<Paragraph>? paragraphs});
+
+  @override
+  $ChapterVersionCopyWith<$Res>? get currentChapterVerion;
 }
 
 /// @nodoc
@@ -251,8 +271,8 @@ class __$$ChapterImplCopyWithImpl<$Res>
     Object? id = null,
     Object? storyId = freezed,
     Object? currentVersionId = freezed,
+    Object? publishedVersionId = freezed,
     Object? position = freezed,
-    Object? productId = freezed,
     Object? title = freezed,
     Object? isDraft = freezed,
     Object? isPaywalled = freezed,
@@ -265,7 +285,7 @@ class __$$ChapterImplCopyWithImpl<$Res>
     Object? createdDate = freezed,
     Object? updatedDate = freezed,
     Object? isEnabled = freezed,
-    Object? chapterVersion = freezed,
+    Object? currentChapterVerion = freezed,
     Object? paragraphs = freezed,
   }) {
     return _then(_$ChapterImpl(
@@ -281,14 +301,14 @@ class __$$ChapterImplCopyWithImpl<$Res>
           ? _value.currentVersionId
           : currentVersionId // ignore: cast_nullable_to_non_nullable
               as String?,
+      publishedVersionId: freezed == publishedVersionId
+          ? _value.publishedVersionId
+          : publishedVersionId // ignore: cast_nullable_to_non_nullable
+              as String?,
       position: freezed == position
           ? _value.position
           : position // ignore: cast_nullable_to_non_nullable
               as int?,
-      productId: freezed == productId
-          ? _value.productId
-          : productId // ignore: cast_nullable_to_non_nullable
-              as String?,
       title: freezed == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -337,10 +357,10 @@ class __$$ChapterImplCopyWithImpl<$Res>
           ? _value.isEnabled
           : isEnabled // ignore: cast_nullable_to_non_nullable
               as bool?,
-      chapterVersion: freezed == chapterVersion
-          ? _value.chapterVersion
-          : chapterVersion // ignore: cast_nullable_to_non_nullable
-              as String?,
+      currentChapterVerion: freezed == currentChapterVerion
+          ? _value.currentChapterVerion
+          : currentChapterVerion // ignore: cast_nullable_to_non_nullable
+              as ChapterVersion?,
       paragraphs: freezed == paragraphs
           ? _value._paragraphs
           : paragraphs // ignore: cast_nullable_to_non_nullable
@@ -356,13 +376,13 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
       {@JsonKey(name: 'id') this.id = '',
       @JsonKey(name: 'story_id') this.storyId,
       @JsonKey(name: 'current_version_id') this.currentVersionId,
+      @JsonKey(name: 'published_version_id') this.publishedVersionId,
       @JsonKey(name: 'position') this.position,
-      @JsonKey(name: 'product_id') this.productId,
       @JsonKey(name: 'title') this.title = '',
-      @JsonKey(name: 'is_draft') this.isDraft,
-      @JsonKey(name: 'is_paywalled') this.isPaywalled,
-      @JsonKey(name: 'is_paid') this.isPaid,
-      @JsonKey(name: 'price') this.price,
+      @JsonKey(name: 'is_draft') this.isDraft = true,
+      @JsonKey(name: 'is_paywalled') this.isPaywalled = false,
+      @JsonKey(name: 'is_paid') this.isPaid = false,
+      @JsonKey(name: 'price') this.price = 0,
       @JsonKey(name: 'read_count') this.readCount,
       @JsonKey(name: 'is_voted') this.isVoted,
       @JsonKey(name: 'vote_count') this.voteCount,
@@ -370,7 +390,7 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
       @JsonKey(name: 'created_date') this.createdDate,
       @JsonKey(name: 'updated_date') this.updatedDate,
       @JsonKey(name: 'is_enabled') this.isEnabled,
-      @JsonKey(name: 'chapter_version') this.chapterVersion,
+      @JsonKey(name: 'current_chapter_version') this.currentChapterVerion,
       @JsonKey(name: 'paragraphs') final List<Paragraph>? paragraphs})
       : _paragraphs = paragraphs;
 
@@ -390,12 +410,12 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
   @JsonKey(name: 'current_version_id')
   final String? currentVersionId;
   @override
+  @JsonKey(name: 'published_version_id')
+  final String? publishedVersionId;
+  @override
   @JsonKey(name: 'position')
   final int? position;
 // chapter position
-  @override
-  @JsonKey(name: 'product_id')
-  final String? productId;
   @override
   @JsonKey(name: 'title')
   final String? title;
@@ -433,8 +453,8 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
   @JsonKey(name: 'is_enabled')
   final bool? isEnabled;
   @override
-  @JsonKey(name: 'chapter_version')
-  final String? chapterVersion;
+  @JsonKey(name: 'current_chapter_version')
+  final ChapterVersion? currentChapterVerion;
   final List<Paragraph>? _paragraphs;
   @override
   @JsonKey(name: 'paragraphs')
@@ -448,7 +468,7 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Chapter(id: $id, storyId: $storyId, currentVersionId: $currentVersionId, position: $position, productId: $productId, title: $title, isDraft: $isDraft, isPaywalled: $isPaywalled, isPaid: $isPaid, price: $price, readCount: $readCount, isVoted: $isVoted, voteCount: $voteCount, commentCount: $commentCount, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapterVersion: $chapterVersion, paragraphs: $paragraphs)';
+    return 'Chapter(id: $id, storyId: $storyId, currentVersionId: $currentVersionId, publishedVersionId: $publishedVersionId, position: $position, title: $title, isDraft: $isDraft, isPaywalled: $isPaywalled, isPaid: $isPaid, price: $price, readCount: $readCount, isVoted: $isVoted, voteCount: $voteCount, commentCount: $commentCount, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, currentChapterVerion: $currentChapterVerion, paragraphs: $paragraphs)';
   }
 
   @override
@@ -459,8 +479,8 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
       ..add(DiagnosticsProperty('id', id))
       ..add(DiagnosticsProperty('storyId', storyId))
       ..add(DiagnosticsProperty('currentVersionId', currentVersionId))
+      ..add(DiagnosticsProperty('publishedVersionId', publishedVersionId))
       ..add(DiagnosticsProperty('position', position))
-      ..add(DiagnosticsProperty('productId', productId))
       ..add(DiagnosticsProperty('title', title))
       ..add(DiagnosticsProperty('isDraft', isDraft))
       ..add(DiagnosticsProperty('isPaywalled', isPaywalled))
@@ -473,7 +493,7 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
       ..add(DiagnosticsProperty('createdDate', createdDate))
       ..add(DiagnosticsProperty('updatedDate', updatedDate))
       ..add(DiagnosticsProperty('isEnabled', isEnabled))
-      ..add(DiagnosticsProperty('chapterVersion', chapterVersion))
+      ..add(DiagnosticsProperty('currentChapterVerion', currentChapterVerion))
       ..add(DiagnosticsProperty('paragraphs', paragraphs));
   }
 
@@ -486,10 +506,10 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
             (identical(other.storyId, storyId) || other.storyId == storyId) &&
             (identical(other.currentVersionId, currentVersionId) ||
                 other.currentVersionId == currentVersionId) &&
+            (identical(other.publishedVersionId, publishedVersionId) ||
+                other.publishedVersionId == publishedVersionId) &&
             (identical(other.position, position) ||
                 other.position == position) &&
-            (identical(other.productId, productId) ||
-                other.productId == productId) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.isDraft, isDraft) || other.isDraft == isDraft) &&
             (identical(other.isPaywalled, isPaywalled) ||
@@ -509,8 +529,8 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
                 other.updatedDate == updatedDate) &&
             (identical(other.isEnabled, isEnabled) ||
                 other.isEnabled == isEnabled) &&
-            (identical(other.chapterVersion, chapterVersion) ||
-                other.chapterVersion == chapterVersion) &&
+            (identical(other.currentChapterVerion, currentChapterVerion) ||
+                other.currentChapterVerion == currentChapterVerion) &&
             const DeepCollectionEquality()
                 .equals(other._paragraphs, _paragraphs));
   }
@@ -522,8 +542,8 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
         id,
         storyId,
         currentVersionId,
+        publishedVersionId,
         position,
-        productId,
         title,
         isDraft,
         isPaywalled,
@@ -536,7 +556,7 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
         createdDate,
         updatedDate,
         isEnabled,
-        chapterVersion,
+        currentChapterVerion,
         const DeepCollectionEquality().hash(_paragraphs)
       ]);
 
@@ -556,26 +576,27 @@ class _$ChapterImpl with DiagnosticableTreeMixin implements _Chapter {
 
 abstract class _Chapter implements Chapter {
   const factory _Chapter(
-          {@JsonKey(name: 'id') final String id,
-          @JsonKey(name: 'story_id') final String? storyId,
-          @JsonKey(name: 'current_version_id') final String? currentVersionId,
-          @JsonKey(name: 'position') final int? position,
-          @JsonKey(name: 'product_id') final String? productId,
-          @JsonKey(name: 'title') final String? title,
-          @JsonKey(name: 'is_draft') final bool? isDraft,
-          @JsonKey(name: 'is_paywalled') final bool? isPaywalled,
-          @JsonKey(name: 'is_paid') final bool? isPaid,
-          @JsonKey(name: 'price') final int? price,
-          @JsonKey(name: 'read_count') final int? readCount,
-          @JsonKey(name: 'is_voted') final bool? isVoted,
-          @JsonKey(name: 'vote_count') final int? voteCount,
-          @JsonKey(name: 'comment_count') final int? commentCount,
-          @JsonKey(name: 'created_date') final String? createdDate,
-          @JsonKey(name: 'updated_date') final String? updatedDate,
-          @JsonKey(name: 'is_enabled') final bool? isEnabled,
-          @JsonKey(name: 'chapter_version') final String? chapterVersion,
-          @JsonKey(name: 'paragraphs') final List<Paragraph>? paragraphs}) =
-      _$ChapterImpl;
+      {@JsonKey(name: 'id') final String id,
+      @JsonKey(name: 'story_id') final String? storyId,
+      @JsonKey(name: 'current_version_id') final String? currentVersionId,
+      @JsonKey(name: 'published_version_id') final String? publishedVersionId,
+      @JsonKey(name: 'position') final int? position,
+      @JsonKey(name: 'title') final String? title,
+      @JsonKey(name: 'is_draft') final bool? isDraft,
+      @JsonKey(name: 'is_paywalled') final bool? isPaywalled,
+      @JsonKey(name: 'is_paid') final bool? isPaid,
+      @JsonKey(name: 'price') final int? price,
+      @JsonKey(name: 'read_count') final int? readCount,
+      @JsonKey(name: 'is_voted') final bool? isVoted,
+      @JsonKey(name: 'vote_count') final int? voteCount,
+      @JsonKey(name: 'comment_count') final int? commentCount,
+      @JsonKey(name: 'created_date') final String? createdDate,
+      @JsonKey(name: 'updated_date') final String? updatedDate,
+      @JsonKey(name: 'is_enabled') final bool? isEnabled,
+      @JsonKey(name: 'current_chapter_version')
+      final ChapterVersion? currentChapterVerion,
+      @JsonKey(name: 'paragraphs')
+      final List<Paragraph>? paragraphs}) = _$ChapterImpl;
 
   factory _Chapter.fromJson(Map<String, dynamic> json) = _$ChapterImpl.fromJson;
 
@@ -591,12 +612,12 @@ abstract class _Chapter implements Chapter {
   @JsonKey(name: 'current_version_id')
   String? get currentVersionId;
   @override
+  @JsonKey(name: 'published_version_id')
+  String? get publishedVersionId;
+  @override
   @JsonKey(name: 'position')
   int? get position;
   @override // chapter position
-  @JsonKey(name: 'product_id')
-  String? get productId;
-  @override
   @JsonKey(name: 'title')
   String? get title;
   @override
@@ -633,8 +654,8 @@ abstract class _Chapter implements Chapter {
   @JsonKey(name: 'is_enabled')
   bool? get isEnabled;
   @override
-  @JsonKey(name: 'chapter_version')
-  String? get chapterVersion;
+  @JsonKey(name: 'current_chapter_version')
+  ChapterVersion? get currentChapterVerion;
   @override
   @JsonKey(name: 'paragraphs')
   List<Paragraph>? get paragraphs;

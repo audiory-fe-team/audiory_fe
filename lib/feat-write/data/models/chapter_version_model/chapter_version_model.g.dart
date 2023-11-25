@@ -10,11 +10,11 @@ _$ChapterVersionImpl _$$ChapterVersionImplFromJson(Map<String, dynamic> json) =>
     _$ChapterVersionImpl(
       id: json['id'] as String? ?? '',
       chapterId: json['chapter_id'] as String? ?? '',
-      versionName: json['version_name'] as String?,
-      bannerUrl: json['banner_url'] as String?,
+      versionName: json['version_name'] as String? ?? '',
+      bannerUrl: json['banner_url'] as String? ?? '',
       title: json['title'] as String? ?? '',
-      richText: json['rich_text'] as String?,
-      content: json['content'] as String?,
+      richText: json['rich_text'] as String? ?? '',
+      content: json['content'] as String? ?? '',
       timestamp: json['timestamp'] as String?,
     );
 

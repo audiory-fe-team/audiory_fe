@@ -62,7 +62,7 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
                 child: SizedBox(
                   width: size.width / 2,
                   child: Text(
-                    myInfoQuery.data?.username ?? 'Người dùng',
+                    myInfoQuery.data?.username ?? 'Người dùng vãng lai',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

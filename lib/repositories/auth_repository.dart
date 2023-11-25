@@ -58,7 +58,7 @@ class AuthRepository extends ChangeNotifier {
     Map<String, String> body = {
       'username_or_email': email,
       'password': password,
-      'registration_token': fcmToken as String
+      'registration_token': fcmToken ?? ''
     };
     Map<String, String> header = {
       "Content-type": "application/json",
@@ -69,7 +69,9 @@ class AuthRepository extends ChangeNotifier {
     try {
       final response =
           await http.post(url, headers: header, body: jsonEncode(body));
-
+      if (response.statusCode != 200) {
+        return null;
+      }
       final token = jsonDecode(response.body)['data'];
 
       storage.write(key: 'jwt', value: token);
@@ -82,8 +84,7 @@ class AuthRepository extends ChangeNotifier {
 
       var uri = Uri.parse('${Endpoints().user}/me');
       var res = await http.get(uri, headers: header2);
-      print('RES FOR LOGIN ${res}');
-      print('RES FOR LOGIN ${res.statusCode}');
+
       if (res.statusCode == 200) {
         storage.write(key: 'currentUser', value: res.body.toString());
         return res;

@@ -70,7 +70,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                     onError: Colors.red,
                     background: appColors.primaryBase,
                     onBackground: appColors.primaryBase,
-                    surface: appColors.primaryBase,
+                    surface: appColors.skyLightest,
                     onSurface: appColors.primaryBase,
                     brightness: Brightness.light),
                 buttonBarTheme: const ButtonBarThemeData(
@@ -102,12 +102,12 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                     Text("Chọn độ tuổi của bạn*",
                         style: Theme.of(context)
                             .textTheme
-                            .headlineMedium
+                            .headlineSmall
                             ?.copyWith(color: appColors.inkDarkest)),
                     Text("Chọn độ tuổi để có gợi ý truyện phù hợp",
                         style: Theme.of(context)
                             .textTheme
-                            .bodyMedium
+                            .bodySmall
                             ?.copyWith(color: appColors.inkLight)),
                   ],
                 ),
@@ -168,15 +168,15 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                       Text("Chọn giới tính của bạn*",
                           style: Theme.of(context)
                               .textTheme
-                              .headlineMedium
+                              .headlineSmall
                               ?.copyWith(color: appColors.inkDarker)),
                       Text("Chọn giới tính để có gợi ý truyện phù hợp",
                           style: Theme.of(context)
                               .textTheme
-                              .bodyMedium
+                              .bodySmall
                               ?.copyWith(color: appColors.inkLight)),
                       FormBuilderRadioGroup(
-                          separator: const SizedBox(height: 20),
+                          separator: const SizedBox(height: 10),
                           orientation: OptionsOrientation.vertical,
                           name: 'sex',
                           activeColor: appColors.primaryBase,

@@ -29,10 +29,15 @@ import 'package:audiory_v0/feat-read/screens/reading/reading_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_screen.dart';
 import 'package:audiory_v0/feat-write/screens/layout/preview_chapter_screen.dart';
+import 'package:audiory_v0/feat-write/screens/paywalled_screen.dart';
 import 'package:audiory_v0/feat-write/screens/writer_screen.dart';
+import 'package:audiory_v0/feat-write/screens/writer_story_overview_screen.dart';
 import 'package:audiory_v0/layout/bottom_bar.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
+import 'package:audiory_v0/models/author-story/author_story_model.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/conversation/conversation_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/feat-auth/screens/register/register_screen.dart';
 import 'package:audiory_v0/feat-auth/screens/register/screens/flow_four.dart';
@@ -235,6 +240,7 @@ class AppRoutes {
                         ),
                       ]),
                   GoRoute(
+                    redirect: _redirect,
                     parentNavigatorKey: _shellNavigatorKey,
                     name: 'writer',
                     path: 'writer',
@@ -498,21 +504,47 @@ class AppRoutes {
         ],
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: 'editStoryOverview',
+        path: '/editStoryOverview',
+        builder: (BuildContext context, GoRouterState state) {
+          //extra
+          final extraMap = state.extra as Map<String, dynamic>;
+          print(extraMap);
+          final storyId = extraMap['storyId'] ?? '';
+          return WriterStoryOverviewScreen(
+              //extra
+              storyId: storyId);
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
+        name: 'paywallStory',
+        path: '/paywallStory',
+        builder: (BuildContext context, GoRouterState state) {
+          //extra
+          final extraMap = state.extra as Map<String, dynamic>;
+          final story = extraMap['story'] ?? '';
+          return PaywalledScreen(
+              //extra
+              story: story);
+        },
+      ),
+      GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'composeStory',
         path: '/composeStory',
         builder: (BuildContext context, GoRouterState state) {
           //extra
           final extraMap = state.extra as Map<String, dynamic>;
-          if (kDebugMode) {
-            print(extraMap['storyId'] == '' ? 'empty' : 'no');
-          }
-          final storyId = extraMap['storyId'] as String?;
+          final storyId = extraMap['storyId'] ?? '';
           return ComposeScreen(
               //extra
               storyId: storyId);
         },
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'previewChapter',
         path: '/previewChapter',
         builder: (BuildContext context, GoRouterState state) {
@@ -531,6 +563,7 @@ class AppRoutes {
         },
       ),
       GoRoute(
+        parentNavigatorKey: _rootNavigatorKey,
         name: 'composeChapter',
         path: '/composeChapter',
         builder: (BuildContext context, GoRouterState state) {
@@ -540,11 +573,14 @@ class AppRoutes {
           print('extra map $extraMap');
           final story =
               extraMap['story'] == '' ? null : extraMap['story'] as Story?;
-          final chapterId = extraMap['chapterId']! as String?;
+          final chapterId = (extraMap['chapterId'] ?? '');
+          final chapter = (extraMap['chapter']);
           return ComposeChapterScreen(
-              //extra
-              story: story,
-              chapterId: chapterId);
+            //extra
+            story: story,
+            chapterId: chapterId,
+            chapter: chapter,
+          );
         },
       ),
     ],

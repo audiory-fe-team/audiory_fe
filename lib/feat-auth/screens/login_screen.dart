@@ -96,30 +96,32 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           return const Center(
                               child: CircularProgressIndicator());
                         });
+                    try {
+                      final res = await AuthRepository()
+                          .signInWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passwordController.text);
+                      // ignore: use_build_context_synchronously
+                      context.pop();
 
-                    final res = await AuthRepository()
-                        .signInWithEmailAndPassword(
-                            email: emailController.text,
-                            password: passwordController.text);
-                    // ignore: use_build_context_synchronously
-                    context.pop();
-
-                    if (res.statusCode == 200) {
-                      FocusManager.instance.primaryFocus!.unfocus();
-                      passwordController.clear();
-                      // ignore: use_build_context_synchronously
-                      context.go('/');
-                      // ignore: use_build_context_synchronously
-                      AppSnackBar.buildSnackbar(context, 'Đăng nhập thành công',
-                          null, SnackBarType.success);
-                    } else {
-                      FocusManager.instance.primaryFocus!.unfocus();
-                      passwordController.clear();
-                      final message = jsonDecode(res.body)['message'];
-                      // ignore: use_build_context_synchronously
-                      AppSnackBar.buildSnackbar(
-                          context, message, null, SnackBarType.success);
-                    }
+                      if (res != null) {
+                        FocusManager.instance.primaryFocus!.unfocus();
+                        passwordController.clear();
+                        // ignore: use_build_context_synchronously
+                        context.go('/');
+                        // ignore: use_build_context_synchronously
+                        AppSnackBar.buildTopSnackBar(context,
+                            'Đăng nhập thành công', null, SnackBarType.success);
+                      } else {
+                        AppSnackBar.buildTopSnackBar(
+                            context,
+                            'Sai tên đăng nhập hoặc mật khẩu',
+                            null,
+                            SnackBarType.error);
+                        FocusManager.instance.primaryFocus!.unfocus();
+                        passwordController.clear();
+                      }
+                    } catch (e) {}
                   } on Exception catch (_) {}
                 }),
     );
