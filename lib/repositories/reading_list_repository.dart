@@ -94,7 +94,6 @@ class ReadingListRepository {
 
   static Future<ReadingList> addReadingList(body, formFile) async {
     final dio = Dio();
-    final url = Uri.parse('$readingListEndpoint/reading-lists');
 
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {
@@ -105,7 +104,7 @@ class ReadingListRepository {
     final Map<String, String> firstMap = body;
     final Map<String, MultipartFile> secondeMap;
 
-    if (formFile[0].runtimeType == String) {
+    if (formFile == null) {
       secondeMap = {};
     } else {
       File file = File(formFile[0].path); //import dart:io
@@ -119,7 +118,7 @@ class ReadingListRepository {
 
     final FormData formData = FormData.fromMap(finalMap);
 
-    final response = await dio.put('$readingListEndpoint/reading-lists',
+    final response = await dio.post('$readingListEndpoint/reading-lists',
         data: formData, options: Options(headers: headers));
     final result = response.data; //do not have to json decode
     // final request = http.MultipartRequest('POST', url)

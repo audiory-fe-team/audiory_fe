@@ -118,7 +118,7 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
                                       extra: {'userId': myInfoQuery.data?.id});
                             },
                             icon:
-                                const Icon(Icons.messenger_outline, size: 20)),
+                                const Icon(Icons.messenger_outline, size: 22)),
                         FutureBuilder(
                             future: ConversationRepository()
                                 .fetchAllConversations(offset: 0, limit: 100),
