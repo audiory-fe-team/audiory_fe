@@ -60,12 +60,8 @@ class _WalletScreenState extends State<WalletScreen> {
               TransactionType.values.byName(element.transactionType ?? '')))
           .toList();
       for (var element in filteredList) {
-        print('total');
-        print(element.totalPriceAfterCommission);
-        print(element.totalPrice);
         if (TransactionType.values.byName(element.transactionType ?? '') ==
             TransactionType.GIFT_SENT) {
-          print('PRICE ${element.totalPrice}');
           total = total + element.totalPrice;
         } else {
           total = total + element.totalPriceAfterCommission;
@@ -319,17 +315,17 @@ class _WalletScreenState extends State<WalletScreen> {
                       onPressed: () {
                         //get all coin packs and get all payment methods
                         //then create a purchase
-
                         context.pushNamed('newPurchase',
                             extra: {'currentUser': widget.currentUser});
                       },
-                      icon: const Icon(Icons.add),
+                      icon: const Icon(Icons.login_rounded),
                       iconPosition: 'start',
-                      title: 'Nạp thêm xu',
+                      title: 'Nạp/ Rút',
                       isOutlined: true,
                       color: appColors.primaryLightest,
                       bgColor: appColors.inkDark,
                     ),
+
                     //stats container
                     Container(
                       margin: const EdgeInsets.symmetric(

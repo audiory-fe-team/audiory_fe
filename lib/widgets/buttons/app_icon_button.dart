@@ -44,7 +44,6 @@ class AppIconButton extends StatelessWidget {
                     visualDensity:
                         const VisualDensity(horizontal: -4, vertical: -2),
                     shape: const StadiumBorder(),
-                    backgroundColor: bgColor ?? appColors.inkLighter,
                     side: BorderSide(
                         width: 1, color: color ?? appColors.primaryBase),
                     minimumSize: const Size(double.minPositive, 48),
@@ -73,7 +72,6 @@ class AppIconButton extends StatelessWidget {
                     visualDensity:
                         const VisualDensity(horizontal: -4, vertical: -2),
                     shape: const StadiumBorder(),
-                    backgroundColor: bgColor ?? appColors.inkLighter,
                     side: BorderSide(
                         width: 1, color: color ?? appColors.primaryBase),
                     minimumSize: const Size(double.minPositive, 48),
@@ -81,7 +79,7 @@ class AppIconButton extends StatelessWidget {
                 : ElevatedButton.styleFrom(
                     visualDensity:
                         const VisualDensity(horizontal: -4, vertical: -2),
-                    backgroundColor: bgColor ?? appColors.primaryBase,
+                    backgroundColor: bgColor ?? Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(25),
                     ),
@@ -113,7 +111,6 @@ class AppIconButton extends StatelessWidget {
                   visualDensity:
                       const VisualDensity(horizontal: -4, vertical: -2),
                   shape: const StadiumBorder(),
-                  backgroundColor: bgColor ?? appColors.inkLighter,
                   side: BorderSide(
                       width: 1, color: color ?? appColors.primaryBase),
                   minimumSize: const Size(double.minPositive, 48),

@@ -21,8 +21,9 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
-    final myInfoQuery =
-        useQuery(['myInfo'], () => AuthRepository().getMyUserById());
+    final myInfoQuery = useQuery(
+        ['myInfo'], () => AuthRepository().getMyUserById(),
+        enabled: true);
     Widget userInfo(UseQueryResult<AuthUser, dynamic> myInfoQuery) {
       return Row(
         children: [
@@ -61,7 +62,7 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
                 child: SizedBox(
                   width: size.width / 2,
                   child: Text(
-                    myInfoQuery.data?.username ?? 'Người dùng',
+                    myInfoQuery.data?.username ?? 'Người dùng vãng lai',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

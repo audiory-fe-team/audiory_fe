@@ -380,12 +380,16 @@ class StoryDetailTab extends HookWidget {
                         showModalBottomSheet(
                             context: context,
                             builder: (BuildContext context) {
-                              return DonateGiftModal(
-                                handleSendingGift: (gift, count) {
-                                  handleSendingGift(gift, count);
-                                },
-                                story: story,
-                                coins: userQuery.data?.wallets?[0].balance,
+                              return Container(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.7,
+                                child: DonateGiftModal(
+                                    handleSendingGift: (gift, count) {
+                                      handleSendingGift(gift, count);
+                                    },
+                                    story: story,
+                                    coins: userQuery.data?.wallets?[0].balance,
+                                    userData: userQuery.data),
                               );
                             })
                       }),

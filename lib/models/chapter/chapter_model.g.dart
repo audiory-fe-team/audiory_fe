@@ -11,13 +11,13 @@ _$ChapterImpl _$$ChapterImplFromJson(Map<String, dynamic> json) =>
       id: json['id'] as String? ?? '',
       storyId: json['story_id'] as String?,
       currentVersionId: json['current_version_id'] as String?,
+      publishedVersionId: json['published_version_id'] as String?,
       position: json['position'] as int?,
-      productId: json['product_id'] as String?,
       title: json['title'] as String? ?? '',
-      isDraft: json['is_draft'] as bool?,
-      isPaywalled: json['is_paywalled'] as bool?,
-      isPaid: json['is_paid'] as bool?,
-      price: json['price'] as int?,
+      isDraft: json['is_draft'] as bool? ?? true,
+      isPaywalled: json['is_paywalled'] as bool? ?? false,
+      isPaid: json['is_paid'] as bool? ?? false,
+      price: json['price'] as int? ?? 0,
       readCount: json['read_count'] as int?,
       isVoted: json['is_voted'] as bool?,
       voteCount: json['vote_count'] as int?,
@@ -25,7 +25,10 @@ _$ChapterImpl _$$ChapterImplFromJson(Map<String, dynamic> json) =>
       createdDate: json['created_date'] as String?,
       updatedDate: json['updated_date'] as String?,
       isEnabled: json['is_enabled'] as bool?,
-      chapterVersion: json['chapter_version'] as String?,
+      currentChapterVerion: json['current_chapter_version'] == null
+          ? null
+          : ChapterVersion.fromJson(
+              json['current_chapter_version'] as Map<String, dynamic>),
       paragraphs: (json['paragraphs'] as List<dynamic>?)
           ?.map((e) => Paragraph.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -36,8 +39,8 @@ Map<String, dynamic> _$$ChapterImplToJson(_$ChapterImpl instance) =>
       'id': instance.id,
       'story_id': instance.storyId,
       'current_version_id': instance.currentVersionId,
+      'published_version_id': instance.publishedVersionId,
       'position': instance.position,
-      'product_id': instance.productId,
       'title': instance.title,
       'is_draft': instance.isDraft,
       'is_paywalled': instance.isPaywalled,
@@ -50,6 +53,6 @@ Map<String, dynamic> _$$ChapterImplToJson(_$ChapterImpl instance) =>
       'created_date': instance.createdDate,
       'updated_date': instance.updatedDate,
       'is_enabled': instance.isEnabled,
-      'chapter_version': instance.chapterVersion,
+      'current_chapter_version': instance.currentChapterVerion?.toJson(),
       'paragraphs': instance.paragraphs?.map((e) => e.toJson()).toList(),
     };

@@ -163,18 +163,24 @@ class _FlowThreeScreenState extends State<FlowThreeScreen>
                         onPressed: () async {
                           print('USERID FLOW 3 ${widget.userId}');
                           if (selectedStoriesList.length < 5) {
-                            AppSnackBar.buildTopSnackBar(
+                            AppSnackBar.buildCustomTopSnackbar(
                                 context,
                                 'Chọn ít nhất 5 truyện',
                                 null,
-                                SnackBarType.warning);
+                                SnackBarType.warning,
+                                300);
                           } else {
                             Map<String, String?> body = {};
 
                             body['user_id'] = widget.userId;
                             body['story_id'] = selectedStoriesList[0];
                             body['event_type'] = 'VIEW';
-
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                });
                             for (var ele in selectedStoriesList) {
                               body['story_id'] = ele;
                               await FeedbackRepository().createFeedback(body);

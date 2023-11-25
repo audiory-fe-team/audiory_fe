@@ -40,7 +40,7 @@ class UserProfileScreen extends StatefulHookWidget {
 class _UserProfileScreenState extends State<UserProfileScreen>
     with TickerProviderStateMixin {
   final storage = const FlutterSecureStorage();
-  AuthUser? currentUser;
+  String? jwt;
 
   late TabController tabController;
   int tabState = 0;
@@ -54,6 +54,14 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       length: 2,
       vsync: this,
     );
+
+    getJwt();
+  }
+
+  getJwt() async {
+    storage.read(key: 'jwt').then((value) => setState(() {
+          jwt = value;
+        }));
   }
 
   Widget introView(List<Story>? story, List<ReadingList>? readingList,
@@ -105,11 +113,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         children: [
           ClipRRect(
               borderRadius: BorderRadius.circular(40),
-              child: AppImage(
-                  url: currentUser?.avatarUrl,
-                  width: 85,
-                  height: 85,
-                  fit: BoxFit.fill)),
+              child:
+                  AppImage(url: '', width: 85, height: 85, fit: BoxFit.fill)),
           const SizedBox(
             height: 4,
           ),
@@ -281,30 +286,24 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                             )),
                             child: Column(
                               children: [
-                                Skeletonizer(
-                                    enabled: profileQuery.isFetching,
-                                    child: AppAvatarImage(
-                                      hasLevel: true,
-                                      levelId: userByIdQuery.data?.levelId ?? 1,
-                                      hasAuthorLevel: true,
-                                      authorLevelId:
-                                          userByIdQuery.data?.authorLevelId ??
-                                              1,
-                                      size: userByIdQuery.data?.levelId != null
-                                          ? 93
-                                          : 88,
-                                      url: profileQuery.data?.avatarUrl,
-                                    )),
+                                AppAvatarImage(
+                                  hasLevel: true,
+                                  levelId: userByIdQuery.data?.levelId ?? 1,
+                                  hasAuthorLevel: true,
+                                  authorLevelId:
+                                      userByIdQuery.data?.authorLevelId ?? 1,
+                                  size: userByIdQuery.data?.levelId != null
+                                      ? 93
+                                      : 88,
+                                  url: profileQuery.data?.avatarUrl,
+                                ),
                                 const SizedBox(height: 8),
-                                Skeletonizer(
-                                  enabled: profileQuery.isFetching,
-                                  child: Text(
-                                    userByIdQuery.data?.fullName ?? 'Họ và tên',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
-                                  ),
+                                Text(
+                                  userByIdQuery.data?.fullName ?? 'Họ và tên',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .headlineMedium,
                                 ),
                                 Text(
                                   '@${profileQuery.data?.username ?? 'Tên đăng nhập'}',
@@ -376,13 +375,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                       textStyle: textTheme.titleMedium
                                           ?.copyWith(
                                               color: appColors.primaryBase),
-                                      icon: Icon(
-                                        Icons.calendar_today,
-                                        color: appColors.primaryBase,
-                                        size: 20,
-                                      ),
-                                      // icon: const Icon(Icons.add),
-
                                       onPressed: () {
                                         userByIdQuery.isError == true
                                             ? null
@@ -585,22 +577,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final userByIdQuery = useQuery(
-        ['user', currentUser?.id], () => AuthRepository().getMyUserById(),
+        ['user', jwt], () => AuthRepository().getMyUserById(),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5));
     final profileQuery = useQuery(
-        ['profile'], () => AuthRepository().getMyInfo(),
+        ['profile', jwt], () => AuthRepository().getMyInfo(),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5)); // include followers
-    final publishedStoriesQuery = useQuery(['publishedStories'],
+    final publishedStoriesQuery = useQuery(['publishedStories', jwt],
         () => StoryRepostitory().fetchPublishedStoriesByUserId('me'),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5)); //userId=me
-    final readingStoriesQuery = useQuery(['readingStories'],
+    final readingStoriesQuery = useQuery(['readingStories', jwt],
         () => StoryRepostitory().fetchReadingStoriesByUserId('me'),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5));
-
+    print(jwt);
     return SafeArea(
       child: Scaffold(
         appBar: UserProfileTopBar(

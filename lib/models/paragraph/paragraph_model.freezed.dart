@@ -26,7 +26,9 @@ mixin _$Paragraph {
   @JsonKey(name: 'id')
   String get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'chapter_id')
-  String get chapterId => throw _privateConstructorUsedError;
+  String? get chapterId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'chapter_version_id')
+  String? get chapterVersionId => throw _privateConstructorUsedError;
   @JsonKey(name: 'order')
   int? get order => throw _privateConstructorUsedError;
   @JsonKey(name: 'content')
@@ -49,7 +51,8 @@ abstract class $ParagraphCopyWith<$Res> {
   @useResult
   $Res call(
       {@JsonKey(name: 'id') String id,
-      @JsonKey(name: 'chapter_id') String chapterId,
+      @JsonKey(name: 'chapter_id') String? chapterId,
+      @JsonKey(name: 'chapter_version_id') String? chapterVersionId,
       @JsonKey(name: 'order') int? order,
       @JsonKey(name: 'content') String? content,
       @JsonKey(name: 'comment_count') int? commentCount,
@@ -70,7 +73,8 @@ class _$ParagraphCopyWithImpl<$Res, $Val extends Paragraph>
   @override
   $Res call({
     Object? id = null,
-    Object? chapterId = null,
+    Object? chapterId = freezed,
+    Object? chapterVersionId = freezed,
     Object? order = freezed,
     Object? content = freezed,
     Object? commentCount = freezed,
@@ -81,10 +85,14 @@ class _$ParagraphCopyWithImpl<$Res, $Val extends Paragraph>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      chapterId: null == chapterId
+      chapterId: freezed == chapterId
           ? _value.chapterId
           : chapterId // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
+      chapterVersionId: freezed == chapterVersionId
+          ? _value.chapterVersionId
+          : chapterVersionId // ignore: cast_nullable_to_non_nullable
+              as String?,
       order: freezed == order
           ? _value.order
           : order // ignore: cast_nullable_to_non_nullable
@@ -115,7 +123,8 @@ abstract class _$$ParagraphImplCopyWith<$Res>
   @useResult
   $Res call(
       {@JsonKey(name: 'id') String id,
-      @JsonKey(name: 'chapter_id') String chapterId,
+      @JsonKey(name: 'chapter_id') String? chapterId,
+      @JsonKey(name: 'chapter_version_id') String? chapterVersionId,
       @JsonKey(name: 'order') int? order,
       @JsonKey(name: 'content') String? content,
       @JsonKey(name: 'comment_count') int? commentCount,
@@ -134,7 +143,8 @@ class __$$ParagraphImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = null,
-    Object? chapterId = null,
+    Object? chapterId = freezed,
+    Object? chapterVersionId = freezed,
     Object? order = freezed,
     Object? content = freezed,
     Object? commentCount = freezed,
@@ -145,10 +155,14 @@ class __$$ParagraphImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
-      chapterId: null == chapterId
+      chapterId: freezed == chapterId
           ? _value.chapterId
           : chapterId // ignore: cast_nullable_to_non_nullable
-              as String,
+              as String?,
+      chapterVersionId: freezed == chapterVersionId
+          ? _value.chapterVersionId
+          : chapterVersionId // ignore: cast_nullable_to_non_nullable
+              as String?,
       order: freezed == order
           ? _value.order
           : order // ignore: cast_nullable_to_non_nullable
@@ -174,7 +188,8 @@ class __$$ParagraphImplCopyWithImpl<$Res>
 class _$ParagraphImpl implements _Paragraph {
   const _$ParagraphImpl(
       {@JsonKey(name: 'id') required this.id,
-      @JsonKey(name: 'chapter_id') required this.chapterId,
+      @JsonKey(name: 'chapter_id') this.chapterId = '',
+      @JsonKey(name: 'chapter_version_id') this.chapterVersionId = '',
       @JsonKey(name: 'order') this.order = 0,
       @JsonKey(name: 'content') this.content = '',
       @JsonKey(name: 'comment_count') this.commentCount = 0,
@@ -191,7 +206,10 @@ class _$ParagraphImpl implements _Paragraph {
   final String id;
   @override
   @JsonKey(name: 'chapter_id')
-  final String chapterId;
+  final String? chapterId;
+  @override
+  @JsonKey(name: 'chapter_version_id')
+  final String? chapterVersionId;
   @override
   @JsonKey(name: 'order')
   final int? order;
@@ -207,7 +225,7 @@ class _$ParagraphImpl implements _Paragraph {
 
   @override
   String toString() {
-    return 'Paragraph(id: $id, chapterId: $chapterId, order: $order, content: $content, commentCount: $commentCount, audioUrl: $audioUrl)';
+    return 'Paragraph(id: $id, chapterId: $chapterId, chapterVersionId: $chapterVersionId, order: $order, content: $content, commentCount: $commentCount, audioUrl: $audioUrl)';
   }
 
   @override
@@ -218,6 +236,8 @@ class _$ParagraphImpl implements _Paragraph {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.chapterId, chapterId) ||
                 other.chapterId == chapterId) &&
+            (identical(other.chapterVersionId, chapterVersionId) ||
+                other.chapterVersionId == chapterVersionId) &&
             (identical(other.order, order) || other.order == order) &&
             (identical(other.content, content) || other.content == content) &&
             (identical(other.commentCount, commentCount) ||
@@ -228,8 +248,8 @@ class _$ParagraphImpl implements _Paragraph {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, chapterId, order, content, commentCount, audioUrl);
+  int get hashCode => Object.hash(runtimeType, id, chapterId, chapterVersionId,
+      order, content, commentCount, audioUrl);
 
   @JsonKey(ignore: true)
   @override
@@ -248,7 +268,8 @@ class _$ParagraphImpl implements _Paragraph {
 abstract class _Paragraph implements Paragraph {
   const factory _Paragraph(
       {@JsonKey(name: 'id') required final String id,
-      @JsonKey(name: 'chapter_id') required final String chapterId,
+      @JsonKey(name: 'chapter_id') final String? chapterId,
+      @JsonKey(name: 'chapter_version_id') final String? chapterVersionId,
       @JsonKey(name: 'order') final int? order,
       @JsonKey(name: 'content') final String? content,
       @JsonKey(name: 'comment_count') final int? commentCount,
@@ -264,7 +285,10 @@ abstract class _Paragraph implements Paragraph {
   String get id;
   @override
   @JsonKey(name: 'chapter_id')
-  String get chapterId;
+  String? get chapterId;
+  @override
+  @JsonKey(name: 'chapter_version_id')
+  String? get chapterVersionId;
   @override
   @JsonKey(name: 'order')
   int? get order;

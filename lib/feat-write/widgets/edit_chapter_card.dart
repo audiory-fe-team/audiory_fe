@@ -1,4 +1,7 @@
+import 'package:audiory_v0/feat-write/widgets/chapter_actions_menu.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/utils/format_date.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -8,7 +11,15 @@ import '../../theme/theme_constants.dart';
 class EditChapterCard extends StatelessWidget {
   final int? index;
   final Chapter? chapter;
-  const EditChapterCard({super.key, required this.chapter, this.index});
+  final Story? story;
+  final Function() onDeleteChapter;
+
+  const EditChapterCard(
+      {super.key,
+      required this.chapter,
+      this.index,
+      this.story,
+      required this.onDeleteChapter});
 
   Map<String, dynamic> getChapterStatus(context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -18,30 +29,16 @@ class EditChapterCard extends StatelessWidget {
       'color': Colors.deepOrange,
     };
     if (chapter?.isDraft == true) {
-      map.update('status', (value) => 'Đã lưu bản thảo');
+      map.update('status', (value) => 'Bản thảo');
       map.update('color', (value) => Colors.deepOrange[400]);
     } else if (chapter?.isPaywalled == true) {
-      map.update('status', (value) => 'Tính phí');
-      map.update('color', (value) => Colors.orangeAccent);
-    } else if (chapter?.isEnabled == true) {
+      map.update('status', (value) => 'Chương trả phí');
+      map.update('color', (value) => appColors.secondaryBase);
+    } else if (chapter?.isDraft == false) {
       map.update('status', (value) => 'Đã đăng tải');
-      map.update('color', (value) => Colors.orangeAccent);
+      map.update('color', (value) => appColors.primaryBase);
     }
     return map;
-  }
-
-  String formatDate(String? date) {
-    //use package intl
-    DateTime dateTime = DateTime.parse(date as String);
-
-    //Date
-    DateTime now = DateTime.now();
-
-    bool diff = now.difference(dateTime).inDays == 1;
-    if (diff) {
-      return '${now.difference(dateTime).inHours} giờ trước';
-    }
-    return DateFormat('dd/MM/yyyy HH:mm').format(dateTime);
   }
 
   @override
@@ -49,10 +46,17 @@ class EditChapterCard extends StatelessWidget {
     final Map<String, dynamic> chapterStatus = getChapterStatus(context);
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
+    final popupMenuItem = chapter?.isPaywalled == true
+        ? ['edit', 'preview']
+        : ['edit', 'preview', 'delete'];
+
     return GestureDetector(
       onTap: () {
-        context.pushNamed('composeChapter',
-            extra: {'chapterId': chapter?.id, 'story': ''});
+        context.pushNamed('composeChapter', extra: {
+          'chapterId': chapter?.id,
+          'story': story,
+          'chapter': chapter
+        });
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -69,52 +73,70 @@ class EditChapterCard extends StatelessWidget {
             Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                Text(
-                  chapter!.title == ''
-                      ? 'Chương $index : Tiêu đề'
-                      : 'Chương $index : ${chapter?.title}',
-                  style: const TextStyle(
-                    color: Color(0xFF72777A),
-                    fontSize: 16,
-                    fontFamily: 'Source Sans Pro',
-                    fontWeight: FontWeight.bold,
+                Flexible(
+                  flex: 2,
+                  child: Text(
+                    chapter!.title == ''
+                        ? '$index. Tiêu đề'
+                        : '$index. ${chapter?.title}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Color(0xFF72777A),
+                      fontSize: 16,
+                      fontFamily: 'Source Sans Pro',
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-                Text(
-                  formatDate(chapter?.updatedDate),
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodyMedium
-                      ?.copyWith(color: appColors.inkLight),
+                Flexible(
+                  flex: 1,
+                  fit: FlexFit.loose,
+                  child: Wrap(
+                    children: [
+                      PopupMenuButton(
+                          onSelected: (value) {
+                            print(value);
+                            if (value == 1) {
+                              onDeleteChapter();
+                            }
+                            if (value == 0) {
+                              context.pushNamed('composeChapter', extra: {
+                                'chapterId': chapter?.id,
+                                'story': story,
+                                'chapter': chapter
+                              });
+                            }
+                          },
+                          icon: const Icon(Icons.more_vert),
+                          itemBuilder: (context) => chapter?.isPaywalled == true
+                              ? appPaywalledChapterPopupMenuItems(context)
+                              : appChapterPopupMenuItems(context)),
+                    ],
+                  ),
                 ),
               ],
             ),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(
-                  chapterStatus['status'],
-                  style: TextStyle(
-                    color: chapterStatus['color'],
-                    fontSize: 14,
-                    fontStyle: FontStyle.italic,
-                    fontFamily: 'Source Sans Pro',
-                    fontWeight: FontWeight.w400,
-                  ),
+                  '${chapterStatus['status']}',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleMedium
+                      ?.copyWith(color: chapterStatus['color']),
                 ),
                 Text(
-                  'id: ${chapter?.id}',
-                  style: const TextStyle(
-                    color: Color(0xFF72777A),
-                    fontSize: 10,
-                    fontStyle: FontStyle.italic,
-                    fontFamily: 'Source Sans Pro',
-                    fontWeight: FontWeight.w400,
-                  ),
+                  'Cập nhật ${appFormatDate(chapter?.updatedDate)}',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: appColors.inkLight,
+                        fontWeight: FontWeight.w400,
+                        fontFamily: 'Source Sans Pro',
+                      ),
                 ),
               ],
             ),
