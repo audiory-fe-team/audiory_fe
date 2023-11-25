@@ -94,10 +94,12 @@ class _PaywalledContractState extends State<PaywalledContract> {
                 Text(
                   'Audiory - Điều khoản và Điều kiện',
                   style: textTheme.headlineLarge,
+                  textAlign: TextAlign.center,
                 ),
                 Text(
                   'Cập nhật lần cuối: 10/03/2023',
-                  style: textTheme.headlineSmall,
+                  style: textTheme.headlineSmall
+                      ?.copyWith(color: appColors.inkLight),
                 ),
               ],
             ),

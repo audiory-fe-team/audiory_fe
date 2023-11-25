@@ -26,13 +26,17 @@ extension TransactionTypeExtension on TransactionType {
   IconData get displayIcon {
     switch (this) {
       case TransactionType.PURCHASE:
-        return Icons.credit_card;
+        return Icons.attach_money_sharp;
       case TransactionType.WITHDRAW:
-        return Icons.info_outline;
+        return Icons.keyboard_return_outlined;
       case TransactionType.CHAPTER_BOUGHT:
         return Icons.shopping_bag_outlined;
       case TransactionType.DAILY_REWARD:
-        return Icons.card_giftcard;
+        return Icons.card_giftcard_sharp;
+      case TransactionType.REWARD_FROM_STORY:
+        return Icons.diamond_outlined;
+      case TransactionType.REWARD_FROM_GIFT:
+        return Icons.card_giftcard_sharp;
       default:
         return Icons.check_circle_outline_rounded;
     }
@@ -74,8 +78,12 @@ extension TransactionTypeExtension on TransactionType {
         return const Color(0xFF439A97);
       case TransactionType.WITHDRAW:
         return const Color(0xFF090A0A);
-      case TransactionType.CHAPTER_BOUGHT:
+      case TransactionType.REWARD_FROM_GIFT:
         return const Color(0xFF090A0A);
+      case TransactionType.REWARD_FROM_STORY:
+        return const Color(0xFF090A0A);
+      case TransactionType.CHAPTER_BOUGHT:
+        return Color.fromARGB(255, 10, 10, 9);
       case TransactionType.DAILY_REWARD:
         return const Color(0xFF090A0A);
       default:
@@ -101,6 +109,8 @@ extension TransactionTypeExtension on TransactionType {
       case TransactionType.REWARD_FROM_GIFT:
         return false;
       case TransactionType.REWARD_FROM_STORY:
+        return false;
+      case TransactionType.WITHDRAW:
         return false;
       default:
         return true;

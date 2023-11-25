@@ -215,7 +215,7 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                           ),
                           GestureDetector(
                             onTap: () async {
-                              if (isEnd) {
+                              if (isEnd==true) {
                                 final result = await AuthRepository()
                                     .verifyEmail(
                                         email:

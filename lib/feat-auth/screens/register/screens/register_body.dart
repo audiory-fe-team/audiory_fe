@@ -24,6 +24,7 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
 
   bool? isChecked = false;
   String errorMessage = '';
+  var pass = '';
 
   Widget _submitButton() {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -163,8 +164,11 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                                   hintText: 'Nhập mật khẩu',
                                   isRequired: true,
                                   onChangeCallback: (value) {
-                                    print(value);
+                                    setState(() {
+                                      pass = value;
+                                    });
                                   },
+                                  textInputType: TextInputType.visiblePassword,
                                   validator: FormBuilderValidators.compose([
                                     FormBuilderValidators.required(
                                         errorText: 'Không được để trống'),
@@ -178,14 +182,12 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                                   name: 'confirm',
                                   hintText: 'Nhập lại mật khẩu',
                                   isRequired: true,
+                                  textInputType: TextInputType.visiblePassword,
                                   validator: FormBuilderValidators.compose([
                                     FormBuilderValidators.required(
                                         errorText: 'Không được để trống'),
-                                    FormBuilderValidators.equal(
-                                        _formKey.currentState
-                                                ?.fields['password']?.value ??
-                                            '123456789',
-                                        errorText: 'Sai mật khẩu xác nhận'),
+                                    // FormBuilderValidators.equal(pass,
+                                    //     errorText: 'Sai mật khẩu xác nhận'),
                                   ])),
                               const SizedBox(
                                 height: 16.0,

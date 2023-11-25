@@ -67,17 +67,19 @@ class StoryDetailTab extends HookWidget {
           for (var i = 0; i < total; i++) {
             await GiftRepository().donateGift(story?.id, body);
           }
+          context.pop();
+          AppSnackBar.buildTopSnackBar(
+              context,
+              'Tặng $total ${gift.name} thành công',
+              null,
+              SnackBarType.success);
+          donatorsQuery.refetch();
+          userQuery.refetch(); //refetch coins
         } catch (e) {
           // ignore: use_build_context_synchronously
           AppSnackBar.buildTopSnackBar(
               context, 'Tặng quà không thành công', null, SnackBarType.error);
         }
-
-        context.pop();
-        AppSnackBar.buildTopSnackBar(context,
-            'Tặng $total ${gift.name} thành công', null, SnackBarType.success);
-        donatorsQuery.refetch();
-        userQuery.refetch(); //refetch coins
       }
     }
 
@@ -124,15 +126,16 @@ class StoryDetailTab extends HookWidget {
       }
 
       Widget topThreeDonatorCard(Profile? donator, int order) {
-        double defaultContainerSize = 110;
+        final size = MediaQuery.of(context).size;
+        double defaultContainerSize = size.width * 0.25;
         Color defaultColor = appColors?.skyLight ?? Colors.transparent;
         switch (order) {
           case 2:
-            defaultContainerSize = 90;
+            defaultContainerSize = size.width * 0.22;
             // defaultColor = appColors.primaryLight;
             break;
           case 3:
-            defaultContainerSize = 80;
+            defaultContainerSize = size.width * 0.18;
             // defaultColor = appColors.skyBase;
             break;
           default:
@@ -182,18 +185,22 @@ class StoryDetailTab extends HookWidget {
                 ]),
               ),
               const SizedBox(width: 4),
-              Text(
-                donator?.fullName ?? 'Ẩn danh',
-                style: textTheme.titleLarge,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              Container(
+                width: defaultContainerSize + 20,
+                child: Text(
+                  donator?.fullName ?? 'Ẩn danh',
+                  style: textTheme.titleMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
                   '${donator?.totalDonation ?? ''} điểm',
                   style:
-                      textTheme.bodyMedium?.copyWith(color: appColors?.skyDark),
+                      textTheme.bodySmall?.copyWith(color: appColors?.skyDark),
                 ),
               ),
             ],

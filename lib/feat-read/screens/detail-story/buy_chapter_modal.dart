@@ -1,11 +1,11 @@
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
-import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class BuyChapterModal extends StatefulHookWidget {
@@ -43,7 +43,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           Container(
-            width: size.width / 3.75,
+            width: size.width / 3.5,
             height: 35,
             alignment: Alignment.center,
             decoration: BoxDecoration(
@@ -54,18 +54,21 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
+                    flex: 1,
                     child: GestureDetector(
-                  child: Image.asset(
-                    'assets/images/coin.png',
-                    width: 30,
-                    height: 30,
-                  ),
-                )),
+                      child: Image.asset(
+                        'assets/images/coin.png',
+                        width: 24,
+                        height: 24,
+                      ),
+                    )),
                 Flexible(
+                  flex: 2,
                   child: Skeletonizer(
                     enabled: userQuery.isFetching,
                     child: Text(
-                      '${userQuery.data?.wallets?[0].balance}' ?? '0',
+                      '${formatNumberWithSeperator(userQuery.data?.wallets?[0].balance)}' ??
+                          '0',
                       style: textTheme.titleLarge
                           ?.copyWith(color: appColors.inkBase),
                     ),

@@ -110,7 +110,7 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
             children: [
               getPaywallResult(list, allChecked),
               Container(
-                height: 400,
+                height: 350,
                 child: ListView.builder(
                     itemCount: list.length,
                     itemBuilder: (context, index) {
@@ -178,9 +178,11 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                                 children: [
                                   AppIconButton(
                                     isOutlined: true,
-                                    onPressed: () {},
+                                    onPressed: () {
+                                      context.pop();
+                                    },
                                     title: 'Tôi không đồng ý',
-                                    textStyle: textTheme.bodyMedium?.copyWith(
+                                    textStyle: textTheme.bodySmall?.copyWith(
                                         color: appColors.primaryBase),
                                   ),
                                   AppIconButton(
@@ -255,7 +257,7 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                                                       Text(
                                                         'Bạn có thể thay đổi giá sau này',
                                                         style: textTheme
-                                                            .bodyMedium
+                                                            .bodySmall
                                                             ?.copyWith(
                                                                 color: appColors
                                                                     ?.inkLight),
@@ -263,9 +265,9 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                                                             TextAlign.center,
                                                       ),
                                                       Text(
-                                                        'Giá của chương trong khoảng 1-10 xu',
+                                                        'Giá của chương từ 1-10 xu',
                                                         style: textTheme
-                                                            .bodyMedium
+                                                            .bodySmall
                                                             ?.copyWith(
                                                                 color: appColors
                                                                     ?.inkLight),
@@ -313,6 +315,8 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                                                 ],
                                               ));
                                     },
+                                    textStyle: textTheme.bodySmall?.copyWith(
+                                        color: appColors.skyLightest),
                                     title: 'Tôi đồng ý, tiếp tục',
                                   ),
                                 ],
