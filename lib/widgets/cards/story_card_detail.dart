@@ -109,7 +109,7 @@ class StoryCardDetail extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     SizedBox(
                       width: double.infinity,
                       child: Column(
@@ -117,98 +117,78 @@ class StoryCardDetail extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            width: double.infinity,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset('assets/icons/write.svg',
-                                        width: 14, height: 14),
-                                    const SizedBox(width: 4),
-                                    SizedBox(
-                                        width: 140,
-                                        child: Text(authorName,
-                                            style: textTheme.titleSmall!
-                                                .copyWith(
-                                                    fontStyle: FontStyle.italic,
-                                                    overflow: TextOverflow
-                                                        .ellipsis))),
-                                  ],
-                                ),
-                                const SizedBox(width: 6),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        SvgPicture.asset(
-                                            'assets/icons/heart.svg',
-                                            width: 14,
-                                            height: 14),
-                                        const SizedBox(width: 3),
-                                        Text(formatNumber(voteCount).toString(),
-                                            style: textTheme.titleSmall
-                                                ?.copyWith(
-                                                    fontStyle:
-                                                        FontStyle.italic)),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.person_rounded,
+                                      size: 16, color: appColors.primaryLight),
+                                  const SizedBox(width: 4),
+                                  Text(authorName,
+                                      style: textTheme.titleSmall!.copyWith(
+                                          fontStyle: FontStyle.italic,
+                                          overflow: TextOverflow.ellipsis)),
+                                ],
+                              ),
+                              const SizedBox(width: 6),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.favorite_rounded,
+                                      size: 14,
+                                      color: appColors.secondaryLighter),
+                                  const SizedBox(width: 3),
+                                  Text(formatNumber(voteCount).toString(),
+                                      style: textTheme.titleSmall?.copyWith(
+                                          fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 6),
-                          SizedBox(
-                            width: double.infinity,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset('assets/icons/chapter.svg',
-                                        width: 14, height: 14),
-                                    const SizedBox(width: 4),
-                                    Text('$chapterNum chương',
-                                        style: textTheme.titleSmall!.copyWith(
-                                            fontStyle: FontStyle.italic)),
-                                  ],
-                                ),
-                                const SizedBox(width: 6),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    SvgPicture.asset('assets/icons/eye.svg',
-                                        width: 14, height: 14),
-                                    const SizedBox(width: 8),
-                                    Text(formatNumber(readCount),
-                                        style: textTheme.titleSmall!.copyWith(
-                                            fontStyle: FontStyle.italic)),
-                                  ],
-                                ),
-                              ],
-                            ),
+                          const SizedBox(height: 2),
+                          Row(
+                            mainAxisSize: MainAxisSize.max,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.reorder_rounded,
+                                      size: 14, color: appColors.primaryBase),
+                                  const SizedBox(width: 3),
+                                  Text('$chapterNum chương',
+                                      style: textTheme.titleSmall!.copyWith(
+                                          fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  const Icon(
+                                    Icons.visibility_rounded,
+                                    size: 14,
+                                    color: Colors.lightBlue,
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Text(formatNumber(readCount),
+                                      style: textTheme.titleSmall!.copyWith(
+                                          fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 6),
                           Container(

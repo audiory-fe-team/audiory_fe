@@ -33,7 +33,7 @@ class ChapterAudioPlayer extends HookWidget {
     final isFirstPlay = useState(true);
     final bgColor = useState(appColors?.skyLightest);
     final textColor = useState(appColors?.inkLighter);
-    print(player.hashCode);
+
     syncPreference() async {
       bgColor.value = THEME_OPTIONS[selectedThemeOption]['audioBackground'];
       textColor.value = THEME_OPTIONS[selectedThemeOption]['audioText'];

@@ -1,6 +1,7 @@
 import 'package:audiory_v0/models/author-story/author_story_model.dart';
 import 'package:audiory_v0/models/category/app_category_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/reading-progress/reading_progress_model.dart';
 import 'package:audiory_v0/models/tag/tag_model.dart';
 import "package:flutter/foundation.dart";
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -46,6 +47,7 @@ class Story with _$Story {
     @JsonKey(name: 'created_date') String? createdDate,
     @JsonKey(name: 'updated_date') String? updatedDate,
     @JsonKey(name: 'is_enabled') bool? isEnabled,
+    @JsonKey(name: 'reading_progress') ReadingProgress? readingProgress,
     @Default([]) @JsonKey(name: 'chapters') List<Chapter>? chapters,
     @Default([]) @JsonKey(name: 'tags') List<Tag>? tags,
   }) = _Story;

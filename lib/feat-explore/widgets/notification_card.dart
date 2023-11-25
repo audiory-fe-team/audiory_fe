@@ -124,7 +124,8 @@ class NotificationCard extends StatelessWidget {
                         ),
                         if (noti?.activity.createdDate != null)
                           Text(
-                            '${formatRelativeTime(noti?.activity.createdDate ?? '')}',
+                            formatRelativeTime(
+                                noti?.activity.createdDate ?? ''),
                             style: textTheme.titleSmall?.copyWith(
                                 fontStyle: FontStyle.italic,
                                 fontWeight: FontWeight.w400,
@@ -138,20 +139,20 @@ class NotificationCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Container(
-                width: 45,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: appColors.primaryLightest,
-                  image: DecorationImage(
-                    image: NetworkImage(
-                        noti?.activity.user?.avatarUrl ?? FALLBACK_IMG_URL),
-                    fit: BoxFit.fill,
-                  ),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-              ),
-              const SizedBox(width: 6),
+              // Container(
+              //   width: 45,
+              //   height: 60,
+              //   decoration: BoxDecoration(
+              //     color: appColors.primaryLightest,
+              //     image: DecorationImage(
+              //       image: NetworkImage(
+              //           noti?.activity.user?.avatarUrl ?? FALLBACK_IMG_URL),
+              //       fit: BoxFit.fill,
+              //     ),
+              //     borderRadius: BorderRadius.circular(4),
+              //   ),
+              // ),
+              // const SizedBox(width: 6),
               Column(children: [
                 Container(
                   height: 8,

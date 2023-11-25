@@ -1,3 +1,4 @@
+import 'package:audiory_v0/models/paragraph/para_audio_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'paragraph_model.freezed.dart';
@@ -16,7 +17,7 @@ class Paragraph with _$Paragraph {
     @Default(0) @JsonKey(name: 'order') int? order,
     @Default('') @JsonKey(name: 'content') String? content,
     @Default(0) @JsonKey(name: 'comment_count') int? commentCount,
-    @Default('') @JsonKey(name: 'audio_url') String? audioUrl,
+    @Default([]) @JsonKey(name: 'audios') List<ParaAudio>? audios,
   }) = _Paragraph;
 
   factory Paragraph.fromJson(Map<String, dynamic> json) =>

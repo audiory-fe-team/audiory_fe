@@ -22,7 +22,13 @@ class DetailStoryTopBar extends StatelessWidget implements PreferredSizeWidget {
             width: double.infinity,
             // padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: const BoxDecoration(
-              color: Colors.transparent,
+              border: Border(
+                bottom: BorderSide(
+                  color: Color.fromARGB(255, 172, 136, 28),
+                  width: 1.0,
+                  style: BorderStyle.solid,
+                ),
+              ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

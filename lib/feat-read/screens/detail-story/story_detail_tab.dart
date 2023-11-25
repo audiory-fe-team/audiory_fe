@@ -34,13 +34,22 @@ class StoryDetailTab extends HookWidget {
     final donatorsQuery = useQuery(
       ['donators', storyId],
       () => StoryRepostitory().fetchTopDonators(storyId),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 1),
     );
-    final userQuery = useQuery([
-      'userById',
-    ], () => AuthRepository().getMyUserById());
+    final userQuery = useQuery(
+      [
+        'userById',
+      ],
+      () => AuthRepository().getMyUserById(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 1),
+    );
     final similarStories = useQuery(
       ['similarStories', storyId],
       () => StoryRepostitory().fetchSimilarStories(storyId),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 1),
     );
 
     handleSendingGift(Gift gift, total) async {

@@ -63,8 +63,6 @@ class _SelectableCurrentReadCardState extends State<SelectableCurrentReadCard> {
 
     return GestureDetector(
         onTap: () {
-          print('ta[]');
-
           setState(() {
             widget.onSelected(storyId);
             widget.isSelected = !widget.isSelected;

@@ -8,6 +8,8 @@ class AppCacheImage extends StatelessWidget {
   final double? height;
   final BoxFit? fit;
   final String? defaultUrl;
+  final Color? color;
+  final BlendMode? blendMode;
 
   const AppCacheImage(
       {super.key,
@@ -15,7 +17,9 @@ class AppCacheImage extends StatelessWidget {
       this.width,
       this.height,
       this.fit,
-      this.defaultUrl});
+      this.defaultUrl,
+      this.color,
+      this.blendMode});
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +32,8 @@ class AppCacheImage extends StatelessWidget {
       );
     }
     return CachedNetworkImage(
+        color: color,
+        colorBlendMode: blendMode,
         imageBuilder: (context, imageProvider) {
           return Container(
             decoration: BoxDecoration(
