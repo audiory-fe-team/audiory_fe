@@ -1,15 +1,20 @@
 import 'dart:convert';
 
+import 'package:audiory_v0/feat-write/data/models/chapter_version_model/chapter_version_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/repositories/chapter_version_repository.dart';
 import 'package:audiory_v0/utils/quill_helper.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:fquery/fquery.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../repositories/chapter_repository.dart';
@@ -18,14 +23,13 @@ import '../../../widgets/input/text_input.dart';
 
 import 'package:flutter/src/widgets/text.dart' as text;
 
-import '../../data/models/chapter_version_model/chapter_version_model.dart';
-
 class ComposeChapterScreen extends StatefulHookWidget {
   final String? storyTitle;
   final Story? story;
   final String? chapterId;
+  final Chapter? chapter;
   const ComposeChapterScreen(
-      {super.key, this.storyTitle, this.story, this.chapterId});
+      {super.key, this.storyTitle, this.story, this.chapterId, this.chapter});
 
   @override
   State<ComposeChapterScreen> createState() => _ComposeChapterScreenState();
@@ -158,38 +162,50 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
     );
   }
 
-  // void _displaySnackBar(String? content) {
-  //   final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+  int getCharactersLength() {
+    var length = 0;
+    length = _controller.document.toPlainText().split(' ').length;
+    return length;
+  }
 
-  //   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-  //     backgroundColor: appColors.primaryBase,
-  //     duration: const Duration(seconds: 3),
-  //     content: text.Text(content ?? ''),
-  //     action: SnackBarAction(
-  //       textColor: appColors.skyBase,
-  //       label: 'Undo',
-  //       onPressed: () {},
-  //     ),
-  //   ));
-  // }
+  getChapterVersionDetail(chapterVersionId) {
+    return ChapterVersionRepository()
+        .fetchChapterVersionByChapterVersionId(chapterVersionId);
+  }
 
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final popupMenuItem = ['saveDraft', 'preview', 'viewHistory'];
-    final String selectedValue = popupMenuItem[0];
+    final size = MediaQuery.of(context).size;
+    final textTheme = Theme.of(context).textTheme;
 
     final chapterByIdQuery = useQuery(
-      ['chapterById', widget.chapterId],
+      ['chapterById${widget.chapterId}', widget.chapter?.currentVersionId],
+      enabled: true,
+      refetchOnMount: RefetchOnMount.always,
       () => ChapterRepository().fetchChapterById(widget.chapterId),
     );
 
+    final chapterVersionsQuery = useQuery(
+      ['chapterVersions', widget.chapterId],
+      enabled: true,
+      refetchOnMount: RefetchOnMount.always,
+      () => ChapterVersionRepository()
+          .fetchChapterVersionsOfChapter(widget.chapterId),
+    );
+
+    onRevert({String chapterVersionId = ''}) {
+      try {
+        ChapterVersionRepository().revertChapterVersion(chapterVersionId);
+        AppSnackBar.buildTopSnackBar(
+            context, 'Khôi phục thành công', null, SnackBarType.success);
+        context.pop();
+        context.pop();
+        chapterByIdQuery.refetch();
+      } catch (e) {}
+    }
+
     useEffect(() {
-      print('decode');
-      print(chapterByIdQuery.data?.currentChapterVerion?.richText);
-      // print(Document.fromJson(jsonDecode(
-      //     chapterByIdQuery.data?.currentChapterVerion?.richText ??
-      //         '{}')['ops']));
       _controller.document = chapterByIdQuery.isSuccess
           ? chapterByIdQuery.data?.currentChapterVerion?.richText != "" &&
                   chapterByIdQuery.data?.currentChapterVerion?.richText != null
@@ -198,23 +214,148 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                       r'{"insert":"hello\n"}')['ops'])
               : Document()
           : Document();
+      // print(chapterByIdQuery.data?.currentChapterVerion?.richText);
     }, [chapterByIdQuery.isSuccess]);
 
-    // print(chapterByIdQuery.data);
-    // print(chapterByIdQuery.data?.title);
-    // print(chapterByIdQuery.data?.currentChapterVerion);
+    saveDraft() async {
+      // print(_controller.document.toDelta());
+      // print(_controller.document.toDelta().toJson().toString());
+      // print(_controller.document.toDelta().compose(Delta()));
+      // print(jsonEncode(_controller.document.toDelta()).toString());
+      // print(
+      //     '{"ops":${(Delta.fromOperations(_controller.document.toDelta().toList()))}');
+      if (getCharactersLength() < 5) {
+        AppSnackBar.buildTopSnackBar(
+            context, 'Tối thiểu 5 từ', null, SnackBarType.error);
+      } else {
+        print('saving');
+        _formKey.currentState?.save();
+        Map<String, String> body = {
+          'chapter_id': widget.chapterId ?? '',
+          'content': _controller.document.toPlainText(),
+          'rich_text':
+              '{"ops":${jsonEncode(_controller.document.toDelta()).toString()}}',
+          'title': _formKey.currentState?.fields['title']?.value ?? '',
+        };
+        try {
+          final res = await ChapterRepository().createChapterVersion(
+              body, _formKey.currentState!.fields['photos']!.value);
+          chapterVersionsQuery.refetch();
+          chapterByIdQuery.refetch();
+          print(res);
+        } catch (e) {
+          print(e);
+        }
+      }
+    }
+
+    publishChapter() async {
+      if (getCharactersLength() < 5) {
+        AppSnackBar.buildTopSnackBar(
+            context, 'Tối thiểu 5 từ', null, SnackBarType.error);
+      } else {
+        print('saving');
+        _formKey.currentState?.save();
+        Map<String, String> body = {
+          'chapter_id': widget.chapterId ?? '',
+          'content': _controller.document.toPlainText(),
+          'rich_text':
+              '{"ops":${jsonEncode(_controller.document.toDelta()).toString()}}',
+          'title': _formKey.currentState?.fields['title']?.value ?? '',
+        };
+        try {
+          final res = await ChapterRepository().createChapterVersion(
+              body, _formKey.currentState!.fields['photos']!.value);
+
+          await ChapterRepository().publishChapter(widget.chapterId);
+
+          chapterVersionsQuery.refetch();
+          chapterByIdQuery.refetch();
+
+          context.pop();
+          print(res);
+        } catch (e) {
+          print(e);
+        }
+      }
+    }
+
+    previewChapterVersion({String chapterVersionId = ''}) {
+      showModalBottomSheet(
+        backgroundColor: appColors.skyLightest,
+        isScrollControlled: true,
+        context: context,
+        useSafeArea: true,
+        builder: (context) => Container(
+          height: size.height * 0.85,
+          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          child: Column(
+            children: [
+              Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Container(
+                    width: size.width,
+                    child: text.Text(
+                      'Bản xem trước',
+                      style: textTheme.headlineMedium
+                          ?.copyWith(color: appColors.inkBase),
+                    ),
+                  ),
+                  Positioned(
+                      right: 0,
+                      child: GestureDetector(
+                        onTap: () {
+                          onRevert(chapterVersionId: chapterVersionId);
+                        },
+                        child: text.Text(
+                          'Khôi phục',
+                          style: textTheme.titleMedium
+                              ?.copyWith(color: appColors.primaryBase),
+                        ),
+                      ))
+                ],
+              ),
+              Container(
+                height: size.height * 0.75,
+                child: ListView(
+                  children: [
+                    Container(
+                        width: size.width,
+                        padding: EdgeInsetsDirectional.symmetric(vertical: 4),
+                        decoration: BoxDecoration(color: appColors.inkBase),
+                        child: Center(
+                          child: Text(
+                            'Chỉ đọc',
+                            style: textTheme.bodyMedium
+                                ?.copyWith(color: appColors.skyLightest),
+                          ),
+                        )),
+                    FutureBuilder<ChapterVersion?>(
+                        future: getChapterVersionDetail(chapterVersionId),
+                        builder: (context, snapshot) {
+                          if (snapshot.hasError) {
+                            return Text(snapshot.error.toString(),
+                                style: textTheme.titleMedium);
+                          }
+                          return Skeletonizer(
+                            enabled: snapshot.connectionState ==
+                                ConnectionState.waiting,
+                            child: text.Text('${snapshot.data?.content}'),
+                          );
+                        })
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
-        // leading: IconButton(
-        //   icon: const Icon(Icons.arrow_back),
-        //   onPressed: () {
-        //     // context.push('/composeStory',
-        //     //     extra: {'storyId': widget.story?.id});
-        //         context.push('/composeStory',
-        //         extra: {'storyId': widget.story?.id});
-        //   },
-        // ),
         title: Skeletonizer(
           enabled: chapterByIdQuery.isFetching,
           child: Center(
@@ -232,18 +373,121 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                       ?.copyWith(color: appColors.inkBase),
                 ),
                 PopupMenuButton(
-                    onSelected: (value) {},
+                    onSelected: (value) {
+                      switch (value) {
+                        case 0:
+                          saveDraft();
+                          break;
+                        case 1:
+                          previewChapterVersion(
+                              chapterVersionId:
+                                  chapterByIdQuery.data?.currentVersionId ??
+                                      '');
+                          break;
+                        case 2:
+                          showModalBottomSheet(
+                            backgroundColor: appColors.skyLightest,
+                            isScrollControlled: true,
+                            context: context,
+                            builder: (context) {
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 24),
+                                height: size.height - 80,
+                                width: size.width,
+                                child: Column(children: [
+                                  text.Text(
+                                    'Lịch sử sửa đổi',
+                                    style: textTheme.headlineSmall,
+                                  ),
+                                  Container(
+                                    height: size.height - 200,
+                                    child: ListView.builder(
+                                        scrollDirection: Axis.vertical,
+                                        itemCount:
+                                            chapterVersionsQuery.data?.length,
+                                        itemBuilder: (context, index) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              previewChapterVersion(
+                                                  chapterVersionId:
+                                                      chapterVersionsQuery
+                                                              .data?[index]
+                                                              .id ??
+                                                          '');
+                                            },
+                                            child: Container(
+                                              alignment: Alignment.centerLeft,
+                                              decoration: BoxDecoration(
+                                                  border: BorderDirectional(
+                                                      bottom: BorderSide(
+                                                          color: appColors
+                                                              .inkLighter,
+                                                          width: 0.5))),
+                                              height: 50,
+                                              child: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 16.0),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Flexible(
+                                                      flex: 4,
+                                                      child: text.Text(
+                                                        'Bản thảo ${chapterVersionsQuery.data?[index].versionName}',
+                                                        style: textTheme.titleMedium?.copyWith(
+                                                            color: chapterByIdQuery
+                                                                        .data
+                                                                        ?.currentVersionId ==
+                                                                    chapterVersionsQuery
+                                                                        .data?[
+                                                                            index]
+                                                                        .id
+                                                                ? appColors
+                                                                    .primaryBase
+                                                                : appColors
+                                                                    .inkBase),
+                                                      ),
+                                                    ),
+                                                    chapterByIdQuery.data
+                                                                ?.currentVersionId ==
+                                                            chapterVersionsQuery
+                                                                .data?[index].id
+                                                        ? Flexible(
+                                                            child: Icon(
+                                                            Icons.check_circle,
+                                                            color: appColors
+                                                                .primaryBase,
+                                                          ))
+                                                        : SizedBox(
+                                                            height: 0,
+                                                          )
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        }),
+                                  )
+                                ]),
+                              );
+                            },
+                          );
+                          break;
+                        default:
+                      }
+                    },
                     icon: const Icon(Icons.arrow_drop_down),
                     itemBuilder: (context) => [
-                          PopupMenuItem(
-                              value: popupMenuItem[0],
-                              child: const text.Text('Lưu bản thảo')),
-                          PopupMenuItem(
-                              value: popupMenuItem[1],
-                              child: const text.Text('Xem trước')),
-                          PopupMenuItem(
-                              value: popupMenuItem[1],
-                              child: const text.Text('Lịch sử sửa đổi')),
+                          const PopupMenuItem(
+                              value: 0, child: text.Text('Lưu bản thảo')),
+                          const PopupMenuItem(
+                              value: 1, child: text.Text('Xem trước')),
+                          const PopupMenuItem(
+                              value: 2, child: text.Text('Lịch sử sửa đổi')),
                         ])
               ],
             ),
@@ -260,88 +504,22 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                       return const text.Text('model');
                     });
               },
-              child: chapterByIdQuery.data?.isDraft == true
-                  ? Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Center(
-                          child: GestureDetector(
-                        child: text.Text(
-                          'Đăng tải',
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
-                              ?.copyWith(color: appColors.primaryBase),
-                        ),
-                        onTap: () async {
-                          // final validationSuccess =
-                          //     _formKey.currentState!.validate();
-                          // if (validationSuccess) {
-                          //   showDialog(
-                          //       context: context,
-                          //       builder: (context) {
-                          //         return const Center(
-                          //             child:
-                          //                 CircularProgressIndicator());
-                          //       });
-                          //   //save data
-                          //   _formKey.currentState!.save();
-
-                          //   //create form data
-                          //   Map<String, String> body =
-                          //       <String, String>{};
-                          //   // print(
-                          //   //     'chapterId ${widget.story?.chapters?.elementAt(0).id}');
-                          //   // body['chapter_id'] = widget
-                          //   //     .story?.chapters
-                          //   //     ?.elementAt(0)
-                          //   //     .id as String;
-                          //   body['chapter_id'] = chapter?.id ?? '';
-                          //   body['title'] = _formKey
-                          //       .currentState!.fields['title']!.value;
-                          //   // body['timestamp'] = DateTime.timestamp().toIso8601String();
-                          //   body['version_name'] = 'version_name';
-
-                          //   //raw text==content: string
-                          //   //rich text: []
-                          //   body['content'] = jsonEncode(_controller
-                          //       .document
-                          //       .toPlainText()
-                          //       .toString());
-                          //   var json = jsonEncode(_controller.document
-                          //       .toDelta()
-                          //       .toJson());
-                          //   body['rich_text'] = json.toString();
-                          //   if (kDebugMode) {
-                          //     print(body);
-                          //   }
-                          //   //call api
-                          //   bool isCreated = await ChapterRepository()
-                          //       .createChapterVersion(
-                          //           body,
-                          //           _formKey.currentState!
-                          //               .fields['photos']!.value);
-                          //   // ignore: use_build_context_synchronously
-                          //   context.pop();
-
-                          //   isCreated
-                          //       ? _displaySnackBar(
-                          //           'Tạo chương truyện thành công')
-                          //       : _displaySnackBar(
-                          //           'Tạo chương truyện thất bại');
-                          //   // ignore: use_build_context_synchronously
-                          //   context.pop();
-                          //   // ignore: use_build_context_synchronously
-                          //   context.go('/composeStory',
-                          //       extra: {'storyId': widget.story?.id});
-                          // } else {
-                          //   _displaySnackBar('Không được để trống');
-                          // }
-                        },
-                      )),
-                    )
-                  : const SizedBox(
-                      height: 0,
-                    ),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                    child: GestureDetector(
+                  child: text.Text(
+                    'Đăng tải',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(color: appColors.primaryBase),
+                  ),
+                  onTap: () async {
+                    publishChapter();
+                  },
+                )),
+              ),
             ),
           )
         ],
@@ -372,41 +550,23 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
           // text.Text(data[0].richText as String),
           Skeletonizer(
             enabled: chapterByIdQuery.isFetching,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: _createChapterForm(chapterByIdQuery),
-            ),
+            child: chapterByIdQuery.data != null
+                ? Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: _createChapterForm(chapterByIdQuery),
+                  )
+                : Skeletonizer(
+                    enabled: true,
+                    child: Container(
+                      child: Column(children: [
+                        Text(''),
+                        Container(
+                          width: double.infinity,
+                          height: 200,
+                        )
+                      ]),
+                    )),
           ),
-          // QuillToolbar.basic(
-          //   controller: _controller,
-          //   showAlignmentButtons: false,
-          //   showCodeBlock: false,
-          //   showBackgroundColorButton: false,
-          //   showIndent: false,
-          //   showInlineCode: false,
-          //   showLink: false,
-          //   showListCheck: false,
-          //   showQuote: false,
-          //   showSubscript: false,
-          //   showSuperscript: false,
-          //   showStrikeThrough: false,
-          //   showSmallButton: false,
-          //   showColorButton: false,
-          //   showDividers: false,
-          //   showClearFormat: false,
-          // ),
-          // Expanded(
-          //     child: Padding(
-          //   padding: const EdgeInsets.all(16.0),
-          //   child: QuillEditor.basic(
-          //     configurations: QuillEditorConfigurations(),
-          //     // controller: QuillController(
-          //     //     document: Document.fromJson(
-          //     //         jsonDecode(data[0].richText as String)),
-          //     //     selection: const TextSelection.collapsed(offset: 0)),
-          //     // readOnly: false,
-          //   ),
-          // )),
           Skeletonizer(
             enabled: chapterByIdQuery.isFetching,
             child: Container(
@@ -416,18 +576,20 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
               child: QuillProvider(
                 configurations: QuillConfigurations(
                   controller: _controller,
-                  sharedConfigurations: const QuillSharedConfigurations(
-                    locale: Locale('de'),
+                  sharedConfigurations: QuillSharedConfigurations(
+                    // locale: Locale('de'),
+                    animationConfigurations:
+                        QuillAnimationConfigurations.disableAll(),
                   ),
                 ),
                 child: Column(
                   children: [
-                    QuillToolbar(configurations: appQuillToolbarConfig()),
+                    QuillToolbar(
+                        configurations: appQuillToolbarConfig(context)),
                     Expanded(
                       child: QuillEditor.basic(
-                        configurations: const QuillEditorConfigurations(
-                          readOnly: false,
-                        ),
+                        configurations: QuillEditorConfigurations(
+                            readOnly: false, maxContentWidth: size.width - 32),
                       ),
                     )
                   ],

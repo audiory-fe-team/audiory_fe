@@ -4,9 +4,12 @@ import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:go_router/go_router.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../../../../theme/theme_constants.dart';
 import '../../../../repositories/auth_repository.dart';
@@ -23,18 +26,19 @@ class FlowOneScreen extends StatefulWidget {
 class _FlowOneScreenState extends State<FlowOneScreen> {
   var isResetCountdown = false;
   var countDownTime = const Duration(
-    minutes: 15,
+    minutes: 1,
     seconds: 0,
   );
   final remainTime = 0;
+  var duration = DateTime.now().add(const Duration(minutes: 1));
+  var isEnd = false;
+  List<TextInputFormatter> inputFormatters = [
+    FilteringTextInputFormatter.digitsOnly, // Allows only digits
+    LengthLimitingTextInputFormatter(4), // Limits to two digits
+  ];
 
   final _formKey = GlobalKey<FormBuilderState>();
   TextEditingController codeController = TextEditingController();
-  void _displaySnackBar(String content) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
-    AppSnackBar.buildSnackbar(context, content, null, SnackBarType.error);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +59,7 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Expanded(
-                    flex: 2,
+                    flex: 4,
                     child: Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -67,7 +71,7 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                                   ?.copyWith(color: const Color(0xff000000))),
                           Container(
                             margin: const EdgeInsets.only(top: 16),
-                            width: size.width / 1.5,
+                            width: size.width / 1.2,
                             child: Text(
                               "Mã xác nhận đã được gửi đến email ${widget.signUpBody?['email']}",
                               style: Theme.of(context)
@@ -77,25 +81,7 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                                     color: appColors.inkBase,
                                   ),
                               textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Center(
-                            child: TimerCountdown(
-                              onTick: (remainingTime) {
-                                print('REMAINING ${remainingTime.inSeconds}');
-                                print('DURATION ${countDownTime.inSeconds}');
-                              },
-                              format: CountDownTimerFormat.minutesSeconds,
-                              descriptionTextStyle:
-                                  const TextStyle(color: Colors.transparent),
-                              timeTextStyle:
-                                  Theme.of(context).textTheme.titleMedium,
-                              endTime: DateTime.now()
-                                  .add(const Duration(minutes: 15)),
-                              spacerWidth: 0,
-                              onEnd: () {
-                                print("Timer finished");
-                              },
+                              maxLines: 3,
                             ),
                           ),
                         ],
@@ -117,9 +103,8 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                           FormBuilder(
                             key: _formKey,
                             child: TextFormField(
-                              validator: (value) {
-                                if (value!.length < 4) return 'Mã có 4 ký tự';
-                              },
+                              inputFormatters: inputFormatters,
+                              keyboardType: TextInputType.number,
                               maxLength: 4,
                               controller: codeController,
                               textAlign: TextAlign.center,
@@ -168,18 +153,13 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                               color: Colors.white,
                               bgColor: const Color(0xFF439A97),
                               onPressed: () async {
-                                if (kDebugMode) {
-                                  print('body ${widget.signUpBody}');
-                                  print(
-                                      'body ${bool.parse(widget.signUpBody?['isForgotPass'] ?? '')}');
-                                }
-
+                                print('is end');
                                 if (bool.parse(
                                     widget.signUpBody?['isForgotPass'] ??
                                         'false')) {
                                   try {
-                                    // await AuthRepository().checkResetPassword(
-                                    //     resetToken: codeController.text);
+                                    await AuthRepository().checkResetPassword(
+                                        resetToken: codeController.text);
                                     // ignore: use_build_context_synchronously
                                     context.push('/resetPassword', extra: {
                                       'resetToken': codeController.text
@@ -196,8 +176,9 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                                   try {
                                     Profile? response = await AuthRepository()
                                         .signUp(
-                                            email: widget.signUpBody?['email']
-                                                as String,
+                                            email:
+                                                widget.signUpBody?['email'] ??
+                                                    '',
                                             password: widget
                                                     .signUpBody?['password'] ??
                                                 '',
@@ -229,42 +210,60 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                               },
                             ),
                           ),
+                          const SizedBox(
+                            height: 16,
+                          ),
                           GestureDetector(
                             onTap: () async {
-                              print(
-                                  'COUNTDOWN TIME ${countDownTime.inSeconds}');
-                              print(
-                                  'DIFF ${Duration(minutes: 15).inSeconds - countDownTime.inSeconds}');
-                              // if (const Duration(minutes: 15).inSeconds -
-                              //         countDownTime.inSeconds >=
-                              //     60) {
-                              //   final result = await AuthRepository()
-                              //       .verifyEmail(
-                              //           email:
-                              //               widget.signUpBody?['email'] ?? '');
-                              //   if (result == 200) {
-                              //     // ignore: use_build_context_synchronously
-                              //     AppSnackBar.buildTopSnackBar(
-                              //         context,
-                              //         'Gửi lại mã thành công',
-                              //         null,
-                              //         SnackBarType.error);
-                              //   } else {
-                              //     // ignore: use_build_context_synchronously
-                              //     AppSnackBar.buildTopSnackBar(
-                              //         context,
-                              //         'Đợi 1 phút để gửi lại mã',
-                              //         null,
-                              //         SnackBarType.error);
-                              //   }
-                              // }
+                              if (isEnd) {
+                                final result = await AuthRepository()
+                                    .verifyEmail(
+                                        email:
+                                            widget.signUpBody?['email'] ?? '');
+                                if (result == 200) {
+                                  // ignore: use_build_context_synchronously
+                                  AppSnackBar.buildTopSnackBar(
+                                      context,
+                                      'Gửi lại mã thành công',
+                                      null,
+                                      SnackBarType.success);
+                                  setState(() {
+                                    duration = DateTime.now()
+                                        .add(const Duration(minutes: 1));
+                                  });
+                                }
+                              } else {
+                                AppSnackBar.buildTopSnackBar(
+                                    context,
+                                    'Đợi 1 phút để gửi lại mã',
+                                    null,
+                                    SnackBarType.info);
+                              }
                             },
                             child: Center(
                                 child: Text('Gửi lại mã',
                                     style: Theme.of(context)
                                         .textTheme
                                         .titleMedium)),
-                          )
+                          ),
+                          Center(
+                            child: TimerCountdown(
+                              onTick: (remainingTime) {},
+                              format: CountDownTimerFormat.secondsOnly,
+                              descriptionTextStyle:
+                                  const TextStyle(color: Colors.transparent),
+                              timeTextStyle:
+                                  Theme.of(context).textTheme.titleMedium,
+                              endTime: duration,
+                              spacerWidth: 0,
+                              onEnd: () {
+                                setState(() {
+                                  isEnd = true;
+                                });
+                              },
+                              secondsDescription: 's',
+                            ),
+                          ),
                         ]),
                   ),
                 ),

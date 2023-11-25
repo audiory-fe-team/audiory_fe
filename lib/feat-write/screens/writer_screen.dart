@@ -51,7 +51,12 @@ class _WriterScreenState extends State<WriterScreen> {
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: Column(
                     children: [
-                      StoryCardDetailWriter(story: filteredList?[index]),
+                      StoryCardDetailWriter(
+                        story: filteredList?[index],
+                        callBackRefetch: () {
+                          myStoriesQuery.refetch();
+                        },
+                      ),
                     ],
                   ),
                 );
@@ -82,30 +87,35 @@ class _WriterScreenState extends State<WriterScreen> {
     }
     return Scaffold(
       appBar: WriterCustomAppBar(),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Container(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            children: [
-              FormBuilder(
-                  key: _formKey,
-                  onChanged: () {
-                    setState(() {
-                      _formKey.currentState?.save();
-                    });
-                  },
-                  child: AppTextInputField(
-                    name: 'search',
-                    hintText: 'Tác phẩm',
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: appColors.skyDark,
-                    ),
-                  )),
-              const SizedBox(height: 16),
-              _storiesList(myStoriesQuery, filteredStories.toList()),
-            ],
+      body: RefreshIndicator(
+        onRefresh: () async {
+          myStoriesQuery.refetch();
+        },
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Container(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                FormBuilder(
+                    key: _formKey,
+                    onChanged: () {
+                      setState(() {
+                        _formKey.currentState?.save();
+                      });
+                    },
+                    child: AppTextInputField(
+                      name: 'search',
+                      hintText: 'Tác phẩm',
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: appColors.skyDark,
+                      ),
+                    )),
+                const SizedBox(height: 16),
+                _storiesList(myStoriesQuery, filteredStories.toList()),
+              ],
+            ),
           ),
         ),
       ),

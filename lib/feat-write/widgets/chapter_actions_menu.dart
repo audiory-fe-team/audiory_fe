@@ -17,22 +17,22 @@ appChapterPopupMenuItems(context) {
             Text('Chỉnh sửa'),
           ],
         )),
-    const PopupMenuItem(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        value: 1,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Icon(Icons.remove_red_eye_rounded),
-            SizedBox(
-              width: 10,
-            ),
-            Text('Xem trước'),
-          ],
-        )),
+    // const PopupMenuItem(
+    //     padding: EdgeInsets.symmetric(horizontal: 20),
+    //     value: 1,
+    //     child: Row(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       children: [
+    //         Icon(Icons.remove_red_eye_rounded),
+    //         SizedBox(
+    //           width: 10,
+    //         ),
+    //         Text('Xem trước'),
+    //       ],
+    //     )),
     PopupMenuItem(
         padding: EdgeInsets.symmetric(horizontal: 20),
-        value: 2,
+        value: 1,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
@@ -68,18 +68,18 @@ appPaywalledChapterPopupMenuItems(context) {
             Text('Chỉnh sửa'),
           ],
         )),
-    const PopupMenuItem(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        value: 1,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Icon(Icons.remove_red_eye_rounded),
-            SizedBox(
-              width: 10,
-            ),
-            Text('Xem trước'),
-          ],
-        )),
+    // const PopupMenuItem(
+    //     padding: EdgeInsets.symmetric(horizontal: 20),
+    //     value: 1,
+    //     child: Row(
+    //       mainAxisAlignment: MainAxisAlignment.start,
+    //       children: [
+    //         Icon(Icons.remove_red_eye_rounded),
+    //         SizedBox(
+    //           width: 10,
+    //         ),
+    //         Text('Xem trước'),
+    //       ],
+    //     )),
   ];
 }

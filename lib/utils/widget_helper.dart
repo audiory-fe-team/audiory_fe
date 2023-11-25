@@ -19,11 +19,11 @@ InputDecoration appInputDecoration(BuildContext context) {
       borderRadius: BorderRadius.circular(100.0), // Adjust the radius here
     ),
     enabledBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: appColors.skyBase, width: 1.0),
+      borderSide: BorderSide(color: appColors.skyBase, width: 2.0),
       borderRadius: BorderRadius.circular(100.0),
     ),
     focusedBorder: OutlineInputBorder(
-      borderSide: BorderSide(color: appColors.primaryBase, width: 1.0),
+      borderSide: BorderSide(color: appColors.primaryBase, width: 2.0),
       borderRadius: BorderRadius.circular(100.0),
     ),
   );

@@ -39,6 +39,8 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
               height: 50,
               // decoration: BoxDecoration(color: appColors.secondaryLighter),
               child: FormBuilderSwitch(
+                inactiveThumbColor: appColors.inkLight,
+                inactiveTrackColor: appColors.skyLighter,
                 decoration: const InputDecoration(border: InputBorder.none),
                 initialValue: false,
                 activeColor: appColors.primaryBase,

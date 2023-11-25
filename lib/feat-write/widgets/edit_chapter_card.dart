@@ -12,8 +12,14 @@ class EditChapterCard extends StatelessWidget {
   final int? index;
   final Chapter? chapter;
   final Story? story;
+  final Function() onDeleteChapter;
+
   const EditChapterCard(
-      {super.key, required this.chapter, this.index, this.story});
+      {super.key,
+      required this.chapter,
+      this.index,
+      this.story,
+      required this.onDeleteChapter});
 
   Map<String, dynamic> getChapterStatus(context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -46,10 +52,11 @@ class EditChapterCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        print('before');
-        print('${chapter?.id}');
-        context.pushNamed('composeChapter',
-            extra: {'chapterId': chapter?.id, 'story': story});
+        context.pushNamed('composeChapter', extra: {
+          'chapterId': chapter?.id,
+          'story': story,
+          'chapter': chapter
+        });
       },
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 10),
@@ -91,9 +98,17 @@ class EditChapterCard extends StatelessWidget {
                     children: [
                       PopupMenuButton(
                           onSelected: (value) {
-                            print('select');
                             print(value);
-                            // _onSelectStoryAction(value, context);
+                            if (value == 1) {
+                              onDeleteChapter();
+                            }
+                            if (value == 0) {
+                              context.pushNamed('composeChapter', extra: {
+                                'chapterId': chapter?.id,
+                                'story': story,
+                                'chapter': chapter
+                              });
+                            }
                           },
                           icon: const Icon(Icons.more_vert),
                           itemBuilder: (context) => chapter?.isPaywalled == true

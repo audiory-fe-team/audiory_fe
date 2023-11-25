@@ -1,3 +1,4 @@
+import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/gift/gift_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/gift_repository.dart';
@@ -8,14 +9,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DonateGiftModal extends StatefulHookWidget {
   final Story? story;
   final dynamic coins;
+  final AuthUser? userData;
   final Function(Gift, int) handleSendingGift;
   const DonateGiftModal(
-      {super.key, this.story, this.coins = 0, required this.handleSendingGift});
+      {super.key,
+      this.story,
+      this.coins = 0,
+      required this.handleSendingGift,
+      this.userData});
 
   @override
   State<DonateGiftModal> createState() => _DonateGiftModalState();
@@ -68,7 +75,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                   ),
                   Flexible(
                     child: Container(
-                      width: size.width / 3.7,
+                      width: size.width / 3.5,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           color: appColors.skyLightest,
@@ -91,7 +98,16 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                             '${widget.coins.toStringAsFixed(0)}',
                             style: textTheme.titleMedium
                                 ?.copyWith(color: appColors.inkBase),
+                            textAlign: TextAlign.center,
                           )),
+                          Flexible(
+                            child: TextButton(
+                                onPressed: () {
+                                  context.pushNamed('newPurchase',
+                                      extra: {'currentUser': widget.userData});
+                                },
+                                child: const Icon(Icons.add)),
+                          ),
                         ],
                       ),
                     ),
@@ -141,9 +157,10 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                           Text(total == 0 ? 'Tặng quà ngay' : 'Tổng $total xu'),
                     ),
                     Flexible(
+                      flex: 2,
                       child: Row(
                         mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Container(
                             width: 100,
@@ -153,10 +170,11 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                                 borderRadius: const BorderRadius.all(
                                     Radius.circular(50))),
                             child: Padding(
-                                padding: const EdgeInsets.all(5),
+                                padding: const EdgeInsets.all(10),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
-                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
                                   children: [
                                     InkWell(
                                         onTap: () {
@@ -212,7 +230,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                           ),
                           Container(
                             height: 40,
-                            width: 75,
+                            width: 85,
                             child: AppIconButton(
                               onPressed: () {
                                 widget.handleSendingGift(selectedItem?.value,
@@ -229,7 +247,10 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                     ),
                   ],
                 ),
-              )
+              ),
+              SizedBox(
+                height: 16,
+              ),
             ]),
       ),
     ));

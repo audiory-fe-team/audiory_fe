@@ -44,14 +44,14 @@ class _WriterCustomAppBarState extends State<WriterCustomAppBar> {
               ),
             ),
           ),
-          Positioned(
-              height: 60,
-              right: 0,
-              child: IconButton(
-                alignment: Alignment.center,
-                icon: const Icon(Icons.bar_chart_rounded),
-                onPressed: () {},
-              ))
+          // Positioned(
+          //     height: 60,
+          //     right: 0,
+          //     child: IconButton(
+          //       alignment: Alignment.center,
+          //       icon: const Icon(Icons.bar_chart_rounded),
+          //       onPressed: () {},
+          //     ))
         ]),
       ),
     );
