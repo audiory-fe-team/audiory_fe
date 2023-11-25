@@ -326,12 +326,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                     //   });
                                   },
                                   child: Container(
-                                    width: 130,
+                                    width: size.width / 3,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Flexible(
+                                          flex: 2,
                                           child: Image.asset(
                                             'assets/images/coin.png',
                                             width: 30,
@@ -341,6 +342,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                         Skeletonizer(
                                           enabled: userByIdQuery.isFetching,
                                           child: Flexible(
+                                            flex: 2,
                                             child: Text(
                                               " ${userByIdQuery.data?.wallets?.isNotEmpty == true ? roundBalance(userByIdQuery.data?.wallets![0].balance) : '_'}",
                                               style: Theme.of(context)

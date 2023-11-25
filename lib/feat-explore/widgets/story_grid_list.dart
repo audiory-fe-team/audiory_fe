@@ -14,7 +14,7 @@ class StoryGridList extends StatelessWidget {
   Widget build(BuildContext context) {
     final list = storyList?.sublist(0, min(storyList?.length ?? 0, 6)) ?? [];
     final screenWidth = MediaQuery.of(context).size.width;
-    final height = screenWidth * 1.1;
+    final height = screenWidth * 1.2;
     return Column(children: [
       SizedBox(
           width: screenWidth,

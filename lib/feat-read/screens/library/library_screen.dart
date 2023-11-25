@@ -105,7 +105,7 @@ class ReadingLists extends HookWidget {
 
       const storage = FlutterSecureStorage();
       final jwtToken = await storage.read(key: 'jwt');
-      final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
+      final userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
       body['user_id'] = userId;
       body['name'] = _formKey.currentState?.fields['name']?.value;
       body['is_private'] = 'true';
@@ -311,6 +311,7 @@ class ReadingLists extends HookWidget {
           ]);
     }
 
+    print(readingListQuery.data);
     return Expanded(
         child: readingListQuery.data == []
             ? Column(

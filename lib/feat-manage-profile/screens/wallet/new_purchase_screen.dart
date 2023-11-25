@@ -35,7 +35,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
   int tabState = 0;
   @override
   void initState() {
-    // TODO: implement initState
+    // TODO: implement initStateTônTôn
     super.initState();
 
     tabController = TabController(
@@ -201,21 +201,29 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                              child: Text(
-                            'Ví kim cương',
-                            style: textTheme.titleLarge,
-                          )),
-                          Flexible(
-                              child: Text(
-                            formatNumberWithSeperator(
-                                widget.currentUser?.wallets![1].balance ?? 0),
-                            style: textTheme.titleLarge,
-                          )),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                                flex: 2,
+                                child: Text(
+                                  formatNumberWithSeperator(
+                                      widget.currentUser?.wallets![1].balance ??
+                                          0),
+                                  style: textTheme.headlineMedium,
+                                )),
+                            Flexible(
+                              flex: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10.0),
+                                child: Image.asset('assets/images/diamond.png',
+                                    width: 24),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       FormBuilder(
                         key: _formKey,
@@ -251,7 +259,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                               return Container(
                                   padding: EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                      color: appColors.secondaryLightest,
+                                      color: appColors.skyLight,
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Column(
                                     children: [

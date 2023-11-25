@@ -160,7 +160,7 @@ class SearchScreen extends HookWidget {
                                                         Padding(
                                                             padding:
                                                                 const EdgeInsets
-                                                                        .only(
+                                                                    .only(
                                                                     bottom: 8),
                                                             child: ProfileCard(
                                                               user: item,

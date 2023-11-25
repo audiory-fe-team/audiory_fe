@@ -447,7 +447,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                                     title: isFollowUser.value == true
                                         ? 'Đang theo dõi'
                                         : 'Theo dõi',
-                                    textStyle: textTheme.titleLarge?.copyWith(
+                                    textStyle: textTheme.titleMedium?.copyWith(
                                       color: isFollowUser.value == true
                                           ? appColors.inkBase
                                           : appColors.skyLightest,

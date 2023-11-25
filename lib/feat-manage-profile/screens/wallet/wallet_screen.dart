@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audiory_v0/feat-manage-profile/widgets/transaction_card.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/enums/TransactionType.dart';
 import 'package:audiory_v0/models/transaction/transaction_model.dart';
@@ -54,7 +55,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   DateTime.now(),
                   DateTime.parse(
                       element.createdDate ?? DateTime.now().toString())) <=
-              30)
+              25)
           .toList()
           .where((element) => listType.contains(
               TransactionType.values.byName(element.transactionType ?? '')))
@@ -124,103 +125,6 @@ class _WalletScreenState extends State<WalletScreen> {
     }
 
     //transaction list
-    Widget transactionCard(Transaction transaction) {
-      final containerSize = size.width - 32;
-
-      TransactionType transactionType = TransactionType.values
-          .byName(transaction.transactionType?.toUpperCase() ?? 'PURCHASE');
-      return Container(
-        width: containerSize,
-        decoration: BoxDecoration(
-            border: Border(
-          bottom: BorderSide(
-            width: 0.5,
-            color: appColors.skyBase,
-          ),
-        )),
-        height: 80,
-        child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              SizedBox(
-                width: containerSize * 0.15,
-                child: Container(
-                  width: containerSize * 0.15,
-                  height: containerSize * 0.15,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      border: Border.all(color: appColors.skyBase),
-                      borderRadius: BorderRadius.circular(50),
-                      color: transactionType.displayBgColor.withOpacity(0.2)),
-                  child: Transform.rotate(
-                    angle: 0,
-                    child: Icon(
-                      transactionType.displayIcon,
-                      color: transactionType.displayIconColor,
-                      size: 30,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                  width: containerSize * 0.6,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          transactionType.displayText,
-                          style: textTheme.titleMedium,
-                        ),
-                        Text(
-                          appFormatDateWithHHmm(transaction.createdDate),
-                          style: textTheme.bodyMedium
-                              ?.copyWith(color: appColors.inkLight),
-                        ),
-                      ],
-                    ),
-                  )),
-              SizedBox(
-                width: containerSize * 0.25,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      '',
-                      style: textTheme.titleLarge,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        Flexible(
-                          child: Padding(
-                            padding: const EdgeInsets.only(right: 4.0),
-                            child: Text(
-                              '${transactionType.displayTrend} ${transaction.totalPrice}',
-                              style: textTheme.titleLarge
-                                  ?.copyWith(color: appColors.inkDarkest),
-                            ),
-                          ),
-                        ),
-                        Flexible(
-                          child: Image.asset(
-                              transactionType.isCoin
-                                  ? 'assets/images/coin.png'
-                                  : 'assets/images/diamond.png',
-                              width: 18),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ]),
-      );
-    }
 
     print(userByIdQuery.data?.wallets);
 
@@ -279,12 +183,13 @@ class _WalletScreenState extends State<WalletScreen> {
                               ),
                               Text(
                                 formatNumberWithSeperator(userByIdQuery
-                                        .data!.wallets!.isNotEmpty
+                                            .data?.wallets!.isNotEmpty ??
+                                        false
                                     ? userByIdQuery.data?.wallets![0].balance
                                     : 0),
                                 style: textTheme.headlineLarge?.copyWith(
                                     color: appColors.primaryLightest,
-                                    fontSize: 50),
+                                    fontSize: 35),
                               ),
                             ],
                           ),
@@ -299,12 +204,13 @@ class _WalletScreenState extends State<WalletScreen> {
                               ),
                               Text(
                                 formatNumberWithSeperator(userByIdQuery
-                                        .data!.wallets!.isNotEmpty
+                                            .data?.wallets!.isNotEmpty ??
+                                        false
                                     ? userByIdQuery.data?.wallets![1].balance
                                     : 0),
                                 style: textTheme.headlineLarge?.copyWith(
                                     color: appColors.primaryLightest,
-                                    fontSize: 50),
+                                    fontSize: 35),
                               ),
                             ],
                           ),
@@ -318,14 +224,17 @@ class _WalletScreenState extends State<WalletScreen> {
                         context.pushNamed('newPurchase',
                             extra: {'currentUser': widget.currentUser});
                       },
-                      icon: const Icon(Icons.login_rounded),
+                      icon: Icon(
+                        Icons.login_rounded,
+                        color: appColors.inkBase,
+                      ),
                       iconPosition: 'start',
                       title: 'Nạp/ Rút',
+                      textStyle: textTheme.bodyMedium
+                          ?.copyWith(color: appColors.inkBase),
                       isOutlined: true,
-                      color: appColors.primaryLightest,
                       bgColor: appColors.inkDark,
                     ),
-
                     //stats container
                     Container(
                       margin: const EdgeInsets.symmetric(
@@ -353,7 +262,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               spendingStats(
                                   countTotal(transactionsQuery.data ?? [],
                                       [TransactionType.PURCHASE]),
-                                  'Đã nạp trong 30 ngày',
+                                  'Đã nạp trong 25 ngày',
                                   true),
                               SizedBox(
                                 width: 2,
@@ -417,8 +326,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                 ),
                               ),
                               Container(
-                                margin: const EdgeInsets.only(bottom: 22),
-                                height: size.height * 0.47,
+                                margin: const EdgeInsets.only(bottom: 100),
+                                height: size.height * 0.42,
                                 child: Skeletonizer(
                                   enabled: transactionsQuery.isFetching,
                                   child: Padding(
@@ -444,14 +353,10 @@ class _WalletScreenState extends State<WalletScreen> {
                                               : -1;
                                         });
                                         return Container(
-                                          // decoration: BoxDecoration(
-                                          //     color: index.isEven
-                                          //         ? appColors.primaryLightest
-                                          //             .withOpacity(0.5)
-                                          //         : Colors.transparent),
-                                          child: transactionCard(
-                                              transactionsQuery.data?[index]
-                                                  as Transaction),
+                                          child: TransactionCard(
+                                            transaction: transactionsQuery
+                                                .data?[index] as Transaction,
+                                          ),
                                         );
                                       }).toList(),
                                     ),
