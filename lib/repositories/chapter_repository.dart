@@ -85,12 +85,6 @@ class ChapterRepository {
       "Content-type": "application/json",
       "Accept": "application/json",
     };
-    const storage = FlutterSecureStorage();
-    final jwt = await storage.read(key: 'jwt');
-
-    if (jwt != null) {
-      header['Authorization'] = 'Bearer $jwt';
-    }
 
     if (jwtToken != null) {
       headers['Authorization'] = 'Bearer $jwtToken';
