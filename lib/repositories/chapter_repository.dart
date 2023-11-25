@@ -79,12 +79,20 @@ class ChapterRepository {
     }
 
     final url = Uri.parse("$chapterEndpoint/$chapterId");
-    Map<String, String> header = {
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
       "Content-type": "application/json",
-      "Accept": "application/json"
+      "Accept": "application/json",
     };
 
-    final response = await http.get(url, headers: header);
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {

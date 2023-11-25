@@ -25,6 +25,7 @@ class ReadingBottomBar extends HookWidget {
     final settingOpen = useState(false);
     final AppColors? appColors = Theme.of(context).extension<AppColors>();
 
+    print(isVoted);
     void handleOpenChapter() {
       Scaffold.of(context).openDrawer();
     }

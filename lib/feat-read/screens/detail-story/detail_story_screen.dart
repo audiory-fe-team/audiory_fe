@@ -517,7 +517,6 @@ class DetailStoryScreen extends HookConsumerWidget {
                 ),
               ))),
       bottomNavigationBar: DetailStoryBottomBar(
-          hasDownload: hasDownload,
           storyId: id,
           onRead: () => handleReading(),
           isContinueReading: isContinueReading,

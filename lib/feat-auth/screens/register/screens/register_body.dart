@@ -91,288 +91,297 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
-        body: Form(
-          key: _formKey,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text("Đăng ký",
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineLarge
-                        ?.copyWith(color: Color(0xff000000))),
-                Text("Tạo một tài khoản để bắt đầu",
-                    style: Theme.of(context)
-                        .textTheme
-                        .titleLarge
-                        ?.copyWith(color: Color(0xFF72777A))),
-                Column(
+        body: Container(
+            width: double.infinity,
+            child: Form(
+              key: _formKey,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Container(
-                        margin: const EdgeInsets.symmetric(vertical: 20.0),
-                        child: const Column(
+                    Text("Đăng ký",
+                        style: Theme.of(context)
+                            .textTheme
+                            .headlineLarge
+                            ?.copyWith(color: Color(0xff000000))),
+                    Text("Tạo một tài khoản để bắt đầu",
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleLarge
+                            ?.copyWith(color: Color(0xFF72777A))),
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                            margin: const EdgeInsets.symmetric(vertical: 20.0),
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                // Text("Tên đăng nhập",
+                                //     style: Theme.of(context)
+                                //         .textTheme
+                                //         .titleLarge
+                                //         ?.copyWith(
+                                //             color: Color(0xff000000),
+                                //             fontWeight: FontWeight.w700)),
+                                // const SizedBox(
+                                //   height: 16.0,
+                                // ),
+                              ],
+                            )),
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            // Text("Tên đăng nhập",
+                            // Text("Địa chỉ email",
                             //     style: Theme.of(context)
                             //         .textTheme
                             //         .titleLarge
                             //         ?.copyWith(
-                            //             color: Color(0xff000000),
+                            //             color: const Color(0xff000000),
                             //             fontWeight: FontWeight.w700)),
-                            // const SizedBox(
-                            //   height: 16.0,
-                            // ),
+                            TextFormField(
+                              controller: usernameController,
+                              decoration: const InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      style: BorderStyle.solid,
+                                      color: Color(0xFF439A97),
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(80)),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      style: BorderStyle.solid,
+                                      color: Color(0xFF439A97),
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(80)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      style: BorderStyle.solid,
+                                      color: Color(0xFF439A97),
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(80)),
+                                  ),
+                                  filled: true,
+                                  hintStyle: TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 228, 212, 212)),
+                                  fillColor: Colors.white70,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 1.0, horizontal: 24),
+                                  labelText: "Tên đăng nhập",
+                                  focusColor: Colors.black12),
+                              // validator: (value) {
+                              //   if (value == null || value.isEmpty) {
+                              //     return 'Nhập tên đăng nhập của bạn';
+                              //   }
+                              //   return null;
+                              // },
+                            ),
+                            const SizedBox(
+                              height: 16.0,
+                            ),
+                            TextFormField(
+                              controller: emailController,
+                              decoration: const InputDecoration(
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      style: BorderStyle.solid,
+                                      color: Color(0xFF439A97),
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(80)),
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      style: BorderStyle.solid,
+                                      color: Color(0xFF439A97),
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(80)),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      style: BorderStyle.solid,
+                                      color: Color(0xFF439A97),
+                                    ),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(80)),
+                                  ),
+                                  filled: true,
+                                  hintStyle: TextStyle(
+                                      color:
+                                          Color.fromARGB(255, 228, 212, 212)),
+                                  fillColor: Colors.white70,
+                                  contentPadding: EdgeInsets.symmetric(
+                                      vertical: 1.0, horizontal: 24),
+                                  labelText: "Email",
+                                  focusColor: Colors.black12),
+                              // validator: (value) {
+                              //   if (value == null || value.isEmpty) {
+                              //     return 'Nhập tên đăng nhập của bạn';
+                              //   }
+                              //   return null;
+                              // },
+                            ),
                           ],
-                        )),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        // Text("Địa chỉ email",
-                        //     style: Theme.of(context)
-                        //         .textTheme
-                        //         .titleLarge
-                        //         ?.copyWith(
-                        //             color: const Color(0xff000000),
-                        //             fontWeight: FontWeight.w700)),
-                        TextFormField(
-                          controller: usernameController,
-                          decoration: const InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  style: BorderStyle.solid,
-                                  color: Color(0xFF439A97),
-                                ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                              ),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  style: BorderStyle.solid,
-                                  color: Color(0xFF439A97),
-                                ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  style: BorderStyle.solid,
-                                  color: Color(0xFF439A97),
-                                ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                              ),
-                              filled: true,
-                              hintStyle: TextStyle(
-                                  color: Color.fromARGB(255, 228, 212, 212)),
-                              fillColor: Colors.white70,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 1.0, horizontal: 24),
-                              labelText: "Tên đăng nhập",
-                              focusColor: Colors.black12),
-                          // validator: (value) {
-                          //   if (value == null || value.isEmpty) {
-                          //     return 'Nhập tên đăng nhập của bạn';
-                          //   }
-                          //   return null;
-                          // },
                         ),
-                        const SizedBox(
-                          height: 16.0,
-                        ),
-                        TextFormField(
-                          controller: emailController,
-                          decoration: const InputDecoration(
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  style: BorderStyle.solid,
-                                  color: Color(0xFF439A97),
+                        Container(
+                            margin: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  // Text("Mật khẩu",
+                                  //     style: Theme.of(context)
+                                  //         .textTheme
+                                  //         .titleLarge
+                                  //         ?.copyWith(
+                                  //             color: Color(0xff000000),
+                                  //             fontWeight: FontWeight.w700)),
+                                  // SizedBox(
+                                  //   height: 16.0,
+                                  // ),
+                                  TextFormField(
+                                    controller: passwordController,
+                                    obscureText: true,
+                                    decoration: const InputDecoration(
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            style: BorderStyle.solid,
+                                            color: Color(0xFF439A97),
+                                          ),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(80)),
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(80)),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            style: BorderStyle.solid,
+                                            color: Color(0xFF439A97),
+                                          ),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(80)),
+                                        ),
+                                        filled: true,
+                                        hintStyle: TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 228, 212, 212),
+                                          fontSize: 24,
+                                          fontFamily: 'Source San Pro',
+                                          fontWeight: FontWeight.w400,
+                                          letterSpacing: 0.06,
+                                        ),
+                                        fillColor: Colors.white70,
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                vertical: 1.0,
+                                                horizontal: 24.0),
+                                        labelText: "Mật khẩu"),
+                                    // validator: (value) {
+                                    //   if (value == null || value.isEmpty) {
+                                    //     return 'Nhập mật khẩu của bạn';
+                                    //   }
+                                    //   return null;
+                                    // },
+                                  ),
+                                  SizedBox(
+                                    height: 16.0,
+                                  ),
+                                  TextFormField(
+                                    controller: confirmPasswordController,
+                                    obscureText: true,
+                                    decoration: const InputDecoration(
+                                        enabledBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            style: BorderStyle.solid,
+                                            color: Color(0xFF439A97),
+                                          ),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(80)),
+                                        ),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(80)),
+                                        ),
+                                        focusedBorder: OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                            style: BorderStyle.solid,
+                                            color: Color(0xFF439A97),
+                                          ),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(80)),
+                                        ),
+                                        filled: true,
+                                        hintStyle: TextStyle(
+                                          color: Color.fromARGB(
+                                              255, 228, 212, 212),
+                                          fontSize: 24,
+                                          fontFamily: 'Source San Pro',
+                                          fontWeight: FontWeight.w400,
+                                          letterSpacing: 0.06,
+                                        ),
+                                        fillColor: Colors.white70,
+                                        contentPadding: EdgeInsets.symmetric(
+                                            vertical: 1.0, horizontal: 24.0),
+                                        labelText: "Xác nhận mật khẩu"),
+                                    // validator: (value) {
+                                    //   if (value == null || value.isEmpty) {
+                                    //     return 'Nhập mật khẩu của bạn';
+                                    //   }
+                                    //   return null;
+                                    // },
+                                  ),
+                                ])),
+                        SizedBox(
+                            width: double.infinity,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                Checkbox(
+                                  activeColor: appColors.primaryBase,
+                                  value: isChecked,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      isChecked = value;
+                                    });
+                                  },
                                 ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                              ),
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  style: BorderStyle.solid,
-                                  color: Color(0xFF439A97),
+                                Text(
+                                  'Tôi đã đọc và đồng ý với các điều khoản và điều kiện',
+                                  textAlign: TextAlign.justify,
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                  maxLines: 2,
                                 ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  style: BorderStyle.solid,
-                                  color: Color(0xFF439A97),
-                                ),
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(80)),
-                              ),
-                              filled: true,
-                              hintStyle: TextStyle(
-                                  color: Color.fromARGB(255, 228, 212, 212)),
-                              fillColor: Colors.white70,
-                              contentPadding: EdgeInsets.symmetric(
-                                  vertical: 1.0, horizontal: 24),
-                              labelText: "Email",
-                              focusColor: Colors.black12),
-                          // validator: (value) {
-                          //   if (value == null || value.isEmpty) {
-                          //     return 'Nhập tên đăng nhập của bạn';
-                          //   }
-                          //   return null;
-                          // },
-                        ),
+                              ],
+                            )),
+                        SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: _submitButton()),
+                        Text(errorMessage),
+                        Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.symmetric(vertical: 16.0),
+                            child: _linkToLoginScreen()),
                       ],
                     ),
-                    Container(
-                        margin: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              // Text("Mật khẩu",
-                              //     style: Theme.of(context)
-                              //         .textTheme
-                              //         .titleLarge
-                              //         ?.copyWith(
-                              //             color: Color(0xff000000),
-                              //             fontWeight: FontWeight.w700)),
-                              // SizedBox(
-                              //   height: 16.0,
-                              // ),
-                              TextFormField(
-                                controller: passwordController,
-                                obscureText: true,
-                                decoration: const InputDecoration(
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        style: BorderStyle.solid,
-                                        color: Color(0xFF439A97),
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(80)),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(80)),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        style: BorderStyle.solid,
-                                        color: Color(0xFF439A97),
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(80)),
-                                    ),
-                                    filled: true,
-                                    hintStyle: TextStyle(
-                                      color: Color.fromARGB(255, 228, 212, 212),
-                                      fontSize: 24,
-                                      fontFamily: 'Source San Pro',
-                                      fontWeight: FontWeight.w400,
-                                      letterSpacing: 0.06,
-                                    ),
-                                    fillColor: Colors.white70,
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        vertical: 1.0, horizontal: 24.0),
-                                    labelText: "Mật khẩu"),
-                                // validator: (value) {
-                                //   if (value == null || value.isEmpty) {
-                                //     return 'Nhập mật khẩu của bạn';
-                                //   }
-                                //   return null;
-                                // },
-                              ),
-                              SizedBox(
-                                height: 16.0,
-                              ),
-                              TextFormField(
-                                controller: confirmPasswordController,
-                                obscureText: true,
-                                decoration: const InputDecoration(
-                                    enabledBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        style: BorderStyle.solid,
-                                        color: Color(0xFF439A97),
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(80)),
-                                    ),
-                                    border: OutlineInputBorder(
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(80)),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderSide: BorderSide(
-                                        style: BorderStyle.solid,
-                                        color: Color(0xFF439A97),
-                                      ),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(80)),
-                                    ),
-                                    filled: true,
-                                    hintStyle: TextStyle(
-                                      color: Color.fromARGB(255, 228, 212, 212),
-                                      fontSize: 24,
-                                      fontFamily: 'Source San Pro',
-                                      fontWeight: FontWeight.w400,
-                                      letterSpacing: 0.06,
-                                    ),
-                                    fillColor: Colors.white70,
-                                    contentPadding: EdgeInsets.symmetric(
-                                        vertical: 1.0, horizontal: 24.0),
-                                    labelText: "Xác nhận mật khẩu"),
-                                // validator: (value) {
-                                //   if (value == null || value.isEmpty) {
-                                //     return 'Nhập mật khẩu của bạn';
-                                //   }
-                                //   return null;
-                                // },
-                              ),
-                            ])),
-                    SizedBox(
-                        width: double.infinity,
-                        child: Row(
-                          children: <Widget>[
-                            Checkbox(
-                              activeColor: appColors.primaryBase,
-                              value: isChecked,
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  isChecked = value;
-                                });
-                              },
-                            ),
-                            SizedBox(
-                              child: Text(
-                                'Tôi đã đọc và đồng ý với các điều khoản và điều kiện',
-                                textAlign: TextAlign.justify,
-                                style: Theme.of(context).textTheme.titleMedium,
-                                maxLines: 2,
-                              ),
-                            ),
-                          ],
-                        )),
-                    SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: _submitButton()),
-                    Text(errorMessage),
-                    Container(
-                        width: double.infinity,
-                        margin: const EdgeInsets.symmetric(vertical: 16.0),
-                        child: _linkToLoginScreen()),
                   ],
                 ),
-              ],
-            ),
-          ),
-        ));
+              ),
+            )));
   }
 }

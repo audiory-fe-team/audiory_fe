@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailStoryBottomBar extends StatefulWidget {
-  final bool? hasDownload;
   final String storyId;
   final Function addToLibraryCallback;
   final bool isAddedToLibrary;

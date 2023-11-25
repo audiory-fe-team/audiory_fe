@@ -94,7 +94,7 @@ class ChapterDrawer extends HookWidget {
                             child: InkWell(
                                 onTap: () {
                                   Navigator.pop(context);
-                                  GoRouter.of(context).go(
+                                  GoRouter.of(context).push(
                                       '/story/${story?.id ?? ''}/chapter/${chapter.id}');
                                 },
                                 borderRadius: BorderRadius.circular(8),

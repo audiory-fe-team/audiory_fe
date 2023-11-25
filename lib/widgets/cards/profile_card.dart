@@ -12,7 +12,8 @@ class ProfileCard extends StatelessWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
+    return GestureDetector(
+        child: Container(
       width: double.infinity,
       height: 54,
       child: Row(
@@ -87,6 +88,6 @@ class ProfileCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }

@@ -48,7 +48,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
       this.initialOffset,
       this.showComment = false});
 
-  final localPlayer = AudioPlayer();
+  var localPlayer = AudioPlayer();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -62,6 +62,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
     final showCommentByParagraph = useState(true);
     final audioSpeed = useState<double>(1);
     final isKaraoke = useState(true);
+    final voiceType = useState(0);
 
     final haveRead = useState(false);
     final hideBars = useState(false);
@@ -79,15 +80,13 @@ class OnlineReadingScreen extends HookConsumerWidget {
     final chapterQuery = useQuery(
       ['chapter', chapterId],
       () => ChapterRepository().fetchChapterDetail(chapterId),
-      refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 5),
+      refetchOnMount: RefetchOnMount.always,
     );
 
     final storyQuery = useQuery(
       ['story', storyId],
       () => StoryRepostitory().fetchStoryById(storyId),
-      refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 5),
+      refetchOnMount: RefetchOnMount.always,
     );
 
     void handleOpenCommentPara(String paraId) {
@@ -143,6 +142,8 @@ class OnlineReadingScreen extends HookConsumerWidget {
       fontSize.value = prefs.getInt('fontSize') ?? 18;
       isKaraoke.value = prefs.getBool('isKaraoke') ?? true;
       audioSpeed.value = prefs.getDouble('audioSpeed') ?? 1;
+      voiceType.value = prefs.getInt('voiceType') ?? 0;
+
       showCommentByParagraph.value =
           prefs.getBool('showCommentByParagraph') ?? true;
       final savedOption = prefs.getInt('themeOption') ?? 0;
@@ -160,13 +161,10 @@ class OnlineReadingScreen extends HookConsumerWidget {
       localPlayer.setSpeed(audioSpeed.value);
     }
 
-    useEffect(() {
-      if (chapterQuery.data?.paragraphs?.isEmpty != false) return;
-      if (storyQuery.data == null) return;
+    setPlayList() async {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      if (localPlayer.sequence != null ||
-          localPlayer.sequence?.isEmpty == false) return;
-      final currentVoice = 0;
+      final currentVoice = prefs.getInt('voiceType') ?? 0;
 
       try {
         final playlist = ConcatenatingAudioSource(
@@ -180,8 +178,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
                 .map((entry) {
           int idx = entry.key;
           Paragraph p = entry.value;
-          print(
-              '${dotenv.get("AUDIO_BASE_URL")}${p.audios?[currentVoice].url}');
+
           return AudioSource.uri(
               Uri.parse(
                   '${dotenv.get("AUDIO_BASE_URL")}${p.audios?[currentVoice].url}'),
@@ -199,6 +196,9 @@ class OnlineReadingScreen extends HookConsumerWidget {
         }).toList());
         localPlayer.setAudioSource(playlist);
 
+        // print(localPlayer.hashCode);
+        // print('Set audio sources');
+
         localPlayer.currentIndexStream.listen((currentParaIndex) {
           if (currentParaIndex == null) return;
           curParaIndex.value = currentParaIndex;
@@ -215,7 +215,67 @@ class OnlineReadingScreen extends HookConsumerWidget {
       } catch (error) {
         print('Error set playlist');
       }
-    }, [localPlayer, chapterQuery.data, storyQuery.data]);
+    }
+
+    useEffect(() {
+      if (chapterQuery.data?.paragraphs?.isEmpty != false) return;
+      if (storyQuery.data == null) return;
+
+      if (localPlayer.sequence != null ||
+          localPlayer.sequence?.isEmpty == false) return;
+      setPlayList();
+
+      // try {
+      //   final currentVoice = voiceType.value;
+      //   final playlist = ConcatenatingAudioSource(
+      //       children: (chapterQuery.data?.paragraphs ?? [])
+      //           .where((element) =>
+      //               element.audios != null &&
+      //               element.audios?.isNotEmpty == true)
+      //           .toList()
+      //           .asMap()
+      //           .entries
+      //           .map((entry) {
+      //     int idx = entry.key;
+      //     Paragraph p = entry.value;
+
+      //     return AudioSource.uri(
+      //         Uri.parse(
+      //             '${dotenv.get("AUDIO_BASE_URL")}${p.audios?[currentVoice].url}'),
+      //         tag: MediaItem(
+      //             id: p.id,
+      //             title: storyQuery.data?.title ?? '',
+      //             extras: {
+      //               'position': chapterQuery.data?.position,
+      //               'storyId': storyId,
+      //               'chapterId': chapterId,
+      //             },
+      //             artist:
+      //                 'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
+      //             album: storyQuery.data?.id));
+      //   }).toList());
+      //   localPlayer.setAudioSource(playlist);
+
+      //   // print(localPlayer.hashCode);
+      //   // print('Set audio sources');
+
+      //   localPlayer.currentIndexStream.listen((currentParaIndex) {
+      //     if (currentParaIndex == null) return;
+      //     curParaIndex.value = currentParaIndex;
+      //     if (keyList.value.isNotEmpty != true) return;
+      //     final keyContext = keyList.value[currentParaIndex].currentContext;
+      //     if (keyContext == null) return;
+      //     if (isKaraoke.value) {
+      //       Scrollable.ensureVisible(keyContext,
+      //           duration: const Duration(seconds: 1), alignment: 0.5);
+      //     }
+
+      //     return;
+      //   });
+      // } catch (error) {
+      //   print('Error set playlist');
+      // }
+    }, [localPlayer, voiceType.value, chapterQuery.data, storyQuery.data]);
 
     useEffect(() {
       syncPreference();
@@ -224,7 +284,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
           localPlayer.stop();
         }
       };
-    }, []);
+    }, [chapterId]);
 
     useEffect(() {
       scrollController.addListener(() {
@@ -403,7 +463,19 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                 ActionButton(
                                     title: 'Bình chọn',
                                     iconName: 'heart',
-                                    onPressed: () {}),
+                                    onPressed: () {
+                                      if (chapterQuery.data?.isVoted != true) {
+                                        ActivitiesRepository.sendActivity(
+                                            actionEntity: 'CHAPTER',
+                                            actionType: 'VOTED',
+                                            entityId: chapterId);
+                                      } else {
+                                        ActivitiesRepository.sendActivity(
+                                            actionEntity: 'CHAPTER',
+                                            actionType: 'UNVOTED',
+                                            entityId: chapterId);
+                                      }
+                                    }),
                                 const SizedBox(width: 12),
                                 ActionButton(
                                     title: 'Tặng quà',

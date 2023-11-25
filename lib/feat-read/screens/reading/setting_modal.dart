@@ -19,6 +19,7 @@ class SettingModel extends HookConsumerWidget {
     final isKaraoke = useState(true);
     final setTimer = useState(false);
     final audioSpeed = useState<double>(1);
+    final voiceType = useState<int>(0);
 
     final notifier = ref.watch(themeNotifierProvider);
 
@@ -36,6 +37,7 @@ class SettingModel extends HookConsumerWidget {
       await prefs.setBool('isKaraoke', isKaraoke.value);
       await prefs.setInt('themeOption', selectedOption.value);
       await prefs.setDouble('audioSpeed', audioSpeed.value);
+      await prefs.setInt('voiceType', voiceType.value);
       if (selectedOption.value <= 1) {
         notifier.setTheme(
             selectedOption.value == 1 ? ThemeMode.dark : ThemeMode.light);
@@ -55,6 +57,7 @@ class SettingModel extends HookConsumerWidget {
       showCommentByParagraph.value =
           prefs.getBool('showCommentByParagraph') ?? true;
       isKaraoke.value = prefs.getBool('isKaraoke') ?? true;
+      voiceType.value = prefs.getInt('voiceType') ?? 0;
     }
 
     useEffect(() {
@@ -164,48 +167,109 @@ class SettingModel extends HookConsumerWidget {
                 ],
               ),
               const SizedBox(height: 16),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                SizedBox(
+                    width: double.infinity,
+                    child: Text(
+                      'Giọng đọc',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    )),
+                const SizedBox(height: 12),
+                Container(
+                    decoration: BoxDecoration(
+                        color: appColors.skyLightest,
+                        border: Border.all(color: appColors.skyLighter),
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Hẹn giờ',
-                          style: Theme.of(context).textTheme.titleLarge,
-                        ),
-                        Checkbox(
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          value: setTimer.value,
-                          onChanged: (value) {
-                            setTimer.value = value ?? false;
-                          },
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4)),
-                          fillColor: MaterialStatePropertyAll(
-                            appColors.primaryBase,
+                        Row(children: [
+                          Radio(
+                            visualDensity: const VisualDensity(
+                                horizontal: -2, vertical: -2),
+                            activeColor: appColors.primaryBase,
+                            splashRadius: 0,
+                            value: 0,
+                            groupValue: voiceType.value,
+                            onChanged: (value) {
+                              voiceType.value = 0;
+                            },
                           ),
-                        ),
-                      ]),
-                  const SizedBox(height: 12),
-                  if (setTimer.value)
-                    SizedBox(
-                      width: 30,
-                      child: TextField(
-                        textAlign: TextAlign.center,
-                        keyboardType: TextInputType.number,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        controller: timerController,
-                        decoration: const InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(0),
-                          isDense: true,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
+                          Text(
+                            'Nữ - Ban Mai',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(color: appColors.inkLight),
+                          )
+                        ]),
+                        Row(children: [
+                          Radio(
+                            visualDensity: const VisualDensity(
+                                horizontal: -2, vertical: -2),
+                            activeColor: appColors.primaryBase,
+                            splashRadius: 0,
+                            value: 1,
+                            groupValue: voiceType.value,
+                            onChanged: (value) {
+                              voiceType.value = 1;
+                            },
+                          ),
+                          Text(
+                            'Nam - Lê Minh',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(color: appColors.inkLight),
+                          )
+                        ])
+                      ],
+                    )),
+              ]),
+              //NOTE: Timer
+              // Column(
+              //   mainAxisAlignment: MainAxisAlignment.start,
+              //   children: [
+              //     Row(
+              //         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              //         children: [
+              //           Text(
+              //             'Hẹn giờ',
+              //             style: Theme.of(context).textTheme.titleLarge,
+              //           ),
+              //           Checkbox(
+              //             materialTapTargetSize:
+              //                 MaterialTapTargetSize.shrinkWrap,
+              //             value: setTimer.value,
+              //             onChanged: (value) {
+              //               setTimer.value = value ?? false;
+              //             },
+              //             shape: RoundedRectangleBorder(
+              //                 borderRadius: BorderRadius.circular(4)),
+              //             fillColor: MaterialStatePropertyAll(
+              //               appColors.primaryBase,
+              //             ),
+              //           ),
+              //         ]),
+              //     const SizedBox(height: 12),
+              //     if (setTimer.value)
+              //       SizedBox(
+              //         width: 30,
+              //         child: TextField(
+              //           textAlign: TextAlign.center,
+              //           keyboardType: TextInputType.number,
+              //           style: Theme.of(context).textTheme.bodyMedium,
+              //           controller: timerController,
+              //           decoration: const InputDecoration(
+              //             border: InputBorder.none,
+              //             contentPadding: EdgeInsets.all(0),
+              //             isDense: true,
+              //           ),
+              //         ),
+              //       ),
+              //   ],
+              // ),
               const SizedBox(height: 16),
               //Display setting
               Row(children: [
