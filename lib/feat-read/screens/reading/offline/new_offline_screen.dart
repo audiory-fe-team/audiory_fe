@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/constants/theme_options.dart';
+import 'package:audiory_v0/feat-read/screens/reading/offline/offline_reading_top_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
@@ -38,11 +39,13 @@ import 'package:skeletonizer/skeletonizer.dart';
 class OfflineReadingScreen extends HookConsumerWidget {
   final String chapterId;
   final String storyId;
+  final int? initialOffset;
 
   OfflineReadingScreen({
     super.key,
     required this.chapterId,
     required this.storyId,
+    this.initialOffset,
   });
 
   final localPlayer = AudioPlayer();
@@ -73,8 +76,18 @@ class OfflineReadingScreen extends HookConsumerWidget {
 
     final curParaIndex = useState<int?>(null);
 
-    final chapter = useFuture(chapterDb.getChapter(chapterId));
-    final story = useFuture(storyDb.getStory(storyId));
+    final reloadKey = useState(UniqueKey());
+    final chapterFuture = useMemoized(
+      () => chapterDb.getChapter(chapterId),
+      [reloadKey.value],
+    );
+    final chapter = useFuture(chapterFuture);
+
+    final storyFuture = useMemoized(
+      () => storyDb.getStory(storyId),
+      [reloadKey.value],
+    );
+    final story = useFuture(storyFuture);
 
     void handleOpenCommentPara(String paraId) {
       AppSnackBar.buildTopSnackBar(
@@ -84,12 +97,12 @@ class OfflineReadingScreen extends HookConsumerWidget {
           SnackBarType.info);
     }
 
-    Timer scheduleTimeout([int milliseconds = 10000]) =>
-        Timer(Duration(milliseconds: milliseconds), () async {
-          final SharedPreferences prefs = await SharedPreferences.getInstance();
-          await prefs.remove('timer');
-          localPlayer.stop();
-        });
+    // Timer scheduleTimeout([int milliseconds = 10000]) =>
+    //     Timer(Duration(milliseconds: milliseconds), () async {
+    //       final SharedPreferences prefs = await SharedPreferences.getInstance();
+    //       await prefs.remove('timer');
+    //       localPlayer.stop();
+    //     });
 
     // handleSetPlaylist(Chapter? chapter, Story? story) async {
     //   final directory = await getApplicationDocumentsDirectory();
@@ -155,20 +168,20 @@ class OfflineReadingScreen extends HookConsumerWidget {
           THEME_OPTIONS[savedOption]["textColor"] ?? appColors.inkBase;
 
       final timerValue = prefs.getInt('timer');
-      if (timerValue != null) {
-        scheduleTimeout(timerValue);
-      }
+      // if (timerValue != null) {
+      //   scheduleTimeout(timerValue);
+      // }
       localPlayer.setSpeed(audioSpeed.value);
     }
 
     useEffect(() {
       syncPreference();
-      return () {
-        if (!player.playing) {
-          localPlayer.stop();
-        }
-      };
-    }, []);
+      // return () {
+      //   if (!player.playing) {
+      //     localPlayer.stop();
+      //   }
+      // };
+    }, [chapterId]);
 
     useEffect(() {
       scrollController.addListener(() {
@@ -183,12 +196,12 @@ class OfflineReadingScreen extends HookConsumerWidget {
         }
 
         // Send READ activity if scroll to bottom
-        if (scrollController.position.atEdge) {
-          if (haveRead.value) return;
-          ActivitiesRepository.sendActivity(
-              actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
-          haveRead.value = true;
-        }
+        // if (scrollController.position.atEdge) {
+        //   if (haveRead.value) return;
+        //   ActivitiesRepository.sendActivity(
+        //       actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
+        //   haveRead.value = true;
+        // }
       });
 
       return () async {
@@ -201,10 +214,11 @@ class OfflineReadingScreen extends HookConsumerWidget {
         //     paragraphId: '',
         //     readingPosition: readingPosition.value);
       };
-    }, []);
-
+    }, [chapterId]);
     return Scaffold(
-      appBar: hideBars.value ? null : ReadingTopBar(storyId: storyId),
+      appBar: hideBars.value
+          ? null
+          : OfflineReadingTopBar(title: story.data?.title ?? ''),
       backgroundColor: bgColor.value,
       body: chapter.connectionState == ConnectionState.none
           ? const SafeArea(child: Center(child: Text('Không thể tải chương')))
@@ -221,8 +235,6 @@ class OfflineReadingScreen extends HookConsumerWidget {
                         child: Column(children: [
                           const SizedBox(height: 24),
                           ReadingScreenHeader(
-                            // num: (storyQuery.data?.chapters ?? [])
-                            //     .indexWhere((element) => element.id == chapterId),
                             textColor: textColor.value,
                             chapter: chapter.connectionState ==
                                     ConnectionState.waiting
@@ -334,29 +346,7 @@ class OfflineReadingScreen extends HookConsumerWidget {
                                   ]),
                                 ));
                           }).toList(),
-                          Skeleton.keep(
-                              child: SizedBox(
-                            height: 32,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ActionButton(
-                                    title: 'Bình chọn',
-                                    iconName: 'heart',
-                                    onPressed: () {}),
-                                const SizedBox(width: 12),
-                                ActionButton(
-                                    title: 'Tặng quà',
-                                    iconName: 'gift',
-                                    onPressed: () {}),
-                                const SizedBox(width: 12),
-                                ActionButton(
-                                    title: 'Chia sẻ',
-                                    iconName: 'share',
-                                    onPressed: () {}),
-                              ],
-                            ),
-                          )),
+
                           const SizedBox(height: 24),
                           Skeleton.keep(child: SizedBox(child: Builder(
                             builder: (context) {
@@ -374,7 +364,7 @@ class OfflineReadingScreen extends HookConsumerWidget {
                                       if (currentIndex <= 0) return;
                                       final prevChapterId =
                                           chapters[currentIndex - 1].id;
-                                      GoRouter.of(context).go(
+                                      GoRouter.of(context).pushReplacement(
                                           '/story/$storyId/chapter/$prevChapterId');
                                     },
                                     disabled:
@@ -389,7 +379,7 @@ class OfflineReadingScreen extends HookConsumerWidget {
                                         return;
                                       final nextChapterId =
                                           chapters[currentIndex + 1].id;
-                                      GoRouter.of(context).go(
+                                      GoRouter.of(context).pushReplacement(
                                           '/story/$storyId/chapter/$nextChapterId');
                                     },
                                     disabled: chapters == null ||
@@ -421,13 +411,14 @@ class OfflineReadingScreen extends HookConsumerWidget {
           : ReadingBottomBar(
               onChangeStyle: syncPreference,
               chapterId: chapterId,
+              storyId: storyId,
             ),
-      floatingActionButton: const AudioBottomBar(),
+      // floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       drawer: ChapterDrawer(
         currentChapterId: chapterId,
-        storyId: storyId,
+        story: story.data,
       ),
       resizeToAvoidBottomInset: true,
     );

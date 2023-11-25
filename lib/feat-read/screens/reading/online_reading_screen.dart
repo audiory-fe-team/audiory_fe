@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/constants/theme_options.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading/deep_share_sheet.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
@@ -118,6 +119,23 @@ class OnlineReadingScreen extends HookConsumerWidget {
     //       await prefs.remove('timer');
     //       localPlayer.stop();
     //     });
+
+    handleShare() async {
+      showModalBottomSheet(
+          isScrollControlled: true,
+          backgroundColor: appColors.background,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12.0),
+            topRight: Radius.circular(12.0),
+          )),
+          useSafeArea: true,
+          context: context,
+          builder: (_) {
+            return DeepShareSheet(
+                appRoutePath: '/story/$storyId/chapter/$chapterId');
+          });
+    }
 
     Future syncPreference() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -244,17 +262,6 @@ class OnlineReadingScreen extends HookConsumerWidget {
         // scrollController.dispose();
       };
     }, [chapterId]);
-
-    // useEffect(() {
-    //   if (showComment == true) {
-    //     showModalBottomSheet(
-    //         isScrollControlled: true,
-    //         context: context,
-    //         builder: (context) {
-    //           return CommentChapterScreen(chapterId: chapterId);
-    //         });
-    //   }
-    // }, []);
 
     return Scaffold(
       appBar: hideBars.value ? null : ReadingTopBar(storyId: storyId),
@@ -406,7 +413,9 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                 ActionButton(
                                     title: 'Chia sẻ',
                                     iconName: 'share',
-                                    onPressed: () {}),
+                                    onPressed: () {
+                                      handleShare();
+                                    }),
                               ],
                             ),
                           )),
@@ -474,6 +483,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
           : ReadingBottomBar(
               onChangeStyle: syncPreference,
               chapterId: chapterId,
+              storyId: storyId,
               isVoted: chapterQuery.data?.isVoted ?? false,
             ),
       floatingActionButton: const AudioBottomBar(),
@@ -481,7 +491,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
           FloatingActionButtonLocation.miniCenterFloat,
       drawer: ChapterDrawer(
         currentChapterId: chapterId,
-        storyId: storyId,
+        story: storyQuery.data,
       ),
       resizeToAvoidBottomInset: true,
     );

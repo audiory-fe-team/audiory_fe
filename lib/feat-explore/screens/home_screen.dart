@@ -54,19 +54,18 @@ class HomeScreen extends HookConsumerWidget {
       ['myPaywalledStories'],
       () => StoryRepostitory().fetchMyPaywalledStories(),
       refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 5),
+      staleDuration: const Duration(minutes: 1),
     );
     final recommendStoriesQuery = useQuery(
       ['recommendStories'],
       () => StoryRepostitory().fetchMyRecommendStories(),
       refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 5),
+      staleDuration: const Duration(minutes: 1),
     );
     final libraryQuery = useQuery(
       ['library'],
       () => LibraryRepository.fetchMyLibrary(),
-      refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 5),
+      refetchOnMount: RefetchOnMount.always,
     );
     return Scaffold(
       appBar: const HomeTopBar(),
@@ -183,7 +182,7 @@ class HomeScreen extends HookConsumerWidget {
                             .map((e) => Container(
                                 margin: const EdgeInsets.only(bottom: 16),
                                 child: CurrentReadCard(
-                                  story: e.story,
+                                  libStory: e,
                                   onDeleteStory: (id) => {},
                                   isEditable: false,
                                 )))

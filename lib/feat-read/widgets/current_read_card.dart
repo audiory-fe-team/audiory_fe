@@ -245,7 +245,8 @@ class CurrentReadCard extends HookWidget {
                                 backgroundColor: appColors.skyLightest,
                               )),
                         ],
-                        if (libStory?.readingProgress != null)
+                        if (libStory?.readingProgress != null &&
+                            libStory?.readingProgress?.chapterId != null)
                           SizedBox(
                             width: double.infinity,
                             child: Column(
@@ -253,29 +254,25 @@ class CurrentReadCard extends HookWidget {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                libStory?.readingProgress?.chapterId == null
-                                    ? SizedBox(
-                                        width: double.infinity,
-                                        child: Text(
-                                          'Đã đọc: 0/ chương',
-                                          style: textTheme.labelLarge?.copyWith(
-                                              fontStyle: FontStyle.italic),
-                                        ),
-                                      )
-                                    : SizedBox(
-                                        width: double.infinity,
-                                        child: Text(
-                                          'Đã đọc: 34/56 chương',
-                                          style: textTheme.labelLarge?.copyWith(
-                                              fontStyle: FontStyle.italic),
-                                        ),
-                                      ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: Text(
+                                    'Đã đọc: ${libStory?.readingProgress?.chapterPosition}/${libStory?.readingProgress?.numChapter} chương',
+                                    style: textTheme.labelLarge
+                                        ?.copyWith(fontStyle: FontStyle.italic),
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
                                 ClipRRect(
                                   borderRadius: const BorderRadius.all(
                                       Radius.circular(10)),
                                   child: LinearProgressIndicator(
-                                    value: 0.6,
+                                    value: (libStory?.readingProgress
+                                                ?.chapterPosition ??
+                                            0) /
+                                        (libStory
+                                                ?.readingProgress?.numChapter ??
+                                            1),
                                     color: appColors.primaryBase,
                                     backgroundColor: appColors.skyLightest,
                                     semanticsLabel: 'Current reading progress',

@@ -1,20 +1,21 @@
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
+import 'package:audiory_v0/feat-read/screens/reading/deep_share_sheet.dart';
 import 'package:audiory_v0/feat-read/screens/reading/setting_modal.dart';
-import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/activities_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class ReadingBottomBar extends HookWidget {
   final String chapterId;
+  final String storyId;
   final Function() onChangeStyle;
   final bool isVoted;
   const ReadingBottomBar({
     super.key,
     required this.onChangeStyle,
     required this.chapterId,
+    required this.storyId,
     this.isVoted = false,
   });
   static const iconSize = 20.0;
@@ -23,7 +24,11 @@ class ReadingBottomBar extends HookWidget {
     final liked = useState(isVoted);
     final settingOpen = useState(false);
     final AppColors? appColors = Theme.of(context).extension<AppColors>();
-    void handleOpenChapter() {}
+
+    void handleOpenChapter() {
+      Scaffold.of(context).openDrawer();
+    }
+
     void handleToggleLike() async {
       //NOTE:Call api like
       if (!liked.value) {
@@ -89,6 +94,23 @@ class ReadingBottomBar extends HookWidget {
       });
     }
 
+    handleShare() async {
+      showModalBottomSheet(
+          isScrollControlled: true,
+          backgroundColor: appColors?.background,
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12.0),
+            topRight: Radius.circular(12.0),
+          )),
+          useSafeArea: true,
+          context: context,
+          builder: (_) {
+            return DeepShareSheet(
+                appRoutePath: '/story/$storyId/chapter/$chapterId');
+          });
+    }
+
     final sharedTextStyle = Theme.of(context).textTheme.titleSmall;
     return Container(
         height: 58,
@@ -105,7 +127,7 @@ class ReadingBottomBar extends HookWidget {
                           MaterialStatePropertyAll(appColors?.primaryLightest),
                       customBorder: const CircleBorder(),
                       onTap: () {
-                        Scaffold.of(context).openDrawer();
+                        handleOpenChapter();
                       },
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
@@ -201,7 +223,9 @@ class ReadingBottomBar extends HookWidget {
                       overlayColor:
                           MaterialStatePropertyAll(appColors?.primaryLightest),
                       customBorder: const CircleBorder(),
-                      onTap: () {},
+                      onTap: () {
+                        handleShare();
+                      },
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.center,

@@ -407,7 +407,7 @@ class CurrentReadings extends HookWidget {
                   .map((e) => Container(
                       margin: const EdgeInsets.only(bottom: 16),
                       child: CurrentReadCard(
-                        story: e.story,
+                        libStory: e,
                         onDeleteStory: (id) => handleDeleteStory(id),
                       )))
                   .toList()),

@@ -19,7 +19,9 @@ class ActionButton extends StatelessWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return FilledButton(
-      onPressed: () {},
+      onPressed: () {
+        onPressed();
+      },
       style: FilledButton.styleFrom(
         backgroundColor: appColors.secondaryLightest,
         elevation: 2,

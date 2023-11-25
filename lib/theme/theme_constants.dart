@@ -263,8 +263,10 @@ ThemeData lightTheme = ThemeData(
       ),
     ),
   ),
-  colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green)
-      .copyWith(background: ColorPaletteDark.primaryBase),
+  colorScheme: ColorScheme.fromSwatch(
+    primarySwatch: Colors.teal,
+    backgroundColor: ColorPaletteLight.background,
+  ),
   extensions: const <ThemeExtension<dynamic>>[
     AppColors(
       primaryBase: ColorPaletteLight.primaryBase,
@@ -367,8 +369,10 @@ ThemeData darkTheme = ThemeData(
       ),
     ),
   ),
-  colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.green)
-      .copyWith(background: ColorPaletteDark.primaryBase),
+  colorScheme: ColorScheme.fromSwatch(
+    primarySwatch: Colors.teal,
+    backgroundColor: ColorPaletteDark.background,
+  ),
   extensions: const <ThemeExtension<dynamic>>[
     AppColors(
       primaryBase: ColorPaletteDark.primaryBase,

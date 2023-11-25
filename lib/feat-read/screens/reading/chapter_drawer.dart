@@ -1,27 +1,26 @@
-import 'package:audiory_v0/repositories/story_repository.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ChapterDrawer extends HookWidget {
-  final String storyId;
+  final Story? story;
   final String currentChapterId;
   const ChapterDrawer(
-      {super.key, required this.storyId, required this.currentChapterId});
+      {super.key, required this.story, required this.currentChapterId});
 
   @override
   Widget build(BuildContext context) {
-    final storyQuery = useQuery(
-      ['story', storyId],
-      () => StoryRepostitory().fetchStoryById(storyId),
-    );
     Size size = MediaQuery.of(context).size;
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    if (story == null) {
+      return Text('Không thể tải truyện');
+    }
 
     return SafeArea(
         child: Drawer(
@@ -39,12 +38,10 @@ class ChapterDrawer extends HookWidget {
                           onTap: () {
                             Navigator.pop(context);
                             GoRouter.of(context)
-                                .push('/story/${storyQuery.data?.id ?? ''}');
+                                .push('/story/${story?.id ?? ''}');
                           },
                           child: AppImage(
-                              url: storyQuery.data?.coverUrl,
-                              width: 70,
-                              height: 94),
+                              url: story?.coverUrl, width: 70, height: 94),
                         ),
                         const SizedBox(width: 8),
                         Expanded(
@@ -53,14 +50,14 @@ class ChapterDrawer extends HookWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                               Text(
-                                storyQuery.data?.title ?? '',
+                                story?.title ?? '',
                                 style: Theme.of(context).textTheme.titleMedium,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                storyQuery.data?.author?.fullName ?? '',
+                                story?.author?.fullName ?? '',
                                 style: Theme.of(context).textTheme.titleSmall,
                                 softWrap: true,
                                 maxLines: 2,
@@ -83,7 +80,7 @@ class ChapterDrawer extends HookWidget {
                     ),
                   ]),
                   const SizedBox(height: 16),
-                  ...(storyQuery.data?.chapters ?? []).map((chapter) {
+                  ...(story?.chapters ?? []).map((chapter) {
                     return Container(
                         margin: const EdgeInsets.only(bottom: 6),
                         decoration: BoxDecoration(
@@ -98,7 +95,7 @@ class ChapterDrawer extends HookWidget {
                                 onTap: () {
                                   Navigator.pop(context);
                                   GoRouter.of(context).go(
-                                      '/story/${storyQuery.data?.id ?? ''}/chapter/${chapter.id}');
+                                      '/story/${story?.id ?? ''}/chapter/${chapter.id}');
                                 },
                                 borderRadius: BorderRadius.circular(8),
                                 child: Padding(

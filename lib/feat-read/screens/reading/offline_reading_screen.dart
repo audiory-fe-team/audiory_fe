@@ -12,13 +12,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class OfflineReadingScreen extends ConsumerStatefulWidget {
+class OfflineReadingScreen_DEPRERCATED extends ConsumerStatefulWidget {
   final String chapterId;
   final String storyId;
   final bool? showComment;
   final int? initialOffset;
 
-  OfflineReadingScreen({
+  OfflineReadingScreen_DEPRERCATED({
     Key? key,
     required this.chapterId,
     required this.storyId,
@@ -27,11 +27,12 @@ class OfflineReadingScreen extends ConsumerStatefulWidget {
   }) : super(key: key);
 
   @override
-  ConsumerState<OfflineReadingScreen> createState() =>
-      _OfflineReadingScreenState();
+  ConsumerState<OfflineReadingScreen_DEPRERCATED> createState() =>
+      _OfflineReadingScreen_DEPRERCATEDState();
 }
 
-class _OfflineReadingScreenState extends ConsumerState<OfflineReadingScreen> {
+class _OfflineReadingScreen_DEPRERCATEDState
+    extends ConsumerState<OfflineReadingScreen_DEPRERCATED> {
   final ChapterDatabase chapterDb = ChapterDatabase();
   final StoryDatabase storyDb = StoryDatabase();
 

@@ -23,6 +23,56 @@ final skeletonStory = Story(
       Tag(id: '5', name: generateFakeString(1)),
       Tag(id: '6', name: generateFakeString(3)),
       Tag(id: '8', name: generateFakeString(7))
+    ],
+    chapters: [
+      Chapter(
+          id: '1',
+          storyId: '1',
+          title: generateFakeString(30),
+          readCount: 1000,
+          voteCount: 1000,
+          commentCount: 1000,
+          paragraphs: [
+            Paragraph(
+                id: '1',
+                chapterVersionId: '1',
+                order: 1,
+                content: generateFakeString(2000),
+                commentCount: 100,
+                audios: [])
+          ]),
+      Chapter(
+          id: '2',
+          storyId: '1',
+          title: generateFakeString(30),
+          readCount: 1000,
+          voteCount: 1000,
+          commentCount: 1000,
+          paragraphs: [
+            Paragraph(
+                id: '1',
+                chapterVersionId: '1',
+                order: 1,
+                content: generateFakeString(2000),
+                commentCount: 100,
+                audios: [])
+          ]),
+      Chapter(
+          id: '2',
+          storyId: '1',
+          title: generateFakeString(30),
+          readCount: 1000,
+          voteCount: 1000,
+          commentCount: 1000,
+          paragraphs: [
+            Paragraph(
+                id: '1',
+                chapterVersionId: '1',
+                order: 1,
+                content: generateFakeString(2000),
+                commentCount: 100,
+                audios: [])
+          ])
     ]);
 
 final skeletonStories = [
