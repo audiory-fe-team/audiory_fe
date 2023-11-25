@@ -17,6 +17,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
+import 'package:go_router/go_router.dart';
 
 class NewPurchaseScreen extends StatefulHookWidget {
   final AuthUser? currentUser;
@@ -78,6 +79,75 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
               context, 'Tạo thất bại', null, SnackBarType.info);
         }
       }
+    }
+
+    Future<void> showConfirmChapterDeleteDialog(
+        BuildContext context, price) async {
+      final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+      final textTheme = Theme.of(context).textTheme;
+      return showDialog<void>(
+        context: context, // User must tap button to close the dialog
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Center(child: Text('Xác nhận rút?')),
+            content: Column(
+              children: [
+                Text('Bạn chắc chắn muốn rút ${price.toString()} kim cương'),
+              ],
+            ),
+            actions: <Widget>[
+              Container(
+                width: 70,
+                height: 30,
+                child: AppIconButton(
+                  bgColor: appColors.secondaryLight,
+                  color: appColors.skyLight,
+                  title: 'Có',
+                  onPressed: () async {
+                    // Perform the action
+                    _formKey.currentState!.save();
+                    if (_formKey.currentState!.validate()) {
+                      // If the form is valid, display a Snackbar.
+                      Map<String, dynamic> body = {
+                        'total_price': int.tryParse(
+                                _formKey.currentState!.fields['num']?.value) ??
+                            0,
+                        'user_payment_method_id':
+                            'af0975b8-8575-11ee-97b6-0242c0a8a002'
+                      };
+                      print('with');
+                      try {
+                        await PaymentMethodRepository().withdraw(body);
+                        AppSnackBar.buildTopSnackBar(context,
+                            'Rút về ví thành công', null, SnackBarType.success);
+                      } catch (e) {
+                        print(e);
+                        AppSnackBar.buildTopSnackBar(
+                            context,
+                            'Rút về ví không thành công',
+                            null,
+                            SnackBarType.error);
+                      }
+                    }
+                    context.pop(); // Dismiss the dialog
+                  },
+                ),
+              ),
+              TextButton(
+                child: Text(
+                  'Hủy',
+                  style: textTheme.titleMedium,
+                ),
+                onPressed: () {
+                  context.pop(); // Dismiss the dialog
+                },
+              ),
+            ],
+          );
+        },
+      );
     }
 
     return Scaffold(
@@ -283,35 +353,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                         height: 40,
                         width: double.infinity,
                         child: AppIconButton(
-                          onPressed: () async {
-                            _formKey.currentState!.save();
-                            if (_formKey.currentState!.validate()) {
-                              // If the form is valid, display a Snackbar.
-                              Map<String, dynamic> body = {
-                                'total_price': int.tryParse(_formKey
-                                        .currentState!.fields['num']?.value) ??
-                                    0,
-                                'user_payment_method_id':
-                                    'af0975b8-8575-11ee-97b6-0242c0a8a002'
-                              };
-                              print('with');
-                              try {
-                                await PaymentMethodRepository().withdraw(body);
-                                AppSnackBar.buildTopSnackBar(
-                                    context,
-                                    'Rút về ví thành công',
-                                    null,
-                                    SnackBarType.success);
-                              } catch (e) {
-                                print(e);
-                                AppSnackBar.buildTopSnackBar(
-                                    context,
-                                    'Rút về ví không thành công',
-                                    null,
-                                    SnackBarType.error);
-                              }
-                            }
-                          },
+                          onPressed: () async {},
                           title: 'Rút tiền',
                         ),
                       ),

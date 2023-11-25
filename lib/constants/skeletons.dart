@@ -1,5 +1,6 @@
 import 'package:audiory_v0/models/Comment.dart';
 import 'package:audiory_v0/models/Profile.dart';
+import 'package:audiory_v0/models/SearchStory.dart';
 import 'package:audiory_v0/models/activity/activity_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/notification/noti_model.dart';
@@ -22,6 +23,56 @@ final skeletonStory = Story(
       Tag(id: '5', name: generateFakeString(1)),
       Tag(id: '6', name: generateFakeString(3)),
       Tag(id: '8', name: generateFakeString(7))
+    ],
+    chapters: [
+      Chapter(
+          id: '1',
+          storyId: '1',
+          title: generateFakeString(30),
+          readCount: 1000,
+          voteCount: 1000,
+          commentCount: 1000,
+          paragraphs: [
+            Paragraph(
+                id: '1',
+                chapterVersionId: '1',
+                order: 1,
+                content: generateFakeString(2000),
+                commentCount: 100,
+                audios: [])
+          ]),
+      Chapter(
+          id: '2',
+          storyId: '1',
+          title: generateFakeString(30),
+          readCount: 1000,
+          voteCount: 1000,
+          commentCount: 1000,
+          paragraphs: [
+            Paragraph(
+                id: '1',
+                chapterVersionId: '1',
+                order: 1,
+                content: generateFakeString(2000),
+                commentCount: 100,
+                audios: [])
+          ]),
+      Chapter(
+          id: '2',
+          storyId: '1',
+          title: generateFakeString(30),
+          readCount: 1000,
+          voteCount: 1000,
+          commentCount: 1000,
+          paragraphs: [
+            Paragraph(
+                id: '1',
+                chapterVersionId: '1',
+                order: 1,
+                content: generateFakeString(2000),
+                commentCount: 100,
+                audios: [])
+          ])
     ]);
 
 final skeletonStories = [
@@ -30,6 +81,29 @@ final skeletonStories = [
   Story(id: '3', title: generateFakeString(25), chapters: []),
   Story(id: '4', title: generateFakeString(23), chapters: []),
   Story(id: '5', title: generateFakeString(33), chapters: []),
+];
+
+final skeletonSearchStories = [
+  SearchStory(
+    id: '1',
+    title: generateFakeString(20),
+  ),
+  SearchStory(
+    id: '2',
+    title: generateFakeString(15),
+  ),
+  SearchStory(
+    id: '3',
+    title: generateFakeString(25),
+  ),
+  SearchStory(
+    id: '4',
+    title: generateFakeString(23),
+  ),
+  SearchStory(
+    id: '5',
+    title: generateFakeString(33),
+  ),
 ];
 final skeletonProfiles = [
   Profile(
@@ -48,11 +122,11 @@ final skeletonChapter = Chapter(
     paragraphs: [
       Paragraph(
           id: '1',
-          chapterId: '1',
+          chapterVersionId: '1',
           order: 1,
           content: generateFakeString(2000),
           commentCount: 100,
-          audioUrl: generateFakeString(50))
+          audios: [])
     ]);
 
 final skeletonComments = [

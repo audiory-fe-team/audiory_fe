@@ -42,6 +42,10 @@ _$StoryImpl _$$StoryImplFromJson(Map<String, dynamic> json) => _$StoryImpl(
       createdDate: json['created_date'] as String?,
       updatedDate: json['updated_date'] as String?,
       isEnabled: json['is_enabled'] as bool?,
+      readingProgress: json['reading_progress'] == null
+          ? null
+          : ReadingProgress.fromJson(
+              json['reading_progress'] as Map<String, dynamic>),
       chapters: (json['chapters'] as List<dynamic>?)
               ?.map((e) => Chapter.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -85,6 +89,7 @@ Map<String, dynamic> _$$StoryImplToJson(_$StoryImpl instance) =>
       'created_date': instance.createdDate,
       'updated_date': instance.updatedDate,
       'is_enabled': instance.isEnabled,
+      'reading_progress': instance.readingProgress?.toJson(),
       'chapters': instance.chapters?.map((e) => e.toJson()).toList(),
       'tags': instance.tags?.map((e) => e.toJson()).toList(),
     };

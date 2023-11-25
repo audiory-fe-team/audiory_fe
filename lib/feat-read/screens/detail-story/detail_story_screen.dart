@@ -9,6 +9,7 @@ import 'package:audiory_v0/feat-read/screens/detail-story/story_detail_tab.dart'
 import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
@@ -23,11 +24,14 @@ import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailStoryScreen extends HookConsumerWidget {
@@ -39,6 +43,7 @@ class DetailStoryScreen extends HookConsumerWidget {
 
   final storyDb = StoryDatabase();
   final chapterDb = ChapterDatabase();
+  Dio dio = Dio();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,8 +53,12 @@ class DetailStoryScreen extends HookConsumerWidget {
 
     final tabController = useTabController(initialLength: 2);
 
-    final libraryQuery =
-        useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
+    final libraryQuery = useQuery(
+      ['library'],
+      () => LibraryRepository.fetchMyLibrary(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 30),
+    );
     final isAddedToLibrary = libraryQuery.data?.libraryStory
         ?.any((element) => element.storyId == id);
 
@@ -299,31 +308,32 @@ class DetailStoryScreen extends HookConsumerWidget {
       }
     }
 
-    Future<void> handleDownloadStory() async {
-      try {
-        final wholeStory = await LibraryRepository.downloadStory(id);
-
-        // Save to offline database
-        final noContentStory = wholeStory.copyWith(
-            chapters: wholeStory.chapters
-                ?.map((e) => e.copyWith(paragraphs: []))
-                .toList());
-        await storyDb.saveStory(noContentStory);
-
-        await Future.forEach(wholeStory.chapters ?? [], (element) async {
-          await chapterDb.saveChapters(element);
-        });
-
-        AppSnackBar.buildTopSnackBar(
-            context, 'Tải truyện thành công', null, SnackBarType.success);
-      } catch (error) {
-        AppSnackBar.buildTopSnackBar(
-            context, error.toString(), null, SnackBarType.warning);
-      }
-    }
-
     final isLoading = isOffline ? false : storyQuery.isFetching;
     final story = isOffline ? storyOffline.data : storyQuery.data;
+    final isContinueReading = story?.readingProgress?.chapterId != null;
+
+    handleReading() {
+      if (story == null) return;
+      if (story.chapters == null || story.chapters?.isNotEmpty != true) return;
+      if (isContinueReading) {
+        final chapterId = story.readingProgress!.chapterId;
+        final readingPosition = story.readingProgress!.readingPosition;
+        if (chapterId == null) {
+          context.push('/story/$id/chapter/${story.chapters![0].id}');
+          return;
+        }
+        if (readingPosition == null) {
+          context.push('/story/$id/chapter/$chapterId');
+          return;
+        }
+        context.push(
+          '/story/$id/chapter/$chapterId?offset=${readingPosition.toString()}',
+        );
+        return;
+      } else {
+        context.push('/story/$id/chapter/${story.chapters![0].id}');
+      }
+    }
 
     return Scaffold(
       appBar: DetailStoryTopBar(story: story),
@@ -443,7 +453,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                                       .map((tag) => GestureDetector(
                                           onTap: () {
                                             context.push(
-                                                '/story/${story?.id}/tag/${tag.id}?tagName=${tag.name}');
+                                                '/story/$id/tag/${tag.id}?tagName=${tag.name}');
                                           },
                                           child: StoryTag(
                                             label: tag.name ?? '',
@@ -507,12 +517,16 @@ class DetailStoryScreen extends HookConsumerWidget {
                 ),
               ))),
       bottomNavigationBar: DetailStoryBottomBar(
-          hasDownload: hasDownload,
           storyId: id,
+          onRead: () => handleReading(),
+          isContinueReading: isContinueReading,
+          continueChapter: isContinueReading
+              ? story?.readingProgress?.chapterPosition
+              : null,
           addToLibraryCallback: () => isAddedToLibrary == true
               ? handleRemoveFromLibrary()
               : handleAddToLibrary(),
-          downloadStoryCallback: () => handleDownloadStory(),
+          // downloadStoryCallback: () => handleDownloadStory(),
           isAddedToLibrary: isAddedToLibrary ?? false),
       floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:

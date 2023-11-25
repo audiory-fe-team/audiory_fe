@@ -23,7 +23,7 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
     final size = MediaQuery.of(context).size;
     final myInfoQuery = useQuery(
         ['myInfo'], () => AuthRepository().getMyUserById(),
-        enabled: true);
+        refetchOnMount: RefetchOnMount.always);
     Widget userInfo(UseQueryResult<AuthUser, dynamic> myInfoQuery) {
       return Row(
         children: [

@@ -32,15 +32,16 @@ class _DownloadedStoriesState extends State<DownloadedStories> {
   Future<void> handleDeleteStory(String id) async {
     try {
       await LibraryRepository.deleteStoryFromMyLibrary(id);
+      await storyDb.deleteStory(id);
+      setState(() {
+        libraryData = storyDb.getAllStories();
+      });
+      await AppSnackBar.buildTopSnackBar(
+          context, 'Xóa thành công.', null, SnackBarType.success);
     } catch (error) {
       AppSnackBar.buildTopSnackBar(
           context, 'Xóa thất bại, thử lại sau.', null, SnackBarType.error);
     }
-    setState(() {
-      libraryData = storyDb.getAllStories();
-    });
-    await AppSnackBar.buildTopSnackBar(
-        context, 'Xóa thành công.', null, SnackBarType.success);
   }
 
   Future<void> handleSyncStories() async {
@@ -177,7 +178,7 @@ class _DownloadedStoriesState extends State<DownloadedStories> {
                       borderRadius: BorderRadius.circular(4),
                       child: LinearProgressIndicator(
                         value: syncProgress! / libraryStoryList.length,
-                        color: appColors?.primaryLightest,
+                        color: appColors?.primaryBase,
                         backgroundColor: appColors?.skyLightest,
                       )),
                 ],

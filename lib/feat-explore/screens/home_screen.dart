@@ -50,12 +50,23 @@ class HomeScreen extends HookConsumerWidget {
               ])));
     }
 
-    final paywalledStoriesQuery = useQuery(['myPaywalledStories'],
-        () => StoryRepostitory().fetchMyPaywalledStories());
-    final recommendStoriesQuery = useQuery(['recommendStories'],
-        () => StoryRepostitory().fetchMyRecommendStories());
-    final libraryQuery =
-        useQuery(['library'], () => LibraryRepository.fetchMyLibrary());
+    final paywalledStoriesQuery = useQuery(
+      ['myPaywalledStories'],
+      () => StoryRepostitory().fetchMyPaywalledStories(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 1),
+    );
+    final recommendStoriesQuery = useQuery(
+      ['recommendStories'],
+      () => StoryRepostitory().fetchMyRecommendStories(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 1),
+    );
+    final libraryQuery = useQuery(
+      ['library'],
+      () => LibraryRepository.fetchMyLibrary(),
+      refetchOnMount: RefetchOnMount.always,
+    );
     return Scaffold(
       appBar: const HomeTopBar(),
       body: RefreshIndicator(
@@ -171,7 +182,7 @@ class HomeScreen extends HookConsumerWidget {
                             .map((e) => Container(
                                 margin: const EdgeInsets.only(bottom: 16),
                                 child: CurrentReadCard(
-                                  story: e.story,
+                                  libStory: e,
                                   onDeleteStory: (id) => {},
                                   isEditable: false,
                                 )))
@@ -281,12 +292,12 @@ class HomeRankingList extends StatefulWidget {
 
 class _HomeRankingListState extends State<HomeRankingList> {
   String? selectedCategory;
-  Future<List<AppCategory>> categoryFuture =
-      CategoryRepository().fetchCategory();
+  Future<List<AppCategory>>? categoryFuture;
 
   @override
   void initState() {
     super.initState();
+    categoryFuture = CategoryRepository().fetchCategory();
   }
 
   @override

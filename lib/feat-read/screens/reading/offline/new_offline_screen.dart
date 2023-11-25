@@ -4,8 +4,7 @@ import 'dart:async';
 
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/constants/theme_options.dart';
-import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
-import 'package:audiory_v0/feat-read/screens/reading/deep_share_sheet.dart';
+import 'package:audiory_v0/feat-read/screens/reading/offline/offline_reading_top_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
@@ -14,41 +13,44 @@ import 'package:audiory_v0/feat-read/screens/reading/chapter_navigate_button.dar
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen_header.dart';
 import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_top_bar.dart';
+import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/audio_player_provider.dart';
+import 'package:audiory_v0/providers/chapter_database.dart';
+import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/repositories/activities_repository.dart';
-import 'package:audiory_v0/repositories/chapter_repository.dart';
-import 'package:audiory_v0/repositories/reading_progress_repository.dart';
-import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class OnlineReadingScreen extends HookConsumerWidget {
+class OfflineReadingScreen extends HookConsumerWidget {
   final String chapterId;
   final String storyId;
-  final bool? showComment;
   final int? initialOffset;
 
-  OnlineReadingScreen(
-      {super.key,
-      required this.chapterId,
-      required this.storyId,
-      this.initialOffset,
-      this.showComment = false});
+  OfflineReadingScreen({
+    super.key,
+    required this.chapterId,
+    required this.storyId,
+    this.initialOffset,
+  });
 
-  var localPlayer = AudioPlayer();
+  final localPlayer = AudioPlayer();
+  final ChapterDatabase chapterDb = ChapterDatabase();
+  final StoryDatabase storyDb = StoryDatabase();
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -62,7 +64,6 @@ class OnlineReadingScreen extends HookConsumerWidget {
     final showCommentByParagraph = useState(true);
     final audioSpeed = useState<double>(1);
     final isKaraoke = useState(true);
-    final voiceType = useState(0);
 
     final haveRead = useState(false);
     final hideBars = useState(false);
@@ -70,46 +71,30 @@ class OnlineReadingScreen extends HookConsumerWidget {
     final player = ref.watch(audioPlayerProvider);
 
     final keyList = useState<List<GlobalKey>>([]);
-    final scrollController = useScrollController(
-        keys: [chapterId],
-        initialScrollOffset: (initialOffset ?? 0).toDouble());
+    final scrollController = useScrollController();
     final playingState = useStream(localPlayer.playingStream);
 
     final curParaIndex = useState<int?>(null);
 
-    final chapterQuery = useQuery(
-      ['chapter', chapterId],
-      () => ChapterRepository().fetchChapterDetail(chapterId),
-      refetchOnMount: RefetchOnMount.always,
+    final reloadKey = useState(UniqueKey());
+    final chapterFuture = useMemoized(
+      () => chapterDb.getChapter(chapterId),
+      [reloadKey.value],
     );
+    final chapter = useFuture(chapterFuture);
 
-    final storyQuery = useQuery(
-      ['story', storyId],
-      () => StoryRepostitory().fetchStoryById(storyId),
-      refetchOnMount: RefetchOnMount.always,
+    final storyFuture = useMemoized(
+      () => storyDb.getStory(storyId),
+      [reloadKey.value],
     );
+    final story = useFuture(storyFuture);
 
     void handleOpenCommentPara(String paraId) {
-      showModalBottomSheet(
-          isScrollControlled: true,
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12.0),
-            topRight: Radius.circular(12.0),
-          )),
-          useSafeArea: true,
-          backgroundColor: appColors.background,
-          context: context,
-          builder: (context) {
-            return Scaffold(
-                body: Padding(
-                    padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: CommentScreen(
-                      chapterId: chapterId,
-                      paraId: paraId,
-                    )));
-          });
+      AppSnackBar.buildTopSnackBar(
+          context,
+          'Đang offline. Mời kết nối mạng để xem bình luận',
+          null,
+          SnackBarType.info);
     }
 
     // Timer scheduleTimeout([int milliseconds = 10000]) =>
@@ -119,31 +104,59 @@ class OnlineReadingScreen extends HookConsumerWidget {
     //       localPlayer.stop();
     //     });
 
-    handleShare() async {
-      showModalBottomSheet(
-          isScrollControlled: true,
-          backgroundColor: appColors.background,
-          shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(12.0),
-            topRight: Radius.circular(12.0),
-          )),
-          useSafeArea: true,
-          context: context,
-          builder: (_) {
-            return DeepShareSheet(
-                appRoutePath: '/story/$storyId/chapter/$chapterId');
-          });
-    }
+    // handleSetPlaylist(Chapter? chapter, Story? story) async {
+    //   final directory = await getApplicationDocumentsDirectory();
+    //   final playlist = ConcatenatingAudioSource(
+    //       children: (chapter?.paragraphs ?? []).asMap().entries.map((entry) {
+    //     int idx = entry.key;
+    //     Paragraph p = entry.value;
+    //     String filepath = "${directory.path}/${p.audioUrl}";
 
-    Future syncPreference() async {
+    //     return AudioSource.file(filepath,
+    //         tag: MediaItem(
+    //           id: p.id,
+    //           title: story?.title ?? '',
+    //           extras: {
+    //             'position': chapter?.position,
+    //             'storyId': storyId,
+    //             'chapterId': chapterId,
+    //           },
+    //           artist: 'Chương ${chapter?.position} - Đoạn ${idx + 1}',
+    //         ));
+    //   }).toList());
+    //   localPlayer.setAudioSource(playlist);
+
+    //   localPlayer.currentIndexStream.listen((currentParaIndex) {
+    //     if (currentParaIndex == null) return;
+    //     curParaIndex.value = currentParaIndex;
+    //     final keyContext = keyList.value[currentParaIndex].currentContext;
+    //     if (keyContext == null) return;
+    //     if (isKaraoke.value) {
+    //       Scrollable.ensureVisible(keyContext,
+    //           duration: const Duration(seconds: 1), alignment: 0.5);
+    //     }
+
+    //     return;
+    //   });
+    // }
+
+    // useEffect(() {
+    //   if (chapter.data?.paragraphs?.isEmpty != false) return;
+    //   if (story.data == null) return;
+
+    //   if (localPlayer.sequence != null ||
+    //       localPlayer.sequence?.isEmpty == false) return;
+    //   try {
+    //     handleSetPlaylist(chapter.data, story.data);
+    //   } catch (error) {}
+    // }, [localPlayer, chapter.data, story.data]);
+
+    syncPreference() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
       fontSize.value = prefs.getInt('fontSize') ?? 18;
       isKaraoke.value = prefs.getBool('isKaraoke') ?? true;
       audioSpeed.value = prefs.getDouble('audioSpeed') ?? 1;
-      voiceType.value = prefs.getInt('voiceType') ?? 0;
-
       showCommentByParagraph.value =
           prefs.getBool('showCommentByParagraph') ?? true;
       final savedOption = prefs.getInt('themeOption') ?? 0;
@@ -155,140 +168,23 @@ class OnlineReadingScreen extends HookConsumerWidget {
           THEME_OPTIONS[savedOption]["textColor"] ?? appColors.inkBase;
 
       final timerValue = prefs.getInt('timer');
-      if (timerValue != null) {
-        // scheduleTimeout(timerValue);
-      }
+      // if (timerValue != null) {
+      //   scheduleTimeout(timerValue);
+      // }
       localPlayer.setSpeed(audioSpeed.value);
     }
 
-    setPlayList() async {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      final currentVoice = prefs.getInt('voiceType') ?? 0;
-
-      try {
-        final playlist = ConcatenatingAudioSource(
-            children: (chapterQuery.data?.paragraphs ?? [])
-                .where((element) =>
-                    element.audios != null &&
-                    element.audios?.isNotEmpty == true)
-                .toList()
-                .asMap()
-                .entries
-                .map((entry) {
-          int idx = entry.key;
-          Paragraph p = entry.value;
-
-          return AudioSource.uri(
-              Uri.parse(
-                  '${dotenv.get("AUDIO_BASE_URL")}${p.audios?[currentVoice].url}'),
-              tag: MediaItem(
-                  id: p.id,
-                  title: storyQuery.data?.title ?? '',
-                  extras: {
-                    'position': chapterQuery.data?.position,
-                    'storyId': storyId,
-                    'chapterId': chapterId,
-                  },
-                  artist:
-                      'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
-                  album: storyQuery.data?.id));
-        }).toList());
-        localPlayer.setAudioSource(playlist);
-
-        // print(localPlayer.hashCode);
-        // print('Set audio sources');
-
-        localPlayer.currentIndexStream.listen((currentParaIndex) {
-          if (currentParaIndex == null) return;
-          curParaIndex.value = currentParaIndex;
-          if (keyList.value.isNotEmpty != true) return;
-          final keyContext = keyList.value[currentParaIndex].currentContext;
-          if (keyContext == null) return;
-          if (isKaraoke.value) {
-            Scrollable.ensureVisible(keyContext,
-                duration: const Duration(seconds: 1), alignment: 0.5);
-          }
-
-          return;
-        });
-      } catch (error) {
-        print('Error set playlist');
-      }
-    }
-
-    useEffect(() {
-      if (chapterQuery.data?.paragraphs?.isEmpty != false) return;
-      if (storyQuery.data == null) return;
-
-      if (localPlayer.sequence != null ||
-          localPlayer.sequence?.isEmpty == false) return;
-      setPlayList();
-
-      // try {
-      //   final currentVoice = voiceType.value;
-      //   final playlist = ConcatenatingAudioSource(
-      //       children: (chapterQuery.data?.paragraphs ?? [])
-      //           .where((element) =>
-      //               element.audios != null &&
-      //               element.audios?.isNotEmpty == true)
-      //           .toList()
-      //           .asMap()
-      //           .entries
-      //           .map((entry) {
-      //     int idx = entry.key;
-      //     Paragraph p = entry.value;
-
-      //     return AudioSource.uri(
-      //         Uri.parse(
-      //             '${dotenv.get("AUDIO_BASE_URL")}${p.audios?[currentVoice].url}'),
-      //         tag: MediaItem(
-      //             id: p.id,
-      //             title: storyQuery.data?.title ?? '',
-      //             extras: {
-      //               'position': chapterQuery.data?.position,
-      //               'storyId': storyId,
-      //               'chapterId': chapterId,
-      //             },
-      //             artist:
-      //                 'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
-      //             album: storyQuery.data?.id));
-      //   }).toList());
-      //   localPlayer.setAudioSource(playlist);
-
-      //   // print(localPlayer.hashCode);
-      //   // print('Set audio sources');
-
-      //   localPlayer.currentIndexStream.listen((currentParaIndex) {
-      //     if (currentParaIndex == null) return;
-      //     curParaIndex.value = currentParaIndex;
-      //     if (keyList.value.isNotEmpty != true) return;
-      //     final keyContext = keyList.value[currentParaIndex].currentContext;
-      //     if (keyContext == null) return;
-      //     if (isKaraoke.value) {
-      //       Scrollable.ensureVisible(keyContext,
-      //           duration: const Duration(seconds: 1), alignment: 0.5);
-      //     }
-
-      //     return;
-      //   });
-      // } catch (error) {
-      //   print('Error set playlist');
-      // }
-    }, [localPlayer, voiceType.value, chapterQuery.data, storyQuery.data]);
-
     useEffect(() {
       syncPreference();
-      return () {
-        if (!player.playing) {
-          localPlayer.stop();
-        }
-      };
+      // return () {
+      //   if (!player.playing) {
+      //     localPlayer.stop();
+      //   }
+      // };
     }, [chapterId]);
 
     useEffect(() {
       scrollController.addListener(() {
-        if (!scrollController.hasClients) return;
         // Hide bar according to scroll direction
         if (scrollController.position.userScrollDirection ==
             ScrollDirection.forward) {
@@ -297,44 +193,40 @@ class OnlineReadingScreen extends HookConsumerWidget {
         if (scrollController.position.userScrollDirection ==
             ScrollDirection.reverse) {
           if (!hideBars.value) hideBars.value = true;
-          if (haveRead.value) return;
-
-          final offset = scrollController.offset.floor();
-          ReadingProgressRepository.updateProgress(
-              storyId: storyId, chapterId: chapterId, readingPosition: offset);
-
-          ActivitiesRepository.sendActivity(
-              actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
-          haveRead.value = true;
         }
+
+        // Send READ activity if scroll to bottom
+        // if (scrollController.position.atEdge) {
+        //   if (haveRead.value) return;
+        //   ActivitiesRepository.sendActivity(
+        //       actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
+        //   haveRead.value = true;
+        // }
       });
 
-      final timer = Timer.periodic(const Duration(seconds: 60), (Timer t) {
-        if (scrollController.hasClients) {
-          final offset = scrollController.offset.floor();
-          ReadingProgressRepository.updateProgress(
-              storyId: storyId, chapterId: chapterId, readingPosition: offset);
-        }
-      });
-
-      return () {
-        timer.cancel();
-        // scrollController.dispose();
+      return () async {
+        // print('haha');
+        // print(readingPosition.value);
+        // if (chapterQuery.data?.storyId == null) return;
+        // await ReadingProgressRepository.updateProgress(
+        //     storyId: chapterQuery.data!.storyId!,
+        //     chapterId: chapterId,
+        //     paragraphId: '',
+        //     readingPosition: readingPosition.value);
       };
     }, [chapterId]);
-
     return Scaffold(
-      appBar: hideBars.value ? null : ReadingTopBar(storyId: storyId),
+      appBar: hideBars.value
+          ? null
+          : OfflineReadingTopBar(title: story.data?.title ?? ''),
       backgroundColor: bgColor.value,
-      body: chapterQuery.isError
+      body: chapter.connectionState == ConnectionState.none
           ? const SafeArea(child: Center(child: Text('Không thể tải chương')))
           : SafeArea(
               child: Skeletonizer(
-              enabled: chapterQuery.isFetching,
+              enabled: chapter.connectionState == ConnectionState.waiting,
               child: RefreshIndicator(
-                  onRefresh: () async {
-                    chapterQuery.refetch();
-                  },
+                  onRefresh: () async {},
                   child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: SingleChildScrollView(
@@ -343,12 +235,11 @@ class OnlineReadingScreen extends HookConsumerWidget {
                         child: Column(children: [
                           const SizedBox(height: 24),
                           ReadingScreenHeader(
-                            // num: (storyQuery.data?.chapters ?? [])
-                            //     .indexWhere((element) => element.id == chapterId),
                             textColor: textColor.value,
-                            chapter: chapterQuery.isFetching
+                            chapter: chapter.connectionState ==
+                                    ConnectionState.waiting
                                 ? skeletonChapter
-                                : chapterQuery.data ?? skeletonChapter,
+                                : chapter.data ?? skeletonChapter,
                           ),
                           const SizedBox(height: 24),
 
@@ -364,9 +255,10 @@ class OnlineReadingScreen extends HookConsumerWidget {
                           ),
 
                           const SizedBox(height: 24),
-                          ...((chapterQuery.isFetching
+                          ...((chapter.connectionState ==
+                                              ConnectionState.waiting
                                           ? skeletonChapter
-                                          : chapterQuery.data)
+                                          : chapter.data)
                                       ?.paragraphs ??
                                   [])
                               .asMap()
@@ -454,47 +346,11 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                   ]),
                                 ));
                           }).toList(),
-                          Skeleton.keep(
-                              child: SizedBox(
-                            height: 32,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ActionButton(
-                                    title: 'Bình chọn',
-                                    iconName: 'heart',
-                                    onPressed: () {
-                                      if (chapterQuery.data?.isVoted != true) {
-                                        ActivitiesRepository.sendActivity(
-                                            actionEntity: 'CHAPTER',
-                                            actionType: 'VOTED',
-                                            entityId: chapterId);
-                                      } else {
-                                        ActivitiesRepository.sendActivity(
-                                            actionEntity: 'CHAPTER',
-                                            actionType: 'UNVOTED',
-                                            entityId: chapterId);
-                                      }
-                                    }),
-                                const SizedBox(width: 12),
-                                ActionButton(
-                                    title: 'Tặng quà',
-                                    iconName: 'gift',
-                                    onPressed: () {}),
-                                const SizedBox(width: 12),
-                                ActionButton(
-                                    title: 'Chia sẻ',
-                                    iconName: 'share',
-                                    onPressed: () {
-                                      handleShare();
-                                    }),
-                              ],
-                            ),
-                          )),
+
                           const SizedBox(height: 24),
                           Skeleton.keep(child: SizedBox(child: Builder(
                             builder: (context) {
-                              final chapters = storyQuery.data?.chapters;
+                              final chapters = story.data?.chapters;
                               final currentIndex = chapters?.indexWhere(
                                   (element) => element.id == chapterId);
                               if (currentIndex == null) return const SizedBox();
@@ -508,8 +364,8 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                       if (currentIndex <= 0) return;
                                       final prevChapterId =
                                           chapters[currentIndex - 1].id;
-                                      GoRouter.of(context).go(
-                                          '/story/${storyQuery.data?.id}/chapter/$prevChapterId');
+                                      GoRouter.of(context).pushReplacement(
+                                          '/story/$storyId/chapter/$prevChapterId');
                                     },
                                     disabled:
                                         currentIndex <= 0 || chapters == null,
@@ -523,8 +379,8 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                         return;
                                       final nextChapterId =
                                           chapters[currentIndex + 1].id;
-                                      GoRouter.of(context).go(
-                                          '/story/${storyQuery.data?.id}/chapter/$nextChapterId');
+                                      GoRouter.of(context).pushReplacement(
+                                          '/story/$storyId/chapter/$nextChapterId');
                                     },
                                     disabled: chapters == null ||
                                         currentIndex + 1 >= chapters.length,
@@ -556,14 +412,13 @@ class OnlineReadingScreen extends HookConsumerWidget {
               onChangeStyle: syncPreference,
               chapterId: chapterId,
               storyId: storyId,
-              isVoted: chapterQuery.data?.isVoted ?? false,
             ),
-      floatingActionButton: const AudioBottomBar(),
+      // floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       drawer: ChapterDrawer(
         currentChapterId: chapterId,
-        story: storyQuery.data,
+        story: story.data,
       ),
       resizeToAvoidBottomInset: true,
     );

@@ -1,4 +1,3 @@
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -14,7 +13,7 @@ class AppImage extends StatelessWidget {
       this.url,
       this.width,
       this.height,
-      this.fit = BoxFit.fill,
+      this.fit = BoxFit.cover,
       this.defaultUrl});
 
   @override

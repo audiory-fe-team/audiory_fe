@@ -77,18 +77,25 @@ class ChapterRepository {
     }
 
     final url = Uri.parse("$chapterEndpoint/$chapterId");
-    Map<String, String> header = {
-      "Content-type": "application/json",
-      "Accept": "application/json"
-    };
     const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
     final jwt = await storage.read(key: 'jwt');
 
     if (jwt != null) {
-      header['Authorization'] = 'Bearer $jwt';
+      headers['Authorization'] = 'Bearer $jwt';
     }
 
-    final response = await http.get(url, headers: header);
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
 
     if (response.statusCode == 200) {
@@ -97,11 +104,10 @@ class ChapterRepository {
             Chapter.fromJson(json.decode(responseBody)['data']);
         return chapter;
       } catch (error) {
-        print("egagag");
-        print(error);
         throw (error);
       }
     } else {
+      if (response.statusCode == 403) throw Exception('Chưa mua chương này');
       throw Exception('Failed to fetch chapter');
     }
   }

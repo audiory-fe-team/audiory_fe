@@ -1,36 +1,38 @@
 // import 'package:audioplayers/audioplayers.dart';
 
-import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
-import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
-import 'package:audiory_v0/feat-read/screens/reading/chapter_navigate_button.dart';
-import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/feat-read/screens/reading/reading_top_bar.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:go_router/go_router.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class OfflineReadingScreen extends StatefulWidget {
+class OfflineReadingScreen_DEPRERCATED extends ConsumerStatefulWidget {
   final String chapterId;
+  final String storyId;
   final bool? showComment;
+  final int? initialOffset;
 
-  OfflineReadingScreen({
+  OfflineReadingScreen_DEPRERCATED({
     Key? key,
     required this.chapterId,
+    required this.storyId,
+    this.initialOffset,
     this.showComment = false,
   }) : super(key: key);
 
   @override
-  _OfflineReadingScreenState createState() => _OfflineReadingScreenState();
+  ConsumerState<OfflineReadingScreen_DEPRERCATED> createState() =>
+      _OfflineReadingScreen_DEPRERCATEDState();
 }
 
-class _OfflineReadingScreenState extends State<OfflineReadingScreen> {
+class _OfflineReadingScreen_DEPRERCATEDState
+    extends ConsumerState<OfflineReadingScreen_DEPRERCATED> {
   final ChapterDatabase chapterDb = ChapterDatabase();
   final StoryDatabase storyDb = StoryDatabase();
 
@@ -49,6 +51,7 @@ class _OfflineReadingScreenState extends State<OfflineReadingScreen> {
     fontSize = ValueNotifier<int>(18);
     showCommentByParagraph = ValueNotifier<bool>(true);
     hideBars = ValueNotifier<bool>(false);
+    bgColor = ValueNotifier(Colors.white);
 
     scrollController.addListener(() {
       if (scrollController.position.userScrollDirection ==
@@ -87,6 +90,7 @@ class _OfflineReadingScreenState extends State<OfflineReadingScreen> {
 
     return Scaffold(
       backgroundColor: bgColor.value,
+      appBar: hideBars.value ? null : ReadingTopBar(storyId: widget.storyId),
       body: SafeArea(
         child: Skeletonizer(
           enabled: false,
@@ -102,7 +106,7 @@ class _OfflineReadingScreenState extends State<OfflineReadingScreen> {
                       builder: (context, snapshot) {
                         if (snapshot.connectionState ==
                             ConnectionState.waiting) {
-                          return Text('loading...');
+                          return const Text('Đang tải');
                         }
 
                         return Column(children: [
@@ -132,10 +136,12 @@ class _OfflineReadingScreenState extends State<OfflineReadingScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: ReadingBottomBar(
-        onChangeStyle: changeStyle,
-        chapterId: widget.chapterId,
-      ),
+      // bottomNavigationBar: hideBars.value
+      //     ? null
+      //     : ReadingBottomBar(
+      //         onChangeStyle: changeStyle,
+      //         chapterId: widget.chapterId,
+      //       ),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       resizeToAvoidBottomInset: true,

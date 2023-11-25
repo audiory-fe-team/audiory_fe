@@ -1,6 +1,7 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -243,17 +244,24 @@ class ReadingListCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(
-                      width: 85,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: appColors.primaryLightest,
-                        image: DecorationImage(
-                          image: NetworkImage(coverUrl),
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
+                    // Container(
+                    //   width: 85,
+                    //   height: 120,
+                    //   decoration: BoxDecoration(
+                    //     color: appColors.primaryLightest,
+                    //     image: DecorationImage(
+                    //       image: NetworkImage(coverUrl),
+                    //       fit: BoxFit.fill,
+                    //     ),
+                    //   ),
+                    // ),
+                    ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: AppImage(
+                          url: coverUrl,
+                          width: 85,
+                          height: 120,
+                        ))
                   ],
                 ),
               ),

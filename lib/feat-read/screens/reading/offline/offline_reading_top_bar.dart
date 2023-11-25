@@ -1,27 +1,22 @@
-import 'package:audiory_v0/repositories/story_repository.dart';
-import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
+import 'package:audiory_v0/providers/story_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class ReadingTopBar extends HookWidget implements PreferredSizeWidget {
-  final String storyId;
-  const ReadingTopBar({
+class OfflineReadingTopBar extends HookWidget implements PreferredSizeWidget {
+  final String title;
+  OfflineReadingTopBar({
     super.key,
-    required this.storyId,
+    required this.title,
   });
 
+  final StoryDatabase storyDb = StoryDatabase();
   @override
   Size get preferredSize => const Size.fromHeight(56);
 
   @override
   Widget build(BuildContext context) {
-    final storyQuery = useQuery(
-      ['story', storyId],
-      () => StoryRepostitory().fetchStoryById(storyId),
-    );
     return SafeArea(
         child: Material(
             color: Colors.transparent,
@@ -47,6 +42,8 @@ class ReadingTopBar extends HookWidget implements PreferredSizeWidget {
                         onPressed: () {
                           if (GoRouter.of(context).canPop()) {
                             GoRouter.of(context).pop();
+                          } else {
+                            context.go('/');
                           }
                         },
                         icon: const Icon(
@@ -56,7 +53,7 @@ class ReadingTopBar extends HookWidget implements PreferredSizeWidget {
                       ),
                       const SizedBox(width: 4),
                       Expanded(
-                          child: Text(storyQuery.data?.title ?? '',
+                          child: Text(title,
                               textAlign: TextAlign.left,
                               overflow: TextOverflow.ellipsis,
                               style:

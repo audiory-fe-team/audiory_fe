@@ -1,25 +1,27 @@
-import 'package:audiory_v0/constants/limits.dart';
-import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/feat-read/screens/detail-story/add_to_list_modal.dart';
 import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailStoryBottomBar extends StatefulWidget {
-  final bool? hasDownload;
   final String storyId;
   final Function addToLibraryCallback;
-  final Function downloadStoryCallback;
   final bool isAddedToLibrary;
+  final Function onRead;
+  final bool isContinueReading;
+  final int? continueChapter;
 
-  const DetailStoryBottomBar(
-      {super.key,
-      required this.addToLibraryCallback,
-      required this.downloadStoryCallback,
-      required this.isAddedToLibrary,
-      required this.storyId,
-      this.hasDownload});
+  const DetailStoryBottomBar({
+    super.key,
+    required this.addToLibraryCallback,
+    // required this.downloadStoryCallback,
+    required this.isAddedToLibrary,
+    required this.storyId,
+    required this.onRead,
+    this.continueChapter,
+    this.isContinueReading = false,
+  });
 
   @override
   _DetailStoryBottomBarState createState() => _DetailStoryBottomBarState();
@@ -32,6 +34,22 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
+
+    void handleAdd() {
+      showModalBottomSheet(
+          //enable scroll
+          enableDrag: true,
+          isDismissible: true, //dismiss bottom sheet when click out
+          isScrollControlled: true,
+          context: context,
+          elevation: 40,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24.0),
+          ),
+          builder: (context) => AddToListModal(
+                storyId: widget.storyId,
+              ));
+    }
 
     return Material(
       elevation: 2,
@@ -48,15 +66,6 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
           children: [
             GestureDetector(
               onTap: () {
-                // if (widget.isAddedToLibrary) {
-                //   AppSnackBar.buildTopSnackBar(
-                //     context,
-                //     'Đã lưu truyện',
-                //     null,
-                //     SnackBarType.info,
-                //   );
-                //   return;
-                // }
                 widget.addToLibraryCallback();
               },
               child: SizedBox(
@@ -73,7 +82,7 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
                           : appColors.skyBase,
                     ),
                     Text(
-                      'Lưu trữ',
+                      'Thư viện',
                       style: textTheme.labelLarge?.copyWith(
                         color: widget.isAddedToLibrary
                             ? appColors.primaryBase
@@ -84,78 +93,43 @@ class _DetailStoryBottomBarState extends State<DetailStoryBottomBar> {
                 ),
               ),
             ),
-            widget.hasDownload == true
-                ? FutureBuilder(
-                    future: storyDb.getStory(widget.storyId),
-                    builder: (context, snapshot) {
-                      final isDownloaded = snapshot.data != null;
-                      return GestureDetector(
-                        onTap: () async {
-                          final stories = await storyDb.getAllStories();
-                          if (isDownloaded == true) {
-                            AppSnackBar.buildTopSnackBar(
-                              context,
-                              'Đã tải truyện',
-                              null,
-                              SnackBarType.info,
-                            );
-                            return;
-                          }
-                          if (stories.length >= LIBRARY_STORY_LIMIT) {
-                            AppSnackBar.buildTopSnackBar(
-                              context,
-                              'Giới hạn tải về là ${LIBRARY_STORY_LIMIT} truyện',
-                              null,
-                              SnackBarType.info,
-                            );
-                            return;
-                          }
-                          widget.downloadStoryCallback();
-                        },
-                        child: SizedBox(
-                          width: 50,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.download_rounded,
-                                size: 24,
-                                color: isDownloaded
-                                    ? appColors.primaryBase
-                                    : appColors.skyBase,
-                              ),
-                              Text(
-                                'Tải xuống',
-                                style: textTheme.labelLarge!.copyWith(
-                                  color: isDownloaded
-                                      ? appColors.primaryBase
-                                      : appColors.skyBase,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                : SizedBox(
-                    height: 0,
-                  ),
+            GestureDetector(
+              onTap: () {
+                handleAdd();
+              },
+              child: SizedBox(
+                width: 50,
+                child: Column(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.add_circle_rounded,
+                      size: 24,
+                      color: appColors.skyBase,
+                    ),
+                    Text(
+                      'Thêm vào',
+                      style: textTheme.labelLarge?.copyWith(
+                        color: appColors.skyBase,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
             Expanded(
               child: FilledButton(
                 onPressed: () {
-                  context.push(
-                    '/story/5fb70bf9-3f5b-4557-a4e1-0bf951486b7c/chapter/cfadac60-a197-f34c-2d24-e9e173dbd054',
-                  );
+                  widget.onRead();
                 },
                 style: ButtonStyle(
                   backgroundColor:
                       MaterialStatePropertyAll(appColors.primaryBase),
                 ),
                 child: Text(
-                  'Đọc',
-                  style: textTheme.titleMedium!.copyWith(color: Colors.white),
+                  '${widget.isContinueReading ? 'Đọc tiếp' : 'Đọc'}${widget.continueChapter != null ? ' (chương ${widget.continueChapter})' : ''}',
+                  style: textTheme.titleMedium?.copyWith(color: Colors.white),
                 ),
               ),
             ),

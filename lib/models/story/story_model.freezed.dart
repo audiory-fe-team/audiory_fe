@@ -87,6 +87,8 @@ mixin _$Story {
   String? get updatedDate => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_enabled')
   bool? get isEnabled => throw _privateConstructorUsedError;
+  @JsonKey(name: 'reading_progress')
+  ReadingProgress? get readingProgress => throw _privateConstructorUsedError;
   @JsonKey(name: 'chapters')
   List<Chapter>? get chapters => throw _privateConstructorUsedError;
   @JsonKey(name: 'tags')
@@ -134,11 +136,13 @@ abstract class $StoryCopyWith<$Res> {
       @JsonKey(name: 'created_date') String? createdDate,
       @JsonKey(name: 'updated_date') String? updatedDate,
       @JsonKey(name: 'is_enabled') bool? isEnabled,
+      @JsonKey(name: 'reading_progress') ReadingProgress? readingProgress,
       @JsonKey(name: 'chapters') List<Chapter>? chapters,
       @JsonKey(name: 'tags') List<Tag>? tags});
 
   $AuthorStoryCopyWith<$Res>? get author;
   $AppCategoryCopyWith<$Res>? get category;
+  $ReadingProgressCopyWith<$Res>? get readingProgress;
 }
 
 /// @nodoc
@@ -185,6 +189,7 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
     Object? createdDate = freezed,
     Object? updatedDate = freezed,
     Object? isEnabled = freezed,
+    Object? readingProgress = freezed,
     Object? chapters = freezed,
     Object? tags = freezed,
   }) {
@@ -313,6 +318,10 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
           ? _value.isEnabled
           : isEnabled // ignore: cast_nullable_to_non_nullable
               as bool?,
+      readingProgress: freezed == readingProgress
+          ? _value.readingProgress
+          : readingProgress // ignore: cast_nullable_to_non_nullable
+              as ReadingProgress?,
       chapters: freezed == chapters
           ? _value.chapters
           : chapters // ignore: cast_nullable_to_non_nullable
@@ -345,6 +354,18 @@ class _$StoryCopyWithImpl<$Res, $Val extends Story>
 
     return $AppCategoryCopyWith<$Res>(_value.category!, (value) {
       return _then(_value.copyWith(category: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ReadingProgressCopyWith<$Res>? get readingProgress {
+    if (_value.readingProgress == null) {
+      return null;
+    }
+
+    return $ReadingProgressCopyWith<$Res>(_value.readingProgress!, (value) {
+      return _then(_value.copyWith(readingProgress: value) as $Val);
     });
   }
 }
@@ -388,6 +409,7 @@ abstract class _$$StoryImplCopyWith<$Res> implements $StoryCopyWith<$Res> {
       @JsonKey(name: 'created_date') String? createdDate,
       @JsonKey(name: 'updated_date') String? updatedDate,
       @JsonKey(name: 'is_enabled') bool? isEnabled,
+      @JsonKey(name: 'reading_progress') ReadingProgress? readingProgress,
       @JsonKey(name: 'chapters') List<Chapter>? chapters,
       @JsonKey(name: 'tags') List<Tag>? tags});
 
@@ -395,6 +417,8 @@ abstract class _$$StoryImplCopyWith<$Res> implements $StoryCopyWith<$Res> {
   $AuthorStoryCopyWith<$Res>? get author;
   @override
   $AppCategoryCopyWith<$Res>? get category;
+  @override
+  $ReadingProgressCopyWith<$Res>? get readingProgress;
 }
 
 /// @nodoc
@@ -439,6 +463,7 @@ class __$$StoryImplCopyWithImpl<$Res>
     Object? createdDate = freezed,
     Object? updatedDate = freezed,
     Object? isEnabled = freezed,
+    Object? readingProgress = freezed,
     Object? chapters = freezed,
     Object? tags = freezed,
   }) {
@@ -567,6 +592,10 @@ class __$$StoryImplCopyWithImpl<$Res>
           ? _value.isEnabled
           : isEnabled // ignore: cast_nullable_to_non_nullable
               as bool?,
+      readingProgress: freezed == readingProgress
+          ? _value.readingProgress
+          : readingProgress // ignore: cast_nullable_to_non_nullable
+              as ReadingProgress?,
       chapters: freezed == chapters
           ? _value._chapters
           : chapters // ignore: cast_nullable_to_non_nullable
@@ -614,6 +643,7 @@ class _$StoryImpl with DiagnosticableTreeMixin implements _Story {
       @JsonKey(name: 'created_date') this.createdDate,
       @JsonKey(name: 'updated_date') this.updatedDate,
       @JsonKey(name: 'is_enabled') this.isEnabled,
+      @JsonKey(name: 'reading_progress') this.readingProgress,
       @JsonKey(name: 'chapters') final List<Chapter>? chapters = const [],
       @JsonKey(name: 'tags') final List<Tag>? tags = const []})
       : _chapters = chapters,
@@ -720,6 +750,9 @@ class _$StoryImpl with DiagnosticableTreeMixin implements _Story {
   @override
   @JsonKey(name: 'is_enabled')
   final bool? isEnabled;
+  @override
+  @JsonKey(name: 'reading_progress')
+  final ReadingProgress? readingProgress;
   final List<Chapter>? _chapters;
   @override
   @JsonKey(name: 'chapters')
@@ -744,7 +777,7 @@ class _$StoryImpl with DiagnosticableTreeMixin implements _Story {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Story(id: $id, authorId: $authorId, author: $author, categoryId: $categoryId, category: $category, title: $title, description: $description, coverUrl: $coverUrl, isDraft: $isDraft, isMature: $isMature, isCompleted: $isCompleted, isCopyright: $isCopyright, isPaywalled: $isPaywalled, chapterPrice: $chapterPrice, coinCost: $coinCost, authorEarningPercentage: $authorEarningPercentage, paywallEffectiveDate: $paywallEffectiveDate, numFreeChapters: $numFreeChapters, publishedCount: $publishedCount, draftCount: $draftCount, reportCount: $reportCount, voteCount: $voteCount, readCount: $readCount, commentCount: $commentCount, totalVote: $totalVote, totalRead: $totalRead, totalComment: $totalComment, explicitPercentage: $explicitPercentage, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, chapters: $chapters, tags: $tags)';
+    return 'Story(id: $id, authorId: $authorId, author: $author, categoryId: $categoryId, category: $category, title: $title, description: $description, coverUrl: $coverUrl, isDraft: $isDraft, isMature: $isMature, isCompleted: $isCompleted, isCopyright: $isCopyright, isPaywalled: $isPaywalled, chapterPrice: $chapterPrice, coinCost: $coinCost, authorEarningPercentage: $authorEarningPercentage, paywallEffectiveDate: $paywallEffectiveDate, numFreeChapters: $numFreeChapters, publishedCount: $publishedCount, draftCount: $draftCount, reportCount: $reportCount, voteCount: $voteCount, readCount: $readCount, commentCount: $commentCount, totalVote: $totalVote, totalRead: $totalRead, totalComment: $totalComment, explicitPercentage: $explicitPercentage, createdDate: $createdDate, updatedDate: $updatedDate, isEnabled: $isEnabled, readingProgress: $readingProgress, chapters: $chapters, tags: $tags)';
   }
 
   @override
@@ -784,6 +817,7 @@ class _$StoryImpl with DiagnosticableTreeMixin implements _Story {
       ..add(DiagnosticsProperty('createdDate', createdDate))
       ..add(DiagnosticsProperty('updatedDate', updatedDate))
       ..add(DiagnosticsProperty('isEnabled', isEnabled))
+      ..add(DiagnosticsProperty('readingProgress', readingProgress))
       ..add(DiagnosticsProperty('chapters', chapters))
       ..add(DiagnosticsProperty('tags', tags));
   }
@@ -852,6 +886,8 @@ class _$StoryImpl with DiagnosticableTreeMixin implements _Story {
                 other.updatedDate == updatedDate) &&
             (identical(other.isEnabled, isEnabled) ||
                 other.isEnabled == isEnabled) &&
+            (identical(other.readingProgress, readingProgress) ||
+                other.readingProgress == readingProgress) &&
             const DeepCollectionEquality().equals(other._chapters, _chapters) &&
             const DeepCollectionEquality().equals(other._tags, _tags));
   }
@@ -891,6 +927,7 @@ class _$StoryImpl with DiagnosticableTreeMixin implements _Story {
         createdDate,
         updatedDate,
         isEnabled,
+        readingProgress,
         const DeepCollectionEquality().hash(_chapters),
         const DeepCollectionEquality().hash(_tags)
       ]);
@@ -944,6 +981,7 @@ abstract class _Story implements Story {
       @JsonKey(name: 'created_date') final String? createdDate,
       @JsonKey(name: 'updated_date') final String? updatedDate,
       @JsonKey(name: 'is_enabled') final bool? isEnabled,
+      @JsonKey(name: 'reading_progress') final ReadingProgress? readingProgress,
       @JsonKey(name: 'chapters') final List<Chapter>? chapters,
       @JsonKey(name: 'tags') final List<Tag>? tags}) = _$StoryImpl;
 
@@ -1044,6 +1082,9 @@ abstract class _Story implements Story {
   @override
   @JsonKey(name: 'is_enabled')
   bool? get isEnabled;
+  @override
+  @JsonKey(name: 'reading_progress')
+  ReadingProgress? get readingProgress;
   @override
   @JsonKey(name: 'chapters')
   List<Chapter>? get chapters;
