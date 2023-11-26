@@ -44,7 +44,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         useQuery(['profile'], () => ProfileRepository().fetchProfileByUserId());
 
     DateTime? datepicked;
-
     Widget userInfo(Profile? profile) {
       String formatDate(String? date) {
         //use package intl
@@ -53,15 +52,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
 
       const genderList = Sex.values;
-      print(profile?.dob);
 
       Future<void> showdobpicker() async {
         datepicked = await showDatePicker(
             helpText: 'Chọn ngày sinh',
             context: context,
-            initialDate: DateTime.tryParse(
-                    profile?.dob ?? DateTime(2000, 1, 1).toString()) ??
-                DateTime(2000, 1, 1),
+            // initialDate: DateTime.tryParse(
+            //         profile?.dob ?? DateTime(2000, 1, 1).toString()) ??
+            //     DateTime(2000, 6, 23),
             firstDate: DateTime(1933, 1, 1),
             lastDate: DateTime(2017, 1, 1),
 
@@ -96,6 +94,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             });
         // ignore: unrelated_type_equality_checks
         if (datepicked != null) {
+          print('DATE $datepicked');
           setState(() {
             _selectedDate = formatDate(datepicked?.toString());
           });
@@ -139,21 +138,23 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               height: 8,
             ),
             AppTextInputField(
-              textInputType: TextInputType.datetime,
-              isRequired: false,
-              name: 'dob',
-              initialValue: appFormatDate(profile?.dob),
-              hintText: 'dd/MM/yyyy',
-              hintTextStyle: TextStyle(color: appColors.inkBase),
-              // validator: (inputDate) {
-              //   try {
-              //     final DateTime d =
-              //         DateFormat('dd/MM/yyyy').parseStrict(inputDate ?? '');
-              //   } catch (e) {
-              //     return 'Sai format';
-              //   }
-              // },
-            ),
+                textInputType: TextInputType.datetime,
+                isRequired: false,
+                name: 'dob',
+                initialValue: _selectedDate != ''
+                    ? _selectedDate
+                    : appFormatDate(profile?.dob),
+                hintText: 'dd/MM/yyyy',
+                hintTextStyle: TextStyle(color: appColors.inkBase),
+                validator: (value) {
+                  if ((value?.allMatches(
+                              r'^(0[1-9]|[12][0-9]|3[01])[-/.](0[1-9]|1[012])[-/.](19|20)\\d\\d$') ??
+                          true) ==
+                      (false)) {
+                    print('wrogn');
+                    return 'Nhập đúng định dạng dd/MM/yyyy';
+                  }
+                }),
             const SizedBox(
               height: 16,
             )

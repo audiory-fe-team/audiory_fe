@@ -200,10 +200,6 @@ class AppRoutes {
                     path: 'accountProfile/:id',
                     builder: (BuildContext context, GoRouterState state) {
                       final id = state.pathParameters['id'];
-                      print('id ${id}');
-                      final extraMap = state.extra as Map<String, dynamic>;
-                      final name = extraMap['name'] ?? '';
-                      final avatar = extraMap['avatar'] ?? '';
 
                       if (id == null || id == '' || id == 'not-found') {
                         return const NotFoundScreen();
@@ -211,8 +207,6 @@ class AppRoutes {
                       // return UserProfileScreen();
                       return AppProfileScreen(
                         id: id,
-                        name: name,
-                        avatar: avatar,
                       );
                     },
                   ),

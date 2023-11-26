@@ -75,8 +75,9 @@ class AuthorRankCard extends StatelessWidget {
     return GestureDetector(
         onTap: () {
           // context.push('/profile/${author.id}');
-          context.push('/accountProfile/${author.id}',
-              extra: {'name': author.fullName, 'avatar': author.avatarUrl});
+          context.push(
+            '/accountProfile/${author.id}',
+          );
         },
         child: Container(
           margin: const EdgeInsets.only(bottom: 16),

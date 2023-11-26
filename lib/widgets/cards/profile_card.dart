@@ -15,8 +15,9 @@ class ProfileCard extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        context.push('/accountProfile/${user.id}',
-            extra: {'name': user.fullName, 'avatar': user.avatarUrl});
+        context.push(
+          '/accountProfile/${user.id}',
+        );
       },
       child: Container(
         width: double.infinity,

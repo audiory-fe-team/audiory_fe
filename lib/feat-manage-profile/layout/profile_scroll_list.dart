@@ -21,8 +21,7 @@ class ProfileScrollList extends StatelessWidget {
     Widget followingCard(Profile? profile) {
       return GestureDetector(
         onTap: () {
-          context.push('/accountProfile/${profile?.id}',
-              extra: {'name': profile?.fullName, 'avatar': profile?.avatarUrl});
+          context.push('/accountProfile/${profile?.id}');
         },
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

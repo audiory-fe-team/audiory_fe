@@ -366,11 +366,8 @@ class DetailStoryScreen extends HookConsumerWidget {
                               onTap: () async {
                                 if (isOffline == false) {
                                   context.push(
-                                      '/accountProfile/${story?.authorId}',
-                                      extra: {
-                                        'name': story?.author?.fullName,
-                                        'avatar': story?.author?.avatarUrl,
-                                      });
+                                    '/accountProfile/${story?.authorId}',
+                                  );
                                 }
                                 ;
                               },
