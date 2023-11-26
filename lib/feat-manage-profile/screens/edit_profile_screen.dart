@@ -5,14 +5,12 @@ import 'package:audiory_v0/models/enums/Sex.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/utils/format_date.dart';
-import 'package:audiory_v0/utils/relative_time.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/dropdown_button.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -42,30 +40,31 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final profileQuery = useQuery(
-        ['profile'],
-        () => ProfileRepository()
-            .fetchUserProfileByUserId(widget.currentUser?.id as String));
+    final profileQuery =
+        useQuery(['profile'], () => ProfileRepository().fetchProfileByUserId());
 
     DateTime? datepicked;
 
-    Widget userInfo() {
+    Widget userInfo(Profile? profile) {
       String formatDate(String? date) {
         //use package intl
-
         DateTime dateTime = DateTime.parse(date ?? '');
         return DateFormat('dd/MM/yyyy').format(dateTime);
       }
 
       const genderList = Sex.values;
+      print(profile?.dob);
 
       Future<void> showdobpicker() async {
         datepicked = await showDatePicker(
             helpText: 'Chọn ngày sinh',
             context: context,
-            initialDate: DateTime(2000, 1, 1),
+            initialDate: DateTime.tryParse(
+                    profile?.dob ?? DateTime(2000, 1, 1).toString()) ??
+                DateTime(2000, 1, 1),
             firstDate: DateTime(1933, 1, 1),
             lastDate: DateTime(2017, 1, 1),
+
             //initial entry : calendar picker or input
             initialEntryMode: DatePickerEntryMode.input,
             confirmText: 'Chọn',
@@ -86,7 +85,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       onError: Colors.red,
                       background: appColors.primaryBase,
                       onBackground: appColors.primaryBase,
-                      surface: appColors.primaryBase,
+                      surface: appColors.skyLightest,
                       onSurface: appColors.primaryBase,
                       brightness: Brightness.light),
                   buttonBarTheme: const ButtonBarThemeData(
@@ -98,7 +97,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // ignore: unrelated_type_equality_checks
         if (datepicked != null) {
           setState(() {
-            _selectedDate = formatDate(datepicked!.toString());
+            _selectedDate = formatDate(datepicked?.toString());
           });
         }
       }
@@ -143,7 +142,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               textInputType: TextInputType.datetime,
               isRequired: false,
               name: 'dob',
-              initialValue: appFormatDate(defaultDob),
+              initialValue: appFormatDate(profile?.dob),
               hintText: 'dd/MM/yyyy',
               hintTextStyle: TextStyle(color: appColors.inkBase),
               // validator: (inputDate) {
@@ -189,106 +188,95 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   ),
                 ),
               ),
-              Skeletonizer(
-                enabled: profileQuery.isFetching,
-                child: FormBuilder(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment:
-                        MainAxisAlignment.spaceEvenly, // <-- SEE HERE
-                    children: [
-                      AppTextInputField(
-                        name: 'full_name',
-                        label: 'Tên gọi',
-                        hintText: 'Nhập tên ',
-                        initialValue: profileQuery.data?.fullName,
-                      ),
+              FormBuilder(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment:
+                      MainAxisAlignment.spaceEvenly, // <-- SEE HERE
+                  children: [
+                    AppTextInputField(
+                      name: 'full_name',
+                      label: 'Tên gọi',
+                      hintText: 'Nhập tên ',
+                      initialValue: profile?.fullName,
+                    ),
 
-                      //dob
-                      timePickerWidget(
-                          defaultDob: profileQuery.data?.dob ?? ''),
-                      //sex
+                    //dob
+                    timePickerWidget(defaultDob: profile?.dob ?? ''),
+                    //sex
 
-                      AppDropdownButton(
-                          label: 'Giới tính ',
-                          name: 'sex',
-                          list: genderList,
-                          initValue:
-                              profileQuery.data?.sex ?? genderList[0].name,
-                          itemsList: List.generate(
-                              genderList.length,
-                              (index) => DropdownMenuItem(
-                                  value: genderList[index].name, //required
-                                  child:
-                                      Text(genderList[index].displayTitle)))),
-                      const SizedBox(
-                        height: 16,
-                      ),
+                    AppDropdownButton(
+                        label: 'Giới tính ',
+                        name: 'sex',
+                        list: genderList,
+                        initValue: profile?.sex ?? genderList[0].name,
+                        itemsList: List.generate(
+                            genderList.length,
+                            (index) => DropdownMenuItem(
+                                value: genderList[index].name, //required
+                                child: Text(genderList[index].displayTitle)))),
+                    const SizedBox(
+                      height: 16,
+                    ),
 
-                      AppTextInputField(
-                        name: 'facebook_url',
-                        initialValue: profileQuery.data?.facebookUrl == ''
-                            ? null
-                            : profileQuery.data?.facebookUrl ?? '',
-                        label: 'Trang facebook',
-                        hintText: 'https://www.facebook.com',
-                      ),
-                      AppTextInputField(
-                        isTextArea: true,
-                        minLines: 5,
-                        maxLengthCharacters: 256,
-                        name: 'description',
-                        label: 'Giới thiệu bản thân',
-                        hintText: 'Đôi ba dòng về bạn',
-                        initialValue: profileQuery.data?.description == ''
-                            ? null
-                            : profileQuery.data?.description ?? '',
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                              child: SizedBox(
-                            width: size.width / 2.5,
+                    AppTextInputField(
+                      name: 'facebook_url',
+                      initialValue: profile?.facebookUrl == ''
+                          ? ''
+                          : profile?.facebookUrl,
+                      label: 'Trang facebook',
+                      hintText: 'https://www.facebook.com',
+                    ),
+                    AppTextInputField(
+                      isTextArea: true,
+                      minLines: 2,
+                      maxLengthCharacters: 256,
+                      name: 'description',
+                      label: 'Giới thiệu bản thân',
+                      hintText: 'Đôi ba dòng về bạn',
+                      initialValue: profile?.description == ''
+                          ? ''
+                          : profile?.description ?? '',
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                            child: SizedBox(
+                          width: size.width / 2.3,
+                          child: AppIconButton(
+                            onPressed: () async {
+                              _formKey.currentState?.reset();
+                            },
+                            isOutlined: true,
+                            bgColor: appColors.skyLightest,
+                            color: appColors.primaryBase,
+                            title: 'Đặt lại',
+                          ),
+                        )),
+                        SizedBox(
+                            width: size.width / 2.3,
                             child: AppIconButton(
-                              onPressed: () {},
-                              isOutlined: true,
-                              bgColor: appColors.skyLightest,
-                              color: appColors.primaryBase,
-                              title: 'Hủy',
-                            ),
-                          )),
-                          SizedBox(
-                              width: size.width / 2.5,
-                              child: AppIconButton(
-                                onPressed: () async {
-                                  final validationSuccess =
-                                      _formKey.currentState!.validate();
-                                  if (validationSuccess) {
-                                    _formKey.currentState!.save();
-                                  }
-
-                                  if (kDebugMode) {
-                                    print('FORM ');
-                                    print(_formKey.currentState!.value);
-                                  }
+                              onPressed: () async {
+                                final validationSuccess =
+                                    _formKey.currentState?.validate();
+                                if (validationSuccess == true) {
+                                  _formKey.currentState?.save();
 
                                   //create request body
                                   Map<String, String> body = <String, String>{};
 
                                   body['full_name'] = _formKey
-                                      .currentState!.fields['full_name']?.value;
+                                      .currentState?.fields['full_name']?.value;
                                   body['sex'] = _formKey
-                                      .currentState!.fields['sex']?.value;
+                                      .currentState?.fields['sex']?.value;
                                   body['description'] = _formKey.currentState!
                                       .fields['description']?.value;
                                   body['facebook_url'] = _formKey.currentState!
                                       .fields['facebook_url']?.value;
-                                  // final parsedDate = DateTime.tryParse('');
-                                  // body['dob'] =
-                                  //     parsedDate!.toUtc().toIso8601String();
-
-                                  print('BODY ${body}');
+                                  final parsedDate = DateTime.tryParse('');
+                                  body['dob'] =
+                                      parsedDate!.toUtc().toIso8601String();
 
                                   //edit profile
                                   showDialog(
@@ -308,7 +296,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     context.pop();
                                   }
                                   profileQuery.refetch();
-
                                   newProfile == null
                                       // ignore: use_build_context_synchronously
                                       ? AppSnackBar.buildSnackbar(
@@ -319,14 +306,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       // ignore: use_build_context_synchronously
                                       : AppSnackBar.buildSnackbar(context,
                                           'Chỉnh sửa thành công', 'Ẩn', null);
-                                },
-                                icon: null,
-                                title: 'Lưu',
-                              ))
-                        ],
-                      )
-                    ],
-                  ),
+                                }
+                              },
+                              title: 'Cập nhật',
+                            ))
+                      ],
+                    )
+                  ],
                 ),
               ),
             ],
@@ -341,7 +327,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         'Sửa hồ sơ',
         style: textTheme.headlineMedium?.copyWith(color: appColors.inkBase),
       )),
-      body: userInfo(),
+      body: Skeletonizer(
+          enabled: profileQuery.isFetching || profileQuery.data == null,
+          child: userInfo(profileQuery.data)),
       floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,

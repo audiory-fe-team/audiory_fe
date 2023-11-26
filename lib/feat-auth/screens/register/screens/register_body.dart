@@ -72,24 +72,26 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
   }
 
   Widget _linkToLoginScreen() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Đã có tài khoản?',
-          textAlign: TextAlign.right,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        GestureDetector(
-          onTap: () => {context.go('/login')},
-          child: Text(
+    return GestureDetector(
+      onTap: () {
+        context.go('/login');
+      },
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Đã có tài khoản?',
+            textAlign: TextAlign.right,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          Text(
             ' Đăng nhập',
             textAlign: TextAlign.right,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold, color: Color(0xFF439A97)),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -137,6 +139,7 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                             FormBuilderValidators.maxLength(25,
                                 errorText: 'Tên đăng nhập tối đa 25 ký tự')
                           ]),
+                          minLines: 1,
                         ),
                         const SizedBox(
                           height: 16.0,
@@ -168,7 +171,9 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                                       pass = value;
                                     });
                                   },
-                                  textInputType: TextInputType.visiblePassword,
+                                  textInputType: TextInputType
+                                      .visiblePassword, //password cannot multi line
+                                  maxLines: null,
                                   validator: FormBuilderValidators.compose([
                                     FormBuilderValidators.required(
                                         errorText: 'Không được để trống'),
@@ -182,13 +187,17 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                                   name: 'confirm',
                                   hintText: 'Nhập lại mật khẩu',
                                   isRequired: true,
-                                  textInputType: TextInputType.visiblePassword,
-                                  validator: FormBuilderValidators.compose([
-                                    FormBuilderValidators.required(
-                                        errorText: 'Không được để trống'),
-                                    // FormBuilderValidators.equal(pass,
-                                    //     errorText: 'Sai mật khẩu xác nhận'),
-                                  ])),
+                                  textInputType: TextInputType
+                                      .visiblePassword, //password cannot multi line
+                                  maxLines: null,
+                                  validator: (val) {
+                                    if (val !=
+                                        _formKey.currentState
+                                            ?.fields['password']?.value) {
+                                      return 'Sai mật khẩu xác nhận';
+                                    }
+                                    return null;
+                                  }),
                               const SizedBox(
                                 height: 16.0,
                               ),

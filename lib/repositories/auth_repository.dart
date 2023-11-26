@@ -169,8 +169,11 @@ class AuthRepository extends ChangeNotifier {
     try {
       final response =
           await http.post(url, headers: header, body: jsonEncode(body));
+      print(utf8.decode(response.bodyBytes));
       if (response.statusCode == 200) {
+        return '200';
       } else {
+        return jsonDecode(utf8.decode(response.bodyBytes))['message'];
         throw Exception();
       }
     } catch (e) {}

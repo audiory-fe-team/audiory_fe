@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:jwt_decoder/jwt_decoder.dart';
 import '../models/AuthUser.dart';
 
 class ProfileRepository {
@@ -32,41 +33,19 @@ class ProfileRepository {
     }
   }
 
-  Future<Profile?> fetchProfileById(String? profileId) async {
-    if (profileId == null || profileId == '') {
-      return null;
-    }
-    final url = Uri.parse("$profileEndpoint/$profileId/profile");
-    Map<String, String> header = {
-      "Content-type": "application/json",
-      "Accept": "application/json"
-    };
-
-    final response = await http.get(url, headers: header);
-    final responseBody = utf8.decode(response.bodyBytes);
-
-    if (response.statusCode == 200) {
-      try {
-        final Profile profile =
-            Profile.fromJson(json.decode(responseBody)['data']);
-        return profile;
-      } catch (error) {
-        throw Exception(error.toString());
-      }
-    } else {
-      throw Exception('Failed to fetch profile');
-    }
-  }
-
-  Future<Profile?> fetchUserProfileByUserId(String profileId) async {
-    if (profileId == '') {
-      return null;
-    }
-    final url = Uri.parse("$profileEndpoint/$profileId/profile");
+  Future<Profile?> fetchProfileByUserId() async {
+    const storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
+    final userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
+    print(userId);
+    final url = Uri.parse("$profileEndpoint/$userId/profile");
     Map<String, String> header = {
       "Content-type": "application/json,charset=UTF-8",
-      "Accept": "application/json"
+      "Accept": "application/json",
     };
+    if (jwtToken != null) {
+      header['Authorization'] = 'Bearer $jwtToken';
+    }
 
     final response = await http.get(url, headers: header);
     final responseBody = utf8.decode(response.bodyBytes);

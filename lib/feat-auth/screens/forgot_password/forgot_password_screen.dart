@@ -1,15 +1,13 @@
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/buttons/filled_button.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
-import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -42,10 +40,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         .headlineMedium
                         ?.copyWith(color: appColors.inkDark)),
                 Text(
-                    "Nhập email của bạn vào ô dưới đây và chúng tôi sẽ gửi bạn hướng dẫn bạn cách đặt lại",
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: appColors.inkBase,
-                        fontWeight: FontWeight.normal)),
+                  "Nhập email của bạn vào ô dưới đây và chúng tôi sẽ gửi bạn hướng dẫn bạn cách đặt lại",
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: appColors.inkLighter,
+                      fontWeight: FontWeight.normal),
+                  textAlign: TextAlign.justify,
+                ),
                 const SizedBox(
                   height: 16,
                 ),
@@ -55,52 +55,57 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       textAlign: TextAlign.center,
                       name: 'email',
                       hintText: 'abc@gmail.com',
-                      validator: (value) {
-                        if (EmailValidator.validate(value ?? '') == false) {
-                          return 'Email không hợp lệ';
-                        }
-                      },
+                      validator: FormBuilderValidators.compose([
+                        FormBuilderValidators.required(errorText: 'Email rỗng'),
+                        FormBuilderValidators.email(
+                            errorText: 'Email sai định dạng'),
+                      ]),
                     )),
                 const SizedBox(
                   height: 16,
                 ),
-                AppFilledButton(
-                    title: 'Tiếp tục',
-                    color: appColors.skyLightest,
-                    bgColor: appColors.primaryBase,
-                    onPressed: () async {
-                      _formKey.currentState!.save();
+                Container(
+                  width: double.infinity,
+                  height: 56,
+                  child: AppIconButton(
+                      title: 'Tiếp tục',
+                      onPressed: () async {
+                        _formKey.currentState!.save();
 
-                      bool isValid = _formKey.currentState!.validate();
-// ignore: use_build_context_synchronously
-                      // context.push('/resetPassword');
-                      if (isValid) {
-                        //send verification email
+                        bool isValid = _formKey.currentState!.validate();
+                        // ignore: use_build_context_synchronously
+                        // context.push('/resetPassword');
+                        if (isValid) {
+                          //send verification email
 
-                        String email =
-                            _formKey.currentState!.fields['email']?.value;
-                        try {
-                          await AuthRepository().forgotPassword(email: email);
+                          String email =
+                              _formKey.currentState!.fields['email']?.value;
+                          try {
+                            final res = await AuthRepository()
+                                .forgotPassword(email: email);
 
-                          // ignore: use_build_context_synchronously
-                          Map<String, String> body = {
-                            'email': email,
-                            'isForgotPass': 'true'
-                          };
-                          // ignore: use_build_context_synchronously
-                          context.pushNamed('flowOne', extra: {
-                            'signUpBody': body,
-                          });
-                        } catch (e) {
-                          // ignore: use_build_context_synchronously
+                            if (res == '200') {
+                              // ignore: use_build_context_synchronously
+                              Map<String, String> body = {
+                                'email': email,
+                                'isForgotPass': 'true'
+                              };
+                              // ignore: use_build_context_synchronously
+                              context.pushNamed('flowOne', extra: {
+                                'signUpBody': body,
+                              });
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              AppSnackBar.buildCustomTopSnackbar(
+                                  context, res, null, SnackBarType.error, 100);
+                            }
+                          } catch (e) {}
+                        } else {
                           AppSnackBar.buildTopSnackBar(
-                              context, e.toString(), null, SnackBarType.error);
+                              context, 'Xảy ra lỗi', null, SnackBarType.error);
                         }
-                      } else {
-                        AppSnackBar.buildTopSnackBar(context,
-                            'Email không hơp lệ', null, SnackBarType.error);
-                      }
-                    }),
+                      }),
+                )
               ]),
         ));
   }

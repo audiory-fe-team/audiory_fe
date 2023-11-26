@@ -92,12 +92,27 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
           return AlertDialog(
             backgroundColor: Colors.white,
             title: Center(child: Text('Xác nhận rút?')),
-            content: Column(
-              children: [
-                Text('Bạn chắc chắn muốn rút ${price.toString()} kim cương'),
-              ],
+            content: Container(
+              height: 100,
+              child: Column(
+                children: [
+                  Text(
+                      'Bạn chắc chắn muốn rút ${price.toString()},000 kim cương'),
+                  Text(
+                      'Bạn sẽ nhận về ví ${double.tryParse(price)?.toStringAsFixed(0)} đồng')
+                ],
+              ),
             ),
             actions: <Widget>[
+              TextButton(
+                child: Text(
+                  'Hủy',
+                  style: textTheme.titleMedium,
+                ),
+                onPressed: () {
+                  context.pop(); // Dismiss the dialog
+                },
+              ),
               Container(
                 width: 70,
                 height: 30,
@@ -117,7 +132,6 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                         'user_payment_method_id':
                             'af0975b8-8575-11ee-97b6-0242c0a8a002'
                       };
-                      print('with');
                       try {
                         await PaymentMethodRepository().withdraw(body);
                         AppSnackBar.buildTopSnackBar(context,
@@ -134,15 +148,6 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                     context.pop(); // Dismiss the dialog
                   },
                 ),
-              ),
-              TextButton(
-                child: Text(
-                  'Hủy',
-                  style: textTheme.titleMedium,
-                ),
-                onPressed: () {
-                  context.pop(); // Dismiss the dialog
-                },
               ),
             ],
           );
@@ -298,6 +303,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                       FormBuilder(
                         key: _formKey,
                         child: AppTextInputField(
+                          textAlign: TextAlign.center,
                           label: 'Nhập số kim cương muốn rút',
                           name: 'num',
                           validator: (value) {
@@ -308,7 +314,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                                 (widget.currentUser?.wallets![0].balance ??
                                     0)) {
                               return 'Nhiều hơn số lượng có thể rút';
-                            } else if (int.tryParse(value)! < 50) {
+                            } else if (int.tryParse(value)! < 2) {
                               // Replace 10 with your min value
                               return 'Tối thiểu 50 kim cương';
                             }
@@ -353,7 +359,13 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                         height: 40,
                         width: double.infinity,
                         child: AppIconButton(
-                          onPressed: () async {},
+                          onPressed: () async {
+                            _formKey.currentState!.save();
+                            if (_formKey.currentState!.validate()) {
+                              showConfirmChapterDeleteDialog(context,
+                                  _formKey.currentState!.fields['num']?.value);
+                            }
+                          },
                           title: 'Rút tiền',
                         ),
                       ),

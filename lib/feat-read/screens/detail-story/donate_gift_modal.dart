@@ -17,7 +17,7 @@ class DonateGiftModal extends StatefulHookWidget {
   final Story? story;
   final dynamic coins;
   final AuthUser? userData;
-  final Function(Gift, int) handleSendingGift;
+  final Function(Gift?, int) handleSendingGift;
   const DonateGiftModal(
       {super.key,
       this.story,
@@ -43,9 +43,8 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
 
-    final selectedItem = giftsQuery.data != null
-        ? useState<dynamic>(lists.isEmpty ? null : lists[0])
-        : null;
+    final selectedItem =
+        giftsQuery.data != null ? useState<Gift>(lists[0]) : null;
     final sizeController = useTextEditingController(text: "1");
 
     handleTotalCoins() {
@@ -71,7 +70,10 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                   Flexible(
                     child: Text(
                       'Tặng vật phẩm',
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(color: appColors.skyLightest),
                     ),
                   ),
                   Flexible(

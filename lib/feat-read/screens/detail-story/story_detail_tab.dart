@@ -11,7 +11,6 @@ import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,16 +51,16 @@ class StoryDetailTab extends HookWidget {
       staleDuration: const Duration(minutes: 1),
     );
 
-    handleSendingGift(Gift gift, total) async {
+    handleSendingGift(Gift? gift, total) async {
       var totalCoinsOfUser = userQuery.data?.wallets![0].balance ?? 0;
-      if (double.parse('${gift.price! * total}') >
+      if (double.parse('${(gift?.price ?? 0) * total}') >
           double.parse(totalCoinsOfUser.toString())) {
         AppSnackBar.buildTopSnackBar(
             context, 'Không đủ số dư', null, SnackBarType.info);
       } else {
         try {
           Map<String, String> body = {
-            'product_id': gift.id,
+            'product_id': gift?.id ?? '',
             'author_id': story?.authorId ?? '',
           };
           for (var i = 0; i < total; i++) {
@@ -70,7 +69,7 @@ class StoryDetailTab extends HookWidget {
           context.pop();
           AppSnackBar.buildTopSnackBar(
               context,
-              'Tặng $total ${gift.name} thành công',
+              'Tặng $total ${gift?.name} thành công',
               null,
               SnackBarType.success);
           donatorsQuery.refetch();
@@ -383,11 +382,11 @@ class StoryDetailTab extends HookWidget {
                   textStyle: Theme.of(context)
                       .textTheme
                       .titleMedium
-                      ?.copyWith(color: appColors?.primaryBase),
+                      ?.copyWith(color: appColors?.inkBase),
                   icon: Icon(
                     Icons.card_giftcard,
-                    color: appColors?.primaryBase,
-                    size: 14,
+                    color: appColors?.inkBase,
+                    size: 16,
                   ),
                   iconPosition: 'start',
                   color: appColors?.primaryBase,

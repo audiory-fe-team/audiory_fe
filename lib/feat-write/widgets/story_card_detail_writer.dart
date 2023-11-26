@@ -1,5 +1,4 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
-import 'package:audiory_v0/feat-write/provider/story_state_provider.dart';
 import 'package:audiory_v0/feat-write/widgets/story_actions_menu.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/story/story_model.dart';

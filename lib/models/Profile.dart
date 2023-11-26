@@ -48,7 +48,7 @@ class Profile {
       this.description,
       this.dob,
       this.email,
-      this.facebookUrl,
+      this.facebookUrl = '',
       this.firstName,
       this.fullName,
       required this.id,

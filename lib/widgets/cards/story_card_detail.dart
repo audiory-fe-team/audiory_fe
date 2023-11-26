@@ -1,13 +1,11 @@
 import 'dart:math';
 
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/SearchStory.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -37,7 +35,8 @@ class StoryCardDetail extends StatelessWidget {
         story?.tags?.map((tag) => tag.name ?? '').toList() ??
             searchStory?.tags?.split(",") ??
             [];
-
+    // print('publish count');
+    // print(story?.publishedCount);
     return GestureDetector(
         onTap: () {
           GoRouter.of(context).push("/story/$storyId");

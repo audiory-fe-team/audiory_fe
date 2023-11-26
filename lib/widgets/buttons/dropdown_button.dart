@@ -64,6 +64,7 @@ class AppDropdownButton extends StatelessWidget {
           name: name,
           items: itemsList,
           initialValue: initValue ?? list[0],
+          borderRadius: BorderRadius.circular(12),
           decoration: InputDecoration(
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
