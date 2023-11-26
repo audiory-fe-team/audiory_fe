@@ -288,13 +288,13 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
         useSafeArea: true,
         builder: (context) => Container(
           height: size.height * 0.85,
-          padding: EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+          padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           child: Column(
             children: [
               Stack(
                 alignment: Alignment.topCenter,
                 children: [
-                  Container(
+                  SizedBox(
                     width: size.width,
                     child: text.Text(
                       'Bản xem trước',
@@ -316,13 +316,14 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                       ))
                 ],
               ),
-              Container(
-                height: size.height * 0.75,
+              Expanded(
+                // height: size.height * 0.75,
                 child: ListView(
                   children: [
                     Container(
                         width: size.width,
-                        padding: EdgeInsetsDirectional.symmetric(vertical: 4),
+                        padding:
+                            const EdgeInsetsDirectional.symmetric(vertical: 4),
                         decoration: BoxDecoration(color: appColors.inkBase),
                         child: Center(
                           child: Text(

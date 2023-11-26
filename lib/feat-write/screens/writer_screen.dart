@@ -126,7 +126,10 @@ class _WriterScreenState extends State<WriterScreen> {
         onPressed: () {
           context.pushNamed('composeStory', extra: {'storyId': ''});
         },
-        icon: const Icon(Icons.edit),
+        icon: Icon(
+          Icons.edit,
+          color: appColors.skyLightest,
+        ),
         iconPosition: 'start',
       ),
     );

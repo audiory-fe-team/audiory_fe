@@ -43,24 +43,25 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
         [];
 
     numOfPages.value = (chaptersList.length / 10).ceil();
-
+    print(numOfPages.value);
     var pages = List.generate(
       numOfPages.value,
       (index) => Column(
         children: [
           Column(
-            children:
-                (isDesc.value ? chaptersList.reversed.toList() : chaptersList)
-                    .getRange(
-                        currentPage.value * 10,
-                        currentPage.value + 1 == numOfPages.value
-                            ? currentPage.value * 10 +
-                                min(10, chaptersList.length.remainder(10))
-                            : currentPage.value * 10 + 10)
-                    .toList()
-                    .asMap()
-                    .entries
-                    .map((entry) {
+            children: (isDesc.value == true
+                    ? chaptersList.reversed.toList()
+                    : chaptersList)
+                .getRange(
+                    currentPage.value * 10,
+                    currentPage.value + 1 == numOfPages.value
+                        ? currentPage.value * 10 +
+                            min(10, chaptersList.length.remainder(10))
+                        : currentPage.value * 10 + 10)
+                .toList()
+                .asMap()
+                .entries
+                .map((entry) {
               Chapter chapter = entry.value;
               int index = isDesc.value
                   ? chaptersList.length -
@@ -120,7 +121,7 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
         ),
         Center(
           child: SizedBox(
-            width: numOfPages.value <= 4 ? size.width / 2 : double.infinity,
+            width: numOfPages.value <= 4 ? size.width / 2 : size.width,
             child: NumberPaginator(
               config: NumberPaginatorUIConfig(
                 buttonSelectedBackgroundColor: appColors.primaryBase,

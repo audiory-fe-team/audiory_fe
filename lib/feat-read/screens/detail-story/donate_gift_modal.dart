@@ -3,6 +3,7 @@ import 'package:audiory_v0/models/gift/gift_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/gift_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +17,7 @@ class DonateGiftModal extends StatefulHookWidget {
   final Story? story;
   final dynamic coins;
   final AuthUser? userData;
-  final Function(Gift, int) handleSendingGift;
+  final Function(Gift?, int) handleSendingGift;
   const DonateGiftModal(
       {super.key,
       this.story,
@@ -42,14 +43,13 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
     final TextTheme textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
 
-    final selectedItem = giftsQuery.data != null
-        ? useState<dynamic>(lists.isEmpty ? null : lists[0])
-        : null;
+    final selectedItem =
+        giftsQuery.data != null ? useState<Gift>(lists[0]) : null;
     final sizeController = useTextEditingController(text: "1");
 
     handleTotalCoins() {
       var count = int.parse(sizeController.value.text) ?? 0;
-      var price = selectedItem!.value?.price ?? 0;
+      var price = selectedItem?.value?.price ?? 0;
 
       setState(() {
         total = price * count;
@@ -58,7 +58,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
 
     return Flexible(
         child: Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(8.0),
       child: SingleChildScrollView(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -70,43 +70,53 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                   Flexible(
                     child: Text(
                       'Tặng vật phẩm',
-                      style: Theme.of(context).textTheme.headlineMedium,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(color: appColors.skyLightest),
                     ),
                   ),
                   Flexible(
                     child: Container(
-                      width: size.width / 3.5,
+                      width: size.width / 3,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           color: appColors.skyLightest,
                           borderRadius:
                               const BorderRadius.all(Radius.circular(50))),
                       child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Flexible(
+                              flex: 2,
                               child: GestureDetector(
-                            child: Image.asset(
-                              'assets/images/coin.png',
-                              width: 30,
-                              height: 30,
-                            ),
-                          )),
+                                child: Image.asset(
+                                  'assets/images/coin.png',
+                                  width: 24,
+                                  height: 24,
+                                ),
+                              )),
                           Flexible(
+                              flex: 2,
                               child: Text(
-                            '${widget.coins.toStringAsFixed(0)}',
-                            style: textTheme.titleMedium
-                                ?.copyWith(color: appColors.inkBase),
-                            textAlign: TextAlign.center,
-                          )),
+                                formatNumberWithSeperator(int.tryParse(
+                                    widget.coins.toStringAsFixed(0))),
+                                style: textTheme.titleMedium
+                                    ?.copyWith(color: appColors.inkBase),
+                                textAlign: TextAlign.center,
+                              )),
                           Flexible(
+                            flex: 2,
                             child: TextButton(
                                 onPressed: () {
                                   context.pushNamed('newPurchase',
                                       extra: {'currentUser': widget.userData});
                                 },
-                                child: const Icon(Icons.add)),
+                                child: Icon(
+                                  Icons.add,
+                                  color: appColors.inkBase,
+                                )),
                           ),
                         ],
                       ),
@@ -119,28 +129,32 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
               ),
               Skeletonizer(
                 enabled: giftsQuery.isFetching,
-                child: SizedBox(
-                  width: double.infinity,
-                  child: Wrap(
-                    direction: Axis.horizontal,
-                    alignment: WrapAlignment.start,
-                    spacing: 0,
-                    runSpacing: 12,
-                    children: lists
-                        .map((option) => GestureDetector(
-                            onTap: () {
-                              selectedItem?.value = option;
+                child: Center(
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: Wrap(
+                      textDirection: TextDirection.ltr,
+                      direction: Axis.horizontal,
+                      alignment: WrapAlignment.start,
+                      crossAxisAlignment: WrapCrossAlignment.start,
+                      spacing: 16,
+                      runSpacing: 12,
+                      children: lists
+                          .map((option) => GestureDetector(
+                              onTap: () {
+                                selectedItem?.value = option;
 
-                              handleTotalCoins();
-                              // handleSendingGift(selectedItem?.value as Gift);
-                            },
-                            child: Padding(
-                                padding: const EdgeInsets.only(right: 16),
-                                child: DonateItemCard(
-                                  gift: option,
-                                  selected: (selectedItem?.value == option),
-                                ))))
-                        .toList(),
+                                handleTotalCoins();
+                                // handleSendingGift(selectedItem?.value as Gift);
+                              },
+                              child: Padding(
+                                  padding: const EdgeInsets.only(right: 2),
+                                  child: DonateItemCard(
+                                    gift: option,
+                                    selected: (selectedItem?.value == option),
+                                  ))))
+                          .toList(),
+                    ),
                   ),
                 ),
               ),

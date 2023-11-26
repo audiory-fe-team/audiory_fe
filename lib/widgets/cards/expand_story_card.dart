@@ -21,7 +21,7 @@ class ExpandedStoryCard extends StatelessWidget {
         context.push("/story/$id");
       },
       child: Column(
-        mainAxisSize: MainAxisSize.min,
+        mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

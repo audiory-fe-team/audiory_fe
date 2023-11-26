@@ -11,7 +11,6 @@ import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -52,32 +51,34 @@ class StoryDetailTab extends HookWidget {
       staleDuration: const Duration(minutes: 1),
     );
 
-    handleSendingGift(Gift gift, total) async {
+    handleSendingGift(Gift? gift, total) async {
       var totalCoinsOfUser = userQuery.data?.wallets![0].balance ?? 0;
-      if (double.parse('${gift.price! * total}') >
+      if (double.parse('${(gift?.price ?? 0) * total}') >
           double.parse(totalCoinsOfUser.toString())) {
         AppSnackBar.buildTopSnackBar(
             context, 'Không đủ số dư', null, SnackBarType.info);
       } else {
         try {
           Map<String, String> body = {
-            'product_id': gift.id,
+            'product_id': gift?.id ?? '',
             'author_id': story?.authorId ?? '',
           };
           for (var i = 0; i < total; i++) {
             await GiftRepository().donateGift(story?.id, body);
           }
+          context.pop();
+          AppSnackBar.buildTopSnackBar(
+              context,
+              'Tặng $total ${gift?.name} thành công',
+              null,
+              SnackBarType.success);
+          donatorsQuery.refetch();
+          userQuery.refetch(); //refetch coins
         } catch (e) {
           // ignore: use_build_context_synchronously
           AppSnackBar.buildTopSnackBar(
               context, 'Tặng quà không thành công', null, SnackBarType.error);
         }
-
-        context.pop();
-        AppSnackBar.buildTopSnackBar(context,
-            'Tặng $total ${gift.name} thành công', null, SnackBarType.success);
-        donatorsQuery.refetch();
-        userQuery.refetch(); //refetch coins
       }
     }
 
@@ -124,15 +125,16 @@ class StoryDetailTab extends HookWidget {
       }
 
       Widget topThreeDonatorCard(Profile? donator, int order) {
-        double defaultContainerSize = 110;
+        final size = MediaQuery.of(context).size;
+        double defaultContainerSize = size.width * 0.25;
         Color defaultColor = appColors?.skyLight ?? Colors.transparent;
         switch (order) {
           case 2:
-            defaultContainerSize = 90;
+            defaultContainerSize = size.width * 0.22;
             // defaultColor = appColors.primaryLight;
             break;
           case 3:
-            defaultContainerSize = 80;
+            defaultContainerSize = size.width * 0.18;
             // defaultColor = appColors.skyBase;
             break;
           default:
@@ -182,18 +184,22 @@ class StoryDetailTab extends HookWidget {
                 ]),
               ),
               const SizedBox(width: 4),
-              Text(
-                donator?.fullName ?? 'Ẩn danh',
-                style: textTheme.titleLarge,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              Container(
+                width: defaultContainerSize + 20,
+                child: Text(
+                  donator?.fullName ?? 'Ẩn danh',
+                  style: textTheme.titleMedium,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                ),
               ),
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
                   '${donator?.totalDonation ?? ''} điểm',
                   style:
-                      textTheme.bodyMedium?.copyWith(color: appColors?.skyDark),
+                      textTheme.bodySmall?.copyWith(color: appColors?.skyDark),
                 ),
               ),
             ],
@@ -376,11 +382,11 @@ class StoryDetailTab extends HookWidget {
                   textStyle: Theme.of(context)
                       .textTheme
                       .titleMedium
-                      ?.copyWith(color: appColors?.primaryBase),
+                      ?.copyWith(color: appColors?.inkBase),
                   icon: Icon(
                     Icons.card_giftcard,
-                    color: appColors?.primaryBase,
-                    size: 14,
+                    color: appColors?.inkBase,
+                    size: 16,
                   ),
                   iconPosition: 'start',
                   color: appColors?.primaryBase,

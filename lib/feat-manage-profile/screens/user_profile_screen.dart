@@ -1,11 +1,9 @@
-import 'dart:convert';
 import 'dart:math';
 
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_top_bar.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
-import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
@@ -13,9 +11,7 @@ import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
-import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -27,7 +23,6 @@ import '../../models/AuthUser.dart';
 import '../../models/Profile.dart';
 import '../../theme/theme_constants.dart';
 import '../../widgets/buttons/app_icon_button.dart';
-import '../../widgets/custom_app_bar.dart';
 import 'package:fquery/fquery.dart';
 
 class UserProfileScreen extends StatefulHookWidget {
@@ -106,51 +101,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
               ),
         SizedBox(height: marginBottom ?? 0),
       ]);
-    }
-
-    Widget followingCard() {
-      return Column(
-        children: [
-          ClipRRect(
-              borderRadius: BorderRadius.circular(40),
-              child:
-                  AppImage(url: '', width: 85, height: 85, fit: BoxFit.fill)),
-          const SizedBox(
-            height: 4,
-          ),
-          Text(
-            'Tác giả X',
-            style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(
-            height: 4,
-          ),
-          SizedBox(
-              height: 20,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/person.svg',
-                    width: 12,
-                    color: appColors.inkLighter,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '1,805 k',
-                    style: textTheme.titleSmall?.copyWith(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.w600,
-                        color: appColors.inkLighter),
-                    overflow: TextOverflow.ellipsis,
-                  )
-                ],
-              ))
-        ],
-      );
     }
 
     return SingleChildScrollView(
@@ -326,12 +276,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                     //   });
                                   },
                                   child: Container(
-                                    width: 130,
+                                    width: size.width / 3,
                                     child: Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Flexible(
+                                          flex: 2,
                                           child: Image.asset(
                                             'assets/images/coin.png',
                                             width: 30,
@@ -341,6 +292,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                         Skeletonizer(
                                           enabled: userByIdQuery.isFetching,
                                           child: Flexible(
+                                            flex: 2,
                                             child: Text(
                                               " ${userByIdQuery.data?.wallets?.isNotEmpty == true ? roundBalance(userByIdQuery.data?.wallets![0].balance) : '_'}",
                                               style: Theme.of(context)

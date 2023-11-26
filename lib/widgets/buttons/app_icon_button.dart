@@ -53,7 +53,7 @@ class AppIconButton extends StatelessWidget {
                         const VisualDensity(horizontal: -4, vertical: -2),
                     backgroundColor: bgColor ?? appColors.primaryBase,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(50),
                     ),
                     minimumSize: const Size(double.minPositive, 48),
                   ),
@@ -81,7 +81,7 @@ class AppIconButton extends StatelessWidget {
                         const VisualDensity(horizontal: -4, vertical: -2),
                     backgroundColor: bgColor ?? Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25),
+                      borderRadius: BorderRadius.circular(50),
                     ),
                     minimumSize: const Size(double.minPositive, 48),
                   ),
@@ -120,7 +120,7 @@ class AppIconButton extends StatelessWidget {
                       const VisualDensity(horizontal: -4, vertical: -2),
                   backgroundColor: bgColor ?? appColors.primaryBase,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(50),
                   ),
                   minimumSize: const Size(double.minPositive, 48),
                 ),

@@ -17,6 +17,7 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
+import 'package:go_router/go_router.dart';
 
 class NewPurchaseScreen extends StatefulHookWidget {
   final AuthUser? currentUser;
@@ -35,7 +36,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
   int tabState = 0;
   @override
   void initState() {
-    // TODO: implement initState
+    // TODO: implement initStateTônTôn
     super.initState();
 
     tabController = TabController(
@@ -78,6 +79,80 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
               context, 'Tạo thất bại', null, SnackBarType.info);
         }
       }
+    }
+
+    Future<void> showConfirmChapterDeleteDialog(
+        BuildContext context, price) async {
+      final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+      final textTheme = Theme.of(context).textTheme;
+      return showDialog<void>(
+        context: context, // User must tap button to close the dialog
+        builder: (BuildContext context) {
+          return AlertDialog(
+            backgroundColor: Colors.white,
+            title: Center(child: Text('Xác nhận rút?')),
+            content: Container(
+              height: 100,
+              child: Column(
+                children: [
+                  Text(
+                      'Bạn chắc chắn muốn rút ${price.toString()},000 kim cương'),
+                  Text(
+                      'Bạn sẽ nhận về ví ${double.tryParse(price)?.toStringAsFixed(0)} đồng')
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: Text(
+                  'Hủy',
+                  style: textTheme.titleMedium,
+                ),
+                onPressed: () {
+                  context.pop(); // Dismiss the dialog
+                },
+              ),
+              Container(
+                width: 70,
+                height: 30,
+                child: AppIconButton(
+                  bgColor: appColors.secondaryLight,
+                  color: appColors.skyLight,
+                  title: 'Có',
+                  onPressed: () async {
+                    // Perform the action
+                    _formKey.currentState!.save();
+                    if (_formKey.currentState!.validate()) {
+                      // If the form is valid, display a Snackbar.
+                      Map<String, dynamic> body = {
+                        'total_price': int.tryParse(
+                                _formKey.currentState!.fields['num']?.value) ??
+                            0,
+                        'user_payment_method_id':
+                            'af0975b8-8575-11ee-97b6-0242c0a8a002'
+                      };
+                      try {
+                        await PaymentMethodRepository().withdraw(body);
+                        AppSnackBar.buildTopSnackBar(context,
+                            'Rút về ví thành công', null, SnackBarType.success);
+                      } catch (e) {
+                        print(e);
+                        AppSnackBar.buildTopSnackBar(
+                            context,
+                            'Rút về ví không thành công',
+                            null,
+                            SnackBarType.error);
+                      }
+                    }
+                    context.pop(); // Dismiss the dialog
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+      );
     }
 
     return Scaffold(
@@ -201,25 +276,34 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                              child: Text(
-                            'Ví kim cương',
-                            style: textTheme.titleLarge,
-                          )),
-                          Flexible(
-                              child: Text(
-                            formatNumberWithSeperator(
-                                widget.currentUser?.wallets![1].balance ?? 0),
-                            style: textTheme.titleLarge,
-                          )),
-                        ],
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                                flex: 2,
+                                child: Text(
+                                  formatNumberWithSeperator(
+                                      widget.currentUser?.wallets![1].balance ??
+                                          0),
+                                  style: textTheme.headlineMedium,
+                                )),
+                            Flexible(
+                              flex: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 10.0),
+                                child: Image.asset('assets/images/diamond.png',
+                                    width: 24),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                       FormBuilder(
                         key: _formKey,
                         child: AppTextInputField(
+                          textAlign: TextAlign.center,
                           label: 'Nhập số kim cương muốn rút',
                           name: 'num',
                           validator: (value) {
@@ -230,7 +314,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                                 (widget.currentUser?.wallets![0].balance ??
                                     0)) {
                               return 'Nhiều hơn số lượng có thể rút';
-                            } else if (int.tryParse(value)! < 50) {
+                            } else if (int.tryParse(value)! < 2) {
                               // Replace 10 with your min value
                               return 'Tối thiểu 50 kim cương';
                             }
@@ -251,7 +335,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                               return Container(
                                   padding: EdgeInsets.all(6),
                                   decoration: BoxDecoration(
-                                      color: appColors.secondaryLightest,
+                                      color: appColors.skyLight,
                                       borderRadius: BorderRadius.circular(10)),
                                   child: Column(
                                     children: [
@@ -278,30 +362,8 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                           onPressed: () async {
                             _formKey.currentState!.save();
                             if (_formKey.currentState!.validate()) {
-                              // If the form is valid, display a Snackbar.
-                              Map<String, dynamic> body = {
-                                'total_price': int.tryParse(_formKey
-                                        .currentState!.fields['num']?.value) ??
-                                    0,
-                                'user_payment_method_id':
-                                    'af0975b8-8575-11ee-97b6-0242c0a8a002'
-                              };
-                              print('with');
-                              try {
-                                await PaymentMethodRepository().withdraw(body);
-                                AppSnackBar.buildTopSnackBar(
-                                    context,
-                                    'Rút về ví thành công',
-                                    null,
-                                    SnackBarType.success);
-                              } catch (e) {
-                                print(e);
-                                AppSnackBar.buildTopSnackBar(
-                                    context,
-                                    'Rút về ví không thành công',
-                                    null,
-                                    SnackBarType.error);
-                              }
+                              showConfirmChapterDeleteDialog(context,
+                                  _formKey.currentState!.fields['num']?.value);
                             }
                           },
                           title: 'Rút tiền',

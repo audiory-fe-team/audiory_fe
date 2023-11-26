@@ -58,7 +58,7 @@ class AppTextInputField extends StatefulWidget {
     this.hintText = '',
     this.isTextArea = false,
     this.minLines = 1,
-    this.maxLines = 1,
+    this.maxLines = 10,
     this.hintTextStyle,
     this.prefixIcon,
     this.suffixIcon,
@@ -113,8 +113,12 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
       keyboardType: widget.textInputType,
       name: widget.name,
       initialValue: widget.initialValue!,
-      minLines: widget.minLines!,
-      maxLines: widget.maxLines!, //dynamic height
+      minLines: widget.textInputType == TextInputType.visiblePassword
+          ? 1
+          : widget.minLines!,
+      maxLines: widget.textInputType == TextInputType.visiblePassword
+          ? 1
+          : widget.maxLines!, //dynamic height
       maxLength: widget.maxLengthCharacters,
       cursorColor: appColors.primaryBase,
       decoration: InputDecoration(

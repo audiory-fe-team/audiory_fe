@@ -4,6 +4,7 @@ import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class AppAvatarImage extends StatelessWidget {
   final String? url;
@@ -83,14 +84,6 @@ class AppAvatarImage extends StatelessWidget {
         ? Container(
             height: (size ?? 65) + 100,
             width: double.infinity,
-            // decoration: BoxDecoration(color: appColors.inkBase),
-            // decoration: BoxDecoration(
-            //     image: DecorationImage(
-            //   opacity: 0.7,
-            //   image: CachedNetworkImageProvider(
-            //       backgroundUrl ?? FALLBACK_BACKGROUND_URL),
-            //   fit: BoxFit.fill,
-            // )),
             child: Stack(alignment: Alignment.center, children: [
               Container(
                 width: size ?? 65,
@@ -127,10 +120,10 @@ class AppAvatarImage extends StatelessWidget {
               decoration: ShapeDecoration(
                 image: DecorationImage(
                   image: CachedNetworkImageProvider(url == null
-                      ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTE5fPhctwNLodS9VmAniEw_UiLWHgKs0fs1w&usqp=CAU'
+                      ? DEFAULT_AVATAR
                       : url == ''
-                          ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTE5fPhctwNLodS9VmAniEw_UiLWHgKs0fs1w&usqp=CAU'
-                          : url as String),
+                          ? DEFAULT_AVATAR
+                          : url ?? ''),
                   fit: BoxFit.fill,
                 ),
                 shape: const CircleBorder(),

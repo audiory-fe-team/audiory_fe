@@ -1,14 +1,10 @@
-import 'dart:convert';
-
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/utils/widget_helper.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
-import 'package:audiory_v0/widgets/buttons/rounded_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 //auth
 import "package:firebase_auth/firebase_auth.dart";
@@ -51,13 +47,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  Widget _errorMessage() {
-    return Text(
-      errorMessage,
-      style: const TextStyle(color: Colors.red),
-    );
-  }
-
   void _displaySnackBar(String? content) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
@@ -79,6 +68,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         emailController.text.isEmpty || passwordController.text.isEmpty;
     return SizedBox(
       width: double.infinity,
+      height: 56,
       child: AppIconButton(
           title: 'Đăng nhập',
           bgColor: isInvalid ? appColors.skyDark : appColors.primaryBase,
@@ -113,6 +103,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         AppSnackBar.buildTopSnackBar(context,
                             'Đăng nhập thành công', null, SnackBarType.success);
                       } else {
+                        // ignore: use_build_context_synchronously
                         AppSnackBar.buildTopSnackBar(
                             context,
                             'Sai tên đăng nhập hoặc mật khẩu',
@@ -128,30 +119,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _linkToRegisterScreen(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          'Chưa có tài khoản?',
-          textAlign: TextAlign.right,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(),
-        ),
-        GestureDetector(
-          onTap: () => {context.go('/register')},
-          child: Text(
+    return GestureDetector(
+      onTap: () => {context.go('/register')},
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Chưa có tài khoản?',
+            textAlign: TextAlign.right,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(),
+          ),
+          Text(
             ' Đăng ký',
             textAlign: TextAlign.right,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold, color: Color(0xFF439A97)),
+                fontWeight: FontWeight.bold, color: const Color(0xFF439A97)),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final AppColors? appColors = Theme.of(context).extension<AppColors>();
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     double size = MediaQuery.of(context).size.height;
 
@@ -185,113 +176,48 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Column(
                         children: <Widget>[
                           Container(
+                            height: 56,
                             margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
-                              onSaved: (event) {
-                                emailController.text.isEmpty
-                                    ? _displaySnackBar('Không được để trống')
-                                    : null;
-                              },
-                              controller: emailController,
-                              decoration: const InputDecoration(
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    style: BorderStyle.solid,
-                                    color: Color(0xFF439A97),
-                                  ),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(80)),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    style: BorderStyle.solid,
-                                    color: Color(0xFF439A97),
-                                  ),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(80)),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    style: BorderStyle.solid,
-                                    color: Color(0xFF439A97),
-                                  ),
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(80)),
-                                ),
-                                filled: true,
-                                hintStyle: TextStyle(
-                                    color: Color.fromARGB(255, 228, 212, 212)),
-                                fillColor: Colors.white70,
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 1.0, horizontal: 24),
-                                labelText: "Tên đăng nhập / Email",
-                                focusColor: Colors.black12,
-                              ),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Nhập tên đăng nhập của bạn';
-                              //   }
-                              //   return null;
-                              // },
-                            ),
+                                controller: emailController,
+                                decoration: appInputDecoration(context)
+                                    .copyWith(
+                                        label: Text(
+                                          'Tên đăng nhập / Email',
+                                          style: TextStyle(
+                                              color: appColors.inkLight),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 16))),
                           ),
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
-                              onSaved: (event) {
-                                emailController.text.isEmpty
-                                    ? AppSnackBar.buildSnackbar(
-                                        context,
-                                        'Không được để trống',
-                                        null,
-                                        SnackBarType.error)
-                                    : null;
-                              },
-                              controller: passwordController,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      style: BorderStyle.solid,
-                                      color: appColors!.primaryBase,
-                                    ),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(80)),
-                                  ),
-                                  border: const OutlineInputBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(80)),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      style: BorderStyle.solid,
-                                      color: appColors.primaryBase,
-                                    ),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(80)),
-                                  ),
-                                  filled: true,
-                                  hintStyle: const TextStyle(
-                                    color: Color.fromARGB(255, 228, 212, 212),
-                                    fontSize: 24,
-                                    fontFamily: 'Source San Pro',
-                                    fontWeight: FontWeight.w400,
-                                    letterSpacing: 0.06,
-                                  ),
-                                  fillColor: Colors.white70,
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 24.0),
-                                  labelText: "Mật khẩu"),
-                              // validator: (value) {
-                              //   if (value == null || value.isEmpty) {
-                              //     return 'Nhập mật khẩu của bạn';
-                              //   }
-                              //   return null;
-                              // },
-                            ),
+                                onSaved: (event) {
+                                  emailController.text.isEmpty
+                                      ? AppSnackBar.buildSnackbar(
+                                          context,
+                                          'Không được để trống',
+                                          null,
+                                          SnackBarType.error)
+                                      : null;
+                                },
+                                controller: passwordController,
+                                obscureText: true,
+                                decoration: appInputDecoration(context)
+                                    .copyWith(
+                                        label: Text(
+                                          'Mật khẩu',
+                                          style: TextStyle(
+                                              color: appColors.inkLight),
+                                        ),
+                                        contentPadding:
+                                            const EdgeInsets.symmetric(
+                                                horizontal: 16))),
                           ),
                           Container(
-                            margin: const EdgeInsets.symmetric(vertical: 4.0),
+                            margin: const EdgeInsets.symmetric(vertical: 8.0),
                             width: double.infinity,
                             child: GestureDetector(
                               onTap: () => {context.push('/forgotPassword')},
@@ -306,13 +232,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           fontWeight: FontWeight.bold)),
                             ),
                           ),
-                          _errorMessage(),
                           _submitButton(),
                         ],
                       ),
                       Container(
                         width: double.infinity,
-                        margin: EdgeInsets.only(top: 16),
+                        height: 56,
+                        margin: const EdgeInsets.only(top: 16),
                         child: AppIconButton(
                           onPressed: () {
                             signInGoogle();
@@ -323,6 +249,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                       Container(
+                          height: 56,
                           width: double.infinity,
                           margin: const EdgeInsets.symmetric(vertical: 8.0),
                           child: _linkToRegisterScreen(context)),

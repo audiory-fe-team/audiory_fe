@@ -7,7 +7,8 @@ import 'package:audiory_v0/theme/theme_manager.dart';
 import 'package:flutter/material.dart';
 //auth
 import "package:firebase_core/firebase_core.dart";
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:fquery/fquery.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -63,6 +64,18 @@ class MyApp extends ConsumerWidget {
             ? const SkeletonizerConfigData.light()
             : const SkeletonizerConfigData.dark(),
         child: MaterialApp.router(
+          locale: const Locale('vi', ''), // Set the locale to Vietnamese
+          supportedLocales: const [
+            Locale('en', ''), // English
+            Locale('vi', ''), // Vietnamese
+            // Add other supported locales here
+          ],
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+
           debugShowCheckedModeBanner: false,
           title: 'Audiory app',
           theme: lightTheme,
