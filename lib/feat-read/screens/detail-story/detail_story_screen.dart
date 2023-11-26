@@ -21,6 +21,7 @@ import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/utils/format_number.dart';
+import 'package:audiory_v0/widgets/app_cache_image.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
@@ -265,11 +266,17 @@ class DetailStoryScreen extends HookConsumerWidget {
           ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Skeleton.shade(
-                child: AppImage(
-                    url: story?.coverUrl,
-                    width: 110,
-                    height: 165,
-                    fit: BoxFit.fill),
+                child: isAddedToLibrary == true
+                    ? AppCacheImage(
+                        url: story?.coverUrl,
+                        width: 110,
+                        height: 165,
+                        fit: BoxFit.fill)
+                    : AppImage(
+                        url: story?.coverUrl,
+                        width: 110,
+                        height: 165,
+                        fit: BoxFit.fill),
               )),
           const SizedBox(height: 24),
           Text(

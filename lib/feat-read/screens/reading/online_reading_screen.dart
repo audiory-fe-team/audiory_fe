@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/constants/theme_options.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
-import 'package:audiory_v0/feat-read/screens/reading/deep_share_sheet.dart';
+import 'package:audiory_v0/feat-read/screens/reading/share_link_sheet.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
@@ -131,7 +131,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
           useSafeArea: true,
           context: context,
           builder: (_) {
-            return DeepShareSheet(
+            return ShareLinkSheet(
                 appRoutePath: '/story/$storyId/chapter/$chapterId');
           });
     }
@@ -309,7 +309,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
         }
       });
 
-      final timer = Timer.periodic(const Duration(seconds: 60), (Timer t) {
+      final timer = Timer.periodic(const Duration(seconds: 30), (Timer t) {
         if (scrollController.hasClients) {
           final offset = scrollController.offset.floor();
           ReadingProgressRepository.updateProgress(
@@ -386,6 +386,10 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                     localPlayer.seek(null, index: index);
                                   }
                                 },
+                                onLongPress: () {
+                                  curParaIndex.value = index;
+                                  handleOpenCommentPara(para.id);
+                                },
                                 child: SizedBox(
                                   key: key,
                                   width: double.infinity,
@@ -421,34 +425,41 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                           bottom: -3,
                                           right: 0,
                                           child: IconButton(
-                                              visualDensity:
-                                                  const VisualDensity(
-                                                      horizontal: -4,
-                                                      vertical: -4),
+                                              style: IconButton.styleFrom(
+                                                  elevation: 1,
+                                                  padding:
+                                                      const EdgeInsets.all(4),
+                                                  backgroundColor:
+                                                      THEME_OPTIONS[selectedOption.value]
+                                                          ['audioBackground']),
+                                              visualDensity: const VisualDensity(
+                                                  horizontal: -4, vertical: -4),
                                               onPressed: () =>
                                                   handleOpenCommentPara(
                                                       para.id),
-                                              icon: Icon(
-                                                  Icons.mode_comment_outlined,
-                                                  size: 16,
-                                                  color: THEME_OPTIONS[
-                                                          selectedOption.value]
-                                                      ['audioBackground']))),
+                                              icon: Icon(Icons.chat_bubble_outline,
+                                                  size: 15,
+                                                  color: THEME_OPTIONS[selectedOption.value]
+                                                      ['textColor']))),
                                     if (showCommentByParagraph.value == true &&
                                         (para.commentCount ?? 0) > 0)
                                       Positioned(
-                                          bottom: 14,
-                                          right: 18,
-                                          child: Text('${para.commentCount}',
-                                              style: textTheme.labelMedium
+                                          bottom: 9.5,
+                                          right: 14,
+                                          child: Text(
+                                              '${para.commentCount}',
+                                              style: textTheme
+                                                  .labelLarge
                                                   ?.copyWith(
-                                                      color: THEME_OPTIONS[
-                                                              selectedOption
-                                                                  .value]
-                                                          ['audioBackground'],
+                                                      color:
+                                                          THEME_OPTIONS[
+                                                                  selectedOption
+                                                                      .value]
+                                                              ['textColor'],
                                                       fontFamily: GoogleFonts
                                                               .sourceSansPro()
                                                           .fontFamily,
+                                                      fontSize: 8,
                                                       fontWeight:
                                                           FontWeight.w600))),
                                   ]),

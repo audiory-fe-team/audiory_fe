@@ -1,5 +1,5 @@
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
-import 'package:audiory_v0/feat-read/screens/reading/deep_share_sheet.dart';
+import 'package:audiory_v0/feat-read/screens/reading/share_link_sheet.dart';
 import 'package:audiory_v0/feat-read/screens/reading/setting_modal.dart';
 import 'package:audiory_v0/repositories/activities_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -25,7 +25,6 @@ class ReadingBottomBar extends HookWidget {
     final settingOpen = useState(false);
     final AppColors? appColors = Theme.of(context).extension<AppColors>();
 
-    print(isVoted);
     void handleOpenChapter() {
       Scaffold.of(context).openDrawer();
     }
@@ -107,7 +106,7 @@ class ReadingBottomBar extends HookWidget {
           useSafeArea: true,
           context: context,
           builder: (_) {
-            return DeepShareSheet(
+            return ShareLinkSheet(
                 appRoutePath: '/story/$storyId/chapter/$chapterId');
           });
     }

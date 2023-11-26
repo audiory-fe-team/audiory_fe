@@ -551,7 +551,9 @@ class SearchStoryFilter extends HookWidget {
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
-                            ?.copyWith(color: appColors?.inkLight),
+                            ?.copyWith(
+                                color: appColors?.inkLight,
+                                overflow: TextOverflow.ellipsis),
                       )
                     ]);
                   }).toList(),
@@ -662,10 +664,9 @@ class SearchStoryFilter extends HookWidget {
                         )),
                     Text(
                       category.name ?? 'option',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(color: appColors?.inkLight),
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: appColors?.inkLight,
+                          overflow: TextOverflow.ellipsis),
                     )
                   ]);
                 }).toList(),
