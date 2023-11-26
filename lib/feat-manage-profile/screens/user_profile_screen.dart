@@ -544,7 +544,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         () => StoryRepostitory().fetchReadingStoriesByUserId('me'),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5));
-    print(jwt);
     return SafeArea(
       child: Scaffold(
         appBar: UserProfileTopBar(

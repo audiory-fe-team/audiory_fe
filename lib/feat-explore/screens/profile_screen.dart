@@ -1,13 +1,11 @@
 import 'dart:math';
 
 import 'package:audiory_v0/constants/fallback_image.dart';
-import 'package:audiory_v0/core/shared_preferences/helper.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/Profile.dart';
-import 'package:audiory_v0/models/author-story/author_story_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
@@ -34,13 +32,8 @@ import 'package:skeletonizer/skeletonizer.dart';
 
 class AppProfileScreen extends StatefulHookWidget {
   final String id;
-  final String? name;
-  final String? avatar;
-  const AppProfileScreen(
-      {super.key,
-      this.name = 'Tên tác giả',
-      this.avatar = '',
-      required this.id});
+
+  const AppProfileScreen({super.key, required this.id});
 
   @override
   State<AppProfileScreen> createState() => _AppProfileScreenState();
@@ -401,7 +394,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                             Skeletonizer(
                                 enabled: profileQuery.isFetching,
                                 child: AppAvatarImage(
-                                  url: widget.avatar,
+                                  url: profileQuery.data?.avatarUrl,
                                   size: 100,
                                   hasLevel: profileQuery
                                               .data?.isAuthorFlairSelected ==
@@ -417,7 +410,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                                 )),
                             const SizedBox(height: 8),
                             Text(
-                              widget.name ?? 'Họ và tên',
+                              profileQuery.data?.fullName ?? 'Họ và tên',
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.headlineMedium,
                             ),
@@ -654,7 +647,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                           context: context,
                           type: QuickAlertType.confirm,
                           title:
-                              'Xác nhận dừng tương tác người dùng ${widget.name == '' ? 'này' : widget.name}?',
+                              'Xác nhận dừng tương tác người dùng ${profileQuery.data?.fullName == '' ? 'này' : profileQuery.data?.fullName}?',
                           titleAlignment: TextAlign.center,
                           confirmBtnText: 'Xác nhận',
                           cancelBtnText: 'Hủy',
@@ -674,7 +667,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                           context: context,
                           type: QuickAlertType.confirm,
                           title:
-                              'Xác nhận chặn người dùng ${widget.name == '' ? 'này' : widget.name}?',
+                              'Xác nhận chặn người dùng ${profileQuery.data?.fullName == '' ? 'này' : profileQuery.data?.fullName}?',
                           titleAlignment: TextAlign.center,
                           confirmBtnText: 'Xác nhận',
                           cancelBtnText: 'Hủy',
