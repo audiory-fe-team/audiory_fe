@@ -101,7 +101,6 @@ class HomeScreen extends HookConsumerWidget {
                           : const SizedBox(
                               height: 0,
                             )),
-
                   Skeletonizer(
                       enabled: recommendStoriesQuery.isFetching,
                       child: StoryGridList(

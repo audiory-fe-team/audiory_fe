@@ -122,6 +122,17 @@ class CommentScreen extends HookWidget {
                   },
                   child: AppInfiniteScrollList(
                     controller: commentsPagingController,
+                    noItemsFoundIndicatorBuilder: (context) {
+                      return Center(
+                          child: Column(children: [
+                        Icon(Icons.connect_without_contact_rounded,
+                            size: 36, color: appColors.primaryBase),
+                        const Text(
+                          'Chưa có bình luận.\n Hãy là người đầu tiên bắt đầu cuộc trò chuyện!',
+                          textAlign: TextAlign.center,
+                        )
+                      ]));
+                    },
                     itemBuilder: (context, item, index) => Padding(
                         padding: const EdgeInsets.only(top: 12),
                         child: CommentCard(

@@ -7,6 +7,7 @@ import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_cache_image.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:dio/dio.dart';
@@ -180,7 +181,7 @@ class CurrentReadCard extends HookWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    AppImage(
+                    AppCacheImage(
                         url: coverUrl,
                         width: 85,
                         height: 120,

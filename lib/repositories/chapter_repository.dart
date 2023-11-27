@@ -85,11 +85,6 @@ class ChapterRepository {
       "Content-type": "application/json",
       "Accept": "application/json",
     };
-    final jwt = await storage.read(key: 'jwt');
-
-    if (jwt != null) {
-      headers['Authorization'] = 'Bearer $jwt';
-    }
 
     if (jwtToken != null) {
       headers['Authorization'] = 'Bearer $jwtToken';
