@@ -16,7 +16,7 @@ class SearchTagScreen extends HookWidget {
   final String tagName;
   const SearchTagScreen(
       {super.key, required this.tagId, required this.tagName});
-  static const _pageSize = 10;
+  static const _pageSize = 100;
 
   @override
   Widget build(BuildContext context) {

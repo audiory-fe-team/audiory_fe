@@ -68,7 +68,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         emailController.text.isEmpty || passwordController.text.isEmpty;
     return SizedBox(
       width: double.infinity,
-      height: 56,
+      height: 50,
       child: AppIconButton(
           title: 'Đăng nhập',
           bgColor: isInvalid ? appColors.skyDark : appColors.primaryBase,
@@ -147,7 +147,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     double size = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -157,7 +157,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             children: <Widget>[
               Container(
                   margin: const EdgeInsets.symmetric(vertical: 2.0),
-                  height: size * 0.30,
+                  height: size * 0.25,
                   child: const Image(
                       height: double.maxFinite,
                       image:
@@ -176,7 +176,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       Column(
                         children: <Widget>[
                           Container(
-                            height: 56,
+                            height: 50,
                             margin: const EdgeInsets.symmetric(vertical: 8.0),
                             child: TextFormField(
                                 controller: emailController,
@@ -237,7 +237,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       Container(
                         width: double.infinity,
-                        height: 56,
+                        height: 50,
                         margin: const EdgeInsets.only(top: 16),
                         child: AppIconButton(
                           onPressed: () {
@@ -249,7 +249,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ),
                       Container(
-                          height: 56,
+                          height: 50,
                           width: double.infinity,
                           margin: const EdgeInsets.symmetric(vertical: 8.0),
                           child: _linkToRegisterScreen(context)),

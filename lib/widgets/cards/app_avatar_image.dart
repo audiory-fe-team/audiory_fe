@@ -90,16 +90,20 @@ class AppAvatarImage extends StatelessWidget {
                 height: size ?? 65,
                 decoration: ShapeDecoration(
                   color: appColors.inkBase,
-                  image: DecorationImage(
-                    image: CachedNetworkImageProvider(url == null
-                        ? DEFAULT_AVATAR
-                        : url == ''
-                            ? DEFAULT_AVATAR
-                            : url ?? ''),
-                    fit: BoxFit.fill,
-                  ),
+                  // image: DecorationImage(
+                  //   image:
+                  //   fit: BoxFit.fill,
+                  // ),
                   shape: const CircleBorder(),
                 ),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: AppImage(
+                      url: url,
+                      fit: BoxFit.fill,
+                      width: size,
+                      height: size,
+                    )),
               ),
               hasLevel == true || hasAuthorLevel == true
                   ? Positioned(
@@ -118,16 +122,26 @@ class AppAvatarImage extends StatelessWidget {
               width: size ?? 65,
               height: size ?? 65,
               decoration: ShapeDecoration(
-                image: DecorationImage(
-                  image: CachedNetworkImageProvider(url == null
-                      ? DEFAULT_AVATAR
-                      : url == ''
-                          ? DEFAULT_AVATAR
-                          : url ?? ''),
-                  fit: BoxFit.fill,
-                ),
+                // image: DecorationImage(
+                //   image: CachedNetworkImageProvider(
+                //       url == null
+                //           ? DEFAULT_AVATAR
+                //           : url == ''
+                //               ? DEFAULT_AVATAR
+                //               : url ?? '',
+                //       errorListener: (_) {}),
+                //   fit: BoxFit.fill,
+                // ),
                 shape: const CircleBorder(),
               ),
+              child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100),
+                  child: AppImage(
+                    url: url,
+                    fit: BoxFit.fill,
+                    width: size,
+                    height: size,
+                  )),
             ),
             isOnline == true
                 ? Positioned(

@@ -104,7 +104,7 @@ class StoryRepostitory {
     };
     const storage = FlutterSecureStorage();
     String? jwtToken = await storage.read(key: 'jwt');
-
+    print(jwtToken);
     if (jwtToken != null) {
       headers['Authorization'] = 'Bearer $jwtToken';
     }

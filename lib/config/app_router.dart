@@ -277,6 +277,7 @@ class AppRoutes {
               builder: (_, GoRouterState state) {
                 final tagId = state.pathParameters["tagId"];
                 final tagName = state.queryParameters["tagName"];
+                print(tagName);
                 if (tagId != null && tagName != null) {
                   return SearchTagScreen(tagId: tagId, tagName: tagName);
                 }
