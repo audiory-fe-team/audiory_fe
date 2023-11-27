@@ -140,6 +140,34 @@ class ChapterRepository {
     return null;
   }
 
+  Future<Chapter?> fetchAuthorChapterById(String? chapterId) async {
+    final storage = FlutterSecureStorage();
+    final jwt = await storage.read(key: 'jwt');
+    if (chapterId == null) {
+      throw Exception('Failed to fetch chapter');
+    }
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
+    if (jwt != null) {
+      header['Authorization'] = 'Bearer $jwt';
+    }
+
+    try {
+      final response = await dio.get("$chapterEndpoint/$chapterId/draft",
+          options: Options(headers: header));
+
+      final Chapter chapter = Chapter.fromJson(response.data['data']);
+
+      return chapter;
+    } catch (e) {
+      print('cast error');
+      print(e);
+    }
+    return null;
+  }
+
   static Future<List<Comment>> fetchCommentsByChapterId(
       {required String chapterId,
       int offset = 1,

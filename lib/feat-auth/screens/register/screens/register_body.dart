@@ -39,7 +39,8 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
             _formKey.currentState?.save();
             try {
               final result = await AuthRepository().verifyEmail(
-                  email: _formKey.currentState?.fields['email']?.value);
+                  email: _formKey.currentState?.fields['email']?.value,
+                  username: _formKey.currentState?.fields['username']?.value);
               if (result == 200) {
                 Map<String, String> body = {
                   'email': _formKey.currentState?.fields['email']?.value,
@@ -47,8 +48,8 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                   'username': _formKey.currentState?.fields['username']?.value,
                 };
                 // ignore: use_build_context_synchronously
-                context.push('/flowOne',
-                    extra: {'signUpBody': body}); //allow back button
+                // context.push('/flowOne',
+                //     extra: {'signUpBody': body}); //allow back button
                 // ignore: use_build_context_synchronously
                 AppSnackBar.buildTopSnackBar(
                     context,

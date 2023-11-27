@@ -183,7 +183,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
       ['chapterById${widget.chapterId}', widget.chapter?.currentVersionId],
       enabled: true,
       refetchOnMount: RefetchOnMount.always,
-      () => ChapterRepository().fetchChapterById(widget.chapterId),
+      () => ChapterRepository().fetchAuthorChapterById(widget.chapterId),
     );
 
     final chapterVersionsQuery = useQuery(

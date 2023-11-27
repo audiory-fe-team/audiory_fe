@@ -14,6 +14,7 @@ import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -169,32 +170,62 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: Material(
-                  child: InkWell(
-                    onTap: () async {
-                      context.push('/profile');
-                    },
-                    customBorder: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100.0),
-                    ),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(400),
-                        child: AppImage(
-                            url: widget.userProfile?.avatarUrl,
-                            width: size.width / 3.5,
-                            height: size.width / 3.5,
-                            fit: BoxFit.fill)),
-                  ),
-                ),
-              ),
               FormBuilder(
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment:
                       MainAxisAlignment.spaceEvenly, // <-- SEE HERE
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 100),
+                      child: Stack(alignment: Alignment.bottomRight, children: [
+                        FormBuilderImagePicker(
+                          initialValue: [profileQuery.data?.avatarUrl ?? ''],
+                          iconColor: appColors.inkBase,
+                          placeholderWidget: Stack(
+                              alignment: AlignmentDirectional.center,
+                              children: [
+                                Container(
+                                  height: size.width / 3,
+                                  width: size.height / 3,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: appColors.skyLighter),
+                                ),
+                                Positioned(
+                                    child: Icon(
+                                  Icons.image,
+                                  color: appColors.inkLight,
+                                ))
+                              ]),
+
+                          transformImageWidget: (context, displayImage) =>
+                              Center(
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                child: SizedBox(
+                                  width: size.width / 3,
+                                  height: size.width / 3,
+                                  child: displayImage,
+                                )),
+                          ),
+                          showDecoration: true,
+                          galleryIcon: Icon(
+                            Icons.image,
+                            color: appColors.primaryBase,
+                          ),
+                          galleryLabel: const Text('Thư viện ảnh'),
+
+                          fit: BoxFit.cover,
+                          backgroundColor: appColors.skyLighter,
+                          availableImageSources: const [
+                            ImageSourceOption.gallery
+                          ], //only gallery
+                          name: 'photos',
+                          maxImages: 1,
+                        ),
+                      ]),
+                    ),
                     AppTextInputField(
                       name: 'full_name',
                       label: 'Tên gọi',
