@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import 'package:audiory_v0/config/app_router.dart';
+import 'package:audiory_v0/providers/global_me_provider.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/theme/theme_manager.dart';
 
@@ -56,8 +58,19 @@ Future<void> main() async {
 
 class MyApp extends ConsumerWidget {
   @override
+  setUserInfoProvider(WidgetRef ref) async {
+    try {
+      final res = await AuthRepository().getMyInfo();
+      ref.read(globalMeProvider.notifier).setUser(res);
+    } catch (error) {
+      print(error);
+    }
+  }
+
   Widget build(BuildContext context, WidgetRef ref) {
     final _themeNotifier = ref.watch(themeNotifierProvider);
+
+    setUserInfoProvider(ref);
 
     return SkeletonizerConfig(
         data: _themeNotifier.themeMode == ThemeMode.light

@@ -243,16 +243,16 @@ class OfflineReadingScreen extends HookConsumerWidget {
                           ),
                           const SizedBox(height: 24),
 
-                          ChapterAudioPlayer(
-                            player: localPlayer,
-                            onFirstPlay: () {
-                              player.stop();
-                              ref
-                                  .read(audioPlayerProvider.notifier)
-                                  .setPlayer(localPlayer);
-                            },
-                            selectedThemeOption: selectedOption.value,
-                          ),
+                          // ChapterAudioPlayer(
+                          //   player: localPlayer,
+                          //   onFirstPlay: () {
+                          //     player.stop();
+                          //     ref
+                          //         .read(audioPlayerProvider.notifier)
+                          //         .setPlayer(localPlayer);
+                          //   },
+                          //   selectedThemeOption: selectedOption.value,
+                          // ),
 
                           const SizedBox(height: 24),
                           ...((chapter.connectionState ==
