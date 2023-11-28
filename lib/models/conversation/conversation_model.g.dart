@@ -20,6 +20,7 @@ _$ConversationImpl _$$ConversationImplFromJson(Map<String, dynamic> json) =>
       lastMessage: json['last_message'] == null
           ? null
           : Message.fromJson(json['last_message'] as Map<String, dynamic>),
+      isLatestMessageRead: json['is_latest_message_read'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$ConversationImplToJson(_$ConversationImpl instance) =>
@@ -31,4 +32,5 @@ Map<String, dynamic> _$$ConversationImplToJson(_$ConversationImpl instance) =>
       'name': instance.name,
       'messages': instance.messages?.map((e) => e.toJson()).toList(),
       'last_message': instance.lastMessage?.toJson(),
+      'is_latest_message_read': instance.isLatestMessageRead,
     };

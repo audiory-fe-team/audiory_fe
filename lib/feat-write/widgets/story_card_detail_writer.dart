@@ -48,23 +48,23 @@ class StoryCardDetailWriter extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               });
 
-          await StoryRepostitory().unPublishStory(story?.id ?? '');
+         int code= await StoryRepostitory().unPublishStory(story?.id ?? '');
 
           // ignore: use_build_context_synchronously
           context.pop();
 
-          // if (code == 200) {
-          //   // ignore: use_build_context_synchronously
-          //   AppSnackBar.buildTopSnackBar(
-          //       context,
-          //       'Dừng đăng thành công ${story?.title}',
-          //       null,
-          //       SnackBarType.success);
+          if (code == 200) {
+            // ignore: use_build_context_synchronously
+            AppSnackBar.buildTopSnackBar(
+                context,
+                'Dừng đăng thành công ${story?.title}',
+                null,
+                SnackBarType.success);
 
-          //   callBackRefetch();
-          // } else {
-          //   // ignore: use_build_context_synchronously
-          // }
+            callBackRefetch();
+          } else {
+            // ignore: use_build_context_synchronously
+          }
         },
       ),
     );

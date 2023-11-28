@@ -1,3 +1,4 @@
+import 'package:audiory_v0/feat-manage-profile/screens/messages/detail_conversation_screen.dart';
 import 'package:audiory_v0/models/conversation/conversation_model.dart';
 import 'package:audiory_v0/repositories/conversation_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -42,7 +43,9 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final conversationsQuery = useQuery(['conversations'],
+    final conversationsQuery = useQuery(
+        ['conversations'],
+        refetchOnMount: RefetchOnMount.always,
         () => ConversationRepository().fetchAllConversations());
     final searchValue = useState('');
     final foundContacts = useState([]);
@@ -56,50 +59,6 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
     useEffect(() {
       conversationsQuery.refetch();
     }, []);
-
-    Widget recentContacts({List<dynamic>? list = const []}) {
-      Widget contactCard() {
-        return Column(
-          children: [
-            const AppAvatarImage(size: 80),
-            const SizedBox(
-              height: 4,
-            ),
-            Text(
-              'Tác giả X',
-              style:
-                  textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        );
-      }
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Liên hệ gần đây',
-            style: textTheme.titleLarge,
-          ),
-          const SizedBox(
-            height: 8,
-          ),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: list!.asMap().entries.map((contact) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: contactCard(),
-                );
-              }).toList(),
-            ),
-          )
-        ],
-      );
-    }
 
     Widget conversationsList(List<Conversation> list) {
       // if (searchValue.value != '') {
@@ -175,16 +134,33 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
                 Conversation? conversation = e.value;
                 return GestureDetector(
                   onTap: () {
-                    context.push('/profileSettings/messages/detailMessage',
-                        extra: {
-                          'conversation': conversation,
-                          'userId': widget.userId
+                    // context.push('/profileSettings/messages/detailMessage',
+                    //     extra: {
+                    //       'conversation': conversation,
+                    //       'userId': widget.userId
+                    //     });
+
+                    showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        useSafeArea: true,
+                        builder: (context) {
+                          return SafeArea(
+                            child: DetailConversationScreen(
+                              conversation: conversation,
+                              userId: widget.userId,
+                              refetchCallback: () {
+                                print('vall');
+                                conversationsQuery.refetch();
+                              },
+                            ),
+                          );
                         });
                   },
                   child: Padding(
                     padding: const EdgeInsets.only(bottom: 15.0),
                     child: conversationCard(conversation,
-                        conversation.lastMessage?.isRead ?? false),
+                        conversation.isLatestMessageRead ?? false),
                   ),
                 );
               }).toList(),

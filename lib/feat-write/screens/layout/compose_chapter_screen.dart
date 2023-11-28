@@ -1,11 +1,18 @@
 import 'dart:convert';
 
+import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-write/data/models/chapter_version_model/chapter_version_model.dart';
+import 'package:audiory_v0/feat-write/screens/layout/content_moderation_dialog.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
+import 'package:audiory_v0/models/enums/Report.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/chapter_version_repository.dart';
+import 'package:audiory_v0/repositories/interaction_repository.dart';
+import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/utils/quill_helper.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
+import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +20,11 @@ import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../repositories/chapter_repository.dart';
@@ -28,8 +38,14 @@ class ComposeChapterScreen extends StatefulHookWidget {
   final Story? story;
   final String? chapterId;
   final Chapter? chapter;
+  final Function? callback;
   const ComposeChapterScreen(
-      {super.key, this.storyTitle, this.story, this.chapterId, this.chapter});
+      {super.key,
+      this.storyTitle,
+      this.story,
+      this.chapterId,
+      this.chapter,
+      this.callback});
 
   @override
   State<ComposeChapterScreen> createState() => _ComposeChapterScreenState();
@@ -133,29 +149,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
 
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  // Container(
-                  //   width: 100,
-                  //   child: AppIconButton(
-                  //     onPressed: () {},
-                  //     title: 'Hủy',
-                  //     bgColor: appColors.skyLighter,
-                  //     color: appColors.inkDark,
-                  //   ),
-                  // ),
-                  // Container(
-                  //   width: 100,
-                  //   child: AppIconButton(
-                  //     onPressed: () {
-                  //       _formKey.currentState!.save();
-                  //       context.go(
-                  //           '/composeChapter/${_formKey.currentState!.value['title']}',
-                  //           extra: {_formKey.currentState!.value['title']});
-                  //     },
-                  //     title: 'Tạo mới',
-                  //   ),
-                  // )
-                ],
+                children: [],
               )
             ]),
       ),
@@ -175,6 +169,9 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final _formKey = GlobalKey<FormBuilderState>();
+    final _formReportKey = GlobalKey<FormBuilderState>();
+
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
@@ -214,7 +211,6 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                       r'{"insert":"hello\n"}')['ops'])
               : Document()
           : Document();
-      // print(chapterByIdQuery.data?.currentChapterVerion?.richText);
     }, [chapterByIdQuery.isSuccess]);
 
     saveDraft() async {
@@ -239,13 +235,44 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
         };
         try {
           final res = await ChapterRepository().createChapterVersion(
-              body, _formKey.currentState!.fields['photos']!.value);
-          chapterVersionsQuery.refetch();
-          chapterByIdQuery.refetch();
+              body, _formKey.currentState?.fields['photos']?.value);
+
+          if (res == true) {
+            AppSnackBar.buildTopSnackBar(
+                context, 'Lưu thành công', null, SnackBarType.success);
+            chapterVersionsQuery.refetch();
+            chapterByIdQuery.refetch();
+          }
+
           print(res);
         } catch (e) {
           print(e);
         }
+      }
+    }
+
+    handleCreateReport() async {
+      Map<String, String> body = <String, String>{};
+
+      body['description'] =
+          _formReportKey.currentState?.fields['description']?.value;
+      body['title'] = _formReportKey.currentState?.fields['title']?.value;
+      body['reported_id'] = widget.story?.id ?? '';
+      body['report_type'] = 'CONTENT_VIOLATION_COMPLAINT';
+      body['user_id'] = widget.story?.authorId ?? '';
+      print(body);
+      try {
+        final res = await InteractionRepository()
+            .report(body, _formReportKey.currentState!.fields['photo']?.value);
+        context.pop();
+        context.pop();
+        context.pop();
+        // ignore: use_build_context_synchronously
+        AppSnackBar.buildTopSnackBar(
+            context, 'Tạo báo cáo thành công', null, SnackBarType.success);
+        print(res);
+      } catch (e) {
+        print(e);
       }
     }
 
@@ -254,6 +281,11 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
         AppSnackBar.buildTopSnackBar(
             context, 'Tối thiểu 5 từ', null, SnackBarType.error);
       } else {
+        showDialog(
+            context: context,
+            builder: (context) {
+              return const Center(child: CircularProgressIndicator());
+            });
         print('saving');
         _formKey.currentState?.save();
         Map<String, String> body = {
@@ -263,19 +295,287 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
               '{"ops":${jsonEncode(_controller.document.toDelta()).toString()}}',
           'title': _formKey.currentState?.fields['title']?.value ?? '',
         };
-        try {
-          final res = await ChapterRepository().createChapterVersion(
-              body, _formKey.currentState!.fields['photos']!.value);
 
-          await ChapterRepository().publishChapter(widget.chapterId);
+        final res = await ChapterRepository().createChapterVersion(
+            body, _formKey.currentState?.fields['photos']?.value);
 
+        final res2 = await ChapterRepository().publishChapter(widget.chapterId);
+        print('res2 ${res2['code'] == '200'}');
+        print('res2 ${res2['message']}');
+        context.pop();
+        if (res2['code'] == 200) {
+          AppSnackBar.buildTopSnackBar(
+              context, 'Đăng tải thành công', null, SnackBarType.success);
           chapterVersionsQuery.refetch();
           chapterByIdQuery.refetch();
 
           context.pop();
-          print(res);
-        } catch (e) {
-          print(e);
+        } else {
+          // ignore: use_build_context_synchronously
+          showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  content: Container(
+                    height: size.height / 3,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            height: size.width / 3.5,
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.asset(
+                                    width: size.width / 4,
+                                    height: size.width / 4,
+                                    'assets/images/dialog_warning.png')),
+                          ),
+                          Text(
+                            '${res2['message']}',
+                            textAlign: TextAlign.center,
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                  width: size.width / 3.2,
+                                  child: AppIconButton(
+                                    isOutlined: true,
+                                    bgColor: appColors.inkBase,
+                                    title: 'Chi tiết',
+                                    textStyle: textTheme.bodySmall?.copyWith(
+                                        color: appColors.primaryBase),
+                                    onPressed: () async {
+                                      final response =
+                                          await ChapterVersionRepository()
+                                              .fetchContentModeration(
+                                                  res2['data']
+                                                      ['current_version_id']);
+                                      // ignore: use_build_context_synchronously
+                                      showModalBottomSheet(
+                                          context: context,
+                                          isScrollControlled: true,
+                                          useSafeArea: true,
+                                          builder: (context) {
+                                            return ContentModerationDialog(
+                                                paragraphs: response);
+                                          });
+                                    },
+                                  )),
+                              Container(
+                                  width: size.width / 3.2,
+                                  child: AppIconButton(
+                                    title: 'Tiếp tục',
+                                    textStyle: textTheme.bodySmall?.copyWith(
+                                        color: appColors.skyLightest),
+                                    onPressed: () {
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: const Text('Thông báo'),
+                                              content: Padding(
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 24.0),
+                                                child: Text(
+                                                  'Để đăng tải thành công truyện này, bạn cần bật nội dung trưởng thành cho truyện của mình',
+                                                  textAlign: TextAlign.justify,
+                                                  style: textTheme.titleMedium,
+                                                ),
+                                              ),
+                                              actions: [
+                                                Column(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    Container(
+                                                        width: double.infinity,
+                                                        child: AppIconButton(
+                                                          isOutlined: true,
+                                                          bgColor:
+                                                              appColors.inkBase,
+                                                          title: 'Kháng cáo',
+                                                          textStyle: textTheme
+                                                              .bodySmall
+                                                              ?.copyWith(
+                                                                  color: appColors
+                                                                      .primaryBase),
+                                                          onPressed: () async {
+                                                            showModalBottomSheet(
+                                                                isScrollControlled:
+                                                                    true,
+                                                                shape:
+                                                                    const RoundedRectangleBorder(
+                                                                        borderRadius:
+                                                                            BorderRadius
+                                                                                .only(
+                                                                  topLeft: Radius
+                                                                      .circular(
+                                                                          8.0),
+                                                                  topRight: Radius
+                                                                      .circular(
+                                                                          8.0),
+                                                                )),
+                                                                useSafeArea:
+                                                                    true,
+                                                                backgroundColor:
+                                                                    appColors
+                                                                        .background,
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (context) {
+                                                                  return Container(
+                                                                    height:
+                                                                        size.height -
+                                                                            200,
+                                                                    padding: const EdgeInsets
+                                                                        .symmetric(
+                                                                        vertical:
+                                                                            8,
+                                                                        horizontal:
+                                                                            16),
+                                                                    child: ListView(
+                                                                        children: [
+                                                                          Padding(
+                                                                            padding:
+                                                                                const EdgeInsets.symmetric(vertical: 16.0),
+                                                                            child:
+                                                                                Row(
+                                                                              mainAxisSize: MainAxisSize.max,
+                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                                              children: [
+                                                                                Flexible(
+                                                                                  child: Text(
+                                                                                    'Tạo báo cáo',
+                                                                                    style: textTheme.headlineSmall,
+                                                                                  ),
+                                                                                ),
+                                                                                Flexible(
+                                                                                  flex: 2,
+                                                                                  child: AppIconButton(
+                                                                                      title: 'Tạo',
+                                                                                      onPressed: () {
+                                                                                        if (_formReportKey.currentState?.validate() ?? false) {
+                                                                                          print('hei');
+                                                                                          _formReportKey.currentState?.save();
+                                                                                          handleCreateReport();
+                                                                                        } else {
+                                                                                          print('false');
+                                                                                        }
+                                                                                      }),
+                                                                                )
+                                                                              ],
+                                                                            ),
+                                                                          ),
+                                                                          FormBuilder(
+                                                                              key: _formReportKey,
+                                                                              autovalidateMode: AutovalidateMode.onUserInteraction,
+                                                                              child: Column(
+                                                                                mainAxisAlignment: MainAxisAlignment.start,
+                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                children: [
+                                                                                  AppTextInputField(
+                                                                                    name: 'title',
+                                                                                    hintText: 'Nhập tiêu đề',
+                                                                                    label: 'Tiêu đề báo cáo',
+                                                                                    isRequired: true,
+                                                                                    isNoError: false,
+                                                                                    validator: FormBuilderValidators.required(errorText: 'Không được để trống'),
+                                                                                  ),
+                                                                                  AppTextInputField(
+                                                                                    name: 'description',
+                                                                                    hintText: 'Nhập nội dung',
+                                                                                    label: 'Nội dung',
+                                                                                    isRequired: true,
+                                                                                    isTextArea: true,
+                                                                                    maxLengthCharacters: 256,
+                                                                                    minLines: 4,
+                                                                                    validator: FormBuilderValidators.compose([
+                                                                                      FormBuilderValidators.required(errorText: 'Không được để trống'),
+                                                                                      FormBuilderValidators.max(256, errorText: 'Tối đa 256 ký tự')
+                                                                                    ]),
+                                                                                  ),
+                                                                                  Text(
+                                                                                    'Hình minh họa',
+                                                                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                                                                  ),
+                                                                                  Center(
+                                                                                    child: SizedBox(
+                                                                                      width: size.width / 4,
+                                                                                      child: FormBuilderImagePicker(previewAutoSizeWidth: true, maxImages: 1, backgroundColor: appColors.skyLightest, iconColor: appColors.primaryBase, decoration: const InputDecoration(border: InputBorder.none), name: 'photo'),
+                                                                                    ),
+                                                                                  ),
+                                                                                ],
+                                                                              ))
+                                                                        ]),
+                                                                  );
+                                                                });
+                                                          },
+                                                        )),
+                                                    SizedBox(
+                                                      height: 8,
+                                                    ),
+                                                    Container(
+                                                        width: double.infinity,
+                                                        child: AppIconButton(
+                                                          title:
+                                                              'Bật truyện trưởng thành',
+                                                          textStyle: textTheme
+                                                              .bodySmall
+                                                              ?.copyWith(
+                                                                  color: appColors
+                                                                      .skyLightest),
+                                                          onPressed: () async {
+                                                            Map<String, String>
+                                                                body = {
+                                                              'is_mature':
+                                                                  'true'
+                                                            };
+                                                            Story? story = await StoryRepostitory()
+                                                                .editStory(
+                                                                    chapterByIdQuery
+                                                                            .data
+                                                                            ?.storyId ??
+                                                                        '',
+                                                                    body,
+                                                                    ['']);
+
+                                                            if (story != null) {
+                                                              // ignore: use_build_context_synchronously
+                                                              AppSnackBar.buildTopSnackBar(
+                                                                  context,
+                                                                  'Đã có thể đăng tải',
+                                                                  null,
+                                                                  SnackBarType
+                                                                      .success);
+                                                              widget.callback;
+                                                            }
+                                                            // ignore: use_build_context_synchronously
+                                                            context.pop();
+                                                            // ignore: use_build_context_synchronously
+                                                            context.pop();
+                                                          },
+                                                        )),
+                                                  ],
+                                                )
+                                              ],
+                                            );
+                                          });
+                                    },
+                                  )),
+                            ],
+                          )
+                        ]),
+                  ),
+                );
+              });
         }
       }
     }
@@ -389,6 +689,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                           showModalBottomSheet(
                             backgroundColor: appColors.skyLightest,
                             isScrollControlled: true,
+                            useSafeArea: true,
                             context: context,
                             builder: (context) {
                               return Container(
@@ -527,28 +828,6 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
       ),
       body: SingleChildScrollView(
         child: Column(mainAxisSize: MainAxisSize.max, children: [
-          // Padding(
-          //   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          //   child: FormBuilderDropdown(
-          //       name: 'chapterVersion',
-          //       initialValue: data[0].id,
-          //       selectedItemBuilder: (context) => List.generate(
-          //             data.length,
-          //             (index) => text.Text(
-          //               'Bản ${data[0].timestamp}',
-          //             ),
-          //           ),
-          //       focusColor: appColors.primaryBase,
-          //       items: List.generate(
-          //           data.length,
-          //           (index) => DropdownMenuItem(
-          //                 value: data[index].id,
-          //                 child: text.Text(
-          //                   'Bản ${data[index].timestamp}',
-          //                 ),
-          //               ))),
-          // ),
-          // text.Text(data[0].richText as String),
           Skeletonizer(
             enabled: chapterByIdQuery.isFetching,
             child: chapterByIdQuery.data != null

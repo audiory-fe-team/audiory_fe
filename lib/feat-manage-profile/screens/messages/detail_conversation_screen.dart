@@ -9,10 +9,12 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fquery/fquery.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -20,14 +22,13 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 class DetailConversationScreen extends StatefulHookWidget {
   final Conversation? conversation;
   final String? userId;
-  final Function? refetchCallBack;
+  final Function refetchCallback;
 
-  const DetailConversationScreen({
-    super.key,
-    required this.conversation,
-    this.userId = '',
-    this.refetchCallBack,
-  });
+  const DetailConversationScreen(
+      {super.key,
+      required this.conversation,
+      this.userId = '',
+      required this.refetchCallback});
 
   @override
   State<DetailConversationScreen> createState() =>
@@ -63,10 +64,15 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     return DateFormat('HH:mm').format(dateTime);
   }
 
+  markConversationAsRead() async {
+    await ConversationRepository().markConversationAsRead();
+  }
+
   @override
   initState() {
     super.initState();
     connectWebsocket();
+    markConversationAsRead();
     try {
       _controller.addListener(() {
         scollListener();
@@ -115,7 +121,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
       messages.insert(0, Message.fromJson(message));
     });
     channel?.sink.add(actualBody);
-    widget.refetchCallBack;
+    widget.refetchCallback();
   }
 
   Future<void> fetchMessages(int offset) async {
@@ -143,7 +149,11 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
         () => ConversationRepository().fetchConversationById(
             conversationId: widget.conversation?.id, offset: 1, limit: 10));
 
-    Widget messageCard({String? content = '', bool? isMe = true, date}) {
+    Widget messageCard(
+        {String? content = '',
+        bool? isMe = true,
+        date,
+        String avatarUrl = ''}) {
       Radius borderRadius = const Radius.circular(16);
       return Row(
         crossAxisAlignment: CrossAxisAlignment.end,
@@ -154,8 +164,9 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
               ? const SizedBox(
                   height: 0,
                 )
-              : const Flexible(
+              : Flexible(
                   child: AppAvatarImage(
+                  url: avatarUrl,
                   size: 40,
                 )),
           Container(
@@ -229,7 +240,8 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
               child: messageCard(
                   content: messageContent,
                   isMe: isMe,
-                  date: formatDate(messageItem?.createdDate)),
+                  date: formatDate(messageItem?.createdDate),
+                  avatarUrl: messageItem?.sender?.avatarUrl ?? ''),
             );
           },
         ),
@@ -299,7 +311,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                         print('MESSAGE LIST $messages');
                         messages.insert(
                             0, Message.fromJson(jsonDecode(decodedJson)));
-                        widget.refetchCallBack;
                       } else {
                         print('SNAPSHOT ERROR');
                         print('${snapshot.error}');
@@ -317,6 +328,8 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
           alignment: Alignment.bottomCenter,
           child: DetailMessageBottomBar(sendMessageCallback: (content) {
             _sendMessage(content, conversationQuery.data?.messages ?? []);
+
+            widget.refetchCallback();
           }),
         )
       ]),

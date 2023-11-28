@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 
 class ConversationRepository {
   String conversationEndpoint = "${dotenv.get('API_BASE_URL')}/conversations";
+  String conversationUserEndpoint =
+      "${dotenv.get('API_BASE_URL')}/conversation-users";
   final dio = Dio();
 
   Future<List<Conversation>> fetchAllConversations({
@@ -89,6 +91,31 @@ class ConversationRepository {
     if (response.statusCode == 200) {
       final result = jsonDecode(responseBody)['data'];
       return Conversation.fromJson(result).messages;
+    } else {
+      throw Exception('Failed to load conversation');
+    }
+  }
+
+  Future<dynamic> markConversationAsRead({
+    String? conversationId,
+  }) async {
+    final url = Uri.parse('$conversationUserEndpoint/$conversationId');
+    const storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
+    if (jwtToken != null) {
+      header['Authorization'] = 'Bearer $jwtToken';
+    }
+    final response = await http.put(url,
+        headers: header, body: jsonEncode({'is_latest_message_read': true}));
+    final responseBody = utf8.decode(response.bodyBytes);
+    print(responseBody);
+    if (response.statusCode == 200) {
+      final result = jsonDecode(responseBody)['data'];
+      // return Conversation.fromJson(result).messages;
     } else {
       throw Exception('Failed to load conversation');
     }
