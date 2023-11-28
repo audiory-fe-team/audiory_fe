@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 
 String appFormatDate(String? date) {
   //use package intl
-  print(date);
   if (date != null && date != "") {
     DateTime dateTime = DateTime.parse(date);
     final inputFormat = DateFormat('yyyy-MM-ddTHH:mm:ss');
