@@ -30,7 +30,7 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
     final size = MediaQuery.of(context).size;
     final paginatorController = NumberPaginatorController();
 
-    final numOfPages = useState(1);
+    // final numOfPages = useState(1);
     final currentPage = useState(0);
     final isDesc = useState(false);
 
@@ -40,11 +40,10 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
                 element.isPaywalled == true && element.isPaid == false)
             .toList() ??
         [];
-
-    numOfPages.value = (chaptersList.length / 10).ceil();
-    print(numOfPages.value);
+    final totalPages = (chaptersList.length / 10).ceil();
+    // numOfPages.value = (chaptersList.length / 10).ceil();
     var pages = List.generate(
-      numOfPages.value,
+      totalPages,
       (index) => Column(
         children: [
           Column(
@@ -53,7 +52,7 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
                     : chaptersList)
                 .getRange(
                     currentPage.value * 10,
-                    currentPage.value + 1 == numOfPages.value
+                    currentPage.value + 1 == totalPages
                         ? currentPage.value * 10 +
                             min(10, chaptersList.length.remainder(10))
                         : currentPage.value * 10 + 10)
@@ -120,14 +119,14 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
         ),
         Center(
           child: SizedBox(
-            width: numOfPages.value <= 4 ? size.width / 2 : size.width,
+            width: totalPages <= 4 ? size.width / 2 : size.width,
             child: NumberPaginator(
               config: NumberPaginatorUIConfig(
                 buttonSelectedBackgroundColor: appColors.primaryBase,
                 buttonUnselectedForegroundColor: appColors.primaryBase,
               ),
               controller: paginatorController,
-              numberPages: numOfPages.value,
+              numberPages: totalPages,
               onPageChange: (index) {
                 currentPage.value = index;
               },

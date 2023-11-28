@@ -44,8 +44,6 @@ class ChapterItem extends StatelessWidget {
 
     return GestureDetector(
       onTap: () {
-        print(chapter.price);
-        print(chapter.isPaid);
         chapter.price != 0
             ? chapter.isPaid == true
                 ? GoRouter.of(context)

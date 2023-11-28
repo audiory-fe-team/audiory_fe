@@ -147,7 +147,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     double size = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      resizeToAvoidBottomInset: false,
       body: SafeArea(
         child: Form(
           key: _formKey,
