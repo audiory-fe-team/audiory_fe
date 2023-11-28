@@ -25,6 +25,7 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
   bool? isChecked = false;
   String errorMessage = '';
   var pass = '';
+  bool hidePass = true;
 
   Widget _submitButton() {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -39,7 +40,8 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
             _formKey.currentState?.save();
             try {
               final result = await AuthRepository().verifyEmail(
-                  email: _formKey.currentState?.fields['email']?.value);
+                  email: _formKey.currentState?.fields['email']?.value,
+                  username: _formKey.currentState?.fields['username']?.value);
               if (result == 200) {
                 Map<String, String> body = {
                   'email': _formKey.currentState?.fields['email']?.value,
@@ -47,8 +49,8 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                   'username': _formKey.currentState?.fields['username']?.value,
                 };
                 // ignore: use_build_context_synchronously
-                context.push('/flowOne',
-                    extra: {'signUpBody': body}); //allow back button
+                // context.push('/flowOne',
+                //     extra: {'signUpBody': body}); //allow back button
                 // ignore: use_build_context_synchronously
                 AppSnackBar.buildTopSnackBar(
                     context,
@@ -171,9 +173,27 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                                       pass = value;
                                     });
                                   },
-                                  textInputType: TextInputType
-                                      .visiblePassword, //password cannot multi line
-                                  maxLines: null,
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        hidePass = !hidePass;
+                                      });
+                                    },
+                                    child: hidePass == true
+                                        ? Icon(
+                                            Icons.remove_red_eye_outlined,
+                                            color: appColors.inkLight,
+                                          )
+                                        : Icon(
+                                            Icons.visibility_off_outlined,
+                                            color: appColors.inkLight,
+                                          ),
+                                  ),
+                                  textInputType: hidePass == true
+                                      ? TextInputType.visiblePassword
+                                      : TextInputType
+                                          .text, //password cannot multi line
+                                  maxLines: hidePass == true ? null : 1,
                                   validator: FormBuilderValidators.compose([
                                     FormBuilderValidators.required(
                                         errorText: 'Không được để trống'),

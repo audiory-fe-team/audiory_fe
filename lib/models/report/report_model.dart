@@ -1,53 +1,34 @@
-// import 'package:audiory_v0/models/category/app_category_model.dart';
-// import 'package:audiory_v0/models/chapter/chapter_model.dart';
-// import 'package:audiory_v0/models/tag/tag_model.dart';
-// import "package:flutter/foundation.dart";
-// import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:audiory_v0/models/enums/Report.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-// part 'report_model.freezed.dart'; //get the file name same as the class file name
-// part 'report_model.g.dart';
+part 'report_model.freezed.dart'; //get the file name same as the class file name
+part 'report_model.g.dart';
 
-// @freezed
-// class Story with _$Story {
-//   const factory Story({
-//     //add the code in analysis_options.yaml to ignore the JsonKey warning
-//     //json key : snack_case
-//     //field key : camelCase
+@freezed
+class Report with _$Report {
+  //category duplicate with annatation category class
+  const factory Report({
+    //add the code in analysis_options.yaml to ignore the JsonKey warning
+    //json key : snack_case
+    //field key : camelCase
 
-//     @JsonKey(name: 'id') required String id,
-//     @JsonKey(name: 'author_id') String? authorId,
-//     @JsonKey(name: 'author') AuthorStory? author,
-//     @JsonKey(name: 'category_id') String? categoryId, // Story position
-//     @JsonKey(name: 'category') AppCategory? category, // Story position
-//     @Default('') @JsonKey(name: 'title') String title,
-//     @JsonKey(name: 'description') String? description,
-//     @JsonKey(name: 'cover_url') String? coverUrl,
-//     @JsonKey(name: 'is_draft') bool? isDraft,
-//     @JsonKey(name: 'is_mature') bool? isMature,
-//     @JsonKey(name: 'is_completed') bool? isCompleted,
-//     @JsonKey(name: 'is_copyright') bool? isCopyright,
-//     @JsonKey(name: 'is_paywalled') bool? isPaywalled,
-//     @JsonKey(name: 'chapter_price') int? chapterPrice,
-//     @JsonKey(name: 'coin_cost') int? coinCost,
-//     @JsonKey(name: 'author_earning_percentage') int? authorEarningPercentage,
-//     @JsonKey(name: 'paywall_effective_date') String? paywallEffectiveDate,
-//     @JsonKey(name: 'num_free_chapters') int? numFreeChapters,
-//     @JsonKey(name: 'published_count') int? publishedCount,
-//     @JsonKey(name: 'draft_count') int? draftCount,
-//     @JsonKey(name: 'report_count') int? reportCount,
-//     @JsonKey(name: 'vote_count') int? voteCount,
-//     @JsonKey(name: 'read_count') int? readCount,
-//     @JsonKey(name: 'comment_count') int? commentCount,
-//     @JsonKey(name: 'total_vote') int? totalVote,
-//     @JsonKey(name: 'total_read') int? totalRead,
-//     @JsonKey(name: 'total_comment') int? totalComment,
-//     @JsonKey(name: 'explicit_percentage') int? explicitPercentage,
-//     @JsonKey(name: 'created_date') String? createdDate,
-//     @JsonKey(name: 'updated_date') String? updatedDate,
-//     @JsonKey(name: 'is_enabled') bool? isEnabled,
-//     @Default([]) @JsonKey(name: 'chapters') List<Chapter>? chapters,
-//     @Default([]) @JsonKey(name: 'tags') List<Tag>? tags,
-//   }) = _Story;
+    @JsonKey(name: 'id') required String id,
+    @Default('') @JsonKey(name: 'user_id') String? userId,
+    @Default('') @JsonKey(name: 'reported_id') String? reportedId,
+    @Default('COMMENT') @JsonKey(name: 'report_type') String? reportedType,
+    @Default('') @JsonKey(name: 'title') String? title,
+    @Default('') @JsonKey(name: 'description') String? description,
+    @Default('') @JsonKey(name: 'image_url') String? imageUrl,
+    @Default('') @JsonKey(name: 'created_date') String? createdDate,
+    @Default('') @JsonKey(name: 'updated_date') String? updatedDate,
+    @Default('') @JsonKey(name: 'approved_date') String? approvedDate,
+    @Default('') @JsonKey(name: 'approved_by') String? approvedBy,
+    @Default('') @JsonKey(name: 'rejected_date') String? rejectedDate,
+    @Default('') @JsonKey(name: 'rejected_by') String? rejectedBy,
+    @Default('') @JsonKey(name: 'report_status') String? reportStatus,
+    @Default('') @JsonKey(name: 'response_message') String? responseMessage,
+    @Default(true) @JsonKey(name: 'is_enabled') bool? isEnabled,
+  }) = _Report;
 
-//   factory Story.fromJson(Map<String, dynamic> json) => _$StoryFromJson(json);
-// }
+  factory Report.fromJson(Map<String, dynamic> json) => _$ReportFromJson(json);
+}

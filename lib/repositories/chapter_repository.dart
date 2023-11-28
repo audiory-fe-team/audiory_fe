@@ -135,6 +135,34 @@ class ChapterRepository {
     return null;
   }
 
+  Future<Chapter?> fetchAuthorChapterById(String? chapterId) async {
+    final storage = FlutterSecureStorage();
+    final jwt = await storage.read(key: 'jwt');
+    if (chapterId == null) {
+      throw Exception('Failed to fetch chapter');
+    }
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
+    if (jwt != null) {
+      header['Authorization'] = 'Bearer $jwt';
+    }
+
+    try {
+      final response = await dio.get("$chapterEndpoint/$chapterId/draft",
+          options: Options(headers: header));
+
+      final Chapter chapter = Chapter.fromJson(response.data['data']);
+
+      return chapter;
+    } catch (e) {
+      print('cast error');
+      print(e);
+    }
+    return null;
+  }
+
   static Future<List<Comment>> fetchCommentsByChapterId(
       {required String chapterId,
       int offset = 1,
@@ -175,8 +203,6 @@ class ChapterRepository {
   }
 
   Future<bool> createChapterVersion(body, formFile) async {
-    print(formFile);
-    File file = File(formFile[0].path); //import dart:io
     final url = Uri.parse(chapterVersionEndpoint);
     Map<String, String> header = {
       "Content-type": "multipart/form-data",
@@ -188,12 +214,21 @@ class ChapterRepository {
       header['Authorization'] = 'Bearer $jwt';
     }
 
-    final request = await http.MultipartRequest('POST', url)
-      ..fields.addAll(body)
-      ..files.add(await http.MultipartFile.fromPath(
-        'form_file',
-        file.path,
-      ));
+    var request;
+
+    if (formFile == [] && formFile?[0].runtimeType != String) {
+      File file = File(formFile[0].path); //import dart:io
+      request = await http.MultipartRequest('POST', url)
+        ..fields.addAll(body)
+        ..files.add(await http.MultipartFile.fromPath(
+          'form_file',
+          file.path,
+        ));
+    } else {
+      request = await http.MultipartRequest('POST', url)
+        ..fields.addAll(body);
+    }
+
     request.headers.addAll(header);
     var response = await request.send();
     final respStr = await response.stream.bytesToString();
@@ -214,9 +249,10 @@ class ChapterRepository {
     }
   }
 
-  Future<Chapter?> publishChapter(String? chapterId) async {
+  Future<dynamic> publishChapter(String? chapterId) async {
     final storage = FlutterSecureStorage();
     final jwt = await storage.read(key: 'jwt');
+    final uri = Uri.parse("$chapterEndpoint/publish/$chapterId");
     if (chapterId == null) {
       throw Exception('Failed to fetch chapter');
     }
@@ -228,19 +264,11 @@ class ChapterRepository {
       header['Authorization'] = 'Bearer $jwt';
     }
 
-    try {
-      final response = await dio.post("$chapterEndpoint/publish/$chapterId",
-          options: Options(headers: header));
-      print(response);
+    final response = await http.post(uri, headers: header);
+    final responseBytes = jsonDecode(utf8.decode(response.bodyBytes));
+    print(responseBytes);
 
-      final Chapter chapter = Chapter.fromJson(response.data['data']);
-
-      return chapter;
-    } catch (e) {
-      print('cast error');
-      print(e);
-    }
-    return null;
+    return responseBytes;
   }
 
   Future<bool?> deleteChapter(String? chapterId) async {

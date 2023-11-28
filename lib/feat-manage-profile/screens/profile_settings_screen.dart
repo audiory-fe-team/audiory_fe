@@ -165,6 +165,26 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
           const Divider(
             thickness: 1,
           ),
+          Container(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            width: double.infinity,
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(
+                'BÁO CÁO VÀ HỖ TRỢ',
+                style: textTheme.headlineMedium
+                    ?.copyWith(color: appColors.inkLight),
+              ),
+            ]),
+          ),
+          item('Xem các báo cáo', 'reports', isPrivacy: true),
+          const Divider(
+            thickness: 1,
+          ),
+          item('Báo cáo sự cố', 'reports', isPrivacy: true),
+          const Divider(
+            thickness: 1,
+          ),
           item('Về Audiory', ''),
           // item('Hỗ trợ và tư vấn', ''),
         ],
@@ -218,10 +238,6 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
               // crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(vertical: 24.0),
-                //   child: userInfo(),
-                // ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: Container(
@@ -230,6 +246,7 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
                 ),
                 Container(
                   width: size.width - 32,
+                  margin: const EdgeInsets.only(bottom: 16),
                   child: AppIconButton(
                       title: 'Đăng xuất',
                       onPressed: () {

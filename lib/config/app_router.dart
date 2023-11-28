@@ -16,8 +16,9 @@ import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart'
 import 'package:audiory_v0/feat-manage-profile/screens/edit_email_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/messages/detail_conversation_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/messages/messages_list_screen.dart';
-import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/block_account_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/block_accounts_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/mute_accounts_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/reports_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/profile_settings_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/user_profile_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_screen.dart';
@@ -277,6 +278,7 @@ class AppRoutes {
               builder: (_, GoRouterState state) {
                 final tagId = state.pathParameters["tagId"];
                 final tagName = state.queryParameters["tagName"];
+                print(tagName);
                 if (tagId != null && tagName != null) {
                   return SearchTagScreen(tagId: tagId, tagName: tagName);
                 }
@@ -390,28 +392,15 @@ class AppRoutes {
           },
           routes: [
             GoRoute(
-                parentNavigatorKey: _rootNavigatorKey,
-                name: 'messages',
-                path: 'messages',
-                builder: (BuildContext context, GoRouterState state) {
-                  final extraMap = state.extra as Map<String, dynamic>;
-                  final userId = extraMap['userId'] as String;
-                  return MessagesListScreen(userId: userId);
-                },
-                routes: [
-                  GoRoute(
-                    parentNavigatorKey: _rootNavigatorKey,
-                    name: 'detailMessage',
-                    path: 'detailMessage',
-                    builder: (BuildContext context, GoRouterState state) {
-                      final extraMap = state.extra as Map<String, dynamic>;
-                      final conversation = extraMap['conversation'] ?? null;
-                      final userId = extraMap['userId'] ?? null;
-                      return DetailConversationScreen(
-                          conversation: conversation, userId: userId);
-                    },
-                  ),
-                ]),
+              parentNavigatorKey: _rootNavigatorKey,
+              name: 'messages',
+              path: 'messages',
+              builder: (BuildContext context, GoRouterState state) {
+                final extraMap = state.extra as Map<String, dynamic>;
+                final userId = extraMap['userId'] as String;
+                return MessagesListScreen(userId: userId);
+              },
+            ),
           ]),
       GoRoute(
           name: 'muteAccounts',
@@ -420,6 +409,22 @@ class AppRoutes {
             final extraMap = state.extra as Map<String, dynamic>;
             final userId = extraMap['userId'] ?? null;
             return MuteAccountsScreen(userId: userId);
+          }),
+      GoRoute(
+          name: 'reports',
+          path: '/reports',
+          builder: (BuildContext context, GoRouterState state) {
+            final extraMap = state.extra as Map<String, dynamic>;
+            final userId = extraMap['userId'] ?? null;
+            return ReportsScreen(userId: userId);
+          }),
+      GoRoute(
+          name: 'newReport',
+          path: '/newReport',
+          builder: (BuildContext context, GoRouterState state) {
+            final extraMap = state.extra as Map<String, dynamic>;
+            final userId = extraMap['userId'] ?? null;
+            return ReportsScreen(userId: userId);
           }),
       GoRoute(
           name: 'blockAccounts',

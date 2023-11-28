@@ -7,6 +7,7 @@ import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -21,6 +22,8 @@ class WriterScreen extends StatefulHookWidget {
 }
 
 class _WriterScreenState extends State<WriterScreen> {
+  final storage = const FlutterSecureStorage();
+  String? jwt;
   UseQueryResult? result;
 
   final _formKey = GlobalKey<FormBuilderState>();
@@ -70,7 +73,7 @@ class _WriterScreenState extends State<WriterScreen> {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final myStoriesQuery = useQuery(
-        ['myStories'], () => StoryRepostitory().fetchMyStories(),
+        ['myStories', jwt], () => StoryRepostitory().fetchMyStories(),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5)); //userId=me
     final filteredStories = _formKey.currentState?.fields['search']?.value == ''

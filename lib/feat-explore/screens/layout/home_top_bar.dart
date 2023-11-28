@@ -126,10 +126,9 @@ class HomeTopBar extends HookWidget implements PreferredSizeWidget {
                               if (snapshot.hasData &&
                                   snapshot.data?.isNotEmpty == true &&
                                   snapshot.data!
-                                          .where((e) =>
-                                              e.lastMessage?.isRead == false)
-                                          .length >
-                                      0) {
+                                      .where(
+                                          (e) => e.isLatestMessageRead == false)
+                                      .isNotEmpty) {
                                 return Positioned(
                                     top: 5,
                                     right: 5,

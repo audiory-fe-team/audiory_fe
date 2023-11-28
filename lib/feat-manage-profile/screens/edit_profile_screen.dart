@@ -8,12 +8,14 @@ import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/dropdown_button.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
+import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -45,21 +47,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
     DateTime? datepicked;
     Widget userInfo(Profile? profile) {
+      const genderList = Sex.values;
       String formatDate(String? date) {
         //use package intl
-        DateTime dateTime = DateTime.parse(date ?? '');
+        DateTime dateTime = DateTime.parse(date as String);
         return DateFormat('dd/MM/yyyy').format(dateTime);
       }
-
-      const genderList = Sex.values;
 
       Future<void> showdobpicker() async {
         datepicked = await showDatePicker(
             helpText: 'Chọn ngày sinh',
             context: context,
-            // initialDate: DateTime.tryParse(
-            //         profile?.dob ?? DateTime(2000, 1, 1).toString()) ??
-            //     DateTime(2000, 6, 23),
+            initialDate: DateTime.tryParse(
+                    profile?.dob ?? DateTime(2000, 1, 1).toString()) ??
+                DateTime(2000, 1, 1),
             firstDate: DateTime(1933, 1, 1),
             lastDate: DateTime(2017, 1, 1),
 
@@ -96,7 +97,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (datepicked != null) {
           print('DATE $datepicked');
           setState(() {
-            _selectedDate = formatDate(datepicked?.toString());
+            _selectedDate = appFormatDate(datepicked?.toString());
           });
         }
       }
@@ -143,8 +144,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 name: 'dob',
                 initialValue: _selectedDate != ''
                     ? _selectedDate
-                    : appFormatDate(profile?.dob),
-                hintText: 'dd/MM/yyyy',
+                    : formatDate(profile?.dob),
+                hintText: _selectedDate,
                 hintTextStyle: TextStyle(color: appColors.inkBase),
                 validator: (value) {
                   if ((value?.allMatches(
@@ -169,32 +170,65 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             // mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24),
-                child: Material(
-                  child: InkWell(
-                    onTap: () async {
-                      context.push('/profile');
-                    },
-                    customBorder: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100.0),
-                    ),
-                    child: ClipRRect(
-                        borderRadius: BorderRadius.circular(400),
-                        child: AppImage(
-                            url: widget.userProfile?.avatarUrl,
-                            width: size.width / 3.5,
-                            height: size.width / 3.5,
-                            fit: BoxFit.fill)),
-                  ),
-                ),
-              ),
               FormBuilder(
                 key: _formKey,
                 child: Column(
                   mainAxisAlignment:
                       MainAxisAlignment.spaceEvenly, // <-- SEE HERE
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 100),
+                      child: Stack(alignment: Alignment.bottomRight, children: [
+                        FormBuilderImagePicker(
+                          initialValue: profile?.avatarUrl != null &&
+                                  profile?.avatarUrl != ''
+                              ? [profile?.avatarUrl ?? '']
+                              : null,
+                          iconColor: appColors.inkBase,
+                          placeholderWidget: Stack(
+                              alignment: AlignmentDirectional.center,
+                              children: [
+                                Container(
+                                  height: size.width / 3,
+                                  width: size.height / 3,
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: appColors.skyLighter),
+                                ),
+                                Positioned(
+                                    child: Icon(
+                                  Icons.image,
+                                  color: appColors.inkLight,
+                                ))
+                              ]),
+
+                          transformImageWidget: (context, displayImage) =>
+                              Center(
+                            child: ClipRRect(
+                                borderRadius: BorderRadius.circular(100),
+                                child: SizedBox(
+                                  width: size.width / 3,
+                                  height: size.width / 3,
+                                  child: displayImage,
+                                )),
+                          ),
+                          showDecoration: true,
+                          galleryIcon: Icon(
+                            Icons.image,
+                            color: appColors.primaryBase,
+                          ),
+                          galleryLabel: const Text('Thư viện ảnh'),
+
+                          fit: BoxFit.cover,
+                          backgroundColor: appColors.skyLighter,
+                          availableImageSources: const [
+                            ImageSourceOption.gallery
+                          ], //only gallery
+                          name: 'photos',
+                          maxImages: 1,
+                        ),
+                      ]),
+                    ),
                     AppTextInputField(
                       name: 'full_name',
                       label: 'Tên gọi',
@@ -276,8 +310,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                   body['facebook_url'] = _formKey.currentState!
                                       .fields['facebook_url']?.value;
                                   final parsedDate = DateTime.tryParse('');
-                                  body['dob'] =
-                                      parsedDate!.toUtc().toIso8601String();
+                                  // body['dob'] =
+                                  //     parsedDate?.toUtc().toIso8601String() ??
+                                  //         '';
 
                                   //edit profile
                                   showDialog(
@@ -289,7 +324,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
                                   Profile? newProfile =
                                       await ProfileRepository().updateProfile(
-                                    '',
+                                    _formKey
+                                        .currentState?.fields['photos']?.value,
                                     body,
                                   );
                                   print('PROFILE ${newProfile}');
@@ -330,7 +366,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       )),
       body: Skeletonizer(
           enabled: profileQuery.isFetching || profileQuery.data == null,
-          child: userInfo(profileQuery.data)),
+          child: profileQuery.data != null
+              ? userInfo(profileQuery.data)
+              : const Skeletonizer(
+                  enabled: true,
+                  child: Center(
+                    child: Column(children: [
+                      AppAvatarImage(
+                        size: 90,
+                        url: '',
+                      ),
+                      AppTextInputField(
+                        name: 'helo',
+                        label: 'helo',
+                      )
+                    ]),
+                  ))),
       floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,

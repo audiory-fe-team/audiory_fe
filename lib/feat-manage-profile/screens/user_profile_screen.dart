@@ -189,8 +189,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   }
 
   Widget userProfileInfo(
-      UseQueryResult<AuthUser?, dynamic> userByIdQuery,
-      UseQueryResult<Profile, dynamic> profileQuery,
+      AuthUser? userData,
+      Profile? profileData,
       UseQueryResult<List<Story>?, dynamic> publishedStoriesQuery,
       UseQueryResult<List<ReadingList>?, dynamic> readingStoriesQuery) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -200,272 +200,218 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       return double.parse(balance.toString()).toStringAsFixed(0);
     }
 
-    return RefreshIndicator(
-      onRefresh: () async {
-        profileQuery.refetch();
-      },
-      child: SingleChildScrollView(
-        child: Container(
-          width: double.infinity,
-          margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-          child: userByIdQuery.isError
-              ? AppIconButton(
-                  title: 'Đăng nhập',
-                  onPressed: () {
-                    context.go('/login');
-                  })
-              : Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Skeletonizer(
-                      enabled: userByIdQuery.isFetching,
-                      child: Column(
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                              opacity: 0.6,
-                              image: CachedNetworkImageProvider(
-                                  profileQuery.data?.backgroundUrl == ''
-                                      ? FALLBACK_BACKGROUND_URL
-                                      : profileQuery.data?.backgroundUrl ??
-                                          FALLBACK_BACKGROUND_URL),
-                              fit: BoxFit.fill,
-                            )),
-                            child: Column(
-                              children: [
-                                AppAvatarImage(
-                                  hasLevel: true,
-                                  levelId: userByIdQuery.data?.levelId ?? 1,
-                                  hasAuthorLevel: true,
-                                  authorLevelId:
-                                      userByIdQuery.data?.authorLevelId ?? 1,
-                                  size: userByIdQuery.data?.levelId != null
-                                      ? 93
-                                      : 88,
-                                  url: profileQuery.data?.avatarUrl,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  userByIdQuery.data?.fullName ?? 'Họ và tên',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .headlineMedium,
-                                ),
-                                Text(
-                                  '@${profileQuery.data?.username ?? 'Tên đăng nhập'}',
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.titleSmall,
-                                ),
-                                const SizedBox(height: 8),
-                                GestureDetector(
-                                  onTap: () {
-                                    // userByIdQuery.isError == true
-                                    //     ? null
-                                    //     : GoRouter.of(context)
-                                    //   ?..pushNamed('profileSettings', extra: {
-                                    //     'currentUser': userByIdQuery.data,
-                                    //     'userProfile': profileQuery.data
-                                    //   })
-                                    //   ..push('/wallet', extra: {
-                                    //     'currentUser': userByIdQuery.data,
-                                    //     'userProfile': profileQuery.data
-                                    //   });
-                                  },
-                                  child: Container(
-                                    width: size.width / 3,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        Flexible(
-                                          flex: 2,
-                                          child: Image.asset(
-                                            'assets/images/coin.png',
-                                            width: 30,
-                                            height: 30,
-                                          ),
-                                        ),
-                                        Skeletonizer(
-                                          enabled: userByIdQuery.isFetching,
-                                          child: Flexible(
-                                            flex: 2,
-                                            child: Text(
-                                              " ${userByIdQuery.data?.wallets?.isNotEmpty == true ? roundBalance(userByIdQuery.data?.wallets![0].balance) : '_'}",
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .headlineSmall,
-                                            ),
-                                          ),
-                                        ),
-                                        Flexible(
-                                            child: GestureDetector(
-                                          child: const Icon(Icons.add),
-                                          onTap: () {
-                                            context.pushNamed('newPurchase',
-                                                extra: {
-                                                  'currentUser':
-                                                      userByIdQuery.data
-                                                });
-                                          },
-                                        )),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                SizedBox(
-                                  width: size.width / 2.3,
-                                  child: AppIconButton(
-                                      isOutlined: true,
-                                      bgColor: appColors.skyLightest,
-                                      color: appColors.primaryBase,
-                                      title: 'Nhận phúc lợi',
-                                      textStyle: textTheme.titleMedium
-                                          ?.copyWith(
-                                              color: appColors.primaryBase),
-                                      onPressed: () {
-                                        userByIdQuery.isError == true
-                                            ? null
-                                            : GoRouter.of(context)
-                                                .push('/profile/dailyReward');
-                                      }),
-                                ),
-                                const SizedBox(height: 16),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Skeletonizer(
-                            enabled: publishedStoriesQuery.isFetching ||
-                                readingStoriesQuery.isFetching,
-                            child: Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 0.0),
-                              child: interactionInfo(
-                                publishedStoriesQuery.data?.length,
-                                readingStoriesQuery.data?.length,
-                                profileQuery.data?.numberOfFollowers,
-                              ),
-                            ),
-                          ),
-                          // descrition
-                          const SizedBox(height: 16),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
+    print(profileData?.avatarUrl);
+    return SingleChildScrollView(
+      child: Container(
+        width: double.infinity,
+        margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Column(
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                      image: DecorationImage(
+                    opacity: 0.6,
+                    image: CachedNetworkImageProvider(
+                        profileData?.backgroundUrl == ''
+                            ? FALLBACK_BACKGROUND_URL
+                            : profileData?.backgroundUrl ??
+                                FALLBACK_BACKGROUND_URL),
+                    fit: BoxFit.fill,
+                  )),
+                  child: Column(
+                    children: [
+                      AppAvatarImage(
+                        hasLevel: true,
+                        levelId: userData?.levelId ?? 1,
+                        hasAuthorLevel: true,
+                        authorLevelId: userData?.authorLevelId ?? 1,
+                        size: userData?.levelId != null ? 93 : 88,
+                        url: userData?.avatarUrl,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        userData?.fullName ?? 'Họ và tên',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      Text(
+                        '@${userData?.username ?? 'Tên đăng nhập'}',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () {
+                          // userByIdQuery.isError == true
+                          //     ? null
+                          //     : GoRouter.of(context)
+                          //   ?..pushNamed('profileSettings', extra: {
+                          //     'currentUser': userByIdQuery.data,
+                          //     'userProfile': profileQuery.data
+                          //   })
+                          //   ..push('/wallet', extra: {
+                          //     'currentUser': userByIdQuery.data,
+                          //     'userProfile': profileQuery.data
+                          //   });
+                        },
+                        child: Container(
+                          width: size.width / 3,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              Skeletonizer(
-                                enabled: profileQuery.isFetching,
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: size.width / 9),
-                                  child: Divider(
-                                    thickness: 1.2,
-                                    color: appColors.inkLighter,
-                                  ),
+                              Flexible(
+                                flex: 2,
+                                child: Image.asset(
+                                  'assets/images/coin.png',
+                                  width: 30,
+                                  height: 30,
                                 ),
                               ),
-                              profileQuery.data?.description == null ||
-                                      profileQuery.data?.description == ''
-                                  ? SizedBox(
-                                      height: 0,
-                                    )
-                                  : Skeletonizer(
-                                      enabled: profileQuery.isFetching,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          profileQuery.data?.description ==
-                                                      null ||
-                                                  profileQuery
-                                                          .data?.description ==
-                                                      ''
-                                              ? 'Nhập gì đó về bạn'
-                                              : profileQuery
-                                                      .data?.description ??
-                                                  '',
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: size.width / 4),
-                                child: Divider(
-                                  thickness: 1.2,
-                                  color: appColors.inkLighter,
+                              Flexible(
+                                flex: 2,
+                                child: Text(
+                                  " ${userData?.wallets?.isNotEmpty == true ? roundBalance(userData?.wallets![0].balance) : '_'}",
+                                  style:
+                                      Theme.of(context).textTheme.headlineSmall,
                                 ),
                               ),
+                              Flexible(
+                                  child: GestureDetector(
+                                child: const Icon(Icons.add),
+                                onTap: () {
+                                  context.pushNamed('newPurchase',
+                                      extra: {'currentUser': userData});
+                                },
+                              )),
                             ],
                           ),
-
-                          //tab
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Column(
-                              children: [
-                                Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 12),
-                                  child: TabBar(
-                                    onTap: (value) {
-                                      setState(() {
-                                        if (tabState != value) tabState = value;
-                                      });
-                                    },
-                                    controller: tabController,
-                                    labelColor: appColors.primaryBase,
-                                    unselectedLabelColor: appColors.inkLight,
-                                    labelPadding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    indicatorColor: appColors.primaryBase,
-                                    labelStyle: textTheme.titleLarge,
-                                    tabs: const [
-                                      Tab(
-                                        text: 'Giới thiệu',
-                                      ),
-                                      Tab(
-                                        text: 'Thông báo',
-                                      )
-                                    ],
-                                  ),
-                                ),
-                                Builder(builder: (context) {
-                                  if (tabState == 0) {
-                                    if ([publishedStoriesQuery.data ?? []]
-                                            .isEmpty &&
-                                        [readingStoriesQuery.data ?? []]
-                                            .isEmpty &&
-                                        [profileQuery.data?.followings ?? []]
-                                            .isEmpty) {
-                                      return Center(
-                                        child: Text('Chưa có dữ liệu mới'),
-                                      );
-                                    } else {
-                                      return introView(
-                                          publishedStoriesQuery.data,
-                                          readingStoriesQuery.data,
-                                          profileQuery.data?.followings ?? []);
-                                    }
-                                  } else {
-                                    return Text('notification');
-                                  }
-                                  // return Skeletonizer(
-                                  //   enabled: ,
-                                  //     child: introView([], [], []));
-                                }),
-                              ],
-                            ),
-                          ),
-                        ],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SizedBox(
+                        width: size.width / 2.3,
+                        child: AppIconButton(
+                            isOutlined: true,
+                            bgColor: appColors.skyLightest,
+                            color: appColors.primaryBase,
+                            title: 'Nhận phúc lợi',
+                            textStyle: textTheme.titleMedium
+                                ?.copyWith(color: appColors.primaryBase),
+                            onPressed: () {
+                              userData == null
+                                  ? null
+                                  : GoRouter.of(context)
+                                      .push('/profile/dailyReward');
+                            }),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Skeletonizer(
+                  enabled: publishedStoriesQuery.isFetching ||
+                      readingStoriesQuery.isFetching,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                    child: interactionInfo(
+                      publishedStoriesQuery.data?.length,
+                      readingStoriesQuery.data?.length,
+                      profileData?.numberOfFollowers,
+                    ),
+                  ),
+                ),
+                // descrition
+                const SizedBox(height: 16),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width / 9),
+                      child: Divider(
+                        thickness: 1.2,
+                        color: appColors.inkLighter,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        profileData?.description == null ||
+                                profileData?.description == ''
+                            ? 'Nhập gì đó về bạn'
+                            : profileData?.description ?? '',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: size.width / 4),
+                      child: Divider(
+                        thickness: 1.2,
+                        color: appColors.inkLighter,
                       ),
                     ),
                   ],
                 ),
+
+                //tab
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        child: TabBar(
+                          onTap: (value) {
+                            setState(() {
+                              if (tabState != value) tabState = value;
+                            });
+                          },
+                          controller: tabController,
+                          labelColor: appColors.primaryBase,
+                          unselectedLabelColor: appColors.inkLight,
+                          labelPadding:
+                              const EdgeInsets.symmetric(horizontal: 8),
+                          indicatorColor: appColors.primaryBase,
+                          labelStyle: textTheme.titleLarge,
+                          tabs: const [
+                            Tab(
+                              text: 'Giới thiệu',
+                            ),
+                            Tab(
+                              text: 'Thông báo',
+                            )
+                          ],
+                        ),
+                      ),
+                      Builder(builder: (context) {
+                        if (tabState == 0) {
+                          if ([publishedStoriesQuery.data ?? []].isEmpty &&
+                              [readingStoriesQuery.data ?? []].isEmpty &&
+                              [profileData?.followings ?? []].isEmpty) {
+                            return Center(
+                              child: Text('Chưa có dữ liệu mới'),
+                            );
+                          } else {
+                            return introView(
+                                publishedStoriesQuery.data,
+                                readingStoriesQuery.data,
+                                profileData?.followings ?? []);
+                          }
+                        } else {
+                          return Text('notification');
+                        }
+                      }),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -553,9 +499,16 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             profileQuery.refetch();
             userByIdQuery.refetch();
             readingStoriesQuery.refetch();
+            publishedStoriesQuery.refetch();
           },
-          child: userProfileInfo(userByIdQuery, profileQuery,
-              publishedStoriesQuery, readingStoriesQuery),
+          child: Skeletonizer(
+            enabled: profileQuery.isFetching ||
+                userByIdQuery.isFetching ||
+                readingStoriesQuery.isFetching ||
+                publishedStoriesQuery.isFetching,
+            child: userProfileInfo(userByIdQuery.data, profileQuery.data,
+                publishedStoriesQuery, readingStoriesQuery),
+          ),
         ),
       ),
     );

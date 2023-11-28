@@ -307,19 +307,14 @@ class _AppProfileScreenState extends State<AppProfileScreen>
     ); // include followers
     final publishedStoriesQuery = useQuery(
         ['publishedStories', widget.id],
-        enabled: profileQuery.data != null,
         () => StoryRepostitory()
             .fetchPublishedStoriesByUserId(widget.id)); //userId=me
-    final readingStoriesQuery = useQuery(
-        ['readingStories', widget.id],
-        enabled: profileQuery.data != null,
+    final readingStoriesQuery = useQuery(['readingStories', widget.id],
         () => StoryRepostitory().fetchReadingStoriesByUserId(widget.id));
     final isFollowUser = useState(false);
-    final conversationsQuery = useQuery(
-        ['conversations'],
-        enabled: profileQuery.data != null,
+    final conversationsQuery = useQuery(['conversations'],
         () => ConversationRepository().fetchAllConversations());
-
+    print(publishedStoriesQuery.data);
     useEffect(() {
       isFollowUser.value = profileQuery.data?.isFollowed ?? false;
       return () {};

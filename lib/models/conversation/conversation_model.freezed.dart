@@ -37,6 +37,8 @@ mixin _$Conversation {
   List<Message>? get messages => throw _privateConstructorUsedError;
   @JsonKey(name: 'last_message')
   Message? get lastMessage => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_latest_message_read')
+  bool? get isLatestMessageRead => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -57,7 +59,8 @@ abstract class $ConversationCopyWith<$Res> {
       @JsonKey(name: 'receiver_id') String? receiverId,
       @JsonKey(name: 'name') String? name,
       @JsonKey(name: 'messages') List<Message>? messages,
-      @JsonKey(name: 'last_message') Message? lastMessage});
+      @JsonKey(name: 'last_message') Message? lastMessage,
+      @JsonKey(name: 'is_latest_message_read') bool? isLatestMessageRead});
 
   $MessageCopyWith<$Res>? get lastMessage;
 }
@@ -82,6 +85,7 @@ class _$ConversationCopyWithImpl<$Res, $Val extends Conversation>
     Object? name = freezed,
     Object? messages = freezed,
     Object? lastMessage = freezed,
+    Object? isLatestMessageRead = freezed,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -112,6 +116,10 @@ class _$ConversationCopyWithImpl<$Res, $Val extends Conversation>
           ? _value.lastMessage
           : lastMessage // ignore: cast_nullable_to_non_nullable
               as Message?,
+      isLatestMessageRead: freezed == isLatestMessageRead
+          ? _value.isLatestMessageRead
+          : isLatestMessageRead // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ) as $Val);
   }
 
@@ -143,7 +151,8 @@ abstract class _$$ConversationImplCopyWith<$Res>
       @JsonKey(name: 'receiver_id') String? receiverId,
       @JsonKey(name: 'name') String? name,
       @JsonKey(name: 'messages') List<Message>? messages,
-      @JsonKey(name: 'last_message') Message? lastMessage});
+      @JsonKey(name: 'last_message') Message? lastMessage,
+      @JsonKey(name: 'is_latest_message_read') bool? isLatestMessageRead});
 
   @override
   $MessageCopyWith<$Res>? get lastMessage;
@@ -167,6 +176,7 @@ class __$$ConversationImplCopyWithImpl<$Res>
     Object? name = freezed,
     Object? messages = freezed,
     Object? lastMessage = freezed,
+    Object? isLatestMessageRead = freezed,
   }) {
     return _then(_$ConversationImpl(
       id: null == id
@@ -197,6 +207,10 @@ class __$$ConversationImplCopyWithImpl<$Res>
           ? _value.lastMessage
           : lastMessage // ignore: cast_nullable_to_non_nullable
               as Message?,
+      isLatestMessageRead: freezed == isLatestMessageRead
+          ? _value.isLatestMessageRead
+          : isLatestMessageRead // ignore: cast_nullable_to_non_nullable
+              as bool?,
     ));
   }
 }
@@ -211,7 +225,9 @@ class _$ConversationImpl implements _Conversation {
       @JsonKey(name: 'receiver_id') this.receiverId = '',
       @JsonKey(name: 'name') this.name = '',
       @JsonKey(name: 'messages') final List<Message>? messages = const [],
-      @JsonKey(name: 'last_message') this.lastMessage = null})
+      @JsonKey(name: 'last_message') this.lastMessage = null,
+      @JsonKey(name: 'is_latest_message_read')
+      this.isLatestMessageRead = false})
       : _messages = messages;
 
   factory _$ConversationImpl.fromJson(Map<String, dynamic> json) =>
@@ -250,10 +266,13 @@ class _$ConversationImpl implements _Conversation {
   @override
   @JsonKey(name: 'last_message')
   final Message? lastMessage;
+  @override
+  @JsonKey(name: 'is_latest_message_read')
+  final bool? isLatestMessageRead;
 
   @override
   String toString() {
-    return 'Conversation(id: $id, lastActive: $lastActive, coverUrl: $coverUrl, receiverId: $receiverId, name: $name, messages: $messages, lastMessage: $lastMessage)';
+    return 'Conversation(id: $id, lastActive: $lastActive, coverUrl: $coverUrl, receiverId: $receiverId, name: $name, messages: $messages, lastMessage: $lastMessage, isLatestMessageRead: $isLatestMessageRead)';
   }
 
   @override
@@ -271,7 +290,9 @@ class _$ConversationImpl implements _Conversation {
             (identical(other.name, name) || other.name == name) &&
             const DeepCollectionEquality().equals(other._messages, _messages) &&
             (identical(other.lastMessage, lastMessage) ||
-                other.lastMessage == lastMessage));
+                other.lastMessage == lastMessage) &&
+            (identical(other.isLatestMessageRead, isLatestMessageRead) ||
+                other.isLatestMessageRead == isLatestMessageRead));
   }
 
   @JsonKey(ignore: true)
@@ -284,7 +305,8 @@ class _$ConversationImpl implements _Conversation {
       receiverId,
       name,
       const DeepCollectionEquality().hash(_messages),
-      lastMessage);
+      lastMessage,
+      isLatestMessageRead);
 
   @JsonKey(ignore: true)
   @override
@@ -302,14 +324,15 @@ class _$ConversationImpl implements _Conversation {
 
 abstract class _Conversation implements Conversation {
   const factory _Conversation(
-          {@JsonKey(name: 'id') required final String id,
-          @JsonKey(name: 'last_active') final String? lastActive,
-          @JsonKey(name: 'cover_url') final String? coverUrl,
-          @JsonKey(name: 'receiver_id') final String? receiverId,
-          @JsonKey(name: 'name') final String? name,
-          @JsonKey(name: 'messages') final List<Message>? messages,
-          @JsonKey(name: 'last_message') final Message? lastMessage}) =
-      _$ConversationImpl;
+      {@JsonKey(name: 'id') required final String id,
+      @JsonKey(name: 'last_active') final String? lastActive,
+      @JsonKey(name: 'cover_url') final String? coverUrl,
+      @JsonKey(name: 'receiver_id') final String? receiverId,
+      @JsonKey(name: 'name') final String? name,
+      @JsonKey(name: 'messages') final List<Message>? messages,
+      @JsonKey(name: 'last_message') final Message? lastMessage,
+      @JsonKey(name: 'is_latest_message_read')
+      final bool? isLatestMessageRead}) = _$ConversationImpl;
 
   factory _Conversation.fromJson(Map<String, dynamic> json) =
       _$ConversationImpl.fromJson;
@@ -337,6 +360,9 @@ abstract class _Conversation implements Conversation {
   @override
   @JsonKey(name: 'last_message')
   Message? get lastMessage;
+  @override
+  @JsonKey(name: 'is_latest_message_read')
+  bool? get isLatestMessageRead;
   @override
   @JsonKey(ignore: true)
   _$$ConversationImplCopyWith<_$ConversationImpl> get copyWith =>

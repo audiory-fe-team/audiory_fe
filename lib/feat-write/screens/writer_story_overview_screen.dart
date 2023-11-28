@@ -1,4 +1,5 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
+import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
 import 'package:audiory_v0/models/category/app_category_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
@@ -216,11 +217,26 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
                       print(res?.id);
 
                       // ignore: use_build_context_synchronously
-                      context.pushNamed('composeChapter', extra: {
-                        'chapterId': res?.id,
-                        'story': editStory,
-                        'chapter': res
-                      });
+                      // context.pushNamed('composeChapter', extra: {
+                      //   'chapterId': res?.id,
+                      //   'story': editStory,
+                      //   'chapter': res
+                      // });
+
+                      // ignore: use_build_context_synchronously
+                      showModalBottomSheet(
+                          context: context,
+                          // isScrollControlled: true,
+                          builder: (context) {
+                            return ComposeChapterScreen(
+                              chapterId: res?.id,
+                              story: editStory,
+                              chapter: res,
+                              callback: () {
+                                chaptersQuery.refetch();
+                              },
+                            );
+                          });
                     } catch (e) {}
                   },
                 ),
@@ -260,11 +276,8 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
         children: [
           Flexible(
             flex: 1,
-            child: Container(
-              width: size.width / 4,
-              height: size.height / 6,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(12)),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
               child: GestureDetector(
                 onTap: () {
                   context

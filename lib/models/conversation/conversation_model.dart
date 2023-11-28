@@ -19,6 +19,9 @@ class Conversation with _$Conversation {
     @Default('') @JsonKey(name: 'name') String? name,
     @Default([]) @JsonKey(name: 'messages') List<Message>? messages,
     @Default(null) @JsonKey(name: 'last_message') Message? lastMessage,
+    @Default(false)
+    @JsonKey(name: 'is_latest_message_read')
+    bool? isLatestMessageRead,
   }) = _Conversation;
 
   factory Conversation.fromJson(Map<String, dynamic> json) =>

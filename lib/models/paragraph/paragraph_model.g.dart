@@ -18,6 +18,10 @@ _$ParagraphImpl _$$ParagraphImplFromJson(Map<String, dynamic> json) =>
               ?.map((e) => ParaAudio.fromJson(e as Map<String, dynamic>))
               .toList() ??
           const [],
+      contentModeration: json['content_moderation'] == null
+          ? null
+          : ContentModeration.fromJson(
+              json['content_moderation'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$ParagraphImplToJson(_$ParagraphImpl instance) =>
@@ -29,4 +33,5 @@ Map<String, dynamic> _$$ParagraphImplToJson(_$ParagraphImpl instance) =>
       'content': instance.content,
       'comment_count': instance.commentCount,
       'audios': instance.audios?.map((e) => e.toJson()).toList(),
+      'content_moderation': instance.contentModeration?.toJson(),
     };
