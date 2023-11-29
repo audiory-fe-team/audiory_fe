@@ -49,8 +49,8 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                   'username': _formKey.currentState?.fields['username']?.value,
                 };
                 // ignore: use_build_context_synchronously
-                // context.push('/flowOne',
-                //     extra: {'signUpBody': body}); //allow back button
+                context.push('/flowOne',
+                    extra: {'signUpBody': body}); //allow back button
                 // ignore: use_build_context_synchronously
                 AppSnackBar.buildTopSnackBar(
                     context,
