@@ -293,22 +293,22 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                         ),
                       ),
                       const SizedBox(height: 8),
-                      SizedBox(
-                        width: size.width / 2.3,
-                        child: AppIconButton(
-                            isOutlined: true,
-                            bgColor: appColors.skyLightest,
-                            color: appColors.primaryBase,
-                            title: 'Nhận phúc lợi',
-                            textStyle: textTheme.titleMedium
-                                ?.copyWith(color: appColors.primaryBase),
-                            onPressed: () {
-                              userData == null
-                                  ? null
-                                  : GoRouter.of(context)
-                                      .push('/profile/dailyReward');
-                            }),
-                      ),
+                      // SizedBox(
+                      //   width: size.width / 2.3,
+                      //   child: AppIconButton(
+                      //       isOutlined: true,
+                      //       bgColor: appColors.skyLightest,
+                      //       color: appColors.primaryBase,
+                      //       title: 'Nhận phúc lợi',
+                      //       textStyle: textTheme.titleMedium
+                      //           ?.copyWith(color: appColors.primaryBase),
+                      //       onPressed: () {
+                      //         userData == null
+                      //             ? null
+                      //             : GoRouter.of(context)
+                      //                 .push('/profile/dailyReward');
+                      //       }),
+                      // ),
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -509,6 +509,18 @@ class _UserProfileScreenState extends State<UserProfileScreen>
             child: userProfileInfo(userByIdQuery.data, profileQuery.data,
                 publishedStoriesQuery, readingStoriesQuery),
           ),
+        ),
+        floatingActionButton: AppIconButton(
+          bgColor: appColors.secondaryBase,
+          title: 'Điểm danh',
+          textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              color: appColors.skyLightest, fontWeight: FontWeight.w700),
+          onPressed: () {
+            userByIdQuery.data == null
+                ? null
+                : GoRouter.of(context).push('/profile/dailyReward');
+          },
+          iconPosition: 'start',
         ),
       ),
     );
