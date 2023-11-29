@@ -17,14 +17,17 @@ class AppTextInputField extends StatefulWidget {
 
   //type
   final bool? isTextArea;
+
   final bool? isNoError;
   final bool? isDisabled;
+  final double? borderRadius;
   final int? maxLengthCharacters;
   final int? minLines;
   final int? maxLines;
 
   //label
   final String? label;
+  final Widget? inputLable;
   final TextStyle? labelTextStyle;
   final bool? isRequired;
   final String? Function(String?)? validator;
@@ -43,39 +46,40 @@ class AppTextInputField extends StatefulWidget {
 
   //function callback
   final Function? onChangeCallback;
-  const AppTextInputField({
-    super.key,
-    this.label,
-    this.labelTextStyle,
-    this.initialValue = '',
-    required this.name,
-    this.marginVertical = 0,
-    this.marginHorizontal = 0,
-    this.paddingVertical = 0,
-    this.paddingHorizontal = 0,
-    this.width = double.infinity,
-    this.sizeBoxHeight = 5,
-    this.hintText = '',
-    this.isTextArea = false,
-    this.minLines = 1,
-    this.maxLines = 10,
-    this.hintTextStyle,
-    this.prefixIcon,
-    this.suffixIcon,
-    this.textInputType = TextInputType.text,
-    this.isRequired = false,
-    this.validator,
-    this.textAlign,
-    this.maxLengthCharacters,
-    this.marginBottom = 16,
-    this.isDisabled = true,
-    this.submmitted = false,
-    this.backgroundColor = Colors.transparent,
-    this.isNoError = false,
-    this.contentPadding =
-        const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12),
-    this.onChangeCallback,
-  });
+  const AppTextInputField(
+      {super.key,
+      this.label,
+      this.labelTextStyle,
+      this.initialValue = '',
+      required this.name,
+      this.marginVertical = 0,
+      this.marginHorizontal = 0,
+      this.paddingVertical = 0,
+      this.paddingHorizontal = 0,
+      this.width = double.infinity,
+      this.sizeBoxHeight = 5,
+      this.hintText = '',
+      this.isTextArea = false,
+      this.minLines = 1,
+      this.maxLines = 10,
+      this.borderRadius = 80,
+      this.hintTextStyle,
+      this.prefixIcon,
+      this.suffixIcon,
+      this.textInputType = TextInputType.text,
+      this.isRequired = false,
+      this.validator,
+      this.textAlign,
+      this.maxLengthCharacters,
+      this.marginBottom = 16,
+      this.isDisabled = true,
+      this.submmitted = false,
+      this.backgroundColor = Colors.transparent,
+      this.isNoError = false,
+      this.contentPadding =
+          const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12),
+      this.onChangeCallback,
+      this.inputLable});
 
   @override
   State<AppTextInputField> createState() => _AppTextInputFieldState();
@@ -122,54 +126,55 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
       maxLength: widget.maxLengthCharacters,
       cursorColor: appColors.primaryBase,
       decoration: InputDecoration(
-        errorStyle: widget.isNoError == true ? TextStyle(height: 0) : null,
-        enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            style: BorderStyle.solid,
-            color: appColors.skyBase,
-          ),
-          borderRadius: widget.isTextArea != null && widget.isTextArea! == true
-              ? const BorderRadius.all(Radius.circular(10))
-              : const BorderRadius.all(Radius.circular(80)),
-        ),
-        border: OutlineInputBorder(
-          borderSide: const BorderSide(
-            style: BorderStyle.solid,
-            color: Color(0xFF439A97),
-          ),
-          borderRadius: widget.isTextArea != null && widget.isTextArea == true
-              ? const BorderRadius.all(Radius.circular(10))
-              : const BorderRadius.all(Radius.circular(80)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(
-            width: 2,
-            style: BorderStyle.solid,
-            color: Color(0xFF439A97),
-          ),
-          borderRadius: widget.isTextArea != null && widget.isTextArea == true
-              ? const BorderRadius.all(Radius.circular(10))
-              : const BorderRadius.all(Radius.circular(80)),
-        ),
-        filled: true,
-        fillColor: widget.backgroundColor,
-        hintText: widget.hintText!,
-        prefixIcon: widget.prefixIcon,
-        suffixIcon: widget.suffixIcon,
-        hintStyle: widget.hintTextStyle ??
-            TextStyle(
-              color: appColors.skyDark,
+          errorStyle: widget.isNoError == true ? TextStyle(height: 0) : null,
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+              style: BorderStyle.solid,
+              color: appColors.skyBase,
             ),
-        counterText: widget.isTextArea != null && widget.isTextArea == true
-            ? '${_enteredText.length.toString()}/${widget.maxLengthCharacters} ký tự'
-            : null,
-        counterStyle: Theme.of(context)
-            .textTheme
-            .bodyMedium
-            ?.copyWith(color: appColors.inkLighter),
-        contentPadding: widget.contentPadding,
-        focusColor: Colors.black12,
-      ),
+            borderRadius: widget.isTextArea != null &&
+                    widget.isTextArea! == true
+                ? const BorderRadius.all(Radius.circular(10))
+                : BorderRadius.all(Radius.circular(widget.borderRadius ?? 80)),
+          ),
+          border: OutlineInputBorder(
+            borderSide: const BorderSide(
+              style: BorderStyle.solid,
+              color: Color(0xFF439A97),
+            ),
+            borderRadius: widget.isTextArea != null && widget.isTextArea == true
+                ? const BorderRadius.all(Radius.circular(10))
+                : BorderRadius.all(Radius.circular(widget.borderRadius ?? 80)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderSide: const BorderSide(
+              width: 2,
+              style: BorderStyle.solid,
+              color: Color(0xFF439A97),
+            ),
+            borderRadius: widget.isTextArea != null && widget.isTextArea == true
+                ? const BorderRadius.all(Radius.circular(10))
+                : BorderRadius.all(Radius.circular(widget.borderRadius ?? 80)),
+          ),
+          filled: true,
+          fillColor: widget.backgroundColor,
+          hintText: widget.hintText!,
+          prefixIcon: widget.prefixIcon,
+          suffixIcon: widget.suffixIcon,
+          hintStyle: widget.hintTextStyle ??
+              TextStyle(
+                color: appColors.skyDark,
+              ),
+          counterText: widget.isTextArea != null && widget.isTextArea == true
+              ? '${_enteredText.length.toString()}/${widget.maxLengthCharacters} ký tự'
+              : null,
+          counterStyle: Theme.of(context)
+              .textTheme
+              .bodyMedium
+              ?.copyWith(color: appColors.inkLighter),
+          contentPadding: widget.contentPadding,
+          focusColor: Colors.black12,
+          label: widget.inputLable),
       validator: widget.validator,
     );
   }

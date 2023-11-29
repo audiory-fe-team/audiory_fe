@@ -308,6 +308,10 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                                                                           priceController
                                                                               .text) ??
                                                                       0);
+
+                                                          context.pop();
+                                                          context.pop();
+                                                          context.pop();
                                                         } catch (e) {}
                                                       },
                                                     ),
@@ -384,8 +388,13 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
               child: AppIconButton(
                 onPressed: () async {
                   try {
-                    await StoryRepostitory().paywallStory(widget.story.id,
-                        int.tryParse(priceController.text) ?? 0);
+                    Map<String, String> body = {
+                      'chapter_price':
+                          '${int.tryParse(priceController.text) ?? 0}'
+                    };
+                    await StoryRepostitory()
+                        .editStory(widget.story.id, body, ['']);
+                    // ignore: use_build_context_synchronously
                     AppSnackBar.buildTopSnackBar(context,
                         'Cập nhật giá thành công', null, SnackBarType.success);
                     context.pop();

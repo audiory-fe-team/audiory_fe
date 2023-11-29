@@ -73,4 +73,34 @@ class TransactionRepository {
       throw Exception('Failed to load user info');
     }
   }
+
+  static Future<Transaction?> fetchTransaction(id) async {
+    String transactionEndpoint = '${Endpoints().transaction}/$id';
+    final url = Uri.parse(transactionEndpoint);
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json; charset=UTF-8",
+      "Accept": "application/json",
+    };
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.get(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+    print(responseBody);
+    if (response.statusCode == 200) {
+      try {
+        final result = jsonDecode(responseBody)['data'];
+        return Transaction.fromJson(result);
+      } catch (error) {
+        print(error);
+        throw (error);
+      }
+    } else {
+      throw Exception('Failed to load user info');
+    }
+  }
 }

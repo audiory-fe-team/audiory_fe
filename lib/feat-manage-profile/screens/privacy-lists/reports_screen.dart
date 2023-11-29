@@ -40,7 +40,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
 
-    final reportsQuery = useQuery(['myReports'],
+    final reportsQuery = useQuery(
+        ['myReports'],
+        refetchOnMount: RefetchOnMount.always,
         () => AuthRepository().getMyReports(userId: widget.userId));
 
     handleUnmute({reportId}) async {

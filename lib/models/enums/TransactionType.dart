@@ -52,15 +52,15 @@ extension TransactionTypeExtension on TransactionType {
   String get displayText {
     switch (this) {
       case TransactionType.PURCHASE:
-        return 'Nạp thành công vào ví';
+        return 'Nạp  vào ví';
       case TransactionType.WITHDRAW:
-        return 'Rút thành công';
+        return 'Rút về ví';
       case TransactionType.REFUND:
-        return 'Hoàn tiền thành công';
+        return 'Hoàn tiền về ví';
       case TransactionType.GIFT_SENT:
-        return 'Tặng quà thành công';
+        return 'Tặng quà cho tác phẩm';
       case TransactionType.CHAPTER_BOUGHT:
-        return 'Mua chương';
+        return 'Mua chương truyện';
       case TransactionType.DAILY_REWARD:
         return 'Nhận thưởng hàng ngày';
       case TransactionType.REWARD_FROM_GIFT:
