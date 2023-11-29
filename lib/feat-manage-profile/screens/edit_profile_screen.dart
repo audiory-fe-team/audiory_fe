@@ -119,20 +119,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
-                Flexible(
-                  child: GestureDetector(
-                      onTap: () {
-                        showdobpicker();
-                      },
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: Icon(
-                          Icons.calendar_today,
-                          color: appColors.skyDark,
-                          size: 20,
-                        ),
-                      )),
-                ),
+                // Flexible(
+                //   child: GestureDetector(
+                //       onTap: () {
+                //         showdobpicker();
+                //       },
+                //       child: Padding(
+                //         padding: const EdgeInsets.only(right: 8.0),
+                //         child: Icon(
+                //           Icons.calendar_today,
+                //           color: appColors.skyDark,
+                //           size: 20,
+                //         ),
+                //       )),
+                // ),
               ],
             ),
             const SizedBox(
@@ -142,6 +142,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 textInputType: TextInputType.datetime,
                 isRequired: false,
                 name: 'dob',
+                suffixIcon: GestureDetector(
+                    onTap: () {
+                      showdobpicker();
+                    },
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 8.0),
+                      child: Icon(
+                        Icons.calendar_today,
+                        color: appColors.skyDark,
+                        size: 20,
+                      ),
+                    )),
                 initialValue: _selectedDate != ''
                     ? _selectedDate
                     : formatDate(profile?.dob),
@@ -305,10 +317,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       .currentState?.fields['full_name']?.value;
                                   body['sex'] = _formKey
                                       .currentState?.fields['sex']?.value;
-                                  body['description'] = _formKey.currentState!
-                                      .fields['description']?.value;
-                                  body['facebook_url'] = _formKey.currentState!
-                                      .fields['facebook_url']?.value;
+                                  body['description'] = _formKey.currentState
+                                      ?.fields['description']?.value;
+                                  body['facebook_url'] = _formKey.currentState
+                                      ?.fields['facebook_url']?.value;
                                   final parsedDate = DateTime.tryParse('');
                                   // body['dob'] =
                                   //     parsedDate?.toUtc().toIso8601String() ??

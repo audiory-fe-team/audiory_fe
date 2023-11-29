@@ -403,7 +403,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 profileData?.followings ?? []);
                           }
                         } else {
-                          return Text('notification');
+                          return Text('Thông báo của người dùng');
                         }
                       }),
                     ],

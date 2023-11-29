@@ -257,7 +257,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
       body['description'] =
           _formReportKey.currentState?.fields['description']?.value;
       body['title'] = _formReportKey.currentState?.fields['title']?.value;
-      body['reported_id'] = widget.story?.id ?? '';
+      body['reported_id'] = widget.chapter?.currentVersionId ?? '';
       body['report_type'] = 'CONTENT_VIOLATION_COMPLAINT';
       body['user_id'] = widget.story?.authorId ?? '';
       print(body);
@@ -431,90 +431,91 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                                     context,
                                                                 builder:
                                                                     (context) {
-                                                                  return Container(
-                                                                    height:
-                                                                        size.height -
-                                                                            200,
-                                                                    padding: const EdgeInsets
-                                                                        .symmetric(
-                                                                        vertical:
-                                                                            8,
-                                                                        horizontal:
-                                                                            16),
-                                                                    child: ListView(
-                                                                        children: [
-                                                                          Padding(
-                                                                            padding:
-                                                                                const EdgeInsets.symmetric(vertical: 16.0),
-                                                                            child:
-                                                                                Row(
-                                                                              mainAxisSize: MainAxisSize.max,
-                                                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                                              children: [
-                                                                                Flexible(
-                                                                                  child: Text(
-                                                                                    'Tạo báo cáo',
-                                                                                    style: textTheme.headlineSmall,
-                                                                                  ),
-                                                                                ),
-                                                                                Flexible(
-                                                                                  flex: 2,
-                                                                                  child: AppIconButton(
-                                                                                      title: 'Tạo',
-                                                                                      onPressed: () {
-                                                                                        if (_formReportKey.currentState?.validate() ?? false) {
-                                                                                          print('hei');
-                                                                                          _formReportKey.currentState?.save();
-                                                                                          handleCreateReport();
-                                                                                        } else {
-                                                                                          print('false');
-                                                                                        }
-                                                                                      }),
-                                                                                )
-                                                                              ],
-                                                                            ),
-                                                                          ),
-                                                                          FormBuilder(
-                                                                              key: _formReportKey,
-                                                                              autovalidateMode: AutovalidateMode.onUserInteraction,
-                                                                              child: Column(
-                                                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                                  return Scaffold(
+                                                                    body:
+                                                                        Container(
+                                                                      height:
+                                                                          size.height -
+                                                                              200,
+                                                                      padding: const EdgeInsets
+                                                                          .symmetric(
+                                                                          vertical:
+                                                                              8,
+                                                                          horizontal:
+                                                                              16),
+                                                                      child: ListView(
+                                                                          children: [
+                                                                            Padding(
+                                                                              padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                                                              child: Row(
+                                                                                mainAxisSize: MainAxisSize.max,
+                                                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                                                 children: [
-                                                                                  AppTextInputField(
-                                                                                    name: 'title',
-                                                                                    hintText: 'Nhập tiêu đề',
-                                                                                    label: 'Tiêu đề báo cáo',
-                                                                                    isRequired: true,
-                                                                                    isNoError: false,
-                                                                                    validator: FormBuilderValidators.required(errorText: 'Không được để trống'),
-                                                                                  ),
-                                                                                  AppTextInputField(
-                                                                                    name: 'description',
-                                                                                    hintText: 'Nhập nội dung',
-                                                                                    label: 'Nội dung',
-                                                                                    isRequired: true,
-                                                                                    isTextArea: true,
-                                                                                    maxLengthCharacters: 256,
-                                                                                    minLines: 4,
-                                                                                    validator: FormBuilderValidators.compose([
-                                                                                      FormBuilderValidators.required(errorText: 'Không được để trống'),
-                                                                                      FormBuilderValidators.max(256, errorText: 'Tối đa 256 ký tự')
-                                                                                    ]),
-                                                                                  ),
-                                                                                  Text(
-                                                                                    'Hình minh họa',
-                                                                                    style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                                                                                  ),
-                                                                                  Center(
-                                                                                    child: SizedBox(
-                                                                                      width: size.width / 4,
-                                                                                      child: FormBuilderImagePicker(previewAutoSizeWidth: true, maxImages: 1, backgroundColor: appColors.skyLightest, iconColor: appColors.primaryBase, decoration: const InputDecoration(border: InputBorder.none), name: 'photo'),
+                                                                                  Flexible(
+                                                                                    child: Text(
+                                                                                      'Tạo báo cáo',
+                                                                                      style: textTheme.headlineSmall,
                                                                                     ),
                                                                                   ),
+                                                                                  Flexible(
+                                                                                    flex: 2,
+                                                                                    child: AppIconButton(
+                                                                                        title: 'Tạo',
+                                                                                        onPressed: () {
+                                                                                          if (_formReportKey.currentState?.validate() ?? false) {
+                                                                                            print('hei');
+                                                                                            _formReportKey.currentState?.save();
+                                                                                            handleCreateReport();
+                                                                                          } else {
+                                                                                            print('false');
+                                                                                          }
+                                                                                        }),
+                                                                                  )
                                                                                 ],
-                                                                              ))
-                                                                        ]),
+                                                                              ),
+                                                                            ),
+                                                                            FormBuilder(
+                                                                                key: _formReportKey,
+                                                                                autovalidateMode: AutovalidateMode.onUserInteraction,
+                                                                                child: Column(
+                                                                                  mainAxisAlignment: MainAxisAlignment.start,
+                                                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                                                  children: [
+                                                                                    AppTextInputField(
+                                                                                      name: 'title',
+                                                                                      hintText: 'Nhập tiêu đề',
+                                                                                      label: 'Tiêu đề báo cáo',
+                                                                                      isRequired: true,
+                                                                                      isNoError: false,
+                                                                                      validator: FormBuilderValidators.required(errorText: 'Không được để trống'),
+                                                                                    ),
+                                                                                    AppTextInputField(
+                                                                                      name: 'description',
+                                                                                      hintText: 'Nhập nội dung',
+                                                                                      label: 'Nội dung',
+                                                                                      isRequired: true,
+                                                                                      isTextArea: true,
+                                                                                      maxLengthCharacters: 256,
+                                                                                      minLines: 4,
+                                                                                      validator: FormBuilderValidators.compose([
+                                                                                        FormBuilderValidators.required(errorText: 'Không được để trống'),
+                                                                                        FormBuilderValidators.max(256, errorText: 'Tối đa 256 ký tự')
+                                                                                      ]),
+                                                                                    ),
+                                                                                    Text(
+                                                                                      'Hình minh họa',
+                                                                                      style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                                                                                    ),
+                                                                                    Center(
+                                                                                      child: SizedBox(
+                                                                                        width: size.width / 4,
+                                                                                        child: FormBuilderImagePicker(previewAutoSizeWidth: true, maxImages: 1, backgroundColor: appColors.skyLightest, iconColor: appColors.primaryBase, decoration: const InputDecoration(border: InputBorder.none), name: 'photo'),
+                                                                                      ),
+                                                                                    ),
+                                                                                  ],
+                                                                                ))
+                                                                          ]),
+                                                                    ),
                                                                   );
                                                                 });
                                                           },

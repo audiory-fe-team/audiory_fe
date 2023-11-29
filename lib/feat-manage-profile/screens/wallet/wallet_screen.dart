@@ -35,7 +35,7 @@ class _WalletScreenState extends State<WalletScreen> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final transactionsQuery = useQuery(['transactions'],
-        () => TransactionRepository.fetchMyTransactions(pageSize: 1000));
+        () => TransactionRepository.fetchMyTransactions(pageSize: 100));
     final userByIdQuery =
         useQuery(['user'], () => AuthRepository().getMyUserById());
 
@@ -315,10 +315,60 @@ class _WalletScreenState extends State<WalletScreen> {
                                       ),
                                     ),
                                     Flexible(
-                                      child: Text(
-                                        'Xem thêm',
-                                        style: textTheme.bodyMedium?.copyWith(
-                                          color: appColors.primaryDark,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          print('more');
+                                          showModalBottomSheet(
+                                              context: context,
+                                              isScrollControlled: true,
+                                              isDismissible: true,
+                                              useSafeArea: true,
+                                              builder: (context) {
+                                                return Scaffold(
+                                                  appBar: CustomAppBar(
+                                                    title: Text(
+                                                        'Lịch sử giao dịch'),
+                                                  ),
+                                                  body: SingleChildScrollView(
+                                                    child: Column(children: [
+                                                      Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  vertical:
+                                                                      6.0),
+                                                          child: Container(
+                                                            height:
+                                                                size.height *
+                                                                    0.85,
+                                                            child: ListView
+                                                                .builder(
+                                                                    itemCount:
+                                                                        transactionsQuery
+                                                                            .data
+                                                                            ?.length,
+                                                                    itemBuilder:
+                                                                        (context,
+                                                                            index) {
+                                                                      return Container(
+                                                                        child:
+                                                                            TransactionCard(
+                                                                          transaction:
+                                                                              transactionsQuery.data?[index] as Transaction,
+                                                                        ),
+                                                                      );
+                                                                    }),
+                                                          )),
+                                                    ]),
+                                                  ),
+                                                );
+                                              });
+                                        },
+                                        child: Text(
+                                          'Xem thêm',
+                                          style: textTheme.bodyMedium?.copyWith(
+                                            color: appColors.primaryDark,
+                                          ),
                                         ),
                                       ),
                                     ),
