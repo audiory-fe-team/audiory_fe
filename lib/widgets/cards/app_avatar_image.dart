@@ -115,6 +115,17 @@ class AppAvatarImage extends StatelessWidget {
                   : const SizedBox(
                       height: 0,
                     ),
+              // hasLevel == true || hasAuthorLevel == true
+              //     ? Positioned(
+              //         bottom: 0,
+              //         width: 200,
+              //         child: Text(
+              //           'chien than tap su',
+              //           textAlign: TextAlign.center,
+              //         ))
+              //     : const SizedBox(
+              //         height: 0,
+              //       ),
             ]),
           )
         : Stack(children: [
