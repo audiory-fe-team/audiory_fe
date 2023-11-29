@@ -308,6 +308,10 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                                                                           priceController
                                                                               .text) ??
                                                                       0);
+
+                                                          context.pop();
+                                                          context.pop();
+                                                          context.pop();
                                                         } catch (e) {}
                                                       },
                                                     ),

@@ -12,30 +12,39 @@ class DonateItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(
-            width: 2.5,
-            color: selected == true
-                ? appColors.primaryBase
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      children: [
+        Container(
+          padding: EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            border: Border.all(
+                width: 2.5,
+                color: selected == true
+                    ? appColors.primaryBase
+                    : appColors.skyLightest),
+            color: (selected == true
+                ? appColors.primaryLightest
                 : appColors.skyLightest),
-        color: (selected == true
-            ? appColors.primaryLightest
-            : appColors.skyLightest),
-        shape: BoxShape.circle,
-      ),
-      child: ClipRRect(
-        child: Lottie.network(gift.imageUrl ?? '',
-            errorBuilder: (context, error, stackTrace) => LottieBuilder.asset(
-                  'assets/gifs/gif-rose.json',
-                  width: 70,
-                  height: 70,
-                ),
-            width: 70,
-            height: 70),
-      ),
+            shape: BoxShape.circle,
+          ),
+          child: ClipRRect(
+            child: Lottie.network(gift.imageUrl ?? '',
+                errorBuilder: (context, error, stackTrace) =>
+                    LottieBuilder.asset(
+                      'assets/gifs/gif-rose.json',
+                      width: 70,
+                      height: 70,
+                    ),
+                width: 70,
+                height: 70),
+          ),
+        ),
+        Text(
+          gift.name ?? 'Quà',
+          style: textTheme.titleSmall,
+        ),
+      ],
     );
   }
 }

@@ -54,7 +54,7 @@ class PaymentMethodRepository {
     }
   }
 
-  Future<void> withdraw(body) async {
+  Future<dynamic> withdraw(body) async {
     final storage = new FlutterSecureStorage();
     final jwt = await storage.read(key: 'jwt');
     final url = Uri.parse('$withDrawalEndpoint');
@@ -71,6 +71,8 @@ class PaymentMethodRepository {
     final responseBody = utf8.decode(response.bodyBytes);
     print('res for paymenth $responseBody');
     if (response.statusCode == 200) {
+      print(jsonDecode(responseBody)['data']['id']);
+      return jsonDecode(responseBody)['data']['id'];
     } else {
       throw Exception('Failed to load payment methods');
     }

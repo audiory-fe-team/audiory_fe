@@ -50,6 +50,7 @@ class PurchaseRepository {
     }
     if (response.statusCode == 200) {
       final result = json.decode(response.body)['data'];
+      print(result);
       print('applink ${result['applink']}');
       return result['applink'];
 

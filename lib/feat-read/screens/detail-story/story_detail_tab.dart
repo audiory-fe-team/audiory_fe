@@ -55,6 +55,7 @@ class StoryDetailTab extends HookWidget {
       var totalCoinsOfUser = userQuery.data?.wallets![0].balance ?? 0;
       if (double.parse('${(gift?.price ?? 0) * total}') >
           double.parse(totalCoinsOfUser.toString())) {
+        context.pop();
         AppSnackBar.buildTopSnackBar(
             context, 'Không đủ số dư', null, SnackBarType.info);
       } else {

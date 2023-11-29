@@ -1,3 +1,4 @@
+import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/gift/gift_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
@@ -73,7 +74,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                       style: Theme.of(context)
                           .textTheme
                           .headlineMedium
-                          ?.copyWith(color: appColors.skyLightest),
+                          ?.copyWith(),
                     ),
                   ),
                   Flexible(
@@ -110,8 +111,20 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                             flex: 2,
                             child: TextButton(
                                 onPressed: () {
-                                  context.pushNamed('newPurchase',
-                                      extra: {'currentUser': widget.userData});
+                                  print('press');
+                                  context.pop();
+                                  // context.pushNamed('newPurchase',
+                                  //     extra: {'currentUser': widget.userData});
+
+                                  showModalBottomSheet(
+                                      context: context,
+                                      useSafeArea: true,
+                                      isScrollControlled: true,
+                                      builder: (context) {
+                                        return NewPurchaseScreen(
+                                          currentUser: widget.userData,
+                                        );
+                                      });
                                 },
                                 child: Icon(
                                   Icons.add,
