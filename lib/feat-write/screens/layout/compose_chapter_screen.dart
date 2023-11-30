@@ -251,13 +251,13 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
       }
     }
 
-    handleCreateReport() async {
+    handleCreateReport(String? chapterVersionId) async {
       Map<String, String> body = <String, String>{};
 
       body['description'] =
           _formReportKey.currentState?.fields['description']?.value;
       body['title'] = _formReportKey.currentState?.fields['title']?.value;
-      body['reported_id'] = widget.chapter?.currentVersionId ?? '';
+      body['reported_id'] = chapterVersionId ?? '';
       body['report_type'] = 'CONTENT_VIOLATION_COMPLAINT';
       body['user_id'] = widget.story?.authorId ?? '';
       print(body);
@@ -332,8 +332,9 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                     'assets/images/dialog_warning.png')),
                           ),
                           Text(
-                            '${res2['message']}',
+                            'Chương của bạn có chứa nội dung nhạy cảm. Nếu bạn vẫn muốn đăng tải chương này, hãy nhấn Tiếp tục',
                             textAlign: TextAlign.center,
+                            style: textTheme.titleSmall,
                           ),
                           SizedBox(
                             height: 8,
@@ -465,7 +466,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                                                           if (_formReportKey.currentState?.validate() ?? false) {
                                                                                             print('hei');
                                                                                             _formReportKey.currentState?.save();
-                                                                                            handleCreateReport();
+                                                                                            handleCreateReport(res2['data']['current_version_id']);
                                                                                           } else {
                                                                                             print('false');
                                                                                           }

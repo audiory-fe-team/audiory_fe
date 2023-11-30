@@ -350,8 +350,9 @@ class AuthRepository extends ChangeNotifier {
   Future<List<Report>?> getMyReports({String userId = ''}) async {
     const storage = FlutterSecureStorage();
     String? jwtToken = await storage.read(key: 'jwt');
+    print(userId);
     final url =
-        Uri.parse('${Endpoints().user}/$userId/reports?page=1&page_size=1000');
+        Uri.parse('${Endpoints().user}/$userId/reports?page=1&page_size=200');
 
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {
