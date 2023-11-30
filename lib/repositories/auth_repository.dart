@@ -140,7 +140,10 @@ class AuthRepository extends ChangeNotifier {
     String? username,
     String? fullname,
   }) async {
-    Map<String, String> body = {'email': email};
+    Map<String, String> body = {
+      'email': email,
+      if (username != null) 'username': username
+    };
     var url = Uri.parse('${Endpoints().auth}/send-verification-email');
     Map<String, String> header = {
       "Content-type": "application/json",

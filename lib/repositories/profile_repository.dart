@@ -146,7 +146,7 @@ class ProfileRepository {
       print(formData.fields);
     }
     try {
-      final response = await dio.put('${Endpoints().user}/$userId/profile',
+      final response = await dio.patch('${Endpoints().user}/$userId/profile',
           data: formData, options: Options(headers: header));
       if (kDebugMode) {
         print('res for update');

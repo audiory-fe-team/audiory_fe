@@ -266,17 +266,11 @@ class DetailStoryScreen extends HookConsumerWidget {
           ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Skeleton.shade(
-                child: isAddedToLibrary == true
-                    ? AppCacheImage(
-                        url: story?.coverUrl,
-                        width: 110,
-                        height: 165,
-                        fit: BoxFit.fill)
-                    : AppImage(
-                        url: story?.coverUrl,
-                        width: 110,
-                        height: 165,
-                        fit: BoxFit.fill),
+                child: AppImage(
+                    url: story?.coverUrl,
+                    width: 110,
+                    height: 165,
+                    fit: BoxFit.fill),
               )),
           const SizedBox(height: 24),
           Text(
