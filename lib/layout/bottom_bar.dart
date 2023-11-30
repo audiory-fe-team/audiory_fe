@@ -18,27 +18,27 @@ class AppBottomNavigationBar extends HookWidget {
       switch (index) {
         case 0:
           {
-            GoRouter.of(context).push("/");
+            GoRouter.of(context).go("/");
             break;
           }
         case 1:
           {
-            GoRouter.of(context).push("/explore");
+            GoRouter.of(context).go("/explore");
             break;
           }
         case 2:
           {
-            GoRouter.of(context).push("/library");
+            GoRouter.of(context).go("/library");
             break;
           }
         case 3:
           {
-            GoRouter.of(context).push("/writer");
+            GoRouter.of(context).go("/writer");
             break;
           }
         case 4:
           {
-            GoRouter.of(context).push("/profile");
+            GoRouter.of(context).go("/profile");
             break;
           }
       }

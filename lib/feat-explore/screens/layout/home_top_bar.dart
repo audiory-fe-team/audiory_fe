@@ -1,3 +1,4 @@
+import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/conversation_repository.dart';
 import 'package:audiory_v0/repositories/notification_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -7,20 +8,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 
-class HomeTopBar extends HookWidget implements PreferredSizeWidget {
+class HomeTopBar extends HookConsumerWidget implements PreferredSizeWidget {
   const HomeTopBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(58);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
+    final currentUserId = ref.watch(globalMeProvider)?.id;
+
     final myInfoQuery = useQuery(
         ['myInfo'], () => AuthRepository().getMyUserById(),
         refetchOnMount: RefetchOnMount.always);

@@ -1,4 +1,5 @@
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/utils/widget_helper.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
@@ -39,6 +40,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     try {
       await AuthRepository().signInWithGoogle();
       // ignore: use_build_context_synchronously
+
+      try {
+        final info = await AuthRepository().getMyInfo();
+        ref.read(globalMeProvider.notifier).setUser(info);
+      } catch (error) {
+        print(error);
+      }
       context.go('/');
     } catch (e) {
       if (kDebugMode) {
@@ -98,6 +106,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         FocusManager.instance.primaryFocus!.unfocus();
                         passwordController.clear();
                         // ignore: use_build_context_synchronously
+
+                        try {
+                          final info = await AuthRepository().getMyInfo();
+                          ref.read(globalMeProvider.notifier).setUser(info);
+                        } catch (error) {
+                          print(error);
+                        }
+
                         context.go('/');
                         // ignore: use_build_context_synchronously
                         AppSnackBar.buildTopSnackBar(context,

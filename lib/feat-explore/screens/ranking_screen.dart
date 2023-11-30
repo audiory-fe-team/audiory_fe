@@ -152,7 +152,7 @@ class StoryRanking extends HookWidget {
     final storiesQuery = useQuery(
         ["ranking", metric, time, category, page.value.toString()], () {
       return RankingRepository().fetchRankingStories(
-          metric: metric, time: time, category: category, page: page.value);
+          metric: metric, time: time, category_id: category, page: page.value);
     });
     final categories =
         useQuery(['categories'], () => CategoryRepository().fetchCategory());
