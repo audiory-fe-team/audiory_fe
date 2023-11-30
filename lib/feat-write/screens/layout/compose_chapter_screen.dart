@@ -1,17 +1,14 @@
 import 'dart:convert';
 
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-write/data/models/chapter_version_model/chapter_version_model.dart';
 import 'package:audiory_v0/feat-write/screens/layout/content_moderation_dialog.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
-import 'package:audiory_v0/models/enums/Report.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/chapter_version_repository.dart';
 import 'package:audiory_v0/repositories/interaction_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/utils/quill_helper.dart';
-import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
@@ -224,7 +221,6 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
         AppSnackBar.buildTopSnackBar(
             context, 'Tối thiểu 5 từ', null, SnackBarType.error);
       } else {
-        print('saving');
         _formKey.currentState?.save();
         Map<String, String> body = {
           'chapter_id': widget.chapterId ?? '',
@@ -238,6 +234,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
               body, _formKey.currentState?.fields['photos']?.value);
 
           if (res == true) {
+            // ignore: use_build_context_synchronously
             AppSnackBar.buildTopSnackBar(
                 context, 'Lưu thành công', null, SnackBarType.success);
             chapterVersionsQuery.refetch();
@@ -264,8 +261,11 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
       try {
         final res = await InteractionRepository()
             .report(body, _formReportKey.currentState!.fields['photo']?.value);
+        // ignore: use_build_context_synchronously
         context.pop();
+        // ignore: use_build_context_synchronously
         context.pop();
+        // ignore: use_build_context_synchronously
         context.pop();
         // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
