@@ -52,6 +52,10 @@ class NotificationCard extends StatelessWidget {
         context.go('/story/${activity.entityId}');
       }
 
+      if (activity.actionEntity == 'CHAPTER') {
+        context.go('/story/${activity.entityId}');
+      }
+
       //NOTE: Entity is a profile
       if (activity.actionEntity == 'USER') {
         context.push('/profile/${activity.entityId}');
