@@ -17,6 +17,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../models/AuthUser.dart';
@@ -510,18 +511,28 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 publishedStoriesQuery, readingStoriesQuery),
           ),
         ),
-        floatingActionButton: AppIconButton(
-          bgColor: appColors.secondaryBase,
-          title: 'Điểm danh',
-          textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: appColors.skyLightest, fontWeight: FontWeight.w700),
-          onPressed: () {
-            userByIdQuery.data == null
-                ? null
-                : GoRouter.of(context).push('/profile/dailyReward');
-          },
-          iconPosition: 'start',
-        ),
+        // floatingActionButton: AppIconButton(
+        //   bgColor: appColors.secondaryBase,
+        //   title: 'Điểm danh',
+        //   textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+        //       color: appColors.skyLightest, fontWeight: FontWeight.w700),
+        //   onPressed: () {
+        //     userByIdQuery.data == null
+        //         ? null
+        //         : GoRouter.of(context).push('/profile/dailyReward');
+        //   },
+        //   iconPosition: 'start',
+        // ),
+        floatingActionButton: GestureDetector(
+            child: Container(
+                width: 70,
+                decoration: BoxDecoration(
+                    color: appColors.secondaryLightest,
+                    borderRadius: BorderRadius.circular(100)),
+                child: LottieBuilder.asset(
+                  'assets/gifs/daily-reward.json',
+                  width: 100,
+                ))),
       ),
     );
   }
