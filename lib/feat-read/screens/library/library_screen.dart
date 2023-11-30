@@ -4,6 +4,7 @@ import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
 import 'package:audiory_v0/feat-read/widgets/reading_list_card.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
+import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/repositories/reading_list_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -17,6 +18,7 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
@@ -88,17 +90,23 @@ class LibraryScreen extends HookWidget {
   }
 }
 
-class ReadingLists extends HookWidget {
+class ReadingLists extends HookConsumerWidget {
   ReadingLists({super.key});
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AppColors? appColors = Theme.of(context).extension<AppColors>();
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
+    final currentUserId = ref.read(globalMeProvider)?.id;
+
     final readingListQuery = useQuery(
-        ['readingList'], () => ReadingListRepository.fetchMyReadingList());
+      ['readingList', currentUserId],
+      () => ReadingListRepository.fetchMyReadingList(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
+    );
 
     handleCreateReadingList() async {
       Map<String, String> body = {};
@@ -373,13 +381,15 @@ class ReadingLists extends HookWidget {
   }
 }
 
-class CurrentReadings extends HookWidget {
+class CurrentReadings extends HookConsumerWidget {
   const CurrentReadings({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUserId = ref.read(globalMeProvider)?.id;
+
     final libraryQuery = useQuery(
-      ['library'],
+      ['library', currentUserId],
       () => LibraryRepository.fetchMyLibrary(),
       refetchOnMount: RefetchOnMount.stale,
       staleDuration: const Duration(minutes: 5),

@@ -309,7 +309,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
         }
       });
 
-      final timer = Timer.periodic(const Duration(seconds: 30), (Timer t) {
+      final timer = Timer.periodic(const Duration(seconds: 10), (Timer t) {
         if (scrollController.hasClients) {
           final offset = scrollController.offset.floor();
           ReadingProgressRepository.updateProgress(
