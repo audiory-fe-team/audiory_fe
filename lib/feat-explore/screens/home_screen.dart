@@ -8,7 +8,9 @@ import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-read/screens/library/downloaded_stories.dart';
 import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
 import 'package:audiory_v0/models/category/app_category_model.dart';
+import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
+import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/category_repository.dart';
 import 'package:audiory_v0/repositories/ranking_repository.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
@@ -28,9 +30,7 @@ class HomeScreen extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final connectivityState = ref.watch(connectivityProvider);
-    final storiesQuery = useQuery(
-        ['stories'], () => StoryRepostitory().fetchStories(),
-        enabled: connectivityState.status == ConnectivityStatus.online);
+    final currentUserId = ref.read(globalMeProvider)?.id;
 
     if (connectivityState.status == ConnectivityStatus.offline) {
       return Scaffold(
@@ -51,27 +51,28 @@ class HomeScreen extends HookConsumerWidget {
     }
 
     final paywalledStoriesQuery = useQuery(
-      ['myPaywalledStories'],
+      ['myPaywalledStories', currentUserId],
       () => StoryRepostitory().fetchMyPaywalledStories(),
       refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 1),
+      staleDuration: const Duration(minutes: 5),
     );
     final recommendStoriesQuery = useQuery(
-      ['recommendStories'],
+      ['recommendStories', currentUserId],
       () => StoryRepostitory().fetchMyRecommendStories(),
       refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 1),
+      staleDuration: const Duration(minutes: 5),
     );
     final libraryQuery = useQuery(
-      ['library'],
+      ['library', currentUserId],
       () => LibraryRepository.fetchMyLibrary(),
-      refetchOnMount: RefetchOnMount.always,
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 5),
     );
     return Scaffold(
       appBar: const HomeTopBar(),
       body: RefreshIndicator(
           onRefresh: () async {
-            storiesQuery.refetch();
+            paywalledStoriesQuery.refetch();
             recommendStoriesQuery.refetch();
             libraryQuery.refetch();
           },
@@ -110,21 +111,33 @@ class HomeScreen extends HookConsumerWidget {
                       )),
                   const SizedBox(height: 32),
                   //NOTE: Ranking section
-                  Skeletonizer(
-                      enabled: storiesQuery.isFetching,
-                      child: const HomeRankingList()),
+                  const HomeRankingList(),
 
                   const SizedBox(height: 32),
 
                   //NOTE: Hot section
-                  Skeletonizer(
-                      enabled: storiesQuery.isFetching,
-                      child: HeaderWithLink(
-                          icon: Image.asset(
-                            "assets/images/home_trend.png",
-                            width: 24,
-                          ),
-                          title: 'Thịnh hành')),
+                  // Skeletonizer(
+                  //     enabled: storiesQuery.isFetching,
+                  //     child: HeaderWithLink(
+                  //         icon: Image.asset(
+                  //           "assets/images/home_trend.png",
+                  //           width: 24,
+                  //         ),
+                  //         title: 'Thịnh hành')),
+                  // const SizedBox(height: 12),
+                  // Skeletonizer(
+                  //     enabled: storiesQuery.isFetching,
+                  //     child: StoryScrollList(
+                  //       storyList: storiesQuery.isFetching
+                  //           ? skeletonStories
+                  //           : storiesQuery.data,
+                  //     )),
+                  // const SizedBox(height: 32),
+                  //NOTE: Paid section
+                  HeaderWithLink(
+                      icon: Image.asset("assets/images/home_paid.png",
+                          width: 24, fit: BoxFit.cover),
+                      title: 'Truyện trả phí'),
                   const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
@@ -136,20 +149,6 @@ class HomeScreen extends HookConsumerWidget {
                           fit: BoxFit.cover,
                         )),
                   ),
-                  const SizedBox(height: 12),
-                  Skeletonizer(
-                      enabled: storiesQuery.isFetching,
-                      child: StoryScrollList(
-                        storyList: storiesQuery.isFetching
-                            ? skeletonStories
-                            : storiesQuery.data,
-                      )),
-                  const SizedBox(height: 32),
-                  //NOTE: Paid section
-                  HeaderWithLink(
-                      icon: Image.asset("assets/images/home_paid.png",
-                          width: 24, fit: BoxFit.cover),
-                      title: 'Truyện trả phí'),
                   const SizedBox(height: 12),
                   Skeletonizer(
                       enabled: paywalledStoriesQuery.isFetching,
@@ -292,11 +291,19 @@ class HomeRankingList extends StatefulWidget {
 class _HomeRankingListState extends State<HomeRankingList> {
   String? selectedCategory;
   Future<List<AppCategory>>? categoryFuture;
+  Future<List<Story>>? rankingFuture;
 
   @override
   void initState() {
     super.initState();
     categoryFuture = CategoryRepository().fetchCategory();
+    rankingFuture = RankingRepository().fetchRankingStories(
+      page: 1,
+      page_size: 5,
+      time: RankingTimeRange.weekly,
+      metric: RankingMetric.total_read,
+      category_id: null,
+    );
   }
 
   @override
@@ -335,8 +342,16 @@ class _HomeRankingListState extends State<HomeRankingList> {
                             padding: const EdgeInsets.only(right: 8),
                             child: GestureDetector(
                                 onTap: () {
+                                  selectedCategory = null;
                                   setState(() {
-                                    selectedCategory = null;
+                                    rankingFuture =
+                                        RankingRepository().fetchRankingStories(
+                                      page: 1,
+                                      page_size: 5,
+                                      time: RankingTimeRange.weekly,
+                                      metric: RankingMetric.total_read,
+                                      category_id: null,
+                                    );
                                   });
                                 },
                                 child: RankingListBadge(
@@ -349,8 +364,17 @@ class _HomeRankingListState extends State<HomeRankingList> {
                               padding: const EdgeInsets.only(right: 8),
                               child: GestureDetector(
                                   onTap: () {
+                                    selectedCategory = category.id;
+
                                     setState(() {
-                                      selectedCategory = category.id;
+                                      rankingFuture = RankingRepository()
+                                          .fetchRankingStories(
+                                        page: 1,
+                                        page_size: 5,
+                                        time: RankingTimeRange.weekly,
+                                        metric: RankingMetric.total_read,
+                                        category_id: category.id,
+                                      );
                                     });
                                   },
                                   child: RankingListBadge(
@@ -365,13 +389,7 @@ class _HomeRankingListState extends State<HomeRankingList> {
               }),
           const SizedBox(height: 12),
           FutureBuilder(
-              future: RankingRepository().fetchRankingStories(
-                page: 1,
-                page_size: 5,
-                time: RankingTimeRange.weekly,
-                metric: RankingMetric.total_read,
-                category: selectedCategory,
-              ),
+              future: rankingFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Skeletonizer(

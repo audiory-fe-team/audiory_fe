@@ -14,7 +14,7 @@ import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class DonateGiftModal extends StatefulHookWidget {
+class DonateGiftModal extends HookWidget {
   final Story? story;
   final dynamic coins;
   final AuthUser? userData;
@@ -26,12 +26,6 @@ class DonateGiftModal extends StatefulHookWidget {
       required this.handleSendingGift,
       this.userData});
 
-  @override
-  State<DonateGiftModal> createState() => _DonateGiftModalState();
-}
-
-class _DonateGiftModalState extends State<DonateGiftModal> {
-  dynamic total = 0;
   @override
   Widget build(BuildContext context) {
     final giftsQuery =
@@ -45,16 +39,14 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
     final size = MediaQuery.of(context).size;
 
     final selectedItem =
-        giftsQuery.data != null ? useState<Gift>(lists[0]) : null;
+        useState<Gift?>(giftsQuery.data != null ? lists[0] : null);
     final sizeController = useTextEditingController(text: "1");
+    final total = useState(0);
 
     handleTotalCoins() {
       var count = int.parse(sizeController.value.text) ?? 0;
-      var price = selectedItem?.value?.price ?? 0;
-
-      setState(() {
-        total = price * count;
-      });
+      var price = selectedItem.value?.price ?? 0;
+      total.value = price * count;
     }
 
     return Flexible(
@@ -101,8 +93,8 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                           Flexible(
                               flex: 2,
                               child: Text(
-                                formatNumberWithSeperator(int.tryParse(
-                                    widget.coins.toStringAsFixed(0))),
+                                formatNumberWithSeperator(
+                                    int.tryParse(coins.toStringAsFixed(0))),
                                 style: textTheme.titleMedium
                                     ?.copyWith(color: appColors.inkBase),
                                 textAlign: TextAlign.center,
@@ -122,7 +114,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                                       isScrollControlled: true,
                                       builder: (context) {
                                         return NewPurchaseScreen(
-                                          currentUser: widget.userData,
+                                          currentUser: userData,
                                         );
                                       });
                                 },
@@ -137,7 +129,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               Skeletonizer(
@@ -171,7 +163,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                   ),
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
               SizedBox(
@@ -180,8 +172,9 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Flexible(
-                      child:
-                          Text(total == 0 ? 'Tặng quà ngay' : 'Tổng $total xu'),
+                      child: Text(total.value == 0
+                          ? 'Tặng quà ngay'
+                          : 'Tổng ${total.value} xu'),
                     ),
                     Flexible(
                       flex: 2,
@@ -255,12 +248,15 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                                   ],
                                 )),
                           ),
+                          const SizedBox(
+                            width: 8,
+                          ),
                           Container(
                             height: 40,
                             width: 85,
                             child: AppIconButton(
                               onPressed: () {
-                                widget.handleSendingGift(selectedItem?.value,
+                                handleSendingGift(selectedItem?.value,
                                     int.parse(sizeController.value.text));
                               },
                               title: 'Tặng',
@@ -275,7 +271,7 @@ class _DonateGiftModalState extends State<DonateGiftModal> {
                   ],
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 16,
               ),
             ]),

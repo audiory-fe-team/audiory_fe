@@ -404,11 +404,12 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                     };
                     await StoryRepostitory()
                         .editStory(widget.story.id, body, ['']);
-                    // ignore: use_build_context_synchronously
-                    AppSnackBar.buildTopSnackBar(context,
-                        'Cập nhật giá thành công', null, SnackBarType.success);
-                    context.pop();
-                  } catch (e) {}
+
+                    // AppSnackBar.buildTopSnackBar(context,
+                    //     'Cập nhật giá thành công', null, SnackBarType.success);
+                  } catch (e) {
+                    print(e);
+                  }
                 },
                 title: 'Cập nhật giá chương',
               ),

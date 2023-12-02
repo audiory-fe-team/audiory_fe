@@ -64,7 +64,6 @@ Future<void> main() async {
 }
 
 class MyApp extends ConsumerWidget {
-  @override
   setUserInfoProvider(WidgetRef ref) async {
     try {
       final res = await AuthRepository().getMyInfo();
@@ -74,6 +73,7 @@ class MyApp extends ConsumerWidget {
     }
   }
 
+  @override
   Widget build(BuildContext context, WidgetRef ref) {
     final _themeNotifier = ref.watch(themeNotifierProvider);
 

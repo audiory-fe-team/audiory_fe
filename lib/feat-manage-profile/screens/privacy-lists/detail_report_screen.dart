@@ -32,6 +32,7 @@ class _DetailReportScreenState extends State<DetailReportScreen> {
         children: [
           Container(
             width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -41,7 +42,18 @@ class _DetailReportScreenState extends State<DetailReportScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
+                          'Tiêu đề:',
+                          style: textTheme.titleMedium,
+                          textAlign: TextAlign.justify,
+                        ),
+                        Text(
                           report?.title ?? '',
+                          style: textTheme.bodyMedium
+                              ?.copyWith(color: appColors.inkBase),
+                          textAlign: TextAlign.justify,
+                        ),
+                        Text(
+                          'Nội dung:',
                           style: textTheme.titleMedium,
                           textAlign: TextAlign.justify,
                         ),
@@ -53,9 +65,12 @@ class _DetailReportScreenState extends State<DetailReportScreen> {
                         )
                       ],
                     )),
+                const SizedBox(height: 12),
                 Flexible(
                     child: Container(
-                  decoration: BoxDecoration(color: appColors.skyLightest),
+                  decoration: BoxDecoration(
+                    color: appColors.skyLightest,
+                  ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: AppImage(
@@ -70,7 +85,13 @@ class _DetailReportScreenState extends State<DetailReportScreen> {
               ],
             ),
           ),
-          Text('Chúng tôi đã nhận được báo cáo của bạn')
+          Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: appColors.primaryLightest,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text('Chúng tôi đã nhận được báo cáo của bạn')),
         ],
       )),
     );

@@ -14,13 +14,13 @@ class RankingRepository {
   Future<List<Story>> fetchRankingStories(
       {required RankingMetric metric,
       required RankingTimeRange time,
-      String? category,
+      String? category_id,
       int? page,
       int? page_size}) async {
     final url = Uri.parse("$storiesEndpoint/stories").replace(queryParameters: {
       'sort_by': getValueString(metric.toString()),
       'time_range': getValueString(time.toString()),
-      category ?? 'category': category,
+      if (category_id != null) 'category_id': category_id,
       'page': (page ?? 1).toString(),
       'page_size': (page_size ?? 10).toString(),
     });

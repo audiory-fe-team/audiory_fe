@@ -304,27 +304,29 @@ class AuthRepository extends ChangeNotifier {
   //get user profile
   Future<Profile?> getOtherUserProfile(String userId) async {
     var url = Uri.parse('${Endpoints().user}/$userId/profile');
-    try {
-      const storage = FlutterSecureStorage();
-      String? value = await storage.read(key: 'jwt');
+    const storage = FlutterSecureStorage();
+    String? value = await storage.read(key: 'jwt');
 
-      if (value != null) {
-        var headers = <String, String>{
-          'Authorization': 'Bearer $value',
-          'Accept': 'application/json'
-        };
-        final response = await http.get(url, headers: headers);
-        final responseBody = utf8.decode(response.bodyBytes);
-        print(responseBody);
-        if (response.statusCode == 200) {
-          final result = jsonDecode(responseBody)['data'];
-          return Profile.fromJson(result);
-        } else {
-          print('alo');
-          return null;
-        }
+    if (value != null) {
+      var headers = <String, String>{
+        'Authorization': 'Bearer $value',
+        'Accept': 'application/json'
+      };
+      final response = await http.get(url, headers: headers);
+      final responseBody = utf8.decode(response.bodyBytes);
+      print(responseBody);
+      if (response.statusCode == 200) {
+        final result = jsonDecode(responseBody)['data'];
+        return Profile.fromJson(result);
+      } else {
+        print('error');
+        print(response.statusCode);
+        print(jsonDecode(responseBody)['data']);
+        return Profile(id: '', username: '');
       }
-    } on DioException catch (e) {}
+    }
+
+    print('end');
     return null;
   }
 

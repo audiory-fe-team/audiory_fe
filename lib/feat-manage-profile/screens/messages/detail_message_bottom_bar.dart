@@ -38,18 +38,19 @@ class _DetailMessageBottomBarState extends State<DetailMessageBottomBar> {
                     padding: const EdgeInsets.only(right: 8.0),
                     child: AppTextInputField(
                       contentPadding: const EdgeInsets.symmetric(
-                          vertical: 20, horizontal: 16),
+                          vertical: 16, horizontal: 16),
                       isNoError: true,
                       name: 'content',
-                      suffixIcon: GestureDetector(
-                        onTap: () {},
-                        child: Transform.rotate(
-                            angle: 45 * pi / 180,
-                            child: const Icon(
-                              Icons.attach_file_outlined,
-                              size: 24,
-                            )),
-                      ),
+                      maxLines: 1,
+                      // suffixIcon: GestureDetector(
+                      //   onTap: () {},
+                      //   child: Transform.rotate(
+                      //       angle: 45 * pi / 180,
+                      //       child: const Icon(
+                      //         Icons.attach_file_outlined,
+                      //         size: 24,
+                      //       )),
+                      // ),
                     ),
                   ),
                 )),

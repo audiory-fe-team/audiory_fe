@@ -657,6 +657,8 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
       );
     }
 
+    print(chapterByIdQuery.data?.position);
+    print(widget.story?.chapters?.length == 1);
     return Scaffold(
       resizeToAvoidBottomInset: false,
       appBar: CustomAppBar(
@@ -668,9 +670,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 text.Text(
-                  widget.story?.chapters?.length == 1
-                      ? 'Chương 1'
-                      : 'Chương ${chapterByIdQuery.data?.position ?? '1'}',
+                  'Chương ${chapterByIdQuery.data?.position}',
                   style: Theme.of(context)
                       .textTheme
                       .titleLarge

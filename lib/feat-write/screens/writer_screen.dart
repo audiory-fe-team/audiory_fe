@@ -1,28 +1,27 @@
 import 'package:audiory_v0/feat-write/screens/layout/writer_app_bar.dart';
 import 'package:audiory_v0/feat-write/widgets/story_card_detail_writer.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../theme/theme_constants.dart';
-import '../../widgets/custom_app_bar.dart';
 
-class WriterScreen extends StatefulHookWidget {
+class WriterScreen extends StatefulHookConsumerWidget {
   const WriterScreen({super.key});
 
   @override
-  State<WriterScreen> createState() => _WriterScreenState();
+  ConsumerState<WriterScreen> createState() => _WriterScreenState();
 }
 
-class _WriterScreenState extends State<WriterScreen> {
+class _WriterScreenState extends ConsumerState<WriterScreen> {
   final storage = const FlutterSecureStorage();
   String? jwt;
   UseQueryResult? result;
@@ -71,9 +70,9 @@ class _WriterScreenState extends State<WriterScreen> {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final size = MediaQuery.of(context).size;
+    final currentUserId = ref.watch(globalMeProvider)?.id;
     final myStoriesQuery = useQuery(
-        ['myStories', jwt], () => StoryRepostitory().fetchMyStories(),
+        ['myStories', currentUserId], () => StoryRepostitory().fetchMyStories(),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5)); //userId=me
     final filteredStories = _formKey.currentState?.fields['search']?.value == ''

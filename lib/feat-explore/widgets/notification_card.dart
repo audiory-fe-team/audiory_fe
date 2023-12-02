@@ -49,11 +49,11 @@ class NotificationCard extends StatelessWidget {
       //NOTE: Entity is a story
       if (activity.actionEntity == 'STORY') {
         print('/story/${activity.entityId}');
-        context.go('/story/${activity.entityId}');
+        context.push('/story/${activity.entityId}');
       }
 
       if (activity.actionEntity == 'CHAPTER') {
-        context.go('/story/${activity.entityId}');
+        context.push('/story/${activity.entityId}');
       }
 
       //NOTE: Entity is a profile

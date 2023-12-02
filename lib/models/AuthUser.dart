@@ -50,8 +50,10 @@ class AuthUser {
     List<dynamic> walletsJsonList = json['wallets'] ?? [];
     List<Wallet> wallets =
         walletsJsonList.map((wallet) => Wallet.fromJson(wallet)).toList();
-    Level level = Level.fromJson(json['level']);
-    AuthorLevel authorLevel = AuthorLevel.fromJson(json['author_level']);
+    Level? level = json['level'] != null ? Level.fromJson(json['level']) : null;
+    AuthorLevel? authorLevel = json['author_level'] != null
+        ? AuthorLevel.fromJson(json['author_level'])
+        : null;
     return AuthUser(
       id: json['id'] ?? 0,
       isEnabled: json['is_enabled'],

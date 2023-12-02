@@ -102,18 +102,28 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
                   onTap: () {
                     isDesc.value = !isDesc.value;
                   },
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text('Sắp xếp',
-                            style: textTheme.titleSmall
-                                ?.copyWith(color: appColors.primaryBase)),
-                      ),
-                      Flexible(
-                          child: isDesc == true
-                              ? Icon(Icons.arrow_downward_sharp)
-                              : Icon(Icons.arrow_upward)),
-                    ],
+                  child: Container(
+                    width: size.width / 4,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          flex: 2,
+                          child: Text('Sắp xếp',
+                              style: textTheme.titleSmall
+                                  ?.copyWith(color: appColors.primaryBase)),
+                        ),
+                        Flexible(
+                            child: isDesc.value == true
+                                ? Icon(
+                                    Icons.arrow_downward_sharp,
+                                    color: appColors.primaryBase,
+                                    size: 16,
+                                  )
+                                : Icon(Icons.arrow_upward,
+                                    color: appColors.primaryBase, size: 16)),
+                      ],
+                    ),
                   ),
                 ),
               ]),

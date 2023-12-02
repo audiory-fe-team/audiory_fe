@@ -398,7 +398,10 @@ class AppRoutes {
               builder: (BuildContext context, GoRouterState state) {
                 final extraMap = state.extra as Map<String, dynamic>;
                 final userId = extraMap['userId'] as String;
-                return MessagesListScreen(userId: userId);
+                return MessagesListScreen(
+                  userId: userId,
+                  refetch: () {},
+                );
               },
             ),
           ]),

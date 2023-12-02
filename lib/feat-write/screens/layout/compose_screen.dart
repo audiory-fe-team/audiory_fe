@@ -289,30 +289,31 @@ class _ComposeScreenState extends State<ComposeScreen> {
 
     String content;
     print(story);
-    if (story != null) {
-      content = isEdit ? 'Cập nhật thành công' : 'Tạo thành công';
-      AppSnackBar.buildTopSnackBar(
-          context, content, null, SnackBarType.success);
-      // ignore: use_build_context_synchronously
-      if (!isEdit) {
-        context.pushNamed('composeChapter', extra: {
-          'chapterId': story.chapters?[0].id,
-          'story': story,
-          'chapter': story.chapters?[0] ?? ''
-        });
-      } else {
-        context.pop();
-      }
-    } else {
-      content = isEdit ? 'Cập nhật thất bại' : 'Tạo thất bại';
-      AppSnackBar.buildTopSnackBar(context, content, null, SnackBarType.error);
-      // ignore: use_build_context_synchronously
-      // context.pushNamed('composeChapter', extra: {
-      //   'chapterId': story?.chapters?[0].id,
-      //   'story': story,
-      //   'chapter': story?.chapters?[0] ?? ''
-      // });
-    }
+    // if (story != null) {
+    //   content = isEdit ? 'Cập nhật thành công' : 'Tạo thành công';
+    //   // ignore: use_build_context_synchronously
+    //   AppSnackBar.buildTopSnackBar(
+    //       context, content, null, SnackBarType.success);
+    //   // ignore: use_build_context_synchronously
+    //   if (!isEdit) {
+    //     // ignore: use_build_context_synchronously
+    //     context.pushNamed('composeChapter', extra: {
+    //       'chapterId': story.chapters?[0].id,
+    //       'story': story,
+    //       'chapter': story.chapters?[0] ?? ''
+    //     });
+    //   } else {}
+    // } else {
+    //   content = isEdit ? 'Cập nhật thất bại' : 'Tạo thất bại';
+    //   // ignore: use_build_context_synchronously
+    //   AppSnackBar.buildTopSnackBar(context, content, null, SnackBarType.error);
+    //   // ignore: use_build_context_synchronously
+    //   // context.pushNamed('composeChapter', extra: {
+    //   //   'chapterId': story?.chapters?[0].id,
+    //   //   'story': story,
+    //   //   'chapter': story?.chapters?[0] ?? ''
+    //   // });
+    // }
   }
 
   @override

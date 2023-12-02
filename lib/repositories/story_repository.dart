@@ -111,16 +111,16 @@ class StoryRepostitory {
     final url = Uri.parse('$storiesEndpoint/$storyId');
     final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
-
+    print(responseBody);
     if (response.statusCode == 200) {
       try {
         final result = jsonDecode(responseBody)['data'];
         return Story.fromJson(result);
       } catch (error) {
-        print(error);
-        throw (error);
+        return Story(id: '');
       }
     } else {
+      return Story(id: '');
       throw Exception('Failed to load stories');
     }
   }
@@ -168,7 +168,7 @@ class StoryRepostitory {
     final url = Uri.parse('$storiesEndpoint/$storyId');
     final response = await http.delete(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
-
+    print(responseBody);
     if (response.statusCode == 200) {
       try {
         final result = jsonDecode(responseBody)['data'];

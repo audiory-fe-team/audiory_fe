@@ -57,6 +57,30 @@ class InteractionRepository {
     }
   }
 
+  Future<dynamic> notify(String userId, bool isNotifyed) async {
+    final url = Uri.parse('$followEndpoint/$userId/notifications');
+    final storage = new FlutterSecureStorage();
+    final jwt = await storage.read(key: 'jwt');
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+    if (jwt != null) {
+      header['Authorization'] = 'Bearer $jwt';
+    }
+
+    final response = await http.put(url,
+        headers: header, body: jsonEncode({'is_notified': isNotifyed}));
+    final responseBody = utf8.decode(response.bodyBytes);
+    print('NOTI $responseBody');
+    if (response.statusCode == 200) {
+      final result = jsonDecode(responseBody)['data'];
+      return result;
+    } else {
+      throw Exception('Failed to load stories');
+    }
+  }
+
   Future<dynamic> block(String userId) async {
     final url = Uri.parse('$privacyEndpoint/block/$userId');
     final storage = new FlutterSecureStorage();
