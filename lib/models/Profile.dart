@@ -1,4 +1,6 @@
 import 'package:audiory_v0/models/Library.dart';
+import 'package:audiory_v0/models/author_level.dart/author_level_model.dart';
+import 'package:audiory_v0/models/level/level_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 
 class Profile {
@@ -37,6 +39,8 @@ class Profile {
   final String? username;
   final List<Story>? stories;
   final Library? library;
+  final Level? level;
+  final AuthorLevel? authorLevel;
 
   Profile(
       {this.avatarUrl,
@@ -66,6 +70,8 @@ class Profile {
       this.totalVote,
       this.levelId = 1,
       this.authorLevelId = 1,
+      this.level,
+      this.authorLevel,
       this.isAuthorFlairSelected = false,
       this.isFollowed = false,
       this.isNotified = false,
@@ -119,6 +125,10 @@ class Profile {
       levelId: json['level_id'],
       authorLevelId: json['author_level_id'],
       isAuthorFlairSelected: json['is_author_flair_selected'],
+      level: json['level'] == null ? null : Level.fromJson(json['level']),
+      authorLevel: json['author_level'] == null
+          ? null
+          : AuthorLevel.fromJson(json['author_level']),
       isFollowed: json['is_followed'],
       isNotified: json['is_notified'],
       updatedDate: json['updated_date'],
@@ -160,6 +170,8 @@ class Profile {
       'level_id': levelId,
       'author_level_id': authorLevelId,
       'is_author_flair_selected': isAuthorFlairSelected,
+      'level': level?.toJson(),
+      'author_level': authorLevel?.toJson(),
       'is_followed': isFollowed,
       'is_notified': isNotified,
       'updated_date': updatedDate,

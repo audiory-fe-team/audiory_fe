@@ -6,9 +6,7 @@ import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
@@ -48,7 +46,7 @@ class StoryCardDetailWriter extends StatelessWidget {
                 return const Center(child: CircularProgressIndicator());
               });
 
-         int code= await StoryRepostitory().unPublishStory(story?.id ?? '');
+          int code = await StoryRepostitory().unPublishStory(story?.id ?? '');
 
           // ignore: use_build_context_synchronously
           context.pop();
@@ -196,18 +194,39 @@ class StoryCardDetailWriter extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 95,
-                    height: 135,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(story?.coverUrl == ""
-                            ? FALLBACK_IMG_URL
-                            : story?.coverUrl ?? FALLBACK_IMG_URL),
-                        fit: BoxFit.fill,
+                  Stack(children: [
+                    Container(
+                      width: 95,
+                      height: 135,
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(story?.coverUrl == ""
+                              ? FALLBACK_IMG_URL
+                              : story?.coverUrl ?? FALLBACK_IMG_URL),
+                          fit: BoxFit.fill,
+                        ),
                       ),
                     ),
-                  ),
+                    story?.isPaywalled == true
+                        ? Positioned(
+                            bottom: 0,
+                            child: Container(
+                              width: 95,
+                              height: 24,
+                              decoration:
+                                  BoxDecoration(color: appColors.secondaryBase),
+                              child: Text(
+                                '${paywalledStatus['status']}',
+                                style: textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: appColors.skyLightest),
+                                textAlign: TextAlign.center,
+                              ),
+                            ))
+                        : const SizedBox(
+                            height: 0,
+                          )
+                  ]),
                 ],
               ),
             ),

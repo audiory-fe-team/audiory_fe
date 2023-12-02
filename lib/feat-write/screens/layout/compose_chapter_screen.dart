@@ -20,8 +20,6 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quickalert/models/quickalert_type.dart';
-import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../../repositories/chapter_repository.dart';
@@ -435,9 +433,11 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                                   return Scaffold(
                                                                     body:
                                                                         Container(
-                                                                      height:
-                                                                          size.height -
-                                                                              200,
+                                                                      width: double
+                                                                          .infinity,
+                                                                      // height:
+                                                                      //     size.height -
+                                                                      //         200,
                                                                       padding: const EdgeInsets
                                                                           .symmetric(
                                                                           vertical:
@@ -510,6 +510,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                                                     Center(
                                                                                       child: SizedBox(
                                                                                         width: size.width / 4,
+                                                                                        height: 200,
                                                                                         child: FormBuilderImagePicker(previewAutoSizeWidth: true, maxImages: 1, backgroundColor: appColors.skyLightest, iconColor: appColors.primaryBase, decoration: const InputDecoration(border: InputBorder.none), name: 'photo'),
                                                                                       ),
                                                                                     ),

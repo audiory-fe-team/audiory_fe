@@ -1,3 +1,5 @@
+import 'package:audiory_v0/models/author_level.dart/author_level_model.dart';
+import 'package:audiory_v0/models/level/level_model.dart';
 import 'package:audiory_v0/models/wallet/wallet_model.dart';
 
 class AuthUser {
@@ -17,6 +19,9 @@ class AuthUser {
   int? numOfFollowing;
   int? levelId;
   int? authorLevelId;
+  Level? level;
+  AuthorLevel? authorLevel;
+  bool? isAuthorFlairSelected;
   List<Wallet>? wallets;
 
   AuthUser(
@@ -36,13 +41,17 @@ class AuthUser {
       this.numOfFollowing = 0,
       this.levelId = 1,
       this.authorLevelId = 1,
+      this.level,
+      this.authorLevel,
+      this.isAuthorFlairSelected = false,
       this.wallets});
 
   factory AuthUser.fromJson(Map<String, dynamic> json) {
     List<dynamic> walletsJsonList = json['wallets'] ?? [];
     List<Wallet> wallets =
         walletsJsonList.map((wallet) => Wallet.fromJson(wallet)).toList();
-
+    Level level = Level.fromJson(json['level']);
+    AuthorLevel authorLevel = AuthorLevel.fromJson(json['author_level']);
     return AuthUser(
       id: json['id'] ?? 0,
       isEnabled: json['is_enabled'],
@@ -59,6 +68,9 @@ class AuthUser {
       numOfFollowing: json['number_of_following'],
       levelId: json['level_id'],
       authorLevelId: json['author_level_id'],
+      isAuthorFlairSelected: json['is_author_flair_selected'],
+      level: level,
+      authorLevel: authorLevel,
       wallets: wallets,
     );
   }
@@ -78,6 +90,9 @@ class AuthUser {
     data['number_of_following'] = numOfFollowing;
     data['level_id'] = levelId;
     data['author_level_id'] = authorLevelId;
+    data['level'] = level;
+    data['author_level'] = authorLevel;
+    data['is_author_flair_selected'] = isAuthorFlairSelected;
     data['created_date'] = createdDate;
     data['updated_date'] = updatedDate;
     data['wallets'] = wallets;

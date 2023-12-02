@@ -30,9 +30,15 @@ class _CoinPackCardState extends State<CoinPackCard> {
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    int promotionPercentage = 1 -
-        (widget.coinPack.priceAfterPromotion! / (widget.coinPack.price ?? 1))
-            .floor();
+    double promotionPercentage = (1 -
+            (widget.coinPack.priceAfterPromotion! /
+                (widget.coinPack.price ?? 1))) *
+        100;
+
+    print(widget.coinPack.priceAfterPromotion);
+    print(widget.coinPack.price ?? '');
+    print(
+        (widget.coinPack.priceAfterPromotion! / (widget.coinPack.price ?? 1)));
     moveToMomo(url) async {
       print('PAYURL ${url}');
       print('MOVE TO MOMO');
@@ -117,7 +123,7 @@ class _CoinPackCardState extends State<CoinPackCard> {
             ),
             Container(
               padding: EdgeInsets.symmetric(horizontal: 8),
-              width: size.width / 2.3,
+              width: size.width / 3.5,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,29 +133,50 @@ class _CoinPackCardState extends State<CoinPackCard> {
                     style: textTheme.headlineMedium,
                     textAlign: TextAlign.start,
                   ),
+                  // promotionPercentage != 0
+                  //     ? Text(
+                  //         // 'Giảm ${promotionPercentage.toStringAsFixed(0)}%',
+                  //         '${NumberFormat('###,000').format(widget.coinPack.price)}đ',
+                  //         textAlign: TextAlign.center,
+                  //         style: textTheme.titleSmall?.copyWith(
+                  //           color: appColors.inkBase,
+                  //           decoration: TextDecoration.lineThrough,
+                  //         ),
+                  //       )
+                  //     : SizedBox(
+                  //         height: 0,
+                  //       ),
+                ],
+              ),
+            ),
+            Container(
+              width: size.width / 3,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+              decoration: BoxDecoration(
+                  color: appColors.skyLight,
+                  borderRadius: BorderRadius.circular(40)),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${NumberFormat('###,000').format(widget.coinPack.priceAfterPromotion)}đ',
+                    textAlign: TextAlign.center,
+                    style: textTheme.titleLarge
+                        ?.copyWith(color: appColors.secondaryBase),
+                  ),
                   promotionPercentage != 0
                       ? Text(
-                          'Giảm ${promotionPercentage}%',
+                          '${NumberFormat('###,000').format(widget.coinPack.price)}đ',
                           textAlign: TextAlign.center,
-                          style: textTheme.titleSmall
-                              ?.copyWith(color: appColors.inkBase),
+                          style: textTheme.titleSmall?.copyWith(
+                              color: appColors.inkBase,
+                              decoration: TextDecoration.lineThrough,
+                              fontSize: 10),
                         )
                       : SizedBox(
                           height: 0,
                         ),
                 ],
-              ),
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              decoration: BoxDecoration(
-                  color: appColors.skyLight,
-                  borderRadius: BorderRadius.circular(40)),
-              child: Text(
-                '${NumberFormat('###,000').format(widget.coinPack.priceAfterPromotion)}đ',
-                textAlign: TextAlign.center,
-                style:
-                    textTheme.titleMedium?.copyWith(color: appColors.inkBase),
               ),
             )
           ]),

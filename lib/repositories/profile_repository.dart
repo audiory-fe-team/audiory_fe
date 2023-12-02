@@ -69,12 +69,16 @@ class ProfileRepository {
     AuthUser? currentUser =
         value != null ? AuthUser.fromJson(jsonDecode(value)['data']) : null;
     String? userId = currentUser?.id;
-
+    const storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
     //call api
     Map<String, String> header = {
       "Content-type": "multipart/form-data",
       "Accept": "application/json",
     };
+    if (jwtToken != null) {
+      header['Authorization'] = 'Bearer $jwtToken';
+    }
 
     //sending form data
     final Map<String, String> firstMap = reqBody;
@@ -123,6 +127,11 @@ class ProfileRepository {
       "Content-type": "multipart/form-data",
       "Accept": "application/json",
     };
+    const storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
+    if (jwtToken != null) {
+      header['Authorization'] = 'Bearer $jwtToken';
+    }
 
     //sending form data
     final Map<String, String> firstMap = reqBody;
@@ -141,10 +150,7 @@ class ProfileRepository {
     finalMap.addAll(secondeMap);
 
     final FormData formData = FormData.fromMap(finalMap);
-    if (kDebugMode) {
-      print('FORM DATA');
-      print(formData.fields);
-    }
+
     try {
       final response = await dio.patch('${Endpoints().user}/$userId/profile',
           data: formData, options: Options(headers: header));

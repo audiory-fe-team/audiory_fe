@@ -215,11 +215,18 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                           ),
                           GestureDetector(
                             onTap: () async {
-                              if (isEnd==true) {
+                              if (isEnd == true) {
                                 final result = await AuthRepository()
                                     .verifyEmail(
                                         email:
-                                            widget.signUpBody?['email'] ?? '');
+                                            widget.signUpBody?['email'] ?? '',
+                                        username: bool.parse(widget.signUpBody?[
+                                                        'isForgotPass'] ??
+                                                    'false') ==
+                                                true
+                                            ? (widget.signUpBody?['username'] ??
+                                                '')
+                                            : 'người dùng');
                                 if (result == 200) {
                                   // ignore: use_build_context_synchronously
                                   AppSnackBar.buildTopSnackBar(

@@ -1,6 +1,7 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
+import 'package:audiory_v0/widgets/cards/level_badge.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class AppAvatarImage extends StatelessWidget {
   final int? levelId;
   final bool? hasAuthorLevel;
   final int? authorLevelId;
+  final String? name;
 
   const AppAvatarImage(
       {super.key,
@@ -27,7 +29,8 @@ class AppAvatarImage extends StatelessWidget {
       this.hasLevel = false,
       this.levelId = 1,
       this.hasAuthorLevel = false,
-      this.authorLevelId = 1});
+      this.authorLevelId = 1,
+      this.name});
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +66,36 @@ class AppAvatarImage extends StatelessWidget {
       );
     }
 
+    Color getBadgeColor() {
+      var id = hasAuthorLevel == true ? authorLevelId : levelId;
+      Color color = appColors.primaryLighter;
+
+      switch (id) {
+        case 1:
+          color =
+              hasAuthorLevel == true ? Color(0xFF01E0FE) : Color(0xFFFDCA99);
+
+          break;
+        case 2:
+          color =
+              hasAuthorLevel == true ? Color(0xFFC9E104) : Color(0xFFBBC2FF);
+          break;
+        case 3:
+          color =
+              hasAuthorLevel == true ? Color(0xFFFC6EE9) : Color(0xFFFFE349);
+          break;
+        default:
+      }
+      return color;
+    }
+
     Widget authorLevelFrame() {
       return Container(
         height: 200,
         alignment: Alignment.center,
         margin: authorLevelId == 1
             ? const EdgeInsets.only(bottom: 20)
-            : const EdgeInsets.only(bottom: 20),
+            : const EdgeInsets.only(bottom: 15),
         child: Image.asset(
             authorLevelId == 1
                 ? 'assets/images/author_level_1.png'
@@ -110,22 +136,25 @@ class AppAvatarImage extends StatelessWidget {
                       width: hasLevel == true
                           ? (size ?? 65) + 50
                           : (size ?? 65) + 90,
-                      child:
-                          hasLevel == true ? levelFrame() : authorLevelFrame())
+                      child: hasAuthorLevel == true
+                          ? authorLevelFrame()
+                          : levelFrame())
                   : const SizedBox(
                       height: 0,
                     ),
-              // hasLevel == true || hasAuthorLevel == true
-              //     ? Positioned(
-              //         bottom: 0,
-              //         width: 200,
-              //         child: Text(
-              //           'chien than tap su',
-              //           textAlign: TextAlign.center,
-              //         ))
-              //     : const SizedBox(
-              //         height: 0,
-              //       ),
+              hasLevel == true || hasAuthorLevel == true
+                  ? Positioned(
+                      bottom: 0,
+                      child: LevelBadge(
+                        name: hasAuthorLevel == false
+                            ? 'Hạng ${name?.toLowerCase()}'
+                            : name,
+                        color: getBadgeColor(),
+                      ),
+                    )
+                  : const SizedBox(
+                      height: 0,
+                    ),
             ]),
           )
         : Stack(children: [

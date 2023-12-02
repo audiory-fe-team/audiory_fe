@@ -22,12 +22,14 @@ class ResetPasswordScreen extends StatefulWidget {
 
 class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
+  bool hidePass = true;
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
     Size size = MediaQuery.of(context).size;
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: CustomAppBar(
         elevation: 0,
       ),
@@ -36,11 +38,11 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
           child: FormBuilder(
             key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            child: ListView(
+              // crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
-                  'Đặt mật khẩu mới ${widget.resetToken}',
+                  'Đặt mật khẩu mới',
                   style: textTheme.headlineMedium,
                 ),
                 Text(
@@ -52,10 +54,29 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   height: 16,
                 ),
                 AppTextInputField(
+                  suffixIcon: GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        hidePass = !hidePass;
+                      });
+                    },
+                    child: hidePass == true
+                        ? Icon(
+                            Icons.remove_red_eye_outlined,
+                            color: appColors.inkLight,
+                          )
+                        : Icon(
+                            Icons.visibility_off_outlined,
+                            color: appColors.inkLight,
+                          ),
+                  ),
+                  textInputType: hidePass == true
+                      ? TextInputType.visiblePassword
+                      : TextInputType.text, //password cannot multi line
+                  maxLines: hidePass == true ? null : 1,
                   label: 'Mật khẩu mới',
                   name: 'newPassword',
                   hintText: 'Chứa ít nhất 8 ký tự',
-                  textInputType: TextInputType.visiblePassword,
                   validator: (value) {
                     if (value!.length < 8) {
                       return 'Mật khẩu yêu cầu ít nhất 8 ký tự';
@@ -66,7 +87,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   label: 'Xác nhận mật khẩu',
                   name: 'confirmPassword',
                   hintText: 'Chứa ít nhất 8 ký tự',
-                  textInputType: TextInputType.visiblePassword,
+                  // textInputType: TextInputType.visiblePassword,
                   validator: (value) {
                     if (value!.length < 8) {
                       return 'Mật khẩu yêu cầu ít nhất 8 ký tự';

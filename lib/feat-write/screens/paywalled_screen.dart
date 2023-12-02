@@ -9,7 +9,6 @@ import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -309,9 +308,20 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                                                                               .text) ??
                                                                       0);
 
+                                                          // ignore: use_build_context_synchronously
                                                           context.pop();
+                                                          // ignore: use_build_context_synchronously
                                                           context.pop();
+                                                          // ignore: use_build_context_synchronously
                                                           context.pop();
+                                                          // ignore: use_build_context_synchronously
+                                                          AppSnackBar
+                                                              .buildTopSnackBar(
+                                                                  context,
+                                                                  'Bật trả phí thành công',
+                                                                  null,
+                                                                  SnackBarType
+                                                                      .success);
                                                         } catch (e) {}
                                                       },
                                                     ),

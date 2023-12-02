@@ -14,6 +14,8 @@ import 'package:audiory_v0/repositories/conversation_repository.dart';
 import 'package:audiory_v0/repositories/interaction_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_number.dart';
+import 'package:audiory_v0/widgets/app_alert_dialog.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -288,7 +290,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
           ],
           interactionItem('Danh sách đọc', '${numOfReadingList ?? '0'}'),
           const VerticalDivider(),
-          interactionItem('Người theo dõi', '${numOfFollowers ?? '0'}'),
+          interactionItem('Người theo dõi', formatNumber(numOfFollowers ?? 0)),
           // const VerticalDivider(),
           // interactionItem('Bình luận', '40'),
         ]));
@@ -303,10 +305,12 @@ class _AppProfileScreenState extends State<AppProfileScreen>
         useQuery(['user'], () => AuthRepository().getMyUserById());
     final profileQuery = useQuery(
       ['otherProfile', widget.id],
+      refetchOnMount: RefetchOnMount.always,
       () => AuthRepository().getOtherUserProfile(widget.id),
     ); // include followers
     final publishedStoriesQuery = useQuery(
         ['publishedStories', widget.id],
+        enabled: profileQuery != null,
         () => StoryRepostitory()
             .fetchPublishedStoriesByUserId(widget.id)); //userId=me
     final readingStoriesQuery = useQuery(['readingStories', widget.id],
@@ -314,13 +318,11 @@ class _AppProfileScreenState extends State<AppProfileScreen>
     final isFollowUser = useState(false);
     final conversationsQuery = useQuery(['conversations'],
         () => ConversationRepository().fetchAllConversations());
-    print(publishedStoriesQuery.data);
     useEffect(() {
       isFollowUser.value = profileQuery.data?.isFollowed ?? false;
       return () {};
     }, [profileQuery.data]);
     handleFollow({bool isFollowed = false}) async {
-      print('IS FOLLOW ${isFollowed}');
       if (!isFollowed) {
         try {
           await InteractionRepository()
@@ -341,8 +343,8 @@ class _AppProfileScreenState extends State<AppProfileScreen>
     }
 
     print(
-        'LEVEL ${profileQuery.data?.levelId} , AUTHOR LEVEL ${profileQuery.data?.authorLevelId}');
-
+        'LEVEL ${profileQuery.data} , AUTHOR LEVEL ${profileQuery.data?.authorLevelId}');
+    print(profileQuery.data);
     Widget userProfileInfo(
         UseQueryResult<AuthUser?, dynamic> userByIdQuery,
         UseQueryResult<Profile?, dynamic> profileQuery,
@@ -355,6 +357,8 @@ class _AppProfileScreenState extends State<AppProfileScreen>
       roundBalance(balance) {
         return double.parse(balance.toString()).toStringAsFixed(0);
       }
+
+      print('check ${profileQuery.data == null}');
 
       return RefreshIndicator(
         onRefresh: () async {
@@ -370,7 +374,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Skeletonizer(
-                  enabled: profileQuery.isFetching,
+                  enabled: profileQuery.isFetching || profileQuery.data == null,
                   child: Column(
                     children: [
                       Container(
@@ -390,7 +394,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                                 enabled: profileQuery.isFetching,
                                 child: AppAvatarImage(
                                   url: profileQuery.data?.avatarUrl,
-                                  size: 100,
+                                  size: 85,
                                   hasLevel: profileQuery
                                               .data?.isAuthorFlairSelected ==
                                           true
@@ -402,6 +406,11 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                                       true,
                                   authorLevelId:
                                       profileQuery.data?.authorLevelId ?? 1,
+                                  name: profileQuery
+                                              .data?.isAuthorFlairSelected ==
+                                          true
+                                      ? profileQuery.data?.authorLevel?.name
+                                      : profileQuery.data?.level?.name,
                                 )),
                             const SizedBox(height: 8),
                             Text(
@@ -589,6 +598,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
       try {
         final res = await InteractionRepository().block(widget.id);
 
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Chặn thành công', null, SnackBarType.success);
       } catch (e) {}
@@ -597,15 +607,17 @@ class _AppProfileScreenState extends State<AppProfileScreen>
     handleMute() async {
       context.pop();
       try {
-        final res = await InteractionRepository().block(widget.id);
+        final res = await InteractionRepository().mute(widget.id);
 
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Dừng tương tác thành công', null, SnackBarType.success);
+        context.pop();
       } catch (e) {}
     }
 
     return profileQuery.data == null && profileQuery.isSuccess
-        ? NotFoundScreen()
+        ? const NotFoundScreen()
         : Scaffold(
             appBar: CustomAppBar(
               leading: null,
@@ -632,24 +644,38 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                             extra: {'userId': widget.id});
                       }
                       if (value == 1) {
-                        QuickAlert.show(
-                          onCancelBtnTap: () {
-                            Navigator.pop(context);
-                          },
-                          onConfirmBtnTap: () {
-                            handleMute();
-                          },
-                          context: context,
-                          type: QuickAlertType.confirm,
-                          title:
-                              'Xác nhận dừng tương tác người dùng ${profileQuery.data?.fullName == '' ? 'này' : profileQuery.data?.fullName}?',
-                          titleAlignment: TextAlign.center,
-                          confirmBtnText: 'Xác nhận',
-                          cancelBtnText: 'Hủy',
-                          confirmBtnColor: appColors.inkBase,
-                          confirmBtnTextStyle: textTheme.bodyMedium
-                              ?.copyWith(color: appColors.skyLightest),
-                        );
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AppAlertDialog(
+                                title: 'Xác nhận',
+                                content:
+                                    'Xác nhận dừng tương tác người dùng ${profileQuery.data?.fullName == '' ? 'này' : profileQuery.data?.fullName}?',
+                                actionText: 'Xác nhận',
+                                actionCallBack: () {
+                                  handleMute();
+                                },
+                                cancelText: 'Hủy',
+                              );
+                            });
+                        // QuickAlert.show(
+                        //   onCancelBtnTap: () {
+                        //     Navigator.pop(context);
+                        //   },
+                        //   onConfirmBtnTap: () {
+                        //     handleMute();
+                        //   },
+                        //   context: context,
+                        //   type: QuickAlertType.confirm,
+                        //   title:
+                        //       'Xác nhận dừng tương tác người dùng ${profileQuery.data?.fullName == '' ? 'này' : profileQuery.data?.fullName}?',
+                        //   titleAlignment: TextAlign.center,
+                        //   confirmBtnText: 'Xác nhận',
+                        //   cancelBtnText: 'Hủy',
+                        //   confirmBtnColor: appColors.inkBase,
+                        //   confirmBtnTextStyle: textTheme.bodyMedium
+                        //       ?.copyWith(color: appColors.skyLightest),
+                        // );
                       }
                       if (value == 2) {
                         QuickAlert.show(

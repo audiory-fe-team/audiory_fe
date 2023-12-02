@@ -4,18 +4,19 @@ import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_top_bar.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/level/my_level_screen.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
-import 'package:audiory_v0/widgets/app_image.dart';
+import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
+import 'package:audiory_v0/widgets/cards/level_badge.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -193,16 +194,13 @@ class _UserProfileScreenState extends State<UserProfileScreen>
       AuthUser? userData,
       Profile? profileData,
       UseQueryResult<List<Story>?, dynamic> publishedStoriesQuery,
-      UseQueryResult<List<ReadingList>?, dynamic> readingStoriesQuery) {
+      UseQueryResult<List<ReadingList>?, dynamic> readingStoriesQuery,
+      Function? refetch) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
-    roundBalance(balance) {
-      return double.parse(balance.toString()).toStringAsFixed(0);
-    }
-
-    print(profileData?.avatarUrl);
     return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(),
       child: Container(
         width: double.infinity,
         margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
@@ -226,13 +224,36 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                   )),
                   child: Column(
                     children: [
-                      AppAvatarImage(
-                        hasLevel: true,
-                        levelId: userData?.levelId ?? 1,
-                        hasAuthorLevel: true,
-                        authorLevelId: userData?.authorLevelId ?? 1,
-                        size: userData?.levelId != null ? 93 : 88,
-                        url: userData?.avatarUrl,
+                      GestureDetector(
+                        onTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              useSafeArea: true,
+                              backgroundColor: Colors.transparent,
+                              elevation: 0,
+                              builder: (context) {
+                                return MyLevelScreen(
+                                  level: userData?.level,
+                                  authorLevel: userData?.authorLevel,
+                                  isAuthorFlairSelected:
+                                      userData?.isAuthorFlairSelected,
+                                  callback: refetch,
+                                );
+                              });
+                        },
+                        child: AppAvatarImage(
+                          hasLevel: true,
+                          levelId: userData?.levelId ?? 1,
+                          hasAuthorLevel:
+                              userData?.isAuthorFlairSelected ?? false,
+                          authorLevelId: userData?.authorLevelId ?? 1,
+                          size: 80,
+                          url: userData?.avatarUrl,
+                          name: userData?.isAuthorFlairSelected == true
+                              ? userData?.authorLevel?.name
+                              : userData?.level?.name,
+                        ),
                       ),
                       const SizedBox(height: 8),
                       Text(
@@ -247,21 +268,9 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                       ),
                       const SizedBox(height: 8),
                       GestureDetector(
-                        onTap: () {
-                          // userByIdQuery.isError == true
-                          //     ? null
-                          //     : GoRouter.of(context)
-                          //   ?..pushNamed('profileSettings', extra: {
-                          //     'currentUser': userByIdQuery.data,
-                          //     'userProfile': profileQuery.data
-                          //   })
-                          //   ..push('/wallet', extra: {
-                          //     'currentUser': userByIdQuery.data,
-                          //     'userProfile': profileQuery.data
-                          //   });
-                        },
+                        onTap: () {},
                         child: Container(
-                          width: size.width / 3,
+                          width: size.width / 2.5,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
@@ -269,16 +278,15 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                                 flex: 2,
                                 child: Image.asset(
                                   'assets/images/coin.png',
-                                  width: 30,
-                                  height: 30,
+                                  width: 24,
+                                  height: 24,
                                 ),
                               ),
                               Flexible(
                                 flex: 2,
                                 child: Text(
-                                  " ${userData?.wallets?.isNotEmpty == true ? roundBalance(userData?.wallets![0].balance) : '_'}",
-                                  style:
-                                      Theme.of(context).textTheme.headlineSmall,
+                                  " ${userData?.wallets?.isNotEmpty == true ? formatNumberWithSeperator(userData?.wallets![0].balance) : '_'}",
+                                  style: Theme.of(context).textTheme.titleLarge,
                                 ),
                               ),
                               Flexible(
@@ -293,23 +301,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                           ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      // SizedBox(
-                      //   width: size.width / 2.3,
-                      //   child: AppIconButton(
-                      //       isOutlined: true,
-                      //       bgColor: appColors.skyLightest,
-                      //       color: appColors.primaryBase,
-                      //       title: 'Nhận phúc lợi',
-                      //       textStyle: textTheme.titleMedium
-                      //           ?.copyWith(color: appColors.primaryBase),
-                      //       onPressed: () {
-                      //         userData == null
-                      //             ? null
-                      //             : GoRouter.of(context)
-                      //                 .push('/profile/dailyReward');
-                      //       }),
-                      // ),
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -466,7 +457,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ],
           interactionItem('Danh sách đọc', '${numOfReadingList ?? '0'}'),
           const VerticalDivider(),
-          interactionItem('Người theo dõi', '${numOfFollowers ?? '0'}'),
+          interactionItem('Người theo dõi', formatNumber(numOfFollowers ?? 0)),
           // const VerticalDivider(),
           // interactionItem('Bình luận', '40'),
         ]));
@@ -491,6 +482,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         () => StoryRepostitory().fetchReadingStoriesByUserId('me'),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5));
+
     return SafeArea(
       child: Scaffold(
         appBar: UserProfileTopBar(
@@ -507,23 +499,20 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 userByIdQuery.isFetching ||
                 readingStoriesQuery.isFetching ||
                 publishedStoriesQuery.isFetching,
-            child: userProfileInfo(userByIdQuery.data, profileQuery.data,
-                publishedStoriesQuery, readingStoriesQuery),
+            child: userProfileInfo(
+                userByIdQuery.data,
+                profileQuery.data,
+                publishedStoriesQuery,
+                readingStoriesQuery,
+                userByIdQuery.refetch),
           ),
         ),
-        // floatingActionButton: AppIconButton(
-        //   bgColor: appColors.secondaryBase,
-        //   title: 'Điểm danh',
-        //   textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        //       color: appColors.skyLightest, fontWeight: FontWeight.w700),
-        //   onPressed: () {
-        //     userByIdQuery.data == null
-        //         ? null
-        //         : GoRouter.of(context).push('/profile/dailyReward');
-        //   },
-        //   iconPosition: 'start',
-        // ),
         floatingActionButton: GestureDetector(
+            onTap: () {
+              userByIdQuery.data == null
+                  ? null
+                  : GoRouter.of(context).push('/profile/dailyReward');
+            },
             child: Container(
                 width: 70,
                 decoration: BoxDecoration(

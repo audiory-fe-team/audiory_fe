@@ -152,6 +152,8 @@ class AuthRepository extends ChangeNotifier {
     try {
       final response =
           await http.post(url, headers: header, body: jsonEncode(body));
+
+      print(jsonDecode(utf8.decode(response.bodyBytes))['data']);
       if (kDebugMode) {
         print('res');
         print(response.body);
@@ -173,9 +175,9 @@ class AuthRepository extends ChangeNotifier {
     try {
       final response =
           await http.post(url, headers: header, body: jsonEncode(body));
-      print(utf8.decode(response.bodyBytes));
+
       if (response.statusCode == 200) {
-        return '200';
+        return response.statusCode;
       } else {
         return jsonDecode(utf8.decode(response.bodyBytes))['message'];
         throw Exception();
@@ -214,6 +216,7 @@ class AuthRepository extends ChangeNotifier {
       "Accept": "application/json",
     };
     final response = await dio.get(url, options: Options(headers: header));
+    print(response);
     if (kDebugMode) {
       print('res for reset pass');
       print(response);
@@ -312,10 +315,12 @@ class AuthRepository extends ChangeNotifier {
         };
         final response = await http.get(url, headers: headers);
         final responseBody = utf8.decode(response.bodyBytes);
+        print(responseBody);
         if (response.statusCode == 200) {
           final result = jsonDecode(responseBody)['data'];
           return Profile.fromJson(result);
         } else {
+          print('alo');
           return null;
         }
       }
@@ -435,6 +440,7 @@ class AuthRepository extends ChangeNotifier {
     };
     const storage = FlutterSecureStorage();
     String? jwtToken = await storage.read(key: 'jwt');
+    print(jwtToken);
     if (jwtToken != null) {
       headers['Authorization'] = 'Bearer $jwtToken';
     }

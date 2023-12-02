@@ -42,7 +42,9 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
                 inactiveThumbColor: appColors.inkLight,
                 inactiveTrackColor: appColors.skyLighter,
                 decoration: const InputDecoration(border: InputBorder.none),
-                initialValue: isDarkMode == true,
+                initialValue: isDarkMode == true
+                    ? notifier.themeMode == ThemeMode.dark
+                    : false,
                 activeColor: appColors.primaryBase,
                 name: 'isNotified',
                 onChanged: (value) {

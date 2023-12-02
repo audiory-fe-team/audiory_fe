@@ -364,9 +364,15 @@ class StoryRepostitory {
   //using dio package for calling PATCH request
   Future<Story?> editStory(String? storyId, body, formFile) async {
     Map<String, String> header = {
-      "Content-type": "multipart/form-data",
+      // "Content-type": "multipart/form-data",
       "Accept": "application/json",
     };
+    const storage = FlutterSecureStorage();
+
+    String? jwtToken = await storage.read(key: 'jwt');
+    if (jwtToken != null) {
+      header['Authorization'] = 'Bearer $jwtToken';
+    }
 
     //sending form data
     final Map<String, String> firstMap = body;
@@ -383,14 +389,12 @@ class StoryRepostitory {
     final Map<String, dynamic> finalMap = {};
     finalMap.addAll(firstMap);
     finalMap.addAll(secondeMap);
-    print(finalMap);
     final FormData formData = FormData.fromMap(finalMap);
     //create global interceptors
-    // print(formData);
     try {
       final response = await dio.patch('$storiesEndpoint/$storyId',
           data: formData, options: Options(headers: header));
-      print('res');
+
       print(response);
 
       final result = response.data['data']; //do not have to json decode
@@ -398,7 +402,7 @@ class StoryRepostitory {
     } on DioException catch (e) {
       if (kDebugMode) {
         print('err');
-        print(e.response);
+        print(e.message);
       }
       return null;
     }

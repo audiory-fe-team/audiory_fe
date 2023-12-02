@@ -7,6 +7,7 @@ import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../theme/theme_constants.dart';
@@ -37,165 +38,181 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 0.0),
           height: size.height,
           width: size.width,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Hoàn tất hồ sơ của bạn",
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineMedium
-                            ?.copyWith(color: appColors.inkDarkest)),
-                    Text(
-                        "Đây là tùy chọn, bạn có thể điền thêm thông tin để mọi người hiểu rõ về bạn hơn",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xff000000),
-                            fontWeight: FontWeight.normal)),
-                  ],
-                ),
-                FormBuilder(
-                  key: _formKey,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 100),
-                              child: Stack(
-                                  alignment: Alignment.bottomRight,
-                                  children: [
-                                    FormBuilderImagePicker(
-                                      iconColor: appColors.inkBase,
-                                      placeholderWidget: Stack(
-                                          alignment:
-                                              AlignmentDirectional.center,
-                                          children: [
-                                            Container(
-                                              height: size.width / 3,
-                                              width: size.height / 3,
-                                              decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: appColors.skyLighter),
-                                            ),
-                                            Positioned(
-                                                child: Icon(
-                                              Icons.image,
-                                              color: appColors.inkLight,
-                                            ))
-                                          ]),
+          child: SingleChildScrollView(
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Hoàn tất hồ sơ của bạn",
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineMedium
+                              ?.copyWith(color: appColors.inkDarkest)),
+                      Text(
+                          "Đây là tùy chọn, bạn có thể điền thêm thông tin để mọi người hiểu rõ về bạn hơn",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyMedium
+                              ?.copyWith(
+                                  color: const Color(0xff000000),
+                                  fontWeight: FontWeight.normal)),
+                    ],
+                  ),
+                  FormBuilder(
+                    key: _formKey,
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 100),
+                                child: Stack(
+                                    alignment: Alignment.bottomRight,
+                                    children: [
+                                      FormBuilderImagePicker(
+                                        iconColor: appColors.inkBase,
+                                        placeholderWidget: Stack(
+                                            alignment:
+                                                AlignmentDirectional.center,
+                                            children: [
+                                              Container(
+                                                height: size.width / 3,
+                                                width: size.height / 3,
+                                                decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color:
+                                                        appColors.skyLighter),
+                                              ),
+                                              Positioned(
+                                                  child: Icon(
+                                                Icons.image,
+                                                color: appColors.inkLight,
+                                              ))
+                                            ]),
 
-                                      transformImageWidget:
-                                          (context, displayImage) => Center(
-                                        child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            child: SizedBox(
-                                              width: size.width / 3,
-                                              height: size.width / 3,
-                                              child: displayImage,
-                                            )),
+                                        transformImageWidget:
+                                            (context, displayImage) => Center(
+                                          child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
+                                              child: SizedBox(
+                                                width: size.width / 3,
+                                                height: size.width / 3,
+                                                child: displayImage,
+                                              )),
+                                        ),
+                                        showDecoration: true,
+                                        galleryIcon: Icon(
+                                          Icons.image,
+                                          color: appColors.primaryBase,
+                                        ),
+                                        galleryLabel:
+                                            const Text('Thư viện ảnh'),
+
+                                        fit: BoxFit.cover,
+                                        backgroundColor: appColors.skyLighter,
+                                        availableImageSources: const [
+                                          ImageSourceOption.gallery
+                                        ], //only gallery
+                                        name: 'photos',
+                                        maxImages: 1,
                                       ),
-                                      showDecoration: true,
-                                      galleryIcon: Icon(
-                                        Icons.image,
-                                        color: appColors.primaryBase,
-                                      ),
-                                      galleryLabel: const Text('Thư viện ảnh'),
-
-                                      fit: BoxFit.cover,
-                                      backgroundColor: appColors.skyLighter,
-                                      availableImageSources: const [
-                                        ImageSourceOption.gallery
-                                      ], //only gallery
-                                      name: 'photos',
-                                      maxImages: 1,
-                                    ),
-                                  ]),
-                            ),
-                          ],
-                        ),
-                        const AppTextInputField(
-                          name: 'full_name',
-                          label: 'Họ và tên',
-                          hintText: 'Nhập họ và tên',
-                        ),
-                        const AppTextInputField(
-                          name: 'description',
-                          label: 'Giới thiệu',
-                          hintText: 'Đôi lời về các hạ',
-                          isTextArea: true,
-                          maxLengthCharacters: 256,
-                          minLines: 5,
-                          maxLines: 6,
-                        ),
-                      ]),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 2.5,
-                      child: AppIconButton(
-                        title: "Bỏ qua",
-                        color: Colors.black,
-                        bgColor: Colors.white,
-                        onPressed: () {
-                          AppSnackBar.buildSnackbar(context, 'Hoàn tất đăng ký',
-                              null, SnackBarType.success);
-                          context.push('/login');
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 2.5,
-                      child: AppIconButton(
-                        title: "Tiếp tục",
-                        color: Colors.white,
-                        bgColor: appColors.primaryBase,
-                        onPressed: () async {
-                          if (_formKey.currentState?.isValid == true) {
-                            _formKey.currentState!.save();
-
-                            Map<String, String> body = {};
-
-                            body['full_name'] = _formKey
-                                .currentState!.fields['full_name']?.value;
-                            body['description'] = _formKey
-                                .currentState!.fields['description']?.value;
-
-                            //update new user data
-                            Profile? updatedProfile = await ProfileRepository()
-                                .updateNewUserProfile(
-                                    _formKey
-                                        .currentState!.fields['photos']?.value,
-                                    body,
-                                    widget.userId);
-
-                            // ignore: use_build_context_synchronously
-                            AppSnackBar.buildSnackbar(context,
-                                'Hoàn tất đăng ký', null, SnackBarType.success);
-                            // ignore: use_build_context_synchronously
-                            context.push('/login');
-                          } else {
-                            // ignore: use_build_context_synchronously
+                                    ]),
+                              ),
+                            ],
+                          ),
+                          const AppTextInputField(
+                            name: 'full_name',
+                            label: 'Họ và tên',
+                            hintText: 'Nhập họ và tên',
+                          ),
+                          AppTextInputField(
+                            name: 'description',
+                            label: 'Giới thiệu',
+                            hintText: 'Đôi lời về các hạ',
+                            isTextArea: true,
+                            maxLengthCharacters: 1000,
+                            minLines: 5,
+                            maxLines: 6,
+                            validator: FormBuilderValidators.maxLength(1000,
+                                errorText: 'Tối đa 1000 ký tự'),
+                          ),
+                        ]),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 2.5,
+                        child: AppIconButton(
+                          title: "Bỏ qua",
+                          color: Colors.black,
+                          bgColor: Colors.white,
+                          onPressed: () {
                             AppSnackBar.buildSnackbar(context,
                                 'Hoàn tất đăng ký', null, SnackBarType.success);
                             context.push('/login');
-                          }
-                        },
+                          },
+                        ),
                       ),
-                    )
-                  ],
-                ),
-              ]),
+                      SizedBox(
+                        width: MediaQuery.of(context).size.width / 2.5,
+                        child: AppIconButton(
+                          title: "Tiếp tục",
+                          color: Colors.white,
+                          bgColor: appColors.primaryBase,
+                          onPressed: () async {
+                            if (_formKey.currentState?.isValid == true) {
+                              _formKey.currentState!.save();
+
+                              Map<String, String> body = {};
+
+                              body['full_name'] = _formKey
+                                  .currentState!.fields['full_name']?.value;
+                              body['description'] = _formKey
+                                  .currentState!.fields['description']?.value;
+
+                              //update new user data
+                              Profile? updatedProfile =
+                                  await ProfileRepository()
+                                      .updateNewUserProfile(
+                                          _formKey.currentState!
+                                              .fields['photos']?.value,
+                                          body,
+                                          widget.userId);
+
+                              // ignore: use_build_context_synchronously
+                              AppSnackBar.buildSnackbar(
+                                  context,
+                                  'Hoàn tất đăng ký',
+                                  null,
+                                  SnackBarType.success);
+                              // ignore: use_build_context_synchronously
+                              context.push('/login');
+                            } else {
+                              // ignore: use_build_context_synchronously
+                              AppSnackBar.buildSnackbar(
+                                  context,
+                                  'Hoàn tất đăng ký',
+                                  null,
+                                  SnackBarType.success);
+                              context.push('/login');
+                            }
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ]),
+          ),
         ));
   }
 }
