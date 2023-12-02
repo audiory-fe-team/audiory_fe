@@ -552,6 +552,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                                                           .user
                                                                           ?.avatarUrl,
                                                                     )),
+                                                                SizedBox(
+                                                                  width: 16,
+                                                                ),
                                                                 Flexible(
                                                                     flex: 4,
                                                                     child:
@@ -565,8 +568,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                                                         Text(
                                                                           appFormatDate(
                                                                               comment.createdDate),
-                                                                          style:
-                                                                              textTheme.bodySmall,
+                                                                          style: textTheme
+                                                                              .bodySmall
+                                                                              ?.copyWith(color: appColors.inkLighter),
                                                                         ),
                                                                       ],
                                                                     ))
@@ -578,20 +582,53 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                                           ),
                                                           Text(comment.text ??
                                                               ''),
-                                                          TextButton(
-                                                              onPressed: () {
-                                                                showModalBottomSheet(
-                                                                    context:
-                                                                        context,
-                                                                    builder:
-                                                                        (context) {
-                                                                      return CommentDetailScreen(
-                                                                          commentId:
-                                                                              comment?.id ?? '');
-                                                                    });
-                                                              },
-                                                              child: const Text(
-                                                                  'Trả lời'))
+                                                          Container(
+                                                            width:
+                                                                double.infinity,
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                Flexible(
+                                                                  child:
+                                                                      TextButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            showModalBottomSheet(
+                                                                                context: context,
+                                                                                builder: (context) {
+                                                                                  return CommentDetailScreen(commentId: comment?.id ?? '');
+                                                                                });
+                                                                          },
+                                                                          child:
+                                                                              Text(
+                                                                            'Trả lời',
+                                                                            style:
+                                                                                textTheme.titleSmall?.copyWith(color: appColors.primaryBase),
+                                                                          )),
+                                                                ),
+                                                                Flexible(
+                                                                  child:
+                                                                      TextButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            showModalBottomSheet(
+                                                                                context: context,
+                                                                                builder: (context) {
+                                                                                  return CommentDetailScreen(commentId: comment?.id ?? '');
+                                                                                });
+                                                                          },
+                                                                          child:
+                                                                              Text(
+                                                                            'Trả lời',
+                                                                            style:
+                                                                                textTheme.titleSmall?.copyWith(color: appColors.primaryBase),
+                                                                          )),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )
                                                           // Align(
                                                           //   alignment: Alignment
                                                           //       .centerRight,
