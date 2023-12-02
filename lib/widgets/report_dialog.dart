@@ -11,12 +11,23 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-class ReportDialog extends StatelessWidget {
+class ReportDialog extends StatefulWidget {
   final String reportType;
   final String reportId;
 
   ReportDialog({super.key, required this.reportType, required this.reportId});
 
+  static const REPORT_TYPE_MAP = {
+    'COMMENT': 'Bình luận',
+    'STORY': 'Truyện',
+    'USER': 'Người dùng'
+  };
+
+  @override
+  State<ReportDialog> createState() => _ReportDialogState();
+}
+
+class _ReportDialogState extends State<ReportDialog> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   handleCreateReport(BuildContext context) async {
@@ -28,8 +39,8 @@ class ReportDialog extends StatelessWidget {
     body['user_id'] = userId;
     body['title'] = _formKey.currentState?.fields['title']?.value;
     body['description'] = _formKey.currentState?.fields['description']?.value;
-    body['report_type'] = reportType;
-    body['reported_id'] = reportId;
+    body['report_type'] = widget.reportType;
+    body['reported_id'] = widget.reportId;
     try {
       await ReportRepository.addReport(
           body, _formKey.currentState?.fields['photo']?.value);
@@ -44,12 +55,6 @@ class ReportDialog extends StatelessWidget {
     }
   }
 
-  static const REPORT_TYPE_MAP = {
-    'COMMENT': 'Bình luận',
-    'STORY': 'Truyện',
-    'USER': 'Người dùng'
-  };
-
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -60,7 +65,7 @@ class ReportDialog extends StatelessWidget {
       scrollable: true,
       title: Column(children: [
         Text(
-          'Báo cáo ${REPORT_TYPE_MAP[reportType]} này',
+          'Báo cáo ${ReportDialog.REPORT_TYPE_MAP[widget.reportType]} này',
           style: textTheme.titleLarge?.copyWith(color: appColors.inkDarkest),
         ),
         // Text(
@@ -104,7 +109,7 @@ class ReportDialog extends StatelessWidget {
                 minLines: 2,
                 maxLines: 5,
                 hintText:
-                    'Ví dụ: ${REPORT_TYPE_MAP[reportType]} này có nội dung kích động',
+                    'Ví dụ: ${ReportDialog.REPORT_TYPE_MAP[widget.reportType]} này có nội dung kích động',
                 name: 'description',
                 validator: FormBuilderValidators.required(
                     errorText: 'Không được để trống'),

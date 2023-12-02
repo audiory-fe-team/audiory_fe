@@ -9,13 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class MessagesListScreen extends StatefulHookWidget {
   final String userId;
-  const MessagesListScreen({super.key, required this.userId});
+  final Function refetch;
+  const MessagesListScreen(
+      {super.key, required this.userId, required this.refetch});
 
   @override
   State<MessagesListScreen> createState() => _MessagesListScreenState();
@@ -127,8 +128,8 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
         );
       }
 
-      return list.length == 0
-          ? Text('Chưa có cuộc hội thoại nào')
+      return list.isEmpty
+          ? const Text('Chưa có cuộc hội thoại nào')
           : Column(
               children: list.asMap().entries.map((e) {
                 Conversation? conversation = e.value;
@@ -141,17 +142,21 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
                     //     });
 
                     showModalBottomSheet(
+                        barrierColor: Colors.transparent,
                         context: context,
                         isScrollControlled: true,
                         useSafeArea: true,
+                        isDismissible: false,
+                        enableDrag: false,
+                        useRootNavigator: false,
                         builder: (context) {
                           return SafeArea(
                             child: DetailConversationScreen(
                               conversation: conversation,
                               userId: widget.userId,
                               refetchCallback: () {
-                                print('vall');
                                 conversationsQuery.refetch();
+                                widget.refetch();
                               },
                             ),
                           );
@@ -175,32 +180,36 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
           style: textTheme.headlineMedium,
         ),
       ),
-      body: SingleChildScrollView(
-          child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24),
-        child: Column(children: [
-          FormBuilder(
-              child: AppTextInputField(
-            onChangeCallback: (value) {
-              searchValue.value = value;
-            },
-            name: 'search',
-            backgroundColor: appColors.skyLighter.withOpacity(0.7),
-            hintText: 'Tìm kiếm',
-            suffixIcon: Icon(
-              Icons.search,
-              color: appColors.inkLight,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          conversationsQuery.refetch();
+        },
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24),
+          child: ListView(children: [
+            FormBuilder(
+                child: AppTextInputField(
+              onChangeCallback: (value) {
+                searchValue.value = value;
+              },
+              name: 'search',
+              backgroundColor: appColors.skyLighter.withOpacity(0.7),
+              hintText: 'Tìm kiếm',
+              suffixIcon: Icon(
+                Icons.search,
+                color: appColors.inkLight,
+              ),
+            )),
+            const SizedBox(
+              height: 24,
             ),
-          )),
-          const SizedBox(
-            height: 24,
-          ),
-          Skeletonizer(
-            enabled: conversationsQuery.isFetching,
-            child: conversationsList(conversationsQuery.data ?? []),
-          ),
-        ]),
-      )),
+            Skeletonizer(
+              enabled: conversationsQuery.isFetching,
+              child: conversationsList(conversationsQuery.data ?? []),
+            ),
+          ]),
+        ),
+      ),
     );
   }
 

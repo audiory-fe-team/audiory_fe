@@ -4,6 +4,7 @@ import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/SearchStory.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_number.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
@@ -33,7 +34,7 @@ class SlidableStoryCardDetail extends StatelessWidget {
     final voteCount = story?.voteCount ?? searchStory?.voteCount ?? 0;
     final readCount = story?.readCount ?? searchStory?.readCount ?? 0;
     final chapterNum =
-        story?.numFreeChapters ?? searchStory?.numFreeChapters ?? 0;
+        story?.publishedCount ?? searchStory?.publishedCount ?? 0;
     final List<String?> tags = story?.tags?.map((tag) => tag.name).toList() ??
         searchStory?.tags?.split(",") ??
         [];
@@ -136,7 +137,8 @@ class SlidableStoryCardDetail extends StatelessWidget {
                                 width: double.infinity,
                                 child: Text(
                                   title,
-                                  maxLines: 2,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: textTheme.titleMedium?.merge(
                                       const TextStyle(
                                           overflow: TextOverflow.ellipsis)),
@@ -216,7 +218,9 @@ class SlidableStoryCardDetail extends StatelessWidget {
                                                 width: 14,
                                                 height: 14),
                                             const SizedBox(width: 3),
-                                            Text(voteCount.toString(),
+                                            Text(
+                                                formatNumber(voteCount)
+                                                    .toString(),
                                                 style: textTheme.titleSmall
                                                     ?.copyWith(
                                                         fontStyle:
@@ -267,7 +271,7 @@ class SlidableStoryCardDetail extends StatelessWidget {
                                         SvgPicture.asset('assets/icons/eye.svg',
                                             width: 14, height: 14),
                                         const SizedBox(width: 8),
-                                        Text('$readCount',
+                                        Text('${formatNumber(readCount)}',
                                             style: textTheme.titleSmall!
                                                 .copyWith(
                                                     fontStyle:

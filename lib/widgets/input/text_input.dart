@@ -102,7 +102,7 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return FormBuilderTextField(
-      // autofocus: false,
+      autofocus: false,
       obscureText:
           widget.textInputType == TextInputType.visiblePassword ? true : false,
       enabled: widget.isDisabled == true,

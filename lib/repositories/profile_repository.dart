@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:audiory_v0/core/network/constant/endpoints.dart';
 import 'package:audiory_v0/models/Profile.dart';
+import 'package:audiory_v0/models/wall-comment/wall_comment_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -69,12 +70,16 @@ class ProfileRepository {
     AuthUser? currentUser =
         value != null ? AuthUser.fromJson(jsonDecode(value)['data']) : null;
     String? userId = currentUser?.id;
-
+    const storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
     //call api
     Map<String, String> header = {
       "Content-type": "multipart/form-data",
       "Accept": "application/json",
     };
+    if (jwtToken != null) {
+      header['Authorization'] = 'Bearer $jwtToken';
+    }
 
     //sending form data
     final Map<String, String> firstMap = reqBody;
@@ -123,6 +128,11 @@ class ProfileRepository {
       "Content-type": "multipart/form-data",
       "Accept": "application/json",
     };
+    const storage = FlutterSecureStorage();
+    final jwtToken = await storage.read(key: 'jwt');
+    if (jwtToken != null) {
+      header['Authorization'] = 'Bearer $jwtToken';
+    }
 
     //sending form data
     final Map<String, String> firstMap = reqBody;
@@ -141,10 +151,7 @@ class ProfileRepository {
     finalMap.addAll(secondeMap);
 
     final FormData formData = FormData.fromMap(finalMap);
-    if (kDebugMode) {
-      print('FORM DATA');
-      print(formData.fields);
-    }
+
     try {
       final response = await dio.patch('${Endpoints().user}/$userId/profile',
           data: formData, options: Options(headers: header));
@@ -161,6 +168,26 @@ class ProfileRepository {
         print(e.response);
       }
       return null;
+    }
+  }
+
+  Future<List<WallComment>?> fetchAllWallComment({String? userId = ''}) async {
+    final url = Uri.parse('$profileEndpoint/$userId/wall');
+
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
+    final response = await http.get(url, headers: header);
+    final responseBody = utf8.decode(response.bodyBytes);
+    print(responseBody);
+
+    if (response.statusCode == 200) {
+      final List result = json.decode(responseBody)['data'];
+
+      return result.map((i) => WallComment.fromJson(i)).toList();
+    } else {
+      throw Exception('Failed to load profiles');
     }
   }
 }

@@ -5,7 +5,6 @@ import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
@@ -133,7 +132,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
             height: 8,
           ),
           AppTextInputField(
-            isRequired: false,
+            isRequired: true,
             isDisabled: false,
             name: 'dob',
             hintText: _selectedDate,
@@ -231,7 +230,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                           onPressed: () async {
                             print('USER ID FLOW 2 ${widget.userId}');
                             //save
-                            if (_formKey.currentState?.isValid == true) {
+                            if (_formKey.currentState?.validate() == true) {
                               _formKey.currentState!.save();
 
                               Map<String, String> body = {};

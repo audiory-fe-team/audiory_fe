@@ -10,6 +10,7 @@ _$ConversationImpl _$$ConversationImplFromJson(Map<String, dynamic> json) =>
     _$ConversationImpl(
       id: json['id'] as String,
       lastActive: json['last_active'] as String? ?? '',
+      isBlocked: json['is_blocked'] as bool? ?? false,
       coverUrl: json['cover_url'] as String? ?? '',
       receiverId: json['receiver_id'] as String? ?? '',
       name: json['name'] as String? ?? '',
@@ -27,6 +28,7 @@ Map<String, dynamic> _$$ConversationImplToJson(_$ConversationImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'last_active': instance.lastActive,
+      'is_blocked': instance.isBlocked,
       'cover_url': instance.coverUrl,
       'receiver_id': instance.receiverId,
       'name': instance.name,

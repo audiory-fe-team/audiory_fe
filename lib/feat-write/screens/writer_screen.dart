@@ -7,7 +7,6 @@ import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
@@ -44,27 +43,25 @@ class _WriterScreenState extends ConsumerState<WriterScreen> {
         const SizedBox(
           height: 8,
         ),
-        Skeletonizer(
-          enabled: myStoriesQuery.isFetching,
-          child: ListView.builder(
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true, //fix error
-              itemCount: filteredList?.length,
-              itemBuilder: ((context, index) {
-                return Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Column(
-                    children: [
-                      StoryCardDetailWriter(
-                        story: filteredList?[index],
-                        callBackRefetch: () {
-                          myStoriesQuery.refetch();
-                        },
-                      ),
-                    ],
-                  ),
-                );
-              })),
+        Expanded(
+          child: Skeletonizer(
+            enabled: myStoriesQuery.isFetching,
+            child: ListView.builder(
+                // physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true, //fix error
+                itemCount: filteredList?.length,
+                itemBuilder: ((context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: StoryCardDetailWriter(
+                      story: filteredList?[index],
+                      callBackRefetch: () {
+                        myStoriesQuery.refetch();
+                      },
+                    ),
+                  );
+                })),
+          ),
         )
       ],
     );
@@ -91,36 +88,57 @@ class _WriterScreenState extends ConsumerState<WriterScreen> {
       });
     }
     return Scaffold(
-      appBar: WriterCustomAppBar(),
+      appBar: const WriterCustomAppBar(),
       body: RefreshIndicator(
         onRefresh: () async {
           myStoriesQuery.refetch();
         },
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Container(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                FormBuilder(
-                    key: _formKey,
-                    onChanged: () {
-                      setState(() {
-                        _formKey.currentState?.save();
-                      });
-                    },
-                    child: AppTextInputField(
-                      name: 'search',
-                      hintText: 'Tác phẩm',
-                      prefixIcon: Icon(
-                        Icons.search,
-                        color: appColors.skyDark,
-                      ),
-                    )),
-                const SizedBox(height: 16),
-                _storiesList(myStoriesQuery, filteredStories.toList()),
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: ListView(
+            children: [
+              const SizedBox(height: 16),
+              FormBuilder(
+                  key: _formKey,
+                  onChanged: () {
+                    setState(() {
+                      _formKey.currentState?.save();
+                    });
+                  },
+                  child: AppTextInputField(
+                    name: 'search',
+                    hintText: 'Tác phẩm',
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: appColors.skyDark,
+                    ),
+                  )),
+              const SizedBox(height: 16),
+              Skeletonizer(
+                enabled: myStoriesQuery.isFetching,
+                child: Text(
+                  '${filteredStories.toList().length} tác phẩm',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Skeletonizer(
+                  enabled: myStoriesQuery.isFetching,
+                  child: Column(
+                      children: filteredStories
+                          .map((story) => Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0),
+                                child: StoryCardDetailWriter(
+                                  story: story,
+                                  callBackRefetch: () {
+                                    myStoriesQuery.refetch();
+                                  },
+                                ),
+                              ))
+                          .toList()))
+            ],
           ),
         ),
       ),

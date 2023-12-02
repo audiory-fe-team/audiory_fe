@@ -205,28 +205,32 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
         editStory != null
             ? Center(
                 child: GestureDetector(
-                  child: const Padding(
+                  child: Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: Text('Thêm chương mới'),
+                    child: Text('Thêm chương mới '),
                   ),
                   onTap: () async {
                     try {
+                      final length = chaptersList?.length ?? 0;
                       final res = await ChapterRepository().createChapter(
                           widget.storyId, (chaptersList?.length ?? 0) + 1);
                       chaptersQuery.refetch();
                       print(res?.id);
 
                       // ignore: use_build_context_synchronously
-                      // context.pushNamed('composeChapter', extra: {
-                      //   'chapterId': res?.id,
-                      //   'story': editStory,
-                      //   'chapter': res
-                      // });
+                      context.pushNamed('composeChapter', extra: {
+                        'chapterId': res?.id,
+                        'story': editStory,
+                        'chapter': res
+                      });
 
                       // ignore: use_build_context_synchronously
                       showModalBottomSheet(
                           context: context,
-                          // isScrollControlled: true,
+                          isScrollControlled: true,
+                          useSafeArea: true,
+                          enableDrag: false,
+                          backgroundColor: appColors.primaryLightest,
                           builder: (context) {
                             return ComposeChapterScreen(
                               chapterId: res?.id,

@@ -32,7 +32,11 @@ class ConversationRepository {
 
     if (response.statusCode == 200) {
       final List result = json.decode(responseBody)['data'];
-      return result.map((i) => Conversation.fromJson(i)).toList();
+      try {
+        return result.map((i) => Conversation.fromJson(i)).toList();
+      } catch (e) {
+        return [];
+      }
     } else {
       throw Exception('Failed to load conversation');
     }

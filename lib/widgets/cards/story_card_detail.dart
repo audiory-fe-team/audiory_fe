@@ -43,7 +43,7 @@ class StoryCardDetail extends StatelessWidget {
         },
         child: Container(
           width: double.infinity,
-          height: 145, //fix here because causing overflow
+          height: 140, //fix here because causing overflow
           decoration: ShapeDecoration(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -72,7 +72,7 @@ class StoryCardDetail extends StatelessWidget {
               Expanded(
                 child: Column(
                   mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
@@ -87,7 +87,8 @@ class StoryCardDetail extends StatelessWidget {
                             width: double.infinity,
                             child: Text(
                               title,
-                              maxLines: 2,
+                              maxLines: 1, //fix because overflow error
+                              overflow: TextOverflow.ellipsis,
                               style: textTheme.titleMedium?.merge(
                                   const TextStyle(
                                       overflow: TextOverflow.ellipsis)),
@@ -190,18 +191,23 @@ class StoryCardDetail extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 6),
-                          Container(
-                            decoration: const BoxDecoration(),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: tags
-                                  .sublist(0, min(3, tags.length))
-                                  .map((tag) => Padding(
-                                      padding: const EdgeInsets.only(right: 8),
-                                      child: StoryDetailTag(content: tag)))
-                                  .toList(),
+                          //add scroll view because error overflow
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Container(
+                              decoration: const BoxDecoration(),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: tags
+                                    .sublist(0, min(3, tags.length))
+                                    .map((tag) => Padding(
+                                        padding:
+                                            const EdgeInsets.only(right: 8),
+                                        child: StoryDetailTag(content: tag)))
+                                    .toList(),
+                              ),
                             ),
                           ),
                         ],

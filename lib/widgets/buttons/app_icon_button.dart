@@ -9,6 +9,7 @@ class AppIconButton extends StatelessWidget {
   //button width , height depends on container cover it
 
   final String? title;
+  final Widget? customTitle;
   final TextStyle? textStyle;
   final Icon? icon; //icon ==null if there is no icon
   final String? iconPosition; //start, end, null
@@ -27,7 +28,8 @@ class AppIconButton extends StatelessWidget {
       this.color,
       this.bgColor,
       required this.onPressed,
-      this.isOutlined = false});
+      this.isOutlined = false,
+      this.customTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -57,12 +59,13 @@ class AppIconButton extends StatelessWidget {
                     ),
                     minimumSize: const Size(double.minPositive, 48),
                   ),
-            label: Text(title == null ? 'Default' : title as String,
-                style: textStyle ??
-                    Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: color ?? appColors.background,
-                          fontWeight: FontWeight.bold,
-                        )),
+            label: customTitle ??
+                Text(title == null ? 'Default' : title as String,
+                    style: textStyle ??
+                        Theme.of(context).textTheme.titleLarge?.copyWith(
+                              color: color ?? appColors.background,
+                              fontWeight: FontWeight.bold,
+                            )),
           );
         } else {
           return ElevatedButton(
@@ -124,12 +127,13 @@ class AppIconButton extends StatelessWidget {
                   ),
                   minimumSize: const Size(double.minPositive, 48),
                 ),
-          child: Text(title == null ? 'Default' : title as String,
-              style: textStyle ??
-                  Theme.of(context).textTheme.titleLarge?.copyWith(
-                        color: color ?? appColors.skyLightest,
-                        fontWeight: FontWeight.bold,
-                      )),
+          child: customTitle ??
+              Text(title == null ? 'Default' : title as String,
+                  style: textStyle ??
+                      Theme.of(context).textTheme.titleLarge?.copyWith(
+                            color: color ?? appColors.skyLightest,
+                            fontWeight: FontWeight.bold,
+                          )),
         );
       }
     });
