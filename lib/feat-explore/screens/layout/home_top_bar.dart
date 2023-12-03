@@ -136,9 +136,7 @@ class HomeTopBar extends HookConsumerWidget implements PreferredSizeWidget {
                                   builder: (context) {
                                     return MessagesListScreen(
                                       userId: myInfoQuery.data?.id ?? '',
-                                      refetch: () {
-                                        conversationsQuery.refetch();
-                                      },
+                                      refetch: conversationsQuery.refetch,
                                     );
                                   });
                             },

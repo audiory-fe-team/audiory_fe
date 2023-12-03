@@ -99,7 +99,7 @@ class AuthRepository extends ChangeNotifier {
     }
   }
 
-  Future<dynamic?> signUp({
+  Future<dynamic> signUp({
     required String email,
     required String username,
     required String password,
