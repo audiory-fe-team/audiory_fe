@@ -11,7 +11,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 class CustomWallComment extends StatefulHookConsumerWidget {
   final WallComment comment;
-  final Function callback;
+  final Function() callback;
   const CustomWallComment(
       {super.key, required this.comment, required this.callback});
 

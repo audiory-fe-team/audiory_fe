@@ -9,6 +9,7 @@ import 'package:audiory_v0/repositories/chapter_version_repository.dart';
 import 'package:audiory_v0/repositories/interaction_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/utils/quill_helper.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
@@ -33,14 +34,14 @@ class ComposeChapterScreen extends StatefulHookWidget {
   final Story? story;
   final String? chapterId;
   final Chapter? chapter;
-  final Function? callback;
+  final Function callback;
   const ComposeChapterScreen(
       {super.key,
       this.storyTitle,
       this.story,
       this.chapterId,
       this.chapter,
-      this.callback});
+      required this.callback});
 
   @override
   State<ComposeChapterScreen> createState() => _ComposeChapterScreenState();
@@ -48,6 +49,8 @@ class ComposeChapterScreen extends StatefulHookWidget {
 
 class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
+  final _formReportKey = GlobalKey<FormBuilderState>();
+
   final _controller = QuillController.basic();
 
   // @override
@@ -164,9 +167,6 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormBuilderState>();
-    final _formReportKey = GlobalKey<FormBuilderState>();
-
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
@@ -230,7 +230,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
         try {
           final res = await ChapterRepository().createChapterVersion(
               body, _formKey.currentState?.fields['photos']?.value);
-
+          print(res);
           if (res == true) {
             // ignore: use_build_context_synchronously
             AppSnackBar.buildTopSnackBar(
@@ -284,7 +284,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
             builder: (context) {
               return const Center(child: CircularProgressIndicator());
             });
-        print('saving');
+
         _formKey.currentState?.save();
         Map<String, String> body = {
           'chapter_id': widget.chapterId ?? '',
@@ -293,6 +293,8 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
               '{"ops":${jsonEncode(_controller.document.toDelta()).toString()}}',
           'title': _formKey.currentState?.fields['title']?.value ?? '',
         };
+        print(_formKey.currentState?.fields['photos']?.value);
+        print(_formKey.currentState?.fields['photos']?.value[0].runtimeType);
 
         final res = await ChapterRepository().createChapterVersion(
             body, _formKey.currentState?.fields['photos']?.value);
@@ -302,12 +304,18 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
         print('res2 ${res2['message']}');
         context.pop();
         if (res2['code'] == 200) {
-          AppSnackBar.buildTopSnackBar(
-              context, 'Đăng tải thành công', null, SnackBarType.success);
           chapterVersionsQuery.refetch();
           chapterByIdQuery.refetch();
+          // ignore: use_build_context_synchronously
+          AppSnackBar.buildTopSnackBar(
+              context, 'Đăng tải thành công', null, SnackBarType.success);
 
           context.pop();
+          try {
+            widget.callback();
+          } catch (e) {
+            print(e);
+          }
         } else {
           // ignore: use_build_context_synchronously
           showDialog(
@@ -464,7 +472,6 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                                                         title: 'Tạo',
                                                                                         onPressed: () {
                                                                                           if (_formReportKey.currentState?.validate() ?? false) {
-                                                                                            print('hei');
                                                                                             _formReportKey.currentState?.save();
                                                                                             handleCreateReport(res2['data']['current_version_id']);
                                                                                           } else {
@@ -483,7 +490,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                                                   crossAxisAlignment: CrossAxisAlignment.start,
                                                                                   children: [
                                                                                     AppTextInputField(
-                                                                                      name: 'title',
+                                                                                      name: 'reportTitle',
                                                                                       hintText: 'Nhập tiêu đề',
                                                                                       label: 'Tiêu đề báo cáo',
                                                                                       isRequired: true,
@@ -522,7 +529,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                                 });
                                                           },
                                                         )),
-                                                    SizedBox(
+                                                    const SizedBox(
                                                       height: 8,
                                                     ),
                                                     Container(
@@ -590,7 +597,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
         context: context,
         useSafeArea: true,
         builder: (context) => Container(
-          height: size.height * 0.85,
+          height: size.height,
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           child: Column(
             children: [
@@ -645,7 +652,26 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                           return Skeletonizer(
                             enabled: snapshot.connectionState ==
                                 ConnectionState.waiting,
-                            child: text.Text('${snapshot.data?.content}'),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AppImage(
+                                  width: double.infinity,
+                                  height: size.height * 0.2,
+                                  url: snapshot.data?.bannerUrl,
+                                ),
+                                Container(
+                                  padding: EdgeInsets.only(top: 32),
+                                  width: double.infinity,
+                                  child: text.Text(
+                                    'Chương: ${snapshot.data?.content}',
+                                    style: textTheme.headlineMedium?.copyWith(),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                text.Text('${snapshot.data?.content}'),
+                              ],
+                            ),
                           );
                         })
                   ],
@@ -821,7 +847,12 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                         ?.copyWith(color: appColors.primaryBase),
                   ),
                   onTap: () async {
-                    publishChapter();
+                    try {
+                      publishChapter();
+                    } catch (e) {
+                      print('error');
+                      print('$e');
+                    }
                   },
                 )),
               ),

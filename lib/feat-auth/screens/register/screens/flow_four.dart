@@ -140,63 +140,44 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                         ),
                       ]),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // SizedBox(
-                    //   width: MediaQuery.of(context).size.width / 2.5,
-                    //   child: AppIconButton(
-                    //     title: "Bỏ qua",
-                    //     color: Colors.black,
-                    //     bgColor: Colors.white,
-                    //     onPressed: () {
-                    //       AppSnackBar.buildSnackbar(context, 'Hoàn tất đăng ký',
-                    //           null, SnackBarType.success);
-                    //       context.push('/login');
-                    //     },
-                    //   ),
-                    // ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 2.5,
-                      child: AppIconButton(
-                        title: "Tiếp tục",
-                        color: Colors.white,
-                        bgColor: appColors.primaryBase,
-                        onPressed: () async {
-                          if (_formKey.currentState?.isValid == true) {
-                            _formKey.currentState!.save();
+                SizedBox(
+                  width: size.width - 32,
+                  child: AppIconButton(
+                    title: "Tiếp tục",
+                    color: Colors.white,
+                    bgColor: appColors.primaryBase,
+                    onPressed: () async {
+                      if (_formKey.currentState?.isValid == true) {
+                        print('validate');
+                        _formKey.currentState!.save();
 
-                            Map<String, String> body = {};
+                        Map<String, String> body = {};
 
-                            body['full_name'] = _formKey
-                                .currentState!.fields['full_name']?.value;
-                            body['description'] = _formKey
-                                .currentState!.fields['description']?.value;
+                        body['full_name'] =
+                            _formKey.currentState!.fields['full_name']?.value;
+                        body['description'] =
+                            _formKey.currentState!.fields['description']?.value;
 
-                            //update new user data
-                            Profile? updatedProfile = await ProfileRepository()
-                                .updateNewUserProfile(
-                                    _formKey
-                                        .currentState!.fields['photos']?.value,
-                                    body,
-                                    widget.userId);
+                        //update new user data
+                        Profile? updatedProfile = await ProfileRepository()
+                            .updateNewUserProfile(
+                                _formKey.currentState!.fields['photos']?.value,
+                                body,
+                                widget.userId);
 
-                            // ignore: use_build_context_synchronously
-                            AppSnackBar.buildSnackbar(context,
-                                'Hoàn tất đăng ký', null, SnackBarType.success);
-                            // ignore: use_build_context_synchronously
-                            context.push('/login');
-                          } else {
-                            // ignore: use_build_context_synchronously
-                            AppSnackBar.buildSnackbar(context,
-                                'Hoàn tất đăng ký', null, SnackBarType.success);
-                            context.push('/login');
-                          }
-                        },
-                      ),
-                    )
-                  ],
+                        // ignore: use_build_context_synchronously
+                        AppSnackBar.buildSnackbar(context, 'Hoàn tất đăng ký',
+                            null, SnackBarType.success);
+                        // ignore: use_build_context_synchronously
+                        context.push('/login');
+                      } else {
+                        // ignore: use_build_context_synchronously
+                        AppSnackBar.buildSnackbar(context, 'Hoàn tất đăng ký',
+                            null, SnackBarType.success);
+                        context.push('/login');
+                      }
+                    },
+                  ),
                 ),
               ]),
         ));

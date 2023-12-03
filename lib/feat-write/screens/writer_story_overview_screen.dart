@@ -205,7 +205,7 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
         editStory != null
             ? Center(
                 child: GestureDetector(
-                  child: Padding(
+                  child: const Padding(
                     padding: EdgeInsets.all(8.0),
                     child: Text('Thêm chương mới '),
                   ),
@@ -218,19 +218,12 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
                       print(res?.id);
 
                       // ignore: use_build_context_synchronously
-                      context.pushNamed('composeChapter', extra: {
-                        'chapterId': res?.id,
-                        'story': editStory,
-                        'chapter': res
-                      });
-
-                      // ignore: use_build_context_synchronously
                       showModalBottomSheet(
                           context: context,
                           isScrollControlled: true,
                           useSafeArea: true,
                           enableDrag: false,
-                          backgroundColor: appColors.primaryLightest,
+                          backgroundColor: Colors.white,
                           builder: (context) {
                             return ComposeChapterScreen(
                               chapterId: res?.id,
