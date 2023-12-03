@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:audiory_v0/models/Comment.dart';
+import 'package:audiory_v0/models/wall-comment/wall_comment_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
@@ -90,6 +91,63 @@ class CommentRepository {
 
     if (response.statusCode == 200) {
       return Comment.fromJson(jsonDecode(responseBody)['data']);
+    } else {
+      throw Exception('Failed to create comment');
+    }
+  }
+
+  static Future<WallComment> fetchWallCommentById(
+      {required String commentId}) async {
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    final url = Uri.parse('$commentsEndpoint/$commentId');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.get(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+
+    if (response.statusCode == 200) {
+      return WallComment.fromJson(jsonDecode(responseBody)['data']);
+    } else {
+      throw Exception('Failed to create comment');
+    }
+  }
+
+  static Future<WallComment?> createWallComment(
+      {required String text, String? parentId}) async {
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    final url = Uri.parse(commentsEndpoint);
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.post(url,
+        body: jsonEncode({
+          'text': text,
+          if (parentId != null) 'parent_id': parentId,
+        }),
+        headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+    print(responseBody);
+    if (response.statusCode == 200) {
+      return WallComment.fromJson(jsonDecode(responseBody)['data']);
     } else {
       throw Exception('Failed to create comment');
     }
