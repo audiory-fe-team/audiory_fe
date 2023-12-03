@@ -68,7 +68,7 @@ class CommentScreen extends HookWidget {
     handleSubmitComment() async {
       //CALL API
       final paragraphs = chapterQuery.data?.paragraphs;
-      if (paragraphs == null || paragraphs.isEmpty) {
+      if (paragraphs == null || paragraphs.isEmpty || controller.text == "") {
         return;
       }
       isCommenting.value = true;
@@ -83,7 +83,8 @@ class CommentScreen extends HookWidget {
       // commentsPagingController.refresh();
     }
 
-    return Column(mainAxisSize: MainAxisSize.min, children: [
+    return Scaffold(
+        body: Column(mainAxisSize: MainAxisSize.min, children: [
       Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           decoration: BoxDecoration(
@@ -255,6 +256,6 @@ class CommentScreen extends HookWidget {
                           size: 16, color: Colors.white)))
             ],
           ))
-    ]);
+    ]));
   }
 }

@@ -1,15 +1,20 @@
 import 'package:audiory_v0/constants/fallback_image.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/detail_report_screen.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_detail_screen.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
 import 'package:audiory_v0/models/Comment.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/notification/noti_model.dart';
 import 'package:audiory_v0/repositories/comment_repository.dart';
+import 'package:audiory_v0/repositories/notification_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/relative_time.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 
-class NotificationCard extends StatelessWidget {
+class NotificationCard extends HookWidget {
   final Noti? noti;
 
   const NotificationCard({super.key, this.noti});
@@ -18,6 +23,7 @@ class NotificationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final textTheme = Theme.of(context).textTheme;
+    final isRead = useState(noti?.isRead);
 
     handleShowComment(Comment comment) {
       showModalBottomSheet(
@@ -31,24 +37,47 @@ class NotificationCard extends StatelessWidget {
           backgroundColor: Colors.white,
           context: context,
           builder: (context) {
-            return Padding(
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
-                child: comment.parentId == null
-                    ? CommentScreen(
-                        chapterId: comment.chapterId,
-                      )
-                    : CommentDetailScreen(commentId: comment.parentId!));
+            if (comment.chapterId == null) return const SizedBox();
+            return comment.parentId == null
+                ? CommentScreen(
+                    chapterId: comment.chapterId!,
+                  )
+                : CommentDetailScreen(commentId: comment.parentId!);
           });
+    }
+
+    handleReadNoti() async {
+      if (noti?.id == null) return;
+      if (isRead.value == true) return;
+      try {
+        await NotificationRepostitory.updateNotiRead(noti?.id);
+        isRead.value = true;
+      } catch (e) {
+        AppSnackBar.buildTopSnackBar(
+            context,
+            'Có lỗi xảy ra. Vui lòng liên hệ admin để được hỗ trợ',
+            null,
+            SnackBarType.error);
+      }
     }
 
     handleTapComment(BuildContext context) async {
       final activity = noti?.activity;
       if (activity == null) return;
 
+      if (activity.actionEntity == 'REPORT') {
+        showModalBottomSheet(
+            useSafeArea: true,
+            isScrollControlled: true,
+            context: context,
+            builder: (context) {
+              return DetailReportScreen(
+                reportId: activity.entityId,
+              );
+            });
+      }
       //NOTE: Entity is a story
       if (activity.actionEntity == 'STORY') {
-        print('/story/${activity.entityId}');
         context.push('/story/${activity.entityId}');
       }
 
@@ -58,7 +87,7 @@ class NotificationCard extends StatelessWidget {
 
       //NOTE: Entity is a profile
       if (activity.actionEntity == 'USER') {
-        context.push('/profile/${activity.entityId}');
+        context.push('/accountProfile/${activity.userId}');
       }
 
       //NOTE: Entity is a comment
@@ -74,13 +103,14 @@ class NotificationCard extends StatelessWidget {
 
     return GestureDetector(
         onTap: () {
+          handleReadNoti();
           handleTapComment(context);
         },
         child: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
-            color: noti?.isRead == false
+            color: isRead.value == false
                 ? appColors.skyLightest
                 : Colors.transparent,
           ),
@@ -157,15 +187,16 @@ class NotificationCard extends StatelessWidget {
               //   ),
               // ),
               // const SizedBox(width: 6),
-              Column(children: [
-                Container(
-                  height: 8,
-                  width: 8,
-                  decoration: ShapeDecoration(
-                      color: appColors.primaryBase,
-                      shape: const CircleBorder()),
-                )
-              ])
+              if (isRead.value != true)
+                Column(children: [
+                  Container(
+                    height: 8,
+                    width: 8,
+                    decoration: ShapeDecoration(
+                        color: appColors.primaryBase,
+                        shape: const CircleBorder()),
+                  )
+                ])
             ],
           ),
         ));

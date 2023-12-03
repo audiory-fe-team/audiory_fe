@@ -1,38 +1,38 @@
 import 'package:audiory_v0/models/Profile.dart';
 
 class Comment {
-  final String chapterId;
+  final String? chapterId;
   final List<Comment>? children;
   final String? createdDate;
   final String id;
   final bool? isEnabled;
   final bool? isLiked;
   final int? likeCount;
-  final String paragraphId;
+  final String? paragraphId;
   final String? parentId;
   final int? replyCount;
   final int? reportCount;
-  final String text;
+  final String? text;
   final String? updatedDate;
   final Profile? user;
-  final String userId;
+  final String? userId;
 
   Comment({
-    required this.chapterId,
+    this.chapterId,
     this.children = const [],
     this.createdDate,
     this.isLiked,
     required this.id,
     this.isEnabled,
     this.likeCount,
-    required this.paragraphId,
+    this.paragraphId,
     this.parentId,
     this.replyCount,
     this.reportCount,
-    required this.text,
+    this.text,
     this.updatedDate,
     this.user,
-    required this.userId,
+    this.userId,
   });
 
   factory Comment.fromJson(Map<String, dynamic> json) {

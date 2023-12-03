@@ -102,10 +102,12 @@ class AppSnackBar {
     final typeOfSnackbar = type ?? SnackBarType.success;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       behavior: SnackBarBehavior.floating,
-      elevation: 10,
-      margin: EdgeInsets.only(left: 8, right: 8, bottom: size.height - 150),
+      elevation: 1,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(24),
+      ),
+      margin: EdgeInsets.only(left: 8, right: 8, bottom: size.height - 200),
       dismissDirection: DismissDirection.up,
-
       backgroundColor: typeOfSnackbar.displayBgColor,
       duration: const Duration(seconds: 3),
       content: Align(

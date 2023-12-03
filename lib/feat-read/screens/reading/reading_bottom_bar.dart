@@ -1,8 +1,10 @@
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
 import 'package:audiory_v0/feat-read/screens/reading/share_link_sheet.dart';
 import 'package:audiory_v0/feat-read/screens/reading/setting_modal.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/activities_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
@@ -11,12 +13,14 @@ class ReadingBottomBar extends HookWidget {
   final String storyId;
   final Function() onChangeStyle;
   final bool isVoted;
+  final bool isOffline;
   const ReadingBottomBar({
     super.key,
     required this.onChangeStyle,
     required this.chapterId,
     required this.storyId,
     this.isVoted = false,
+    this.isOffline = false,
   });
   static const iconSize = 20.0;
   @override
@@ -30,6 +34,11 @@ class ReadingBottomBar extends HookWidget {
     }
 
     void handleToggleLike() async {
+      if (isOffline) {
+        AppSnackBar.buildTopSnackBar(
+            context, 'Vui lòng kết nối mạng', null, SnackBarType.info);
+        return;
+      }
       //NOTE:Call api like
       if (!liked.value) {
         await ActivitiesRepository.sendActivity(
@@ -46,6 +55,11 @@ class ReadingBottomBar extends HookWidget {
     }
 
     void handleOpenComment() {
+      if (isOffline) {
+        AppSnackBar.buildTopSnackBar(
+            context, 'Vui lòng kết nối mạng', null, SnackBarType.info);
+        return;
+      }
       //NOTE: Navigate to comment of chapter page
       showModalBottomSheet(
           isScrollControlled: true,

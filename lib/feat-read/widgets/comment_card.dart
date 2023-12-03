@@ -171,7 +171,7 @@ class _CommentCardState extends ConsumerState<CommentCard> {
                           Container(
                             margin: const EdgeInsets.symmetric(vertical: 4),
                             child: Text(
-                              content,
+                              content ?? '',
                               style: Theme.of(context)
                                   .textTheme
                                   .titleSmall
@@ -336,7 +336,7 @@ class _CommentCardState extends ConsumerState<CommentCard> {
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 2.0),
                                       child: Text(
-                                        '${comment.likeCount ?? 0 + (isLiked ? 1 : 0)}',
+                                        '${(comment.likeCount ?? 0) + (isLiked ? 1 : 0)}',
                                         style: Theme.of(context)
                                             .textTheme
                                             .titleMedium

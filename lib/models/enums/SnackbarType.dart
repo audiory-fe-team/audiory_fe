@@ -22,26 +22,26 @@ extension SnackBarTypeExtension on SnackBarType {
   Color get displayBgColor {
     switch (this) {
       case SnackBarType.error:
-        return Colors.red;
+        return Color.fromARGB(255, 226, 170, 168);
       case SnackBarType.info:
-        return const Color(0xFF303437);
+        return Color.fromARGB(255, 194, 193, 193);
       case SnackBarType.warning:
-        return Colors.amber;
+        return Color.fromARGB(255, 231, 209, 141);
       default:
-        return const Color(0xFF439A97);
+        return Color.fromARGB(255, 192, 223, 222);
     }
   }
 
   Color get displayTextColor {
     switch (this) {
       case SnackBarType.error:
-        return Colors.white;
+        return const Color(0xFF404446);
       case SnackBarType.info:
-        return Colors.white;
+        return const Color(0xFF404446);
       case SnackBarType.warning:
-        return const Color(0xFF090A0A);
+        return const Color(0xFF404446);
       default:
-        return Colors.white;
+        return const Color(0xFF404446);
     }
   }
 }

@@ -3,6 +3,7 @@ import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/detail_repo
 import 'package:audiory_v0/models/enums/Report.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/report/report_model.dart';
+import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/interaction_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
@@ -20,30 +21,24 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class ReportsScreen extends StatefulHookWidget {
-  final String userId;
-  const ReportsScreen({super.key, required this.userId});
-
-  @override
-  State<ReportsScreen> createState() => _ReportsScreenState();
-}
-
-class _ReportsScreenState extends State<ReportsScreen> {
+class ReportsScreen extends HookConsumerWidget {
   final _formKey = GlobalKey<FormBuilderState>();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
+    final currentUserId = ref.watch(globalMeProvider)?.id;
 
     final reportsQuery = useQuery(
-        ['myReports'],
+        ['myReports', currentUserId],
         refetchOnMount: RefetchOnMount.always,
-        () => AuthRepository().getMyReports(userId: widget.userId));
+        () => AuthRepository().getMyReports(userId: currentUserId ?? ''));
 
     handleUnmute({reportId}) async {
       context.pop();
@@ -64,9 +59,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
       body['title'] = _formKey.currentState?.fields['title']?.value;
       body['reported_id'] = reportId;
       body['report_type'] = 'USER';
-      body['user_id'] = widget.userId;
+      body['user_id'] = currentUserId ?? '';
 
-      print(body);
       try {
         final res = await InteractionRepository()
             .report(body, _formKey.currentState!.fields['photo']?.value);
@@ -74,7 +68,6 @@ class _ReportsScreenState extends State<ReportsScreen> {
         // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Tạo báo cáo thành công', null, SnackBarType.success);
-        print(res);
         reportsQuery.refetch();
       } catch (e) {
         print(e);
@@ -162,8 +155,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
                             isScrollControlled: true,
                             context: context,
                             builder: (context) {
+                              if (report?.id == null) return const SizedBox();
                               return DetailReportScreen(
-                                report: report,
+                                reportId: report?.id ?? '',
                               );
                             });
                       },

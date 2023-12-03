@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/constants/theme_options.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
+import 'package:audiory_v0/feat-read/screens/detail-story/donate_gift_modal.dart';
 import 'package:audiory_v0/feat-read/screens/reading/share_link_sheet.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
@@ -102,13 +103,10 @@ class OnlineReadingScreen extends HookConsumerWidget {
           context: context,
           builder: (context) {
             return Scaffold(
-                body: Padding(
-                    padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewInsets.bottom),
-                    child: CommentScreen(
-                      chapterId: chapterId,
-                      paraId: paraId,
-                    )));
+                body: CommentScreen(
+              chapterId: chapterId,
+              paraId: paraId,
+            ));
           });
     }
 
@@ -224,57 +222,6 @@ class OnlineReadingScreen extends HookConsumerWidget {
       if (localPlayer.sequence != null ||
           localPlayer.sequence?.isEmpty == false) return;
       setPlayList();
-
-      // try {
-      //   final currentVoice = voiceType.value;
-      //   final playlist = ConcatenatingAudioSource(
-      //       children: (chapterQuery.data?.paragraphs ?? [])
-      //           .where((element) =>
-      //               element.audios != null &&
-      //               element.audios?.isNotEmpty == true)
-      //           .toList()
-      //           .asMap()
-      //           .entries
-      //           .map((entry) {
-      //     int idx = entry.key;
-      //     Paragraph p = entry.value;
-
-      //     return AudioSource.uri(
-      //         Uri.parse(
-      //             '${dotenv.get("AUDIO_BASE_URL")}${p.audios?[currentVoice].url}'),
-      //         tag: MediaItem(
-      //             id: p.id,
-      //             title: storyQuery.data?.title ?? '',
-      //             extras: {
-      //               'position': chapterQuery.data?.position,
-      //               'storyId': storyId,
-      //               'chapterId': chapterId,
-      //             },
-      //             artist:
-      //                 'Chương ${chapterQuery.data?.position} - Đoạn ${idx + 1}',
-      //             album: storyQuery.data?.id));
-      //   }).toList());
-      //   localPlayer.setAudioSource(playlist);
-
-      //   // print(localPlayer.hashCode);
-      //   // print('Set audio sources');
-
-      //   localPlayer.currentIndexStream.listen((currentParaIndex) {
-      //     if (currentParaIndex == null) return;
-      //     curParaIndex.value = currentParaIndex;
-      //     if (keyList.value.isNotEmpty != true) return;
-      //     final keyContext = keyList.value[currentParaIndex].currentContext;
-      //     if (keyContext == null) return;
-      //     if (isKaraoke.value) {
-      //       Scrollable.ensureVisible(keyContext,
-      //           duration: const Duration(seconds: 1), alignment: 0.5);
-      //     }
-
-      //     return;
-      //   });
-      // } catch (error) {
-      //   print('Error set playlist');
-      // }
     }, [localPlayer, voiceType.value, chapterQuery.data, storyQuery.data]);
 
     useEffect(() {
@@ -390,6 +337,31 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                   curParaIndex.value = index;
                                   handleOpenCommentPara(para.id);
                                 },
+                                onPanUpdate: (details) {
+                                  final chapters = storyQuery.data?.chapters;
+                                  final currentIndex = chapters?.indexWhere(
+                                      (element) => element.id == chapterId);
+                                  if (currentIndex == null || chapters == null)
+                                    return;
+                                  // Swiping in right direction.
+                                  if (details.delta.dx < 0) {
+                                    if (currentIndex >= chapters.length - 1)
+                                      return;
+                                    final nextChapterId =
+                                        chapters[currentIndex + 1].id;
+                                    GoRouter.of(context).go(
+                                        '/story/${storyQuery.data?.id}/chapter/$nextChapterId');
+                                  }
+
+                                  // Swiping in left direction.
+                                  if (details.delta.dx > 0) {
+                                    if (currentIndex <= 0) return;
+                                    final prevChapterId =
+                                        chapters[currentIndex - 1].id;
+                                    GoRouter.of(context).go(
+                                        '/story/${storyQuery.data?.id}/chapter/$prevChapterId');
+                                  }
+                                },
                                 child: SizedBox(
                                   key: key,
                                   width: double.infinity,
@@ -491,7 +463,26 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                 ActionButton(
                                     title: 'Tặng quà',
                                     iconName: 'gift',
-                                    onPressed: () {}),
+                                    onPressed: () {
+                                      showModalBottomSheet(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return Container(
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.7,
+                                              child: DonateGiftModal(
+                                                onAfterSendGift: () {
+                                                  // donatorsQuery.refetch();
+                                                },
+                                                storyId: storyId,
+                                                authorId:
+                                                    storyQuery.data?.authorId,
+                                              ),
+                                            );
+                                          });
+                                    }),
                                 const SizedBox(width: 12),
                                 ActionButton(
                                     title: 'Chia sẻ',
