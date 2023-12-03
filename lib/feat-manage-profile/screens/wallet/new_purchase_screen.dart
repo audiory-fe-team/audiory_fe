@@ -14,6 +14,7 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
+import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
@@ -436,6 +437,37 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                       Text(
                         'Đến nguồn tiền',
                         style: textTheme.titleLarge,
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      TapEffectWrapper(
+                        onTap: () {
+                          // showModalBottomSheet(
+                          //     context: context,
+                          //     builder: (context) {
+                          //       return Scaffold(
+
+                          //       );
+                          //     });
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 12),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              color: appColors.skyLightest,
+                              borderRadius: BorderRadius.circular(12)),
+                          child: const Center(
+                              child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.add),
+                              Text('Thêm nguồn tiền'),
+                            ],
+                          )),
+                        ),
                       ),
                       Container(
                         margin: const EdgeInsetsDirectional.only(top: 8),

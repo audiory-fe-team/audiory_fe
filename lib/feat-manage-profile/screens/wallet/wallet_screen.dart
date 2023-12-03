@@ -6,7 +6,6 @@ import 'package:audiory_v0/models/enums/TransactionType.dart';
 import 'package:audiory_v0/models/transaction/transaction_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/transaction_repository.dart';
-import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
@@ -194,28 +193,31 @@ class _WalletScreenState extends State<WalletScreen> {
                             ],
                           ),
                         ),
-                        Flexible(
-                          child: Column(
-                            children: [
-                              Text(
-                                'Kim cương',
-                                style: textTheme.bodyMedium?.copyWith(
-                                    color: appColors.primaryLightest),
-                              ),
-                              Text(
-                                formatNumberWithSeperator(userByIdQuery
-                                            .data?.wallets!.isNotEmpty ??
-                                        false
-                                    ? userByIdQuery.data?.wallets![1].balance
-                                    : 0),
-                                style: textTheme.headlineLarge?.copyWith(
-                                    color: appColors.primaryLightest,
-                                    fontSize: 35),
-                              ),
-                            ],
-                          ),
-                        ),
+                        // Flexible(
+                        //   child: Column(
+                        //     children: [
+                        //       Text(
+                        //         'Kim cương',
+                        //         style: textTheme.bodyMedium?.copyWith(
+                        //             color: appColors.primaryLightest),
+                        //       ),
+                        //       Text(
+                        //         formatNumberWithSeperator(userByIdQuery
+                        //                     .data?.wallets!.isNotEmpty ??
+                        //                 false
+                        //             ? userByIdQuery.data?.wallets![1].balance
+                        //             : 0),
+                        //         style: textTheme.headlineLarge?.copyWith(
+                        //             color: appColors.primaryLightest,
+                        //             fontSize: 35),
+                        //       ),
+                        //     ],
+                        //   ),
+                        // ),
                       ],
+                    ),
+                    const SizedBox(
+                      height: 16,
                     ),
                     AppIconButton(
                       onPressed: () {
@@ -226,14 +228,14 @@ class _WalletScreenState extends State<WalletScreen> {
                       },
                       icon: Icon(
                         Icons.login_rounded,
-                        color: appColors.inkBase,
+                        color: appColors.primaryLightest,
                       ),
                       iconPosition: 'start',
                       title: 'Nạp/ Rút',
                       textStyle: textTheme.bodyMedium
-                          ?.copyWith(color: appColors.inkBase),
-                      isOutlined: true,
-                      bgColor: appColors.inkDark,
+                          ?.copyWith(color: appColors.inkBase)
+                          ?.copyWith(color: appColors.primaryLightest),
+                      bgColor: appColors.inkBase,
                     ),
                     //stats container
                     Container(

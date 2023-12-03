@@ -5,16 +5,20 @@ import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_top_bar.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/level/my_level_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/wall-comment/wall_comment_detail.dart';
+import 'package:audiory_v0/feat-manage-profile/widgets/custom_wall_comment.dart';
 import 'package:audiory_v0/feat-read/screens/comment/comment_detail_screen.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/models/wall-comment/wall_comment_model.dart';
 import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
+import 'package:audiory_v0/repositories/comment_repository.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/utils/format_number.dart';
+import 'package:audiory_v0/utils/widget_helper.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/cards/level_badge.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
@@ -253,6 +257,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final textTheme = Theme.of(context).textTheme;
     final currentUserId = ref.watch(globalMeProvider)?.id;
 
     final userByIdQuery = useQuery(
@@ -275,6 +280,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
         () => StoryRepostitory().fetchReadingStoriesByUserId('me'),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5));
+
+    final controller = useTextEditingController();
+
     Widget userProfileInfo(
       AuthUser? userData,
       Profile? profileData,
@@ -492,190 +500,144 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                               Skeletonizer(
                                 enabled: wallCommentsQuery.isFetching,
                                 child: wallCommentsQuery.data?.length == 0
-                                    ? Text(
+                                    ? const Text(
                                         'Chưa có thông báo nào từ người dùng')
                                     : Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: (wallCommentsQuery.data ?? [])
-                                            .map((e) {
-                                          WallComment comment = e;
-                                          List<WallComment>? children =
-                                              e.children ?? [];
-                                          return Container(
-                                              margin: const EdgeInsets.only(
-                                                  bottom: 16),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                children: [
-                                                  Container(
-                                                      width: double.infinity,
-                                                      padding: const EdgeInsets
-                                                          .symmetric(
-                                                          horizontal: 16,
-                                                          vertical: 10),
-                                                      decoration: BoxDecoration(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Container(
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                        vertical: 16),
+                                                width: size.width - 32,
+                                                height: 50,
+                                                child: TextField(
+                                                  onTap: () {},
+                                                  controller: controller,
+                                                  onChanged: (value) {},
+                                                  onSubmitted: (value) {
+                                                    FocusScope.of(context)
+                                                        .unfocus();
+                                                  },
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .bodyMedium,
+                                                  maxLines: 3,
+                                                  decoration: InputDecoration(
+                                                      hintText: 'Đăng gì đó',
+                                                      hintStyle: TextStyle(
                                                           color: appColors
-                                                              .skyLightest,
-                                                          borderRadius:
-                                                              BorderRadius
-                                                                  .circular(
-                                                                      12)),
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          Container(
-                                                            width:
-                                                                double.infinity,
-                                                            child: Row(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .center,
-                                                              // mainAxisAlignment:
-                                                              //     MainAxisAlignment
-                                                              //         .spaceBetween,
-                                                              children: [
-                                                                Flexible(
-                                                                    flex: 1,
-                                                                    child:
-                                                                        AppAvatarImage(
-                                                                      size: 30,
-                                                                      url: comment
-                                                                          .user
-                                                                          ?.avatarUrl,
-                                                                    )),
-                                                                SizedBox(
-                                                                  width: 16,
-                                                                ),
-                                                                Flexible(
-                                                                    flex: 4,
-                                                                    child:
-                                                                        Column(
-                                                                      crossAxisAlignment:
-                                                                          CrossAxisAlignment
-                                                                              .start,
-                                                                      children: [
-                                                                        Text(
-                                                                            'Bạn đã đăng 1 thông báo'),
-                                                                        Text(
-                                                                          appFormatDate(
-                                                                              comment.createdDate),
-                                                                          style: textTheme
-                                                                              .bodySmall
-                                                                              ?.copyWith(color: appColors.inkLighter),
-                                                                        ),
-                                                                      ],
-                                                                    ))
-                                                              ],
-                                                            ),
+                                                              .inkLighter),
+                                                      border:
+                                                          OutlineInputBorder(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(8),
+                                                        borderSide:
+                                                            const BorderSide(
+                                                          width: 0,
+                                                          style:
+                                                              BorderStyle.none,
+                                                        ),
+                                                      ),
+                                                      fillColor: appColors
+                                                          .skyLightest,
+                                                      filled: true,
+                                                      suffixIconConstraints:
+                                                          const BoxConstraints(
+                                                        minHeight: 10,
+                                                        minWidth: 10,
+                                                      ),
+                                                      suffixIcon: Container(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .all(8),
+                                                          margin:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  right: 8),
+                                                          decoration:
+                                                              ShapeDecoration(
+                                                            shape:
+                                                                const CircleBorder(),
+                                                            color: appColors
+                                                                .primaryLight,
                                                           ),
-                                                          SizedBox(
-                                                            height: 16,
-                                                          ),
-                                                          Text(comment.text ??
-                                                              ''),
-                                                          Container(
-                                                            width:
-                                                                double.infinity,
-                                                            child: Row(
-                                                              crossAxisAlignment:
-                                                                  CrossAxisAlignment
-                                                                      .end,
-                                                              children: [
-                                                                Flexible(
-                                                                  child:
-                                                                      TextButton(
-                                                                          onPressed:
-                                                                              () {
-                                                                            showModalBottomSheet(
-                                                                                context: context,
-                                                                                builder: (context) {
-                                                                                  return CommentDetailScreen(commentId: comment?.id ?? '');
-                                                                                });
-                                                                          },
-                                                                          child:
-                                                                              Text(
-                                                                            'Trả lời',
-                                                                            style:
-                                                                                textTheme.titleSmall?.copyWith(color: appColors.primaryBase),
-                                                                          )),
-                                                                ),
-                                                                Flexible(
-                                                                  child:
-                                                                      TextButton(
-                                                                          onPressed:
-                                                                              () {
-                                                                            showModalBottomSheet(
-                                                                                context: context,
-                                                                                builder: (context) {
-                                                                                  return CommentDetailScreen(commentId: comment?.id ?? '');
-                                                                                });
-                                                                          },
-                                                                          child:
-                                                                              Text(
-                                                                            'Trả lời',
-                                                                            style:
-                                                                                textTheme.titleSmall?.copyWith(color: appColors.primaryBase),
-                                                                          )),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          )
-                                                          // Align(
-                                                          //   alignment: Alignment
-                                                          //       .centerRight,
-                                                          //   child: IconButton(
-                                                          //       onPressed:
-                                                          //           () {},
-                                                          //       icon: comment
-                                                          //                   ?.isLiked ==
-                                                          //               true
-                                                          //           ? Icon(Icons
-                                                          //               .thumb_up_alt)
-                                                          //           : Icon(Icons
-                                                          //               .thumb_up_alt_outlined)),
-                                                          // )
-                                                        ],
-                                                      )),
-                                                  Container(
-                                                      margin: EdgeInsets.only(
-                                                          left: 32),
-                                                      width: double.infinity,
-                                                      child: Column(
-                                                        children: (children ??
-                                                                [])
-                                                            .map((subComment) {
-                                                          return Row(
-                                                            children: [
-                                                              Flexible(
-                                                                  child:
-                                                                      AppAvatarImage(
-                                                                size: 30,
-                                                                url: subComment
-                                                                    .user
-                                                                    ?.avatarUrl,
-                                                              )),
-                                                              Flexible(
-                                                                child: Text(
-                                                                    subComment
-                                                                            .text ??
-                                                                        ''),
-                                                              ),
-                                                            ],
-                                                          );
-                                                        }).toList(),
-                                                      ))
-                                                ],
-                                              ));
-                                        }).toList()),
+                                                          child: InkWell(
+                                                              onTap: () async {
+                                                                if (controller
+                                                                        .text
+                                                                        .trim() !=
+                                                                    '') {
+                                                                  await CommentRepository
+                                                                      .createWallComment(
+                                                                    text: controller
+                                                                        .text,
+                                                                  );
+
+                                                                  controller
+                                                                          .text ==
+                                                                      '';
+
+                                                                  wallCommentsQuery
+                                                                      .refetch();
+                                                                }
+                                                              },
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          8),
+                                                              child: const Icon(
+                                                                  Icons
+                                                                      .send_rounded,
+                                                                  size: 16,
+                                                                  color: Colors
+                                                                      .white)))),
+                                                ),
+                                              ),
+                                              // IconButton(
+                                              //   onPressed: () async {
+                                              //     print(controller.text);
+                                              //     print(
+                                              //         controller.text == '');
+                                              //     // await CommentRepository
+                                              //     //     .createWallComment(
+                                              //     //   text:
+                                              //     //       'Hôm nay tôi buồn nên không ra truyện',
+                                              //     // );
+
+                                              //     // wallCommentsQuery.refetch();
+                                              //   },
+                                              //   icon: Icon(Icons.send),
+                                              // )
+                                            ],
+                                          ),
+                                          Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children:
+                                                  (wallCommentsQuery.data ?? [])
+                                                      .map((e) {
+                                                WallComment comment = e;
+                                                List<WallComment>? children =
+                                                    e.children ?? [];
+                                                return Container(
+                                                    margin:
+                                                        const EdgeInsets.only(
+                                                            bottom: 32),
+                                                    child: CustomWallComment(
+                                                      comment: comment,
+                                                      callback: () {
+                                                        wallCommentsQuery
+                                                            .refetch();
+                                                      },
+                                                    ));
+                                              }).toList()),
+                                        ],
+                                      ),
                               ),
                             ]);
                           }
@@ -701,6 +663,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
             userByIdQuery.refetch();
             readingStoriesQuery.refetch();
             publishedStoriesQuery.refetch();
+            wallCommentsQuery.refetch();
           },
           child: Skeletonizer(
             enabled: profileQuery.isFetching ||

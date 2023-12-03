@@ -5,6 +5,7 @@ import 'package:audiory_v0/feat-explore/widgets/following_popup_menu.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/messages/detail_conversation_screen.dart';
+import 'package:audiory_v0/feat-manage-profile/widgets/custom_wall_comment.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/Profile.dart';
@@ -13,9 +14,11 @@ import 'package:audiory_v0/models/enums/Report.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/models/wall-comment/wall_comment_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/conversation_repository.dart';
 import 'package:audiory_v0/repositories/interaction_repository.dart';
+import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/format_number.dart';
@@ -319,6 +322,10 @@ class _AppProfileScreenState extends State<AppProfileScreen>
         () => StoryRepostitory().fetchReadingStoriesByUserId(widget.id));
     final conversationsQuery = useQuery(['conversations'],
         () => ConversationRepository().fetchAllConversations());
+    final wallCommentsQuery = useQuery(['wallComments', widget.id],
+        () => ProfileRepository().fetchAllWallComment(userId: widget.id),
+        refetchOnMount: RefetchOnMount.stale,
+        staleDuration: const Duration(minutes: 5)); //userId=me
 
     final isFollowUser = useState(false);
     final isNotifyOn = useState(true);
@@ -728,7 +735,38 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                                 profileQuery.data?.followings ?? []),
                           );
                         } else {
-                          return Text('alo');
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 10),
+                            child: wallCommentsQuery.data?.length == 0
+                                ? Padding(
+                                    padding: const EdgeInsets.all(30.0),
+                                    child: Text(
+                                      'Chưa có thông báo nào từ ${profileQuery.data?.username}',
+                                      textAlign: TextAlign.center,
+                                      style: textTheme.titleMedium,
+                                    ),
+                                  )
+                                : Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children:
+                                        (wallCommentsQuery.data ?? []).map((e) {
+                                      WallComment comment = e;
+                                      List<WallComment>? children =
+                                          e.children ?? [];
+
+                                      return Container(
+                                          margin:
+                                              const EdgeInsets.only(bottom: 32),
+                                          child: CustomWallComment(
+                                            callback: () {
+                                              wallCommentsQuery.refetch();
+                                            },
+                                            comment: comment,
+                                          ));
+                                    }).toList()),
+                          );
                         }
                         return Skeletonizer(
                             enabled: false, child: introView([], [], []));
@@ -937,6 +975,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
             body: RefreshIndicator(
                 onRefresh: () async {
                   profileQuery.refetch();
+                  wallCommentsQuery.refetch();
                 },
                 child: userProfileInfo(
                     userByIdQuery, publishedStoriesQuery, readingStoriesQuery)),
