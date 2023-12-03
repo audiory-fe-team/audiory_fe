@@ -1,18 +1,12 @@
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
-import 'package:audiory_v0/models/enums/SnackbarType.dart';
-import 'package:audiory_v0/models/gift/gift_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
-import 'package:audiory_v0/repositories/auth_repository.dart';
-import 'package:audiory_v0/repositories/gift_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
-import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
-import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import '../../../models/Profile.dart';
@@ -36,52 +30,13 @@ class StoryDetailTab extends HookWidget {
       refetchOnMount: RefetchOnMount.stale,
       staleDuration: const Duration(minutes: 1),
     );
-    final userQuery = useQuery(
-      [
-        'userById',
-      ],
-      () => AuthRepository().getMyUserById(),
-      refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 1),
-    );
+
     final similarStories = useQuery(
       ['similarStories', storyId],
       () => StoryRepostitory().fetchSimilarStories(storyId),
       refetchOnMount: RefetchOnMount.stale,
       staleDuration: const Duration(minutes: 1),
     );
-
-    handleSendingGift(Gift? gift, total) async {
-      var totalCoinsOfUser = userQuery.data?.wallets![0].balance ?? 0;
-      if (double.parse('${(gift?.price ?? 0) * total}') >
-          double.parse(totalCoinsOfUser.toString())) {
-        context.pop();
-        AppSnackBar.buildTopSnackBar(
-            context, 'Không đủ số dư', null, SnackBarType.info);
-      } else {
-        try {
-          Map<String, String> body = {
-            'product_id': gift?.id ?? '',
-            'author_id': story?.authorId ?? '',
-          };
-          for (var i = 0; i < total; i++) {
-            await GiftRepository().donateGift(story?.id, body);
-          }
-          context.pop();
-          AppSnackBar.buildTopSnackBar(
-              context,
-              'Tặng $total ${gift?.name} thành công',
-              null,
-              SnackBarType.success);
-          donatorsQuery.refetch();
-          userQuery.refetch(); //refetch coins
-        } catch (e) {
-          // ignore: use_build_context_synchronously
-          AppSnackBar.buildTopSnackBar(
-              context, 'Tặng quà không thành công', null, SnackBarType.error);
-        }
-      }
-    }
 
     Widget donatorsView(List<Profile> donators) {
       final list = donators;
@@ -400,12 +355,12 @@ class StoryDetailTab extends HookWidget {
                                 height:
                                     MediaQuery.of(context).size.height * 0.7,
                                 child: DonateGiftModal(
-                                    handleSendingGift: (gift, count) {
-                                      handleSendingGift(gift, count);
-                                    },
-                                    story: story,
-                                    coins: userQuery.data?.wallets?[0].balance,
-                                    userData: userQuery.data),
+                                  onAfterSendGift: () {
+                                    donatorsQuery.refetch();
+                                  },
+                                  storyId: story?.id,
+                                  authorId: story?.authorId,
+                                ),
                               );
                             })
                       }),

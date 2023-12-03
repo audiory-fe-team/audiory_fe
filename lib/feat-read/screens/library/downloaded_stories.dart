@@ -31,7 +31,7 @@ class _DownloadedStoriesState extends State<DownloadedStories> {
 
   Future<void> handleDeleteStory(String id) async {
     try {
-      await LibraryRepository.deleteStoryFromMyLibrary(id);
+      // await LibraryRepository.deleteStoryFromMyLibrary(id);
       await storyDb.deleteStory(id);
       setState(() {
         libraryData = storyDb.getAllStories();

@@ -20,27 +20,29 @@ class ReportDialog extends StatelessWidget {
   final _formKey = GlobalKey<FormBuilderState>();
 
   handleCreateReport(BuildContext context) async {
-    Map<String, String> body = {};
-
-    const storage = FlutterSecureStorage();
-    final jwtToken = await storage.read(key: 'jwt');
-    final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
-    body['user_id'] = userId;
-    body['title'] = _formKey.currentState?.fields['title']?.value;
-    body['description'] = _formKey.currentState?.fields['description']?.value;
-    body['report_type'] = reportType;
-    body['reported_id'] = reportId;
     try {
+      Map<String, String> body = {};
+
+      const storage = FlutterSecureStorage();
+      final jwtToken = await storage.read(key: 'jwt');
+      final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
+      body['user_id'] = userId;
+      body['title'] = _formKey.currentState?.fields['title']?.value;
+      body['description'] = _formKey.currentState?.fields['description']?.value;
+      body['report_type'] = reportType;
+      body['reported_id'] = reportId;
       await ReportRepository.addReport(
           body, _formKey.currentState?.fields['photo']?.value);
 
       // ignore: use_build_context_synchronously
       await AppSnackBar.buildTopSnackBar(
           context, 'Tạo thành công', null, SnackBarType.success);
+      context.pop();
     } catch (error) {
       // ignore: use_build_context_synchronously
       AppSnackBar.buildTopSnackBar(
           context, 'Tạo thất bại', null, SnackBarType.error);
+      context.pop();
     }
   }
 
@@ -135,7 +137,6 @@ class ReportDialog extends StatelessWidget {
 
                             if (isValid != null && isValid) {
                               _formKey.currentState?.save();
-                              context.pop();
                               handleCreateReport(context);
                             }
                             // context.pop();

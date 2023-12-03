@@ -7,7 +7,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 class StoryCardOverView extends StatelessWidget {
   final String id;
   final String? coverUrl;
-  final String title;
+  final String? title;
 
   const StoryCardOverView(
       {super.key, this.title = '', this.coverUrl = '', required this.id});
@@ -35,7 +35,7 @@ class StoryCardOverView extends StatelessWidget {
                       height: 135,
                     ))),
             const SizedBox(height: 8),
-            Text(this.title,
+            Text(title ?? 'Không tiêu đề',
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.center,

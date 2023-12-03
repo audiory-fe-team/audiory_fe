@@ -195,6 +195,7 @@ class ChapterRepository {
         final List<dynamic> result = jsonDecode(responseBody)['data'];
         return result.map((i) => Comment.fromJson(i)).toList();
       } catch (error) {
+        print(error.toString());
         throw (error);
       }
     } else {

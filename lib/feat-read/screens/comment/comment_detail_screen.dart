@@ -28,11 +28,13 @@ class CommentDetailScreen extends HookWidget {
 
     handleSubmitComment() async {
       final comment = commentQuery.data;
-      if (comment == null) return;
+      if (comment == null ||
+          comment.chapterId == null ||
+          comment.paragraphId == null) return;
       isCommenting.value = true;
       await CommentRepository.createComment(
-          chapterId: comment.chapterId,
-          paraId: comment.paragraphId,
+          chapterId: comment.chapterId!,
+          paraId: comment.paragraphId!,
           text: controller.text,
           parentId: commentId);
       controller.text = "";

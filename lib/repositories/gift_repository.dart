@@ -29,10 +29,9 @@ class GiftRepository {
     }
   }
 
-  Future<void> donateGift(storyId, body) async {
+  Future<void> donateGift(String userId, String storyId, body) async {
     const storage = FlutterSecureStorage();
     var jwtToken = await storage.read(key: 'jwt');
-    var userId = JwtDecoder.decode(jwtToken as String)['user_id'];
 
     final url =
         Uri.parse('${Endpoints().user}/$userId/stories/$storyId/donate');
@@ -45,9 +44,7 @@ class GiftRepository {
     }
     final response =
         await http.post(url, headers: header, body: jsonEncode(body));
-    print('STORY ID ${storyId}');
-    print('BODY ${body}');
-    print('RESPONSE ${utf8.decode(response.bodyBytes)}');
+
     if (response.statusCode == 200) {
     } else {
       throw Exception('Failed to donate gift');
