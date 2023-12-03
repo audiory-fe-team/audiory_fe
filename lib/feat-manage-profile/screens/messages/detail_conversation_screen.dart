@@ -270,7 +270,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
             Flexible(
                 flex: 2,
                 child: Padding(
-                  padding: EdgeInsets.only(right: 16.0),
+                  padding: const EdgeInsets.only(right: 16.0),
                   child: AppAvatarImage(
                     url: widget.conversation?.coverUrl ?? '',
                     size: 40,
@@ -331,6 +331,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                         print('${messages.length}');
 
                         print('MESSAGE LIST $messages');
+
                         messages.insert(
                             0, Message.fromJson(jsonDecode(decodedJson)));
                       } else {
@@ -359,7 +360,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
                   child: const Text(
-                    'Bạn không thể tiếp tục trò chuyện khi bị chặn',
+                    'Bạn không thể tiếp tục trò chuyện với người dùng này',
                     textAlign: TextAlign.center,
                   ),
                 ),

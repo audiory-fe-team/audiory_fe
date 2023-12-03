@@ -5,9 +5,7 @@ import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_top_bar.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/level/my_level_screen.dart';
-import 'package:audiory_v0/feat-manage-profile/screens/wall-comment/wall_comment_detail.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/custom_wall_comment.dart';
-import 'package:audiory_v0/feat-read/screens/comment/comment_detail_screen.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/models/wall-comment/wall_comment_model.dart';
@@ -331,7 +329,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                     authorLevel: userData?.authorLevel,
                                     isAuthorFlairSelected:
                                         userData?.isAuthorFlairSelected,
-                                    callback: profileQuery.refetch,
+                                    callback: () {
+                                      profileQuery.refetch();
+                                    },
                                   );
                                 });
                           },
@@ -631,6 +631,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                                     child: CustomWallComment(
                                                       comment: comment,
                                                       callback: () {
+                                                        print('hi');
                                                         wallCommentsQuery
                                                             .refetch();
                                                       },
