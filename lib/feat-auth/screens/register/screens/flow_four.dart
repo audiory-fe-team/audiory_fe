@@ -144,19 +144,19 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width / 2.5,
-                      child: AppIconButton(
-                        title: "Bỏ qua",
-                        color: Colors.black,
-                        bgColor: Colors.white,
-                        onPressed: () {
-                          AppSnackBar.buildSnackbar(context, 'Hoàn tất đăng ký',
-                              null, SnackBarType.success);
-                          context.push('/login');
-                        },
-                      ),
-                    ),
+                    // SizedBox(
+                    //   width: MediaQuery.of(context).size.width / 2.5,
+                    //   child: AppIconButton(
+                    //     title: "Bỏ qua",
+                    //     color: Colors.black,
+                    //     bgColor: Colors.white,
+                    //     onPressed: () {
+                    //       AppSnackBar.buildSnackbar(context, 'Hoàn tất đăng ký',
+                    //           null, SnackBarType.success);
+                    //       context.push('/login');
+                    //     },
+                    //   ),
+                    // ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 2.5,
                       child: AppIconButton(

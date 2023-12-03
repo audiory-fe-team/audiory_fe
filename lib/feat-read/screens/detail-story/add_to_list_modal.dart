@@ -86,6 +86,7 @@ class AddToListModal extends HookWidget {
         expand: false,
         initialChildSize: 0.8,
         builder: (context, scrollController) => Container(
+              height: 300,
               color: appColors.background,
               child: Column(
                 children: [
@@ -101,7 +102,7 @@ class AddToListModal extends HookWidget {
                         ),
                       ),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 8),
+                          horizontal: 8, vertical: 2),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -125,7 +126,7 @@ class AddToListModal extends HookWidget {
                                 child: Text(
                                   'Chọn danh sách để thêm ',
                                   textAlign: TextAlign.center,
-                                  style: textTheme.headlineSmall
+                                  style: textTheme.titleSmall
                                       ?.copyWith(color: appColors.inkDarkest),
                                 ),
                               )),
@@ -152,7 +153,7 @@ class AddToListModal extends HookWidget {
                                   ))),
                         ],
                       )),
-                  const SizedBox(height: 8),
+                  // const SizedBox(height: 8),
                   Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                     GestureDetector(
                         onTap: () {
@@ -163,19 +164,19 @@ class AddToListModal extends HookWidget {
                               title: Column(children: [
                                 Text(
                                   'Tạo một danh sách đọc',
-                                  style: textTheme.titleLarge
+                                  style: textTheme.titleMedium
                                       ?.copyWith(color: appColors.inkDarkest),
                                 ),
                                 Text(
                                   'Đặt tên cho danh sách đọc của bạn',
-                                  style: textTheme.bodyMedium
+                                  style: textTheme.bodySmall
                                       ?.copyWith(color: appColors.inkLight),
                                   textAlign: TextAlign.center,
                                 )
                               ]),
                               content: SizedBox(
                                 width: size.width / 2,
-                                height: size.height / 2.8,
+                                // height: size.height / 2,
                                 child: FormBuilder(
                                   key: _formKey,
                                   child: Column(
@@ -195,7 +196,7 @@ class AddToListModal extends HookWidget {
                                             name: 'photo'),
                                       ),
                                       SizedBox(
-                                        height: 70,
+                                        // height: 70,
                                         child: AppTextInputField(
                                           hintText:
                                               'Ví dụ: Truyện trinh thám hay',
@@ -206,62 +207,57 @@ class AddToListModal extends HookWidget {
                                                       'Không được để trống'),
                                         ),
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            vertical: 8.0),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            SizedBox(
-                                                width: 100,
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    context.pop();
-                                                  },
-                                                  child: Text(
-                                                    'Hủy',
-                                                    style:
-                                                        textTheme.titleMedium,
-                                                  ),
-                                                )),
-                                            SizedBox(
-                                                width: 100,
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    //check if input validate
-                                                    final isValid = _formKey
-                                                        .currentState
-                                                        ?.validate();
+                                      // Row(
+                                      //   mainAxisSize: MainAxisSize.max,
+                                      //   mainAxisAlignment:
+                                      //       MainAxisAlignment.spaceBetween,
+                                      //   children: [
+                                      //     SizedBox(
+                                      //         width: 100,
+                                      //         child: GestureDetector(
+                                      //           onTap: () {
+                                      //             context.pop();
+                                      //           },
+                                      //           child: Text(
+                                      //             'Hủy',
+                                      //             style: textTheme.titleMedium,
+                                      //           ),
+                                      //         )),
+                                      //     SizedBox(
+                                      //         width: 100,
+                                      //         child: GestureDetector(
+                                      //           onTap: () {
+                                      //             //check if input validate
+                                      //             final isValid = _formKey
+                                      //                 .currentState
+                                      //                 ?.validate();
 
-                                                    if (isValid != null &&
-                                                        isValid) {
-                                                      _formKey.currentState
-                                                          ?.save();
-                                                      context.pop();
-                                                      handleCreateReadingList();
-                                                    }
-                                                    // context.pop();
-                                                  },
-                                                  child: Text(
-                                                    'Tạo',
-                                                    textAlign: TextAlign.end,
-                                                    style: textTheme.titleMedium
-                                                        ?.copyWith(
-                                                            color: _formKey
-                                                                        .currentState
-                                                                        ?.validate() ==
-                                                                    true
-                                                                ? appColors
-                                                                    .primaryBase
-                                                                : appColors
-                                                                    .inkLighter),
-                                                  ),
-                                                ))
-                                          ],
-                                        ),
-                                      )
+                                      //             if (isValid != null &&
+                                      //                 isValid) {
+                                      //               _formKey.currentState
+                                      //                   ?.save();
+                                      //               context.pop();
+                                      //               handleCreateReadingList();
+                                      //             }
+                                      //             // context.pop();
+                                      //           },
+                                      //           child: Text(
+                                      //             'Tạo',
+                                      //             textAlign: TextAlign.end,
+                                      //             style: textTheme.titleMedium
+                                      //                 ?.copyWith(
+                                      //                     color: _formKey
+                                      //                                 .currentState
+                                      //                                 ?.validate() ==
+                                      //                             true
+                                      //                         ? appColors
+                                      //                             .primaryBase
+                                      //                         : appColors
+                                      //                             .inkLighter),
+                                      //           ),
+                                      //         ))
+                                      //   ],
+                                      // )
                                     ],
                                   ),
                                 ),

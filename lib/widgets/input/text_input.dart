@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import '../../theme/theme_constants.dart';
 
 class AppTextInputField extends StatefulWidget {
@@ -66,7 +65,7 @@ class AppTextInputField extends StatefulWidget {
       this.hintTextStyle,
       this.prefixIcon,
       this.suffixIcon,
-      this.textInputType = TextInputType.text,
+      this.textInputType = TextInputType.name,
       this.isRequired = false,
       this.validator,
       this.textAlign,
