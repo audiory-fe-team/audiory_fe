@@ -8,8 +8,6 @@ import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'dart:convert';
 
-import 'package:audiory_v0/feat-write/widgets/edit_chapter_card.dart';
-import 'package:audiory_v0/state/state_manager.dart';
 import 'package:audiory_v0/utils/widget_helper.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
@@ -18,16 +16,12 @@ import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-import 'package:motion_toast/motion_toast.dart';
-import 'package:motion_toast/resources/arrays.dart';
-import 'package:sembast/sembast.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:textfield_tags/textfield_tags.dart';
 
@@ -91,7 +85,6 @@ class _ComposeScreenState extends State<ComposeScreen> {
     //each tag has length 2<= tag <=256
     //each tag can contain special character except comma(,)
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    print(tags);
     return Column(
       children: [
         Row(
@@ -298,27 +291,23 @@ class _ComposeScreenState extends State<ComposeScreen> {
     print(story);
     if (story != null) {
       content = isEdit ? 'Cập nhật thành công' : 'Tạo thành công';
+      // ignore: use_build_context_synchronously
       AppSnackBar.buildTopSnackBar(
           context, content, null, SnackBarType.success);
       // ignore: use_build_context_synchronously
       if (!isEdit) {
+        // ignore: use_build_context_synchronously
         context.pushNamed('composeChapter', extra: {
           'chapterId': story.chapters?[0].id,
           'story': story,
           'chapter': story.chapters?[0] ?? ''
         });
-      } else {
-        context.pop();
-      }
+      } else {}
     } else {
       content = isEdit ? 'Cập nhật thất bại' : 'Tạo thất bại';
+      // ignore: use_build_context_synchronously
       AppSnackBar.buildTopSnackBar(context, content, null, SnackBarType.error);
       // ignore: use_build_context_synchronously
-      // context.pushNamed('composeChapter', extra: {
-      //   'chapterId': story?.chapters?[0].id,
-      //   'story': story,
-      //   'chapter': story?.chapters?[0] ?? ''
-      // });
     }
   }
 
@@ -347,13 +336,14 @@ class _ComposeScreenState extends State<ComposeScreen> {
     );
 
     handleDeleteChapter(chapterId) async {
-      print('delete');
       try {
         await ChapterRepository().deleteChapter(chapterId);
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Xóa thành công', null, SnackBarType.success);
         chaptersQuery.refetch();
       } catch (e) {
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Xóa không thành công', null, SnackBarType.success);
       }
@@ -369,10 +359,10 @@ class _ComposeScreenState extends State<ComposeScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: Colors.white,
-            title: Center(child: Text('Xác nhận xóa?')),
-            content: Text('Bạn chắc chắn muốn xóa chương này'),
+            title: const Center(child: Text('Xác nhận xóa?')),
+            content: const Text('Bạn chắc chắn muốn xóa chương này'),
             actions: <Widget>[
-              Container(
+              SizedBox(
                 width: 70,
                 height: 30,
                 child: AppIconButton(

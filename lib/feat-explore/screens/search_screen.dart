@@ -617,6 +617,7 @@ class SearchStoryFilter extends HookWidget {
           ),
           const SizedBox(height: 12),
           Container(
+            width: double.infinity,
             decoration: BoxDecoration(
                 color: appColors?.skyLightest,
                 border: Border.all(
@@ -662,11 +663,19 @@ class SearchStoryFilter extends HookWidget {
                             }
                           },
                         )),
-                    Text(
-                      category.name ?? 'option',
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: appColors?.inkLight,
-                          overflow: TextOverflow.ellipsis),
+                    Flexible(
+                      flex: 3,
+                      child: Text(
+                        category.name ?? 'option',
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
+                        style: Theme.of(context)
+                            .textTheme
+                            .titleMedium
+                            ?.copyWith(
+                                color: appColors?.inkLight,
+                                overflow: TextOverflow.ellipsis),
+                      ),
                     )
                   ]);
                 }).toList(),

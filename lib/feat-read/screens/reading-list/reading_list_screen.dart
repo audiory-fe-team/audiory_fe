@@ -222,6 +222,8 @@ class ReadingListScreen extends HookWidget {
         appBar: CustomAppBar(
           title: Text(
             name ?? 'Danh sách đọc',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: textTheme.headlineMedium,
           ),
           actions: [

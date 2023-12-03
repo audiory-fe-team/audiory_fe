@@ -9,14 +9,11 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fquery/fquery.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:intl/intl.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class DetailConversationScreen extends StatefulHookWidget {
@@ -46,6 +43,8 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
   final ScrollController _controller = ScrollController();
   int pageNumber = 1;
 
+  String conversationId = ''; //use for first time message
+
 // This is what you're looking for!
   void _scrollDown() {
     _controller.jumpTo(
@@ -65,14 +64,18 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
   }
 
   markConversationAsRead() async {
-    await ConversationRepository().markConversationAsRead();
+    await ConversationRepository()
+        .markConversationAsRead(conversationId: widget.conversation?.id ?? '');
   }
 
   @override
   initState() {
     super.initState();
-    connectWebsocket();
-    markConversationAsRead();
+    connectWebsocket(); //connect to receive and send message
+    if (widget.conversation?.id != '') {
+      print('mark as read');
+      markConversationAsRead(); // mark conversation as read if the conversation is not first time
+    }
     try {
       _controller.addListener(() {
         scollListener();
@@ -82,6 +85,10 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     }
 
     fetchMessages(pageNumber);
+
+    setState(() {
+      conversationId = widget.conversation?.id ?? '';
+    });
   }
 
   @override
@@ -93,6 +100,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
 
   connectWebsocket() async {
     final jwtToken = await storage.read(key: 'jwt');
+
     wsUri = Uri.parse(
         'wss://${dotenv.get('HOST')}/messages/${widget.userId}?token=$jwtToken');
 
@@ -106,20 +114,26 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
       });
     }
 
-    // print('ID ${widget.conversation?.id}');
+    print('ID FROM OUTSIDE ${widget.conversation?.id}');
+    print('CONVERSATIONiD ${conversationId}');
 
     Map<String, dynamic> message = {
       'receiver_id': widget.conversation?.receiverId ?? '',
       'content': content,
       'sender_id': widget.userId
     };
-    if (widget.conversation?.id != null) {
+    if (conversationId != '') {
       message['conversation_id'] = widget.conversation?.id ?? '';
     }
+
+    print('actual message BODY ${message}');
     var actualBody = jsonEncode(message);
     setState(() {
       messages.insert(0, Message.fromJson(message));
     });
+
+    print(messages);
+
     channel?.sink.add(actualBody);
     widget.refetchCallback();
   }
@@ -148,7 +162,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
         ['conversation', widget.conversation?.id],
         () => ConversationRepository().fetchConversationById(
             conversationId: widget.conversation?.id, offset: 1, limit: 10));
-
+    print(conversationQuery.data?.isBlocked);
     Widget messageCard(
         {String? content = '',
         bool? isMe = true,
@@ -251,7 +265,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     return Scaffold(
       appBar: CustomAppBar(
         title: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Flexible(
                 flex: 2,
@@ -264,26 +278,34 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                 )),
             Flexible(
               flex: 5,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    widget.conversation?.name != null
-                        ? widget.conversation?.name == ''
-                            ? 'Người dùng'
-                            : widget.conversation?.name as String
-                        : 'Người dùng',
-                    style: textTheme.titleLarge
-                        ?.copyWith(color: appColors.inkBase),
-                  ),
-                  Text(
-                    'Đang hoạt động ',
-                    style: textTheme.bodySmall
-                        ?.copyWith(color: appColors.inkLighter),
-                  ),
-                ],
+              child: Text(
+                widget.conversation?.name != null
+                    ? widget.conversation?.name == ''
+                        ? 'Người dùng'
+                        : widget.conversation?.name as String
+                    : 'Người dùng',
+                style: textTheme.titleLarge?.copyWith(color: appColors.inkBase),
               ),
+              // child: Column(
+              //   crossAxisAlignment: CrossAxisAlignment.center,
+              //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+              //   children: [
+              //     Text(
+              //       widget.conversation?.name != null
+              //           ? widget.conversation?.name == ''
+              //               ? 'Người dùng'
+              //               : widget.conversation?.name as String
+              //           : 'Người dùng',
+              //       style: textTheme.titleLarge
+              //           ?.copyWith(color: appColors.inkBase),
+              //     ),
+              //     // Text(
+              //     //   'Đang hoạt động ',
+              //     //   style: textTheme.bodySmall
+              //     //       ?.copyWith(color: appColors.inkLighter),
+              //     // ),
+              //   ],
+              // ),
             ),
           ],
         ),
@@ -313,6 +335,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                             0, Message.fromJson(jsonDecode(decodedJson)));
                       } else {
                         print('SNAPSHOT ERROR');
+                        print(messages);
                         print('${snapshot.error}');
                       }
 
@@ -326,11 +349,20 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
         ),
         Align(
           alignment: Alignment.bottomCenter,
-          child: DetailMessageBottomBar(sendMessageCallback: (content) {
-            _sendMessage(content, conversationQuery.data?.messages ?? []);
+          child: conversationQuery.data?.isBlocked == false
+              ? DetailMessageBottomBar(sendMessageCallback: (content) {
+                  _sendMessage(content, conversationQuery.data?.messages ?? []);
 
-            widget.refetchCallback();
-          }),
+                  widget.refetchCallback();
+                })
+              : Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+                  child: const Text(
+                    'Bạn không thể tiếp tục trò chuyện khi bị chặn',
+                    textAlign: TextAlign.center,
+                  ),
+                ),
         )
       ]),
     );

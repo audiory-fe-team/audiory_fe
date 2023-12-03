@@ -94,7 +94,7 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
           children: [
             Text(
               'Cập nhật vào ${appFormatDate(widget.story?.updatedDate)}',
-              style: textTheme.headlineSmall,
+              style: textTheme.titleMedium,
             ),
             IntrinsicHeight(
               child: Row(children: [
@@ -102,10 +102,29 @@ class _StoryChapterTabState extends State<StoryChapterTab> {
                   onTap: () {
                     isDesc.value = !isDesc.value;
                   },
-                  child: Text(
-                      isDesc.value ? 'Đọc chương mới nhất' : 'Đọc từ cũ nhất',
-                      style: textTheme.titleSmall
-                          ?.copyWith(color: appColors.primaryBase)),
+                  child: Container(
+                    width: size.width / 4,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Flexible(
+                          flex: 2,
+                          child: Text('Sắp xếp',
+                              style: textTheme.titleSmall
+                                  ?.copyWith(color: appColors.primaryBase)),
+                        ),
+                        Flexible(
+                            child: isDesc.value == true
+                                ? Icon(
+                                    Icons.arrow_downward_sharp,
+                                    color: appColors.primaryBase,
+                                    size: 16,
+                                  )
+                                : Icon(Icons.arrow_upward,
+                                    color: appColors.primaryBase, size: 16)),
+                      ],
+                    ),
+                  ),
                 ),
               ]),
             ),

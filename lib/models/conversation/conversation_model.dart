@@ -14,11 +14,12 @@ class Conversation with _$Conversation {
 
     @JsonKey(name: 'id') required String id, //int
     @Default('') @JsonKey(name: 'last_active') String? lastActive,
+    @Default(false) @JsonKey(name: 'is_blocked') bool? isBlocked,
     @Default('') @JsonKey(name: 'cover_url') String? coverUrl,
     @Default('') @JsonKey(name: 'receiver_id') String? receiverId,
     @Default('') @JsonKey(name: 'name') String? name,
     @Default([]) @JsonKey(name: 'messages') List<Message>? messages,
-    @Default(null) @JsonKey(name: 'last_message') Message? lastMessage,
+    @JsonKey(name: 'last_message') Message? lastMessage,
     @Default(false)
     @JsonKey(name: 'is_latest_message_read')
     bool? isLatestMessageRead,

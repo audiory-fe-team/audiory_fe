@@ -77,29 +77,42 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                         // context.push('/resetPassword');
                         if (isValid) {
                           //send verification email
-
+                          // showDialog(
+                          //     context: context,
+                          //     builder: (context) {
+                          //       return Center(
+                          //           child: const CircularProgressIndicator());
+                          //     });
                           String email =
                               _formKey.currentState!.fields['email']?.value;
                           try {
                             final res = await AuthRepository()
                                 .forgotPassword(email: email);
 
-                            if (res == '200') {
-                              // ignore: use_build_context_synchronously
+                            print(res);
+                            print('status ${res == 200}');
+
+                            if (res == 200) {
+                              context.pop();
+
                               Map<String, String> body = {
                                 'email': email,
                                 'isForgotPass': 'true'
                               };
+
                               // ignore: use_build_context_synchronously
-                              context.pushNamed('flowOne', extra: {
-                                'signUpBody': body,
-                              });
+                              context.push('/flowOne', extra: {
+                                'signUpBody': body
+                              }); //allow back button
                             } else {
                               // ignore: use_build_context_synchronously
                               AppSnackBar.buildCustomTopSnackbar(
                                   context, res, null, SnackBarType.error, 100);
+                              // }
                             }
-                          } catch (e) {}
+                          } catch (e) {
+                            print(e);
+                          }
                         } else {
                           AppSnackBar.buildTopSnackBar(
                               context, 'Xảy ra lỗi', null, SnackBarType.error);

@@ -4,19 +4,27 @@ import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_top_bar.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/level/my_level_screen.dart';
+import 'package:audiory_v0/feat-read/screens/comment/comment_detail_screen.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/models/wall-comment/wall_comment_model.dart';
+import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
+import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
-import 'package:audiory_v0/widgets/app_image.dart';
+import 'package:audiory_v0/utils/format_date.dart';
+import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
+import 'package:audiory_v0/widgets/cards/level_badge.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:lottie/lottie.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../models/AuthUser.dart';
@@ -25,14 +33,14 @@ import '../../theme/theme_constants.dart';
 import '../../widgets/buttons/app_icon_button.dart';
 import 'package:fquery/fquery.dart';
 
-class UserProfileScreen extends StatefulHookWidget {
+class UserProfileScreen extends StatefulHookConsumerWidget {
   const UserProfileScreen({super.key});
 
   @override
-  State<UserProfileScreen> createState() => _UserProfileScreenState();
+  ConsumerState<UserProfileScreen> createState() => _UserProfileScreenState();
 }
 
-class _UserProfileScreenState extends State<UserProfileScreen>
+class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     with TickerProviderStateMixin {
   final storage = const FlutterSecureStorage();
   String? jwt;
@@ -188,235 +196,6 @@ class _UserProfileScreenState extends State<UserProfileScreen>
     );
   }
 
-  Widget userProfileInfo(
-      AuthUser? userData,
-      Profile? profileData,
-      UseQueryResult<List<Story>?, dynamic> publishedStoriesQuery,
-      UseQueryResult<List<ReadingList>?, dynamic> readingStoriesQuery) {
-    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final size = MediaQuery.of(context).size;
-    final textTheme = Theme.of(context).textTheme;
-    roundBalance(balance) {
-      return double.parse(balance.toString()).toStringAsFixed(0);
-    }
-
-    print(profileData?.avatarUrl);
-    return SingleChildScrollView(
-      child: Container(
-        width: double.infinity,
-        margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                    opacity: 0.6,
-                    image: CachedNetworkImageProvider(
-                        profileData?.backgroundUrl == ''
-                            ? FALLBACK_BACKGROUND_URL
-                            : profileData?.backgroundUrl ??
-                                FALLBACK_BACKGROUND_URL),
-                    fit: BoxFit.fill,
-                  )),
-                  child: Column(
-                    children: [
-                      AppAvatarImage(
-                        hasLevel: true,
-                        levelId: userData?.levelId ?? 1,
-                        hasAuthorLevel: true,
-                        authorLevelId: userData?.authorLevelId ?? 1,
-                        size: userData?.levelId != null ? 93 : 88,
-                        url: userData?.avatarUrl,
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        userData?.fullName ?? 'Họ và tên',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.headlineMedium,
-                      ),
-                      Text(
-                        '@${userData?.username ?? 'Tên đăng nhập'}',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleSmall,
-                      ),
-                      const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: () {
-                          // userByIdQuery.isError == true
-                          //     ? null
-                          //     : GoRouter.of(context)
-                          //   ?..pushNamed('profileSettings', extra: {
-                          //     'currentUser': userByIdQuery.data,
-                          //     'userProfile': profileQuery.data
-                          //   })
-                          //   ..push('/wallet', extra: {
-                          //     'currentUser': userByIdQuery.data,
-                          //     'userProfile': profileQuery.data
-                          //   });
-                        },
-                        child: Container(
-                          width: size.width / 3,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Flexible(
-                                flex: 2,
-                                child: Image.asset(
-                                  'assets/images/coin.png',
-                                  width: 30,
-                                  height: 30,
-                                ),
-                              ),
-                              Flexible(
-                                flex: 2,
-                                child: Text(
-                                  " ${userData?.wallets?.isNotEmpty == true ? roundBalance(userData?.wallets![0].balance) : '_'}",
-                                  style:
-                                      Theme.of(context).textTheme.headlineSmall,
-                                ),
-                              ),
-                              Flexible(
-                                  child: GestureDetector(
-                                child: const Icon(Icons.add),
-                                onTap: () {
-                                  context.pushNamed('newPurchase',
-                                      extra: {'currentUser': userData});
-                                },
-                              )),
-                            ],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      // SizedBox(
-                      //   width: size.width / 2.3,
-                      //   child: AppIconButton(
-                      //       isOutlined: true,
-                      //       bgColor: appColors.skyLightest,
-                      //       color: appColors.primaryBase,
-                      //       title: 'Nhận phúc lợi',
-                      //       textStyle: textTheme.titleMedium
-                      //           ?.copyWith(color: appColors.primaryBase),
-                      //       onPressed: () {
-                      //         userData == null
-                      //             ? null
-                      //             : GoRouter.of(context)
-                      //                 .push('/profile/dailyReward');
-                      //       }),
-                      // ),
-                      const SizedBox(height: 16),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Skeletonizer(
-                  enabled: publishedStoriesQuery.isFetching ||
-                      readingStoriesQuery.isFetching,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 0.0),
-                    child: interactionInfo(
-                      publishedStoriesQuery.data?.length,
-                      readingStoriesQuery.data?.length,
-                      profileData?.numberOfFollowers,
-                    ),
-                  ),
-                ),
-                // descrition
-                const SizedBox(height: 16),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: size.width / 9),
-                      child: Divider(
-                        thickness: 1.2,
-                        color: appColors.inkLighter,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        profileData?.description == null ||
-                                profileData?.description == ''
-                            ? 'Nhập gì đó về bạn'
-                            : profileData?.description ?? '',
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: size.width / 4),
-                      child: Divider(
-                        thickness: 1.2,
-                        color: appColors.inkLighter,
-                      ),
-                    ),
-                  ],
-                ),
-
-                //tab
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.symmetric(vertical: 12),
-                        child: TabBar(
-                          onTap: (value) {
-                            setState(() {
-                              if (tabState != value) tabState = value;
-                            });
-                          },
-                          controller: tabController,
-                          labelColor: appColors.primaryBase,
-                          unselectedLabelColor: appColors.inkLight,
-                          labelPadding:
-                              const EdgeInsets.symmetric(horizontal: 8),
-                          indicatorColor: appColors.primaryBase,
-                          labelStyle: textTheme.titleLarge,
-                          tabs: const [
-                            Tab(
-                              text: 'Giới thiệu',
-                            ),
-                            Tab(
-                              text: 'Thông báo',
-                            )
-                          ],
-                        ),
-                      ),
-                      Builder(builder: (context) {
-                        if (tabState == 0) {
-                          if ([publishedStoriesQuery.data ?? []].isEmpty &&
-                              [readingStoriesQuery.data ?? []].isEmpty &&
-                              [profileData?.followings ?? []].isEmpty) {
-                            return Center(
-                              child: Text('Chưa có dữ liệu mới'),
-                            );
-                          } else {
-                            return introView(
-                                publishedStoriesQuery.data,
-                                readingStoriesQuery.data,
-                                profileData?.followings ?? []);
-                          }
-                        } else {
-                          return Text('Thông báo của người dùng');
-                        }
-                      }),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget interactionInfo(
       int? numOfStories, int? numOfReadingList, int? numOfFollowers) {
     final textTheme = Theme.of(context).textTheme;
@@ -465,7 +244,7 @@ class _UserProfileScreenState extends State<UserProfileScreen>
           ],
           interactionItem('Danh sách đọc', '${numOfReadingList ?? '0'}'),
           const VerticalDivider(),
-          interactionItem('Người theo dõi', '${numOfFollowers ?? '0'}'),
+          interactionItem('Người theo dõi', formatNumber(numOfFollowers ?? 0)),
           // const VerticalDivider(),
           // interactionItem('Bình luận', '40'),
         ]));
@@ -474,6 +253,8 @@ class _UserProfileScreenState extends State<UserProfileScreen>
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+    final currentUserId = ref.watch(globalMeProvider)?.id;
+
     final userByIdQuery = useQuery(
         ['user', jwt], () => AuthRepository().getMyUserById(),
         refetchOnMount: RefetchOnMount.stale,
@@ -486,10 +267,430 @@ class _UserProfileScreenState extends State<UserProfileScreen>
         () => StoryRepostitory().fetchPublishedStoriesByUserId('me'),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5)); //userId=me
+    final wallCommentsQuery = useQuery(['wallComments', jwt],
+        () => ProfileRepository().fetchAllWallComment(userId: currentUserId),
+        refetchOnMount: RefetchOnMount.stale,
+        staleDuration: const Duration(minutes: 5)); //userId=me
     final readingStoriesQuery = useQuery(['readingStories', jwt],
         () => StoryRepostitory().fetchReadingStoriesByUserId('me'),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5));
+    Widget userProfileInfo(
+      AuthUser? userData,
+      Profile? profileData,
+      UseQueryResult<List<Story>?, dynamic> publishedStoriesQuery,
+      UseQueryResult<List<ReadingList>?, dynamic> readingStoriesQuery,
+    ) {
+      final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+      final size = MediaQuery.of(context).size;
+      final textTheme = Theme.of(context).textTheme;
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Container(
+          width: double.infinity,
+          margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                      opacity: 0.6,
+                      image: CachedNetworkImageProvider(
+                          profileData?.backgroundUrl == ''
+                              ? FALLBACK_BACKGROUND_URL
+                              : profileData?.backgroundUrl ??
+                                  FALLBACK_BACKGROUND_URL),
+                      fit: BoxFit.fill,
+                    )),
+                    child: Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                useSafeArea: true,
+                                backgroundColor: Colors.transparent,
+                                elevation: 0,
+                                builder: (context) {
+                                  return MyLevelScreen(
+                                    level: userData?.level,
+                                    authorLevel: userData?.authorLevel,
+                                    isAuthorFlairSelected:
+                                        userData?.isAuthorFlairSelected,
+                                    callback: profileQuery.refetch,
+                                  );
+                                });
+                          },
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(100),
+                            child: Skeleton.shade(
+                              child: AppAvatarImage(
+                                hasLevel: true,
+                                levelId: userData?.levelId ?? 1,
+                                hasAuthorLevel:
+                                    userData?.isAuthorFlairSelected ?? false,
+                                authorLevelId: userData?.authorLevelId ?? 1,
+                                size: 80,
+                                url: userData?.avatarUrl,
+                                name: userData?.isAuthorFlairSelected == true
+                                    ? userData?.authorLevel?.name
+                                    : userData?.level?.name,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          userData?.fullName ?? 'Họ và tên',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        Text(
+                          '@${userData?.username ?? 'Tên đăng nhập'}',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () {},
+                          child: Container(
+                            width: size.width / 2.5,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Flexible(
+                                  flex: 2,
+                                  child: Image.asset(
+                                    'assets/images/coin.png',
+                                    width: 24,
+                                    height: 24,
+                                  ),
+                                ),
+                                Flexible(
+                                  flex: 2,
+                                  child: Text(
+                                    " ${userData?.wallets?.isNotEmpty == true ? formatNumberWithSeperator(userData?.wallets![0].balance) : '_'}",
+                                    style:
+                                        Theme.of(context).textTheme.titleLarge,
+                                  ),
+                                ),
+                                Flexible(
+                                    child: GestureDetector(
+                                  child: const Icon(Icons.add),
+                                  onTap: () {
+                                    context.pushNamed('newPurchase',
+                                        extra: {'currentUser': userData});
+                                  },
+                                )),
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Skeletonizer(
+                    enabled: publishedStoriesQuery.isFetching ||
+                        readingStoriesQuery.isFetching,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 0.0),
+                      child: interactionInfo(
+                        publishedStoriesQuery.data?.length,
+                        readingStoriesQuery.data?.length,
+                        profileData?.numberOfFollowers,
+                      ),
+                    ),
+                  ),
+                  // descrition
+                  const SizedBox(height: 16),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: size.width / 9),
+                        child: Divider(
+                          thickness: 1.2,
+                          color: appColors.inkLighter,
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Text(
+                          profileData?.description == null ||
+                                  profileData?.description == ''
+                              ? 'Nhập gì đó về bạn'
+                              : profileData?.description ?? '',
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Padding(
+                        padding:
+                            EdgeInsets.symmetric(horizontal: size.width / 4),
+                        child: Divider(
+                          thickness: 1.2,
+                          color: appColors.inkLighter,
+                        ),
+                      ),
+                    ],
+                  ),
+
+                  //tab
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 12),
+                          child: TabBar(
+                            onTap: (value) {
+                              setState(() {
+                                if (tabState != value) tabState = value;
+                              });
+                            },
+                            controller: tabController,
+                            labelColor: appColors.primaryBase,
+                            unselectedLabelColor: appColors.inkLight,
+                            labelPadding:
+                                const EdgeInsets.symmetric(horizontal: 8),
+                            indicatorColor: appColors.primaryBase,
+                            labelStyle: textTheme.titleLarge,
+                            tabs: const [
+                              Tab(
+                                text: 'Giới thiệu',
+                              ),
+                              Tab(
+                                text: 'Thông báo',
+                              )
+                            ],
+                          ),
+                        ),
+                        Builder(builder: (context) {
+                          if (tabState == 0) {
+                            if ([publishedStoriesQuery.data ?? []].isEmpty &&
+                                [readingStoriesQuery.data ?? []].isEmpty &&
+                                [profileData?.followings ?? []].isEmpty) {
+                              return Center(
+                                child: Text('Chưa có dữ liệu mới'),
+                              );
+                            } else {
+                              return introView(
+                                  publishedStoriesQuery.data,
+                                  readingStoriesQuery.data,
+                                  profileData?.followings ?? []);
+                            }
+                          } else {
+                            return Column(children: [
+                              Skeletonizer(
+                                enabled: wallCommentsQuery.isFetching,
+                                child: wallCommentsQuery.data?.length == 0
+                                    ? Text(
+                                        'Chưa có thông báo nào từ người dùng')
+                                    : Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: (wallCommentsQuery.data ?? [])
+                                            .map((e) {
+                                          WallComment comment = e;
+                                          List<WallComment>? children =
+                                              e.children ?? [];
+                                          return Container(
+                                              margin: const EdgeInsets.only(
+                                                  bottom: 16),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                      width: double.infinity,
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                          horizontal: 16,
+                                                          vertical: 10),
+                                                      decoration: BoxDecoration(
+                                                          color: appColors
+                                                              .skyLightest,
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(
+                                                                      12)),
+                                                      child: Column(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .start,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        children: [
+                                                          Container(
+                                                            width:
+                                                                double.infinity,
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .center,
+                                                              // mainAxisAlignment:
+                                                              //     MainAxisAlignment
+                                                              //         .spaceBetween,
+                                                              children: [
+                                                                Flexible(
+                                                                    flex: 1,
+                                                                    child:
+                                                                        AppAvatarImage(
+                                                                      size: 30,
+                                                                      url: comment
+                                                                          .user
+                                                                          ?.avatarUrl,
+                                                                    )),
+                                                                SizedBox(
+                                                                  width: 16,
+                                                                ),
+                                                                Flexible(
+                                                                    flex: 4,
+                                                                    child:
+                                                                        Column(
+                                                                      crossAxisAlignment:
+                                                                          CrossAxisAlignment
+                                                                              .start,
+                                                                      children: [
+                                                                        Text(
+                                                                            'Bạn đã đăng 1 thông báo'),
+                                                                        Text(
+                                                                          appFormatDate(
+                                                                              comment.createdDate),
+                                                                          style: textTheme
+                                                                              .bodySmall
+                                                                              ?.copyWith(color: appColors.inkLighter),
+                                                                        ),
+                                                                      ],
+                                                                    ))
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          SizedBox(
+                                                            height: 16,
+                                                          ),
+                                                          Text(comment.text ??
+                                                              ''),
+                                                          Container(
+                                                            width:
+                                                                double.infinity,
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .end,
+                                                              children: [
+                                                                Flexible(
+                                                                  child:
+                                                                      TextButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            showModalBottomSheet(
+                                                                                context: context,
+                                                                                builder: (context) {
+                                                                                  return CommentDetailScreen(commentId: comment?.id ?? '');
+                                                                                });
+                                                                          },
+                                                                          child:
+                                                                              Text(
+                                                                            'Trả lời',
+                                                                            style:
+                                                                                textTheme.titleSmall?.copyWith(color: appColors.primaryBase),
+                                                                          )),
+                                                                ),
+                                                                Flexible(
+                                                                  child:
+                                                                      TextButton(
+                                                                          onPressed:
+                                                                              () {
+                                                                            showModalBottomSheet(
+                                                                                context: context,
+                                                                                builder: (context) {
+                                                                                  return CommentDetailScreen(commentId: comment?.id ?? '');
+                                                                                });
+                                                                          },
+                                                                          child:
+                                                                              Text(
+                                                                            'Trả lời',
+                                                                            style:
+                                                                                textTheme.titleSmall?.copyWith(color: appColors.primaryBase),
+                                                                          )),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          )
+                                                          // Align(
+                                                          //   alignment: Alignment
+                                                          //       .centerRight,
+                                                          //   child: IconButton(
+                                                          //       onPressed:
+                                                          //           () {},
+                                                          //       icon: comment
+                                                          //                   ?.isLiked ==
+                                                          //               true
+                                                          //           ? Icon(Icons
+                                                          //               .thumb_up_alt)
+                                                          //           : Icon(Icons
+                                                          //               .thumb_up_alt_outlined)),
+                                                          // )
+                                                        ],
+                                                      )),
+                                                  Container(
+                                                      margin: EdgeInsets.only(
+                                                          left: 32),
+                                                      width: double.infinity,
+                                                      child: Column(
+                                                        children: (children ??
+                                                                [])
+                                                            .map((subComment) {
+                                                          return Row(
+                                                            children: [
+                                                              Flexible(
+                                                                  child:
+                                                                      AppAvatarImage(
+                                                                size: 30,
+                                                                url: subComment
+                                                                    .user
+                                                                    ?.avatarUrl,
+                                                              )),
+                                                              Flexible(
+                                                                child: Text(
+                                                                    subComment
+                                                                            .text ??
+                                                                        ''),
+                                                              ),
+                                                            ],
+                                                          );
+                                                        }).toList(),
+                                                      ))
+                                                ],
+                                              ));
+                                        }).toList()),
+                              ),
+                            ]);
+                          }
+                        }),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return SafeArea(
       child: Scaffold(
         appBar: UserProfileTopBar(
@@ -510,18 +711,21 @@ class _UserProfileScreenState extends State<UserProfileScreen>
                 publishedStoriesQuery, readingStoriesQuery),
           ),
         ),
-        floatingActionButton: AppIconButton(
-          bgColor: appColors.secondaryBase,
-          title: 'Điểm danh',
-          textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: appColors.skyLightest, fontWeight: FontWeight.w700),
-          onPressed: () {
-            userByIdQuery.data == null
-                ? null
-                : GoRouter.of(context).push('/profile/dailyReward');
-          },
-          iconPosition: 'start',
-        ),
+        floatingActionButton: GestureDetector(
+            onTap: () {
+              userByIdQuery.data == null
+                  ? null
+                  : GoRouter.of(context).push('/profile/dailyReward');
+            },
+            child: Container(
+                width: 70,
+                decoration: BoxDecoration(
+                    color: appColors.secondaryLightest,
+                    borderRadius: BorderRadius.circular(100)),
+                child: LottieBuilder.asset(
+                  'assets/gifs/daily-reward.json',
+                  width: 100,
+                ))),
       ),
     );
   }

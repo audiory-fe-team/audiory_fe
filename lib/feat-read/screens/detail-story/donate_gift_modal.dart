@@ -99,7 +99,7 @@ class DonateGiftModal extends HookConsumerWidget {
 
     return Flexible(
         child: Padding(
-      padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
       child: SingleChildScrollView(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -187,7 +187,7 @@ class DonateGiftModal extends HookConsumerWidget {
                     child: Wrap(
                       textDirection: TextDirection.ltr,
                       direction: Axis.horizontal,
-                      alignment: WrapAlignment.start,
+                      alignment: WrapAlignment.spaceBetween,
                       crossAxisAlignment: WrapCrossAlignment.start,
                       spacing: 16,
                       runSpacing: 12,

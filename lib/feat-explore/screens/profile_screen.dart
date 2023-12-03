@@ -1,11 +1,15 @@
 import 'dart:math';
 
 import 'package:audiory_v0/constants/fallback_image.dart';
+import 'package:audiory_v0/feat-explore/widgets/following_popup_menu.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/messages/detail_conversation_screen.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/Profile.dart';
+import 'package:audiory_v0/models/conversation/conversation_model.dart';
+import 'package:audiory_v0/models/enums/Report.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
@@ -14,11 +18,14 @@ import 'package:audiory_v0/repositories/conversation_repository.dart';
 import 'package:audiory_v0/repositories/interaction_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_number.dart';
+import 'package:audiory_v0/utils/widget_helper.dart';
+import 'package:audiory_v0/widgets/app_alert_dialog.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
-import 'package:audiory_v0/widgets/cards/story_card_overview.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
+import 'package:audiory_v0/widgets/report_dialog.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -27,8 +34,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
-import 'package:quickalert/models/quickalert_type.dart';
-import 'package:quickalert/widgets/quickalert_dialog.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class AppProfileScreen extends StatefulHookWidget {
@@ -170,8 +175,8 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                 height: 16,
               ),
               if (story?.isEmpty == false) ...[
-                titleWithLink('Tác phẩm', '', '${story?.length ?? 0} tác phẩm',
-                    () {
+                titleWithLink(
+                    'Tác phẩm', 'Thêm', '${story?.length ?? 0} tác phẩm', () {
                   context.go('/');
                 }, 12),
                 //this single child call null
@@ -183,14 +188,12 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: story
                               .take(min(story.length, 10))
-                              .map(
-                                (story) => Padding(
-                                    padding: const EdgeInsets.only(right: 16),
-                                    child: StoryCardOverView(
-                                        id: story.id,
-                                        title: story.title,
-                                        coverUrl: story.coverUrl)),
-                              )
+                              .map((story) => Padding(
+                                    padding: const EdgeInsets.only(right: 12),
+                                    child: SizedBox(
+                                        width: size.width - 5,
+                                        child: StoryCardDetail(story: story)),
+                                  ))
                               .toList(),
                         ))
                     : Skeletonizer(
@@ -246,8 +249,13 @@ class _AppProfileScreenState extends State<AppProfileScreen>
   Widget interactionInfo(
       int? numOfStories, int? numOfReadingList, int? numOfFollowers) {
     final textTheme = Theme.of(context).textTheme;
+    final size = MediaQuery.of(context).size;
+    final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
+    final sharedNumberStyle =
+        textTheme.titleLarge!.copyWith(color: appColors.inkLight);
     final sharedHeaderStyle = textTheme.titleLarge;
+    final sharedTitleStyle = textTheme.titleMedium;
 
     Widget interactionItem(String title, data) {
       return Flexible(
@@ -286,7 +294,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
           ],
           interactionItem('Danh sách đọc', '${numOfReadingList ?? '0'}'),
           const VerticalDivider(),
-          interactionItem('Người theo dõi', '${numOfFollowers ?? '0'}'),
+          interactionItem('Người theo dõi', formatNumber(numOfFollowers ?? 0)),
           // const VerticalDivider(),
           // interactionItem('Bình luận', '40'),
         ]));
@@ -297,7 +305,8 @@ class _AppProfileScreenState extends State<AppProfileScreen>
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
-
+    final userByIdQuery =
+        useQuery(['user'], () => AuthRepository().getMyUserById());
     final profileQuery = useQuery(
       ['otherProfile', widget.id],
       () => AuthRepository().getOtherUserProfile(widget.id),
@@ -308,39 +317,442 @@ class _AppProfileScreenState extends State<AppProfileScreen>
             .fetchPublishedStoriesByUserId(widget.id)); //userId=me
     final readingStoriesQuery = useQuery(['readingStories', widget.id],
         () => StoryRepostitory().fetchReadingStoriesByUserId(widget.id));
+    final conversationsQuery = useQuery(['conversations'],
+        () => ConversationRepository().fetchAllConversations());
+
     final isFollowUser = useState(false);
+    final isNotifyOn = useState(true);
 
     useEffect(() {
       isFollowUser.value = profileQuery.data?.isFollowed ?? false;
       return () {};
     }, [profileQuery.data]);
-
     handleFollow({bool isFollowed = false}) async {
-      print('IS FOLLOW ${isFollowed}');
       if (!isFollowed) {
         try {
           await InteractionRepository()
               .follow(widget.id)
               .then((res) => {print(res)});
           isFollowUser.value = true;
-          // profileQuery.refetch();
+
+          // ignore: use_build_context_synchronously
+          AppSnackBar.buildTopSnackBar(
+              context, 'Theo dõi thành công', null, SnackBarType.success);
         } catch (e) {}
       } else {
-        try {
-          await InteractionRepository()
-              .unfollow(widget.id)
-              .then((res) => {print(res)});
-          isFollowUser.value = false;
-          // profileQuery.refetch();
-        } catch (e) {}
+        //show dropdown
+
+        //action unfollow
       }
+    }
+
+    handleUnfollow() async {
+      try {
+        await InteractionRepository()
+            .unfollow(widget.id)
+            .then((res) => {print(res)});
+        isFollowUser.value = false;
+      } catch (e) {}
+    }
+
+    handleNoti(isNotified) async {
+      try {
+        await InteractionRepository().notify(widget.id, isNotified);
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    print(profileQuery.data);
+    print(profileQuery.isError);
+    print(profileQuery.isSuccess);
+    Widget userProfileInfo(
+        UseQueryResult<AuthUser?, dynamic> userByIdQuery,
+        UseQueryResult<List<Story>?, dynamic> publishedStoriesQuery,
+        UseQueryResult<List<ReadingList>?, dynamic> readingStoriesQuery) {
+      final isFollowed = profileQuery.data?.isFollowed ?? false;
+      final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+      final size = MediaQuery.of(context).size;
+      final textTheme = Theme.of(context).textTheme;
+      roundBalance(balance) {
+        return double.parse(balance.toString()).toStringAsFixed(0);
+      }
+
+      Widget followingButton() {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+              color: appColors.primaryLightest,
+              borderRadius: BorderRadius.circular(50)),
+          child:
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Flexible(
+              child: isNotifyOn.value == true
+                  ? Icon(
+                      Icons.notifications_active,
+                      color: appColors.inkBase,
+                    )
+                  : Icon(
+                      Icons.notifications_off_outlined,
+                      color: appColors.inkBase,
+                    ),
+            ),
+            Flexible(
+                flex: 4,
+                child: Text(
+                  'Đang theo dõi',
+                  style:
+                      textTheme.titleMedium?.copyWith(color: appColors.inkBase),
+                )),
+            Flexible(
+                child: Icon(
+              Icons.keyboard_arrow_down,
+              color: appColors.inkBase,
+            ))
+          ]),
+        );
+      }
+
+      return RefreshIndicator(
+        onRefresh: () async {
+          profileQuery.refetch();
+        },
+        child: SingleChildScrollView(
+          child: Container(
+            width: double.infinity,
+            margin: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Skeletonizer(
+                  enabled: profileQuery.isFetching || profileQuery.data == null,
+                  child: Column(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                            image: DecorationImage(
+                          opacity: 0.6,
+                          image: CachedNetworkImageProvider(
+                              profileQuery.data?.backgroundUrl == ''
+                                  ? FALLBACK_BACKGROUND_URL
+                                  : profileQuery.data?.backgroundUrl ??
+                                      FALLBACK_BACKGROUND_URL),
+                          fit: BoxFit.fill,
+                        )),
+                        child: Column(
+                          children: [
+                            Skeletonizer(
+                                enabled: profileQuery.isFetching,
+                                child: AppAvatarImage(
+                                  url: profileQuery.data?.avatarUrl,
+                                  size: 85,
+                                  hasLevel: profileQuery
+                                              .data?.isAuthorFlairSelected ==
+                                          true
+                                      ? false
+                                      : true,
+                                  levelId: profileQuery.data?.levelId ?? 1,
+                                  hasAuthorLevel: profileQuery
+                                          .data?.isAuthorFlairSelected ==
+                                      true,
+                                  authorLevelId:
+                                      profileQuery.data?.authorLevelId ?? 1,
+                                  name: profileQuery
+                                              .data?.isAuthorFlairSelected ==
+                                          true
+                                      ? profileQuery.data?.authorLevel?.name
+                                      : profileQuery.data?.level?.name,
+                                )),
+                            const SizedBox(height: 8),
+                            Text(
+                              profileQuery.data?.fullName ?? 'Họ và tên',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.headlineMedium,
+                            ),
+                            Skeletonizer(
+                              enabled: profileQuery.isFetching,
+                              child: Text(
+                                '@${profileQuery.data?.username ?? 'Tên đăng nhập'}',
+                                textAlign: TextAlign.center,
+                                style: Theme.of(context).textTheme.titleSmall,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Skeletonizer(
+                              enabled: profileQuery.isFetching,
+                              child: Container(
+                                width: isFollowUser.value == true
+                                    ? size.width / 1.8
+                                    : size.width / 2.2,
+                                child: isFollowUser.value == true
+                                    ? DropdownButtonFormField<dynamic>(
+                                        borderRadius: BorderRadius.circular(12),
+                                        decoration: appInputDecoration(context)
+                                            ?.copyWith(
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                          borderSide: BorderSide(
+                                              color: appColors.inkLighter,
+                                              width: 2.0),
+                                          borderRadius:
+                                              BorderRadius.circular(100.0),
+                                        )),
+                                        alignment: Alignment(10, 10),
+                                        value: isNotifyOn.value == true ? 0 : 1,
+                                        // isExpanded: true,
+                                        // isDense: true,
+                                        items: followingDropdownItems(context),
+                                        selectedItemBuilder: (context) {
+                                          return List.generate(
+                                              3,
+                                              (index) => index == 0
+                                                  ? Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Icon(
+                                                          Icons
+                                                              .notifications_active,
+                                                          color:
+                                                              appColors.inkBase,
+                                                        ),
+                                                        SizedBox(
+                                                          width: size.width / 3,
+                                                          child: Text(
+                                                            'Đang theo dõi',
+                                                            style: textTheme
+                                                                .titleMedium,
+                                                            textAlign:
+                                                                TextAlign.end,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  : index == 1
+                                                      ? Row(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .spaceBetween,
+                                                          children: [
+                                                            Icon(
+                                                              Icons
+                                                                  .notifications_off_outlined,
+                                                              color: appColors
+                                                                  .inkBase,
+                                                            ),
+                                                            SizedBox(
+                                                              width:
+                                                                  size.width /
+                                                                      3,
+                                                              child: Text(
+                                                                'Đang theo dõi',
+                                                                style: textTheme
+                                                                    .titleMedium,
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .end,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )
+                                                      : Text('Theo dõi'));
+                                        },
+                                        onChanged: (value) {
+                                          switch (value) {
+                                            case 0:
+                                              isNotifyOn.value == true;
+                                              handleNoti(true);
+
+                                              break;
+                                            case 1:
+                                              isNotifyOn.value == false;
+                                              handleNoti(false);
+
+                                              break;
+                                            case 2:
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return AppAlertDialog(
+                                                      title: 'Xác nhận',
+                                                      content:
+                                                          'Xác nhận bỏ theo dõi ${profileQuery.data?.fullName}?',
+                                                      actionText: 'Xác nhận',
+                                                      actionCallBack: () {
+                                                        handleUnfollow();
+                                                        context.pop();
+                                                      },
+                                                    );
+                                                  });
+
+                                              break;
+                                            default:
+                                          }
+                                        },
+                                      )
+                                    : AppIconButton(
+                                        isOutlined: false,
+                                        bgColor: appColors.inkBase,
+                                        color: appColors.skyLightest,
+                                        title: 'Theo dõi',
+                                        textStyle:
+                                            textTheme.titleMedium?.copyWith(
+                                          color: appColors.skyLightest,
+                                        ),
+                                        icon: Icon(
+                                          Icons.add,
+                                          color: appColors.skyLightest,
+                                          size: 24,
+                                        ),
+                                        // icon: const Icon(Icons.add),
+                                        onPressed: () {
+                                          handleFollow(
+                                              isFollowed: isFollowUser.value ??
+                                                  profileQuery
+                                                      .data?.isFollowed ??
+                                                  false);
+                                        }),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(children: [
+                          const SizedBox(height: 16),
+                          Skeletonizer(
+                            enabled: publishedStoriesQuery.isFetching ||
+                                readingStoriesQuery.isFetching,
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 0.0),
+                              child: interactionInfo(
+                                publishedStoriesQuery.data?.length,
+                                readingStoriesQuery.data?.length,
+                                profileQuery.data?.numberOfFollowers,
+                              ),
+                            ),
+                          ),
+                          // descrition
+                          const SizedBox(height: 16),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Skeletonizer(
+                                enabled: profileQuery.isFetching,
+                                child: profileQuery.data?.description != null
+                                    ? Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: size.width / 9),
+                                        child: Divider(
+                                          thickness: 1.2,
+                                          color: appColors.inkLighter,
+                                        ),
+                                      )
+                                    : const SizedBox(
+                                        height: 0,
+                                      ),
+                              ),
+                              Skeletonizer(
+                                enabled: profileQuery.isFetching,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(12.0),
+                                  child: Text(
+                                    profileQuery.data?.description == null ||
+                                            profileQuery.data?.description == ""
+                                        ? 'Nhập gì đó về bạn'
+                                        : profileQuery.data?.description ?? '',
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ),
+                              Skeletonizer(
+                                enabled: profileQuery.isFetching,
+                                child: profileQuery.data?.description != null
+                                    ? Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: size.width / 4),
+                                        child: Divider(
+                                          thickness: 1.2,
+                                          color: appColors.inkLighter,
+                                        ),
+                                      )
+                                    : const SizedBox(
+                                        height: 0,
+                                      ),
+                              ),
+                            ],
+                          ),
+                          //tab
+                          Container(
+                            margin: const EdgeInsets.symmetric(vertical: 0),
+                            child: TabBar(
+                              onTap: (value) {
+                                setState(() {
+                                  tabState = value;
+                                });
+                              },
+                              controller: tabController,
+                              labelColor: appColors.primaryBase,
+                              // overlayColor: appColors.skyBase,
+                              unselectedLabelColor: appColors.inkLight,
+                              labelPadding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              indicatorColor: appColors.primaryBase,
+                              labelStyle: textTheme.titleLarge,
+                              tabs: const [
+                                Tab(
+                                  text: 'Giới thiệu',
+                                ),
+                                Tab(
+                                  text: 'Thông báo',
+                                )
+                              ],
+                            ),
+                          ),
+                        ]),
+                      ),
+                      Builder(builder: (context) {
+                        if (tabState == 0) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 16),
+                            child: introView(
+                                publishedStoriesQuery.data,
+                                readingStoriesQuery.data,
+                                profileQuery.data?.followings ?? []),
+                          );
+                        } else {
+                          return Text('alo');
+                        }
+                        return Skeletonizer(
+                            enabled: false, child: introView([], [], []));
+                      }),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
 
     handleBlock() async {
       context.pop();
       try {
-        await InteractionRepository().block(widget.id);
+        final res = await InteractionRepository().block(widget.id);
 
+        // ignore: use_build_context_synchronously
+        context.pop();
+        // ignore: use_build_context_synchronously
+        context.pop();
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Chặn thành công', null, SnackBarType.success);
       } catch (e) {}
@@ -349,14 +761,16 @@ class _AppProfileScreenState extends State<AppProfileScreen>
     handleMute() async {
       context.pop();
       try {
-        await InteractionRepository().block(widget.id);
+        final res = await InteractionRepository().mute(widget.id);
 
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Dừng tương tác thành công', null, SnackBarType.success);
+        context.pop();
       } catch (e) {}
     }
 
-    return profileQuery.data == null && profileQuery.isSuccess
+    return profileQuery.data?.id == ''
         ? const NotFoundScreen()
         : Scaffold(
             appBar: CustomAppBar(
@@ -380,50 +794,81 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                             Icon(Icons.more_horiz, color: appColors.inkDarker)),
                     onSelected: (value) {
                       if (value == 0) {
-                        GoRouter.of(context).push('/profileSettings/messages',
-                            extra: {'userId': widget.id});
+                        // GoRouter.of(context).push('/profileSettings/messages',
+                        //     extra: {'userId': widget.id});
+
+                        showModalBottomSheet(
+                            context: context,
+                            barrierColor: Colors.white,
+                            isScrollControlled: true,
+                            isDismissible: false,
+                            useSafeArea: true,
+                            builder: (context) {
+                              Conversation conversation;
+                              if (conversationsQuery.data?.any((element) =>
+                                      element.receiverId == widget.id) ??
+                                  false) {
+                                print('existed conversation');
+                                conversation = conversationsQuery.data
+                                        ?.firstWhere((element) =>
+                                            element.receiverId == widget.id) ??
+                                    const Conversation(id: '');
+                              } else {
+                                conversation = Conversation(
+                                    id: '',
+                                    receiverId: widget.id,
+                                    name: profileQuery.data?.fullName,
+                                    coverUrl: profileQuery.data?.avatarUrl);
+                              }
+                              print(conversation);
+                              return DetailConversationScreen(
+                                conversation: conversation,
+                                refetchCallback: () {},
+                                userId: userByIdQuery.data?.id,
+                              );
+                            });
                       }
                       if (value == 1) {
-                        QuickAlert.show(
-                          onCancelBtnTap: () {
-                            Navigator.pop(context);
-                          },
-                          onConfirmBtnTap: () {
-                            handleMute();
-                          },
-                          context: context,
-                          type: QuickAlertType.confirm,
-                          title:
-                              'Xác nhận dừng tương tác người dùng ${profileQuery.data?.fullName == '' ? 'này' : profileQuery.data?.fullName}?',
-                          titleAlignment: TextAlign.center,
-                          confirmBtnText: 'Xác nhận',
-                          cancelBtnText: 'Hủy',
-                          confirmBtnColor: appColors.inkBase,
-                          confirmBtnTextStyle: textTheme.bodyMedium
-                              ?.copyWith(color: appColors.skyLightest),
-                        );
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AppAlertDialog(
+                                title: 'Xác nhận',
+                                content:
+                                    'Xác nhận dừng tương tác người dùng ${profileQuery.data?.fullName == '' ? 'này' : profileQuery.data?.fullName}?',
+                                actionText: 'Xác nhận',
+                                actionCallBack: () {
+                                  handleMute();
+                                },
+                                cancelText: 'Hủy',
+                              );
+                            });
                       }
                       if (value == 2) {
-                        QuickAlert.show(
-                          onCancelBtnTap: () {
-                            Navigator.pop(context);
-                          },
-                          onConfirmBtnTap: () {
-                            handleBlock();
-                          },
-                          context: context,
-                          type: QuickAlertType.confirm,
-                          title:
-                              'Xác nhận chặn người dùng ${profileQuery.data?.fullName == '' ? 'này' : profileQuery.data?.fullName}?',
-                          titleAlignment: TextAlign.center,
-                          confirmBtnText: 'Xác nhận',
-                          cancelBtnText: 'Hủy',
-                          confirmBtnColor: appColors.inkBase,
-                          confirmBtnTextStyle: textTheme.bodyMedium
-                              ?.copyWith(color: appColors.skyLightest),
-                        );
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AppAlertDialog(
+                                title: 'Xác nhận',
+                                content:
+                                    'Xác nhận chặn người dùng ${profileQuery.data?.fullName == '' ? 'này' : profileQuery.data?.fullName}?',
+                                actionText: 'Xác nhận',
+                                actionCallBack: () {
+                                  handleBlock();
+                                },
+                                cancelText: 'Hủy',
+                              );
+                            });
                       }
-                      if (value == 3) {}
+                      if (value == 3) {
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return ReportDialog(
+                                  reportType: ReportType.USER.name,
+                                  reportId: widget.id);
+                            });
+                      }
                     },
                     itemBuilder: (context) => [
                           PopupMenuItem(
@@ -490,252 +935,11 @@ class _AppProfileScreenState extends State<AppProfileScreen>
               ],
             ),
             body: RefreshIndicator(
-              onRefresh: () async {
-                profileQuery.refetch();
-              },
-              child: SingleChildScrollView(
-                child: Container(
-                  width: double.infinity,
-                  margin:
-                      const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Skeletonizer(
-                        enabled: profileQuery.isFetching,
-                        child: Column(
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                  image: DecorationImage(
-                                opacity: 0.6,
-                                image: CachedNetworkImageProvider(
-                                    profileQuery.data?.backgroundUrl == ''
-                                        ? FALLBACK_BACKGROUND_URL
-                                        : profileQuery.data?.backgroundUrl ??
-                                            FALLBACK_BACKGROUND_URL),
-                                fit: BoxFit.fill,
-                              )),
-                              child: Column(
-                                children: [
-                                  Skeletonizer(
-                                      enabled: profileQuery.isFetching,
-                                      child: AppAvatarImage(
-                                        url: profileQuery.data?.avatarUrl,
-                                        size: 100,
-                                        hasLevel: profileQuery.data
-                                                    ?.isAuthorFlairSelected ==
-                                                true
-                                            ? false
-                                            : true,
-                                        levelId:
-                                            profileQuery.data?.levelId ?? 1,
-                                        hasAuthorLevel: profileQuery
-                                                .data?.isAuthorFlairSelected ==
-                                            true,
-                                        authorLevelId:
-                                            profileQuery.data?.authorLevelId ??
-                                                1,
-                                      )),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    profileQuery.data?.fullName ?? 'Họ và tên',
-                                    textAlign: TextAlign.center,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headlineMedium,
-                                  ),
-                                  Skeletonizer(
-                                    enabled: profileQuery.isFetching,
-                                    child: Text(
-                                      '@${profileQuery.data?.username ?? 'Tên đăng nhập'}',
-                                      textAlign: TextAlign.center,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .titleSmall,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Skeletonizer(
-                                      enabled: profileQuery.isFetching,
-                                      child: Container(
-                                        width: 180,
-                                        child: Skeleton.shade(
-                                          child: AppIconButton(
-                                              isOutlined:
-                                                  isFollowUser.value == true
-                                                      ? true
-                                                      : false,
-                                              bgColor:
-                                                  isFollowUser.value == true
-                                                      ? appColors.skyLightest
-                                                      : appColors.inkBase,
-                                              color: isFollowUser.value == true
-                                                  ? appColors.inkBase
-                                                  : appColors.skyLightest,
-                                              title: isFollowUser.value == true
-                                                  ? 'Đang theo dõi'
-                                                  : 'Theo dõi',
-                                              textStyle: textTheme.titleMedium
-                                                  ?.copyWith(
-                                                color:
-                                                    isFollowUser.value == true
-                                                        ? appColors.inkBase
-                                                        : appColors.skyLightest,
-                                              ),
-                                              icon: Icon(
-                                                isFollowUser.value == true
-                                                    ? Icons.check
-                                                    : Icons.add,
-                                                color:
-                                                    isFollowUser.value == true
-                                                        ? appColors.inkBase
-                                                        : appColors.skyLightest,
-                                                size: 24,
-                                              ),
-                                              // icon: const Icon(Icons.add),
-                                              onPressed: () {
-                                                handleFollow(
-                                                    isFollowed:
-                                                        isFollowUser.value);
-                                              }),
-                                        ),
-                                      )),
-                                  const SizedBox(height: 16),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Column(children: [
-                                const SizedBox(height: 16),
-                                Skeletonizer(
-                                  enabled: publishedStoriesQuery.isFetching ||
-                                      readingStoriesQuery.isFetching,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 0.0),
-                                    child: interactionInfo(
-                                      publishedStoriesQuery.data?.length,
-                                      readingStoriesQuery.data?.length,
-                                      profileQuery.data?.numberOfFollowers,
-                                    ),
-                                  ),
-                                ),
-                                // descrition
-                                const SizedBox(height: 16),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Skeletonizer(
-                                      enabled: profileQuery.isFetching,
-                                      child: profileQuery.data?.description !=
-                                              null
-                                          ? Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: size.width / 9),
-                                              child: Divider(
-                                                thickness: 1.2,
-                                                color: appColors.inkLighter,
-                                              ),
-                                            )
-                                          : const SizedBox(
-                                              height: 0,
-                                            ),
-                                    ),
-                                    Skeletonizer(
-                                      enabled: profileQuery.isFetching,
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(12.0),
-                                        child: Text(
-                                          profileQuery.data?.description ==
-                                                      null ||
-                                                  profileQuery
-                                                          .data?.description ==
-                                                      ""
-                                              ? 'Nhập gì đó về bạn'
-                                              : profileQuery
-                                                      .data?.description ??
-                                                  '',
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                    Skeletonizer(
-                                      enabled: profileQuery.isFetching,
-                                      child: profileQuery.data?.description !=
-                                              null
-                                          ? Padding(
-                                              padding: EdgeInsets.symmetric(
-                                                  horizontal: size.width / 4),
-                                              child: Divider(
-                                                thickness: 1.2,
-                                                color: appColors.inkLighter,
-                                              ),
-                                            )
-                                          : const SizedBox(
-                                              height: 0,
-                                            ),
-                                    ),
-                                  ],
-                                ),
-                                //tab
-                                Container(
-                                  margin:
-                                      const EdgeInsets.symmetric(vertical: 0),
-                                  child: TabBar(
-                                    onTap: (value) {
-                                      setState(() {
-                                        tabState = value;
-                                      });
-                                    },
-                                    controller: tabController,
-                                    labelColor: appColors.primaryBase,
-                                    // overlayColor: appColors.skyBase,
-                                    unselectedLabelColor: appColors.inkLight,
-                                    labelPadding: const EdgeInsets.symmetric(
-                                        horizontal: 8),
-                                    indicatorColor: appColors.primaryBase,
-                                    labelStyle: textTheme.titleLarge,
-                                    tabs: const [
-                                      Tab(
-                                        text: 'Giới thiệu',
-                                      ),
-                                      Tab(
-                                        text: 'Thông báo',
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ]),
-                            ),
-                            Builder(builder: (context) {
-                              if (tabState == 0) {
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 16, horizontal: 16),
-                                  child: introView(
-                                      publishedStoriesQuery.data,
-                                      readingStoriesQuery.data,
-                                      profileQuery.data?.followings ?? []),
-                                );
-                              } else {
-                                return const Text('alo');
-                              }
-                              return Skeletonizer(
-                                  enabled: false, child: introView([], [], []));
-                            }),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+                onRefresh: () async {
+                  profileQuery.refetch();
+                },
+                child: userProfileInfo(
+                    userByIdQuery, publishedStoriesQuery, readingStoriesQuery)),
           );
   }
 }

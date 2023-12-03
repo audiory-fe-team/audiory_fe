@@ -25,14 +25,15 @@ class _ContentModerationDialogState extends State<ContentModerationDialog> {
     return Container(
       height: size.height,
       child: Scaffold(
-        appBar: CustomAppBar(title: Text('Chi tiết vi phạm')),
+        appBar: CustomAppBar(title: const Text('Chi tiết vi phạm')),
         body: SingleChildScrollView(
           child: Center(
             child: Column(
               children: [
                 Container(
-                  margin: EdgeInsets.symmetric(vertical: 8),
-                  padding: EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   decoration: BoxDecoration(
                       color: appColors.skyLighter,
                       borderRadius: BorderRadius.circular(12)),
@@ -46,7 +47,7 @@ class _ContentModerationDialogState extends State<ContentModerationDialog> {
                 Container(
                   width: size.width - 32,
                   height: size.height,
-                  padding: EdgeInsets.only(bottom: 30),
+                  padding: const EdgeInsets.only(bottom: 30),
                   child: ListView.builder(
                       itemCount: paragraphs.length,
                       itemBuilder: (BuildContext context, int index) {
@@ -87,7 +88,6 @@ class _ContentModerationDialogState extends State<ContentModerationDialog> {
               textStyle:
                   textTheme.bodySmall?.copyWith(color: appColors.skyLightest),
               onPressed: () {
-                context.pop();
                 context.pop();
               },
             )),

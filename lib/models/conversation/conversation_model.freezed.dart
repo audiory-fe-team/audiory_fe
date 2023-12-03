@@ -27,6 +27,8 @@ mixin _$Conversation {
   String get id => throw _privateConstructorUsedError; //int
   @JsonKey(name: 'last_active')
   String? get lastActive => throw _privateConstructorUsedError;
+  @JsonKey(name: 'is_blocked')
+  bool? get isBlocked => throw _privateConstructorUsedError;
   @JsonKey(name: 'cover_url')
   String? get coverUrl => throw _privateConstructorUsedError;
   @JsonKey(name: 'receiver_id')
@@ -55,6 +57,7 @@ abstract class $ConversationCopyWith<$Res> {
   $Res call(
       {@JsonKey(name: 'id') String id,
       @JsonKey(name: 'last_active') String? lastActive,
+      @JsonKey(name: 'is_blocked') bool? isBlocked,
       @JsonKey(name: 'cover_url') String? coverUrl,
       @JsonKey(name: 'receiver_id') String? receiverId,
       @JsonKey(name: 'name') String? name,
@@ -80,6 +83,7 @@ class _$ConversationCopyWithImpl<$Res, $Val extends Conversation>
   $Res call({
     Object? id = null,
     Object? lastActive = freezed,
+    Object? isBlocked = freezed,
     Object? coverUrl = freezed,
     Object? receiverId = freezed,
     Object? name = freezed,
@@ -96,6 +100,10 @@ class _$ConversationCopyWithImpl<$Res, $Val extends Conversation>
           ? _value.lastActive
           : lastActive // ignore: cast_nullable_to_non_nullable
               as String?,
+      isBlocked: freezed == isBlocked
+          ? _value.isBlocked
+          : isBlocked // ignore: cast_nullable_to_non_nullable
+              as bool?,
       coverUrl: freezed == coverUrl
           ? _value.coverUrl
           : coverUrl // ignore: cast_nullable_to_non_nullable
@@ -147,6 +155,7 @@ abstract class _$$ConversationImplCopyWith<$Res>
   $Res call(
       {@JsonKey(name: 'id') String id,
       @JsonKey(name: 'last_active') String? lastActive,
+      @JsonKey(name: 'is_blocked') bool? isBlocked,
       @JsonKey(name: 'cover_url') String? coverUrl,
       @JsonKey(name: 'receiver_id') String? receiverId,
       @JsonKey(name: 'name') String? name,
@@ -171,6 +180,7 @@ class __$$ConversationImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? lastActive = freezed,
+    Object? isBlocked = freezed,
     Object? coverUrl = freezed,
     Object? receiverId = freezed,
     Object? name = freezed,
@@ -187,6 +197,10 @@ class __$$ConversationImplCopyWithImpl<$Res>
           ? _value.lastActive
           : lastActive // ignore: cast_nullable_to_non_nullable
               as String?,
+      isBlocked: freezed == isBlocked
+          ? _value.isBlocked
+          : isBlocked // ignore: cast_nullable_to_non_nullable
+              as bool?,
       coverUrl: freezed == coverUrl
           ? _value.coverUrl
           : coverUrl // ignore: cast_nullable_to_non_nullable
@@ -221,11 +235,12 @@ class _$ConversationImpl implements _Conversation {
   const _$ConversationImpl(
       {@JsonKey(name: 'id') required this.id,
       @JsonKey(name: 'last_active') this.lastActive = '',
+      @JsonKey(name: 'is_blocked') this.isBlocked = false,
       @JsonKey(name: 'cover_url') this.coverUrl = '',
       @JsonKey(name: 'receiver_id') this.receiverId = '',
       @JsonKey(name: 'name') this.name = '',
       @JsonKey(name: 'messages') final List<Message>? messages = const [],
-      @JsonKey(name: 'last_message') this.lastMessage = null,
+      @JsonKey(name: 'last_message') this.lastMessage,
       @JsonKey(name: 'is_latest_message_read')
       this.isLatestMessageRead = false})
       : _messages = messages;
@@ -243,6 +258,9 @@ class _$ConversationImpl implements _Conversation {
   @override
   @JsonKey(name: 'last_active')
   final String? lastActive;
+  @override
+  @JsonKey(name: 'is_blocked')
+  final bool? isBlocked;
   @override
   @JsonKey(name: 'cover_url')
   final String? coverUrl;
@@ -272,7 +290,7 @@ class _$ConversationImpl implements _Conversation {
 
   @override
   String toString() {
-    return 'Conversation(id: $id, lastActive: $lastActive, coverUrl: $coverUrl, receiverId: $receiverId, name: $name, messages: $messages, lastMessage: $lastMessage, isLatestMessageRead: $isLatestMessageRead)';
+    return 'Conversation(id: $id, lastActive: $lastActive, isBlocked: $isBlocked, coverUrl: $coverUrl, receiverId: $receiverId, name: $name, messages: $messages, lastMessage: $lastMessage, isLatestMessageRead: $isLatestMessageRead)';
   }
 
   @override
@@ -283,6 +301,8 @@ class _$ConversationImpl implements _Conversation {
             (identical(other.id, id) || other.id == id) &&
             (identical(other.lastActive, lastActive) ||
                 other.lastActive == lastActive) &&
+            (identical(other.isBlocked, isBlocked) ||
+                other.isBlocked == isBlocked) &&
             (identical(other.coverUrl, coverUrl) ||
                 other.coverUrl == coverUrl) &&
             (identical(other.receiverId, receiverId) ||
@@ -301,6 +321,7 @@ class _$ConversationImpl implements _Conversation {
       runtimeType,
       id,
       lastActive,
+      isBlocked,
       coverUrl,
       receiverId,
       name,
@@ -326,6 +347,7 @@ abstract class _Conversation implements Conversation {
   const factory _Conversation(
       {@JsonKey(name: 'id') required final String id,
       @JsonKey(name: 'last_active') final String? lastActive,
+      @JsonKey(name: 'is_blocked') final bool? isBlocked,
       @JsonKey(name: 'cover_url') final String? coverUrl,
       @JsonKey(name: 'receiver_id') final String? receiverId,
       @JsonKey(name: 'name') final String? name,
@@ -345,6 +367,9 @@ abstract class _Conversation implements Conversation {
   @override //int
   @JsonKey(name: 'last_active')
   String? get lastActive;
+  @override
+  @JsonKey(name: 'is_blocked')
+  bool? get isBlocked;
   @override
   @JsonKey(name: 'cover_url')
   String? get coverUrl;

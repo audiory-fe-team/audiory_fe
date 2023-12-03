@@ -307,6 +307,14 @@ class StoryDetailTab extends HookWidget {
                       const SizedBox(
                         height: 8,
                       ),
+                      Text('Thể loại: ${story?.category?.name}',
+                          style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              fontFamily:
+                                  GoogleFonts.sourceSansPro().fontFamily)),
+                      const SizedBox(
+                        height: 8,
+                      ),
                       ReadMoreText(
                         story?.description ?? '',
                         trimLines: 4,

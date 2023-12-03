@@ -7,6 +7,7 @@ import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_image_picker/form_builder_image_picker.dart';
+import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../theme/theme_constants.dart';
@@ -37,9 +38,9 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 0.0),
           height: size.height,
           width: size.width,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
+          child: ListView(
+              // crossAxisAlignment: CrossAxisAlignment.center,
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,14 +127,16 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                           label: 'Họ và tên',
                           hintText: 'Nhập họ và tên',
                         ),
-                        const AppTextInputField(
+                        AppTextInputField(
                           name: 'description',
                           label: 'Giới thiệu',
                           hintText: 'Đôi lời về các hạ',
                           isTextArea: true,
-                          maxLengthCharacters: 256,
+                          maxLengthCharacters: 1000,
                           minLines: 5,
                           maxLines: 6,
+                          validator: FormBuilderValidators.maxLength(1000,
+                              errorText: 'Tối đa 1000 ký tự'),
                         ),
                       ]),
                 ),
