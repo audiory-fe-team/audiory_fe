@@ -11,7 +11,7 @@ import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 
-class ReportDialog extends StatefulWidget {
+class ReportDialog extends StatelessWidget {
   final String reportType;
   final String reportId;
 
@@ -23,35 +23,32 @@ class ReportDialog extends StatefulWidget {
     'USER': 'Người dùng'
   };
 
-  @override
-  State<ReportDialog> createState() => _ReportDialogState();
-}
-
-class _ReportDialogState extends State<ReportDialog> {
   final _formKey = GlobalKey<FormBuilderState>();
 
   handleCreateReport(BuildContext context) async {
-    Map<String, String> body = {};
-
-    const storage = FlutterSecureStorage();
-    final jwtToken = await storage.read(key: 'jwt');
-    final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
-    body['user_id'] = userId;
-    body['title'] = _formKey.currentState?.fields['title']?.value;
-    body['description'] = _formKey.currentState?.fields['description']?.value;
-    body['report_type'] = widget.reportType;
-    body['reported_id'] = widget.reportId;
     try {
+      Map<String, String> body = {};
+
+      const storage = FlutterSecureStorage();
+      final jwtToken = await storage.read(key: 'jwt');
+      final userId = JwtDecoder.decode(jwtToken as String)['user_id'];
+      body['user_id'] = userId;
+      body['title'] = _formKey.currentState?.fields['title']?.value;
+      body['description'] = _formKey.currentState?.fields['description']?.value;
+      body['report_type'] = reportType;
+      body['reported_id'] = reportId;
       await ReportRepository.addReport(
           body, _formKey.currentState?.fields['photo']?.value);
 
       // ignore: use_build_context_synchronously
       await AppSnackBar.buildTopSnackBar(
           context, 'Tạo thành công', null, SnackBarType.success);
+      context.pop();
     } catch (error) {
       // ignore: use_build_context_synchronously
       AppSnackBar.buildTopSnackBar(
           context, 'Tạo thất bại', null, SnackBarType.error);
+      context.pop();
     }
   }
 
@@ -65,7 +62,7 @@ class _ReportDialogState extends State<ReportDialog> {
       scrollable: true,
       title: Column(children: [
         Text(
-          'Báo cáo ${ReportDialog.REPORT_TYPE_MAP[widget.reportType]} này',
+          'Báo cáo ${ReportDialog.REPORT_TYPE_MAP[reportType]} này',
           style: textTheme.titleLarge?.copyWith(color: appColors.inkDarkest),
         ),
         // Text(
@@ -109,7 +106,7 @@ class _ReportDialogState extends State<ReportDialog> {
                 minLines: 2,
                 maxLines: 5,
                 hintText:
-                    'Ví dụ: ${ReportDialog.REPORT_TYPE_MAP[widget.reportType]} này có nội dung kích động',
+                    'Ví dụ: ${ReportDialog.REPORT_TYPE_MAP[reportType]} này có nội dung kích động',
                 name: 'description',
                 validator: FormBuilderValidators.required(
                     errorText: 'Không được để trống'),
@@ -140,7 +137,6 @@ class _ReportDialogState extends State<ReportDialog> {
 
                             if (isValid != null && isValid) {
                               _formKey.currentState?.save();
-                              context.pop();
                               handleCreateReport(context);
                             }
                             // context.pop();

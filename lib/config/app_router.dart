@@ -228,6 +228,13 @@ class AppRoutes {
                             return const DailyRewardsScreen();
                           },
                         ),
+                        GoRoute(
+                            name: 'reports',
+                            path: 'reports',
+                            builder:
+                                (BuildContext context, GoRouterState state) {
+                              return ReportsScreen();
+                            }),
                       ]),
                   GoRoute(
                     redirect: _redirect,
@@ -414,20 +421,12 @@ class AppRoutes {
             return MuteAccountsScreen(userId: userId);
           }),
       GoRoute(
-          name: 'reports',
-          path: '/reports',
-          builder: (BuildContext context, GoRouterState state) {
-            final extraMap = state.extra as Map<String, dynamic>;
-            final userId = extraMap['userId'] ?? null;
-            return ReportsScreen(userId: userId);
-          }),
-      GoRoute(
           name: 'newReport',
           path: '/newReport',
           builder: (BuildContext context, GoRouterState state) {
             final extraMap = state.extra as Map<String, dynamic>;
             final userId = extraMap['userId'] ?? null;
-            return ReportsScreen(userId: userId);
+            return ReportsScreen();
           }),
       GoRoute(
           name: 'blockAccounts',

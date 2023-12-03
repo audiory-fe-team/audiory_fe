@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:audiory_v0/models/notification/noti_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -46,6 +47,32 @@ class NotificationRepostitory {
       }
     } else {
       throw jsonDecode(responseBody)['message'];
+    }
+  }
+
+  static Future<dynamic> updateNotiRead(notiId) async {
+    final url = Uri.parse('$notificationsEndpoint/$notiId');
+
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    final response = await http.put(url,
+        body: jsonEncode({
+          'is_read': true,
+        }),
+        headers: headers);
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      throw Exception('Failed to update reading progress');
     }
   }
 }

@@ -1,35 +1,50 @@
 import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
+import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/gift/gift_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
+import 'package:audiory_v0/providers/global_me_provider.dart';
+import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/gift_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
+import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class DonateGiftModal extends HookWidget {
-  final Story? story;
+class DonateGiftModal extends HookConsumerWidget {
+  final String? storyId;
+  final String? authorId;
   final dynamic coins;
   final AuthUser? userData;
-  final Function(Gift?, int) handleSendingGift;
+  final Function() onAfterSendGift;
   const DonateGiftModal(
       {super.key,
-      this.story,
+      this.storyId,
+      this.authorId,
       this.coins = 0,
-      required this.handleSendingGift,
+      required this.onAfterSendGift,
       this.userData});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUserId = ref.watch(globalMeProvider)?.id;
     final giftsQuery =
         useQuery(['gifts'], () => GiftRepository().fetchAllGifts());
+
+    final userQuery = useQuery(
+      ['userById', currentUserId],
+      () => AuthRepository().getMyUserById(),
+      refetchOnMount: RefetchOnMount.stale,
+      staleDuration: const Duration(minutes: 1),
+    );
 
     var lists = giftsQuery.data ?? [];
     // lists.sort((a, b) => a.price?.compareTo(b.price ?? 0));
@@ -47,6 +62,39 @@ class DonateGiftModal extends HookWidget {
       var count = int.parse(sizeController.value.text) ?? 0;
       var price = selectedItem.value?.price ?? 0;
       total.value = price * count;
+    }
+
+    handleSendingGift(Gift? gift, total) async {
+      var totalCoinsOfUser = userQuery.data?.wallets![0].balance ?? 0;
+      if (double.parse('${(gift?.price ?? 0) * total}') >
+          double.parse(totalCoinsOfUser.toString())) {
+        context.pop();
+        AppSnackBar.buildTopSnackBar(
+            context, 'Không đủ số dư', null, SnackBarType.info);
+      } else {
+        try {
+          Map<String, String> body = {
+            'product_id': gift?.id ?? '',
+            'author_id': authorId ?? '',
+          };
+          for (var i = 0; i < total; i++) {
+            await GiftRepository()
+                .donateGift(currentUserId ?? '', storyId ?? '', body);
+          }
+          context.pop();
+          AppSnackBar.buildTopSnackBar(
+              context,
+              'Tặng $total ${gift?.name} thành công',
+              null,
+              SnackBarType.success);
+          onAfterSendGift();
+          userQuery.refetch(); //refetch coins
+        } catch (e) {
+          // ignore: use_build_context_synchronously
+          AppSnackBar.buildTopSnackBar(
+              context, 'Tặng quà không thành công', null, SnackBarType.error);
+        }
+      }
     }
 
     return Flexible(
@@ -103,7 +151,6 @@ class DonateGiftModal extends HookWidget {
                             flex: 2,
                             child: TextButton(
                                 onPressed: () {
-                                  print('press');
                                   context.pop();
                                   // context.pushNamed('newPurchase',
                                   //     extra: {'currentUser': widget.userData});
@@ -147,7 +194,7 @@ class DonateGiftModal extends HookWidget {
                       children: lists
                           .map((option) => GestureDetector(
                               onTap: () {
-                                selectedItem?.value = option;
+                                selectedItem.value = option;
 
                                 handleTotalCoins();
                                 // handleSendingGift(selectedItem?.value as Gift);
@@ -156,7 +203,7 @@ class DonateGiftModal extends HookWidget {
                                   padding: const EdgeInsets.only(right: 2),
                                   child: DonateItemCard(
                                     gift: option,
-                                    selected: (selectedItem?.value == option),
+                                    selected: (selectedItem.value == option),
                                   ))))
                           .toList(),
                     ),

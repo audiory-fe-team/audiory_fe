@@ -1,26 +1,19 @@
 // import 'package:audioplayers/audioplayers.dart';
 
-import 'dart:async';
-
 import 'package:audiory_v0/constants/skeletons.dart';
 import 'package:audiory_v0/constants/theme_options.dart';
+import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/offline/offline_reading_top_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_bottom_bar.dart';
-import 'package:audiory_v0/feat-read/screens/reading/action_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_drawer.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_navigate_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen_header.dart';
-import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
-import 'package:audiory_v0/feat-read/screens/reading/reading_top_bar.dart';
-import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
-import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/audio_player_provider.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/story_database.dart';
-import 'package:audiory_v0/repositories/activities_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 
@@ -64,8 +57,8 @@ class OfflineReadingScreen extends HookConsumerWidget {
     final showCommentByParagraph = useState(true);
     final audioSpeed = useState<double>(1);
     final isKaraoke = useState(true);
+    final voiceType = useState(0);
 
-    final haveRead = useState(false);
     final hideBars = useState(false);
 
     final player = ref.watch(audioPlayerProvider);
@@ -96,13 +89,6 @@ class OfflineReadingScreen extends HookConsumerWidget {
           null,
           SnackBarType.info);
     }
-
-    // Timer scheduleTimeout([int milliseconds = 10000]) =>
-    //     Timer(Duration(milliseconds: milliseconds), () async {
-    //       final SharedPreferences prefs = await SharedPreferences.getInstance();
-    //       await prefs.remove('timer');
-    //       localPlayer.stop();
-    //     });
 
     // handleSetPlaylist(Chapter? chapter, Story? story) async {
     //   final directory = await getApplicationDocumentsDirectory();
@@ -139,17 +125,56 @@ class OfflineReadingScreen extends HookConsumerWidget {
     //     return;
     //   });
     // }
+    setPlayList() async {
+      try {
+        final SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    // useEffect(() {
-    //   if (chapter.data?.paragraphs?.isEmpty != false) return;
-    //   if (story.data == null) return;
+        final currentVoice = prefs.getInt('voiceType') ?? 0;
+        final directory = await getApplicationDocumentsDirectory();
+        final playlist = ConcatenatingAudioSource(
+            children:
+                (chapter.data?.paragraphs ?? []).asMap().entries.map((entry) {
+          int idx = entry.key;
+          Paragraph p = entry.value;
+          String filepath = "${directory.path}/${p.audios?[currentVoice].url}";
+          return AudioSource.file(filepath,
+              tag: MediaItem(
+                  id: p.id,
+                  title: story.data?.title ?? '',
+                  extras: {
+                    'position': chapter.data?.position,
+                    'storyId': storyId,
+                    'chapterId': chapterId,
+                  },
+                  artist: 'Chương ${chapter.data?.position} - Đoạn ${idx + 1}',
+                  album: story.data?.id));
+        }).toList());
+        localPlayer.setAudioSource(playlist);
 
-    //   if (localPlayer.sequence != null ||
-    //       localPlayer.sequence?.isEmpty == false) return;
-    //   try {
-    //     handleSetPlaylist(chapter.data, story.data);
-    //   } catch (error) {}
-    // }, [localPlayer, chapter.data, story.data]);
+        localPlayer.currentIndexStream.listen((currentParaIndex) {
+          if (currentParaIndex == null) return;
+          curParaIndex.value = currentParaIndex;
+          if (keyList.value.isNotEmpty != true) return;
+          final keyContext = keyList.value[currentParaIndex].currentContext;
+          if (keyContext == null) return;
+          if (isKaraoke.value) {
+            Scrollable.ensureVisible(keyContext,
+                duration: const Duration(seconds: 1), alignment: 0.5);
+          }
+        });
+      } catch (error) {
+        print('Error set playlist');
+      }
+    }
+
+    useEffect(() {
+      if (chapter.data?.paragraphs?.isEmpty != false) return;
+      if (story.data == null) return;
+
+      if (localPlayer.sequence != null ||
+          localPlayer.sequence?.isEmpty == false) return;
+      setPlayList();
+    }, [localPlayer, voiceType.value, chapter.data, story.data]);
 
     syncPreference() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -176,11 +201,11 @@ class OfflineReadingScreen extends HookConsumerWidget {
 
     useEffect(() {
       syncPreference();
-      // return () {
-      //   if (!player.playing) {
-      //     localPlayer.stop();
-      //   }
-      // };
+      return () {
+        if (!player.playing) {
+          localPlayer.stop();
+        }
+      };
     }, [chapterId]);
 
     useEffect(() {
@@ -194,27 +219,9 @@ class OfflineReadingScreen extends HookConsumerWidget {
             ScrollDirection.reverse) {
           if (!hideBars.value) hideBars.value = true;
         }
-
-        // Send READ activity if scroll to bottom
-        // if (scrollController.position.atEdge) {
-        //   if (haveRead.value) return;
-        //   ActivitiesRepository.sendActivity(
-        //       actionEntity: 'CHAPTER', actionType: 'READ', entityId: chapterId);
-        //   haveRead.value = true;
-        // }
       });
-
-      return () async {
-        // print('haha');
-        // print(readingPosition.value);
-        // if (chapterQuery.data?.storyId == null) return;
-        // await ReadingProgressRepository.updateProgress(
-        //     storyId: chapterQuery.data!.storyId!,
-        //     chapterId: chapterId,
-        //     paragraphId: '',
-        //     readingPosition: readingPosition.value);
-      };
     }, [chapterId]);
+
     return Scaffold(
       appBar: hideBars.value
           ? null
@@ -243,16 +250,16 @@ class OfflineReadingScreen extends HookConsumerWidget {
                           ),
                           const SizedBox(height: 24),
 
-                          // ChapterAudioPlayer(
-                          //   player: localPlayer,
-                          //   onFirstPlay: () {
-                          //     player.stop();
-                          //     ref
-                          //         .read(audioPlayerProvider.notifier)
-                          //         .setPlayer(localPlayer);
-                          //   },
-                          //   selectedThemeOption: selectedOption.value,
-                          // ),
+                          ChapterAudioPlayer(
+                            player: localPlayer,
+                            onFirstPlay: () {
+                              player.stop();
+                              ref
+                                  .read(audioPlayerProvider.notifier)
+                                  .setPlayer(localPlayer);
+                            },
+                            selectedThemeOption: selectedOption.value,
+                          ),
 
                           const SizedBox(height: 24),
                           ...((chapter.connectionState ==
@@ -412,8 +419,9 @@ class OfflineReadingScreen extends HookConsumerWidget {
               onChangeStyle: syncPreference,
               chapterId: chapterId,
               storyId: storyId,
+              isOffline: true,
             ),
-      // floatingActionButton: const AudioBottomBar(),
+      floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       drawer: ChapterDrawer(
