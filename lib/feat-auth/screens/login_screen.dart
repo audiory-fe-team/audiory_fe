@@ -47,6 +47,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       } catch (error) {
         print(error);
       }
+      // ignore: use_build_context_synchronously
       context.go('/');
     } catch (e) {
       if (kDebugMode) {
@@ -269,6 +270,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           width: double.infinity,
                           margin: const EdgeInsets.symmetric(vertical: 8.0),
                           child: _linkToRegisterScreen(context)),
+                      Container(
+                          height: 50,
+                          width: double.infinity,
+                          margin: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: TextButton(
+                            onPressed: () {
+                              context.go('/');
+                            },
+                            child: Text(
+                              'Trang chủ',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleMedium
+                                  ?.copyWith(),
+                            ),
+                          )),
                     ],
                   )),
             ],

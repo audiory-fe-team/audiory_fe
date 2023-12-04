@@ -279,11 +279,11 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
         AppSnackBar.buildTopSnackBar(
             context, 'Tối thiểu 5 từ', null, SnackBarType.error);
       } else {
-        showDialog(
-            context: context,
-            builder: (context) {
-              return const Center(child: CircularProgressIndicator());
-            });
+        // showDialog(
+        //     context: context,
+        //     builder: (context) {
+        //       return const Center(child: CircularProgressIndicator());
+        //     });
 
         _formKey.currentState?.save();
         Map<String, String> body = {
@@ -295,15 +295,15 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
         };
         print(_formKey.currentState?.fields['photos']?.value);
         print(_formKey.currentState?.fields['photos']?.value[0].runtimeType);
-
+        print(_formKey.currentState?.fields['photos']?.value);
         final res = await ChapterRepository().createChapterVersion(
             body, _formKey.currentState?.fields['photos']?.value);
 
         final res2 = await ChapterRepository().publishChapter(widget.chapterId);
         print('res2 ${res2['code'] == '200'}');
         print('res2 ${res2['message']}');
-        context.pop();
         if (res2['code'] == 200) {
+          print('yes');
           chapterVersionsQuery.refetch();
           chapterByIdQuery.refetch();
           // ignore: use_build_context_synchronously
@@ -311,25 +311,26 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
               context, 'Đăng tải thành công', null, SnackBarType.success);
 
           context.pop();
-          try {
-            widget.callback();
-          } catch (e) {
-            print(e);
-          }
+          // try {
+          //   widget.callback();
+          // } catch (e) {
+          //   print(e);
+          // }
         } else {
+          print('no');
           // ignore: use_build_context_synchronously
           showDialog(
               context: context,
               builder: (context) {
                 return AlertDialog(
-                  content: Container(
-                    height: size.height / 3,
+                  content: SizedBox(
+                    height: size.height * 0.3,
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
                             width: double.infinity,
-                            height: size.width / 3.5,
+                            // height: size.width / 3.5,
                             child: ClipRRect(
                                 borderRadius: BorderRadius.circular(12),
                                 child: Image.asset(
@@ -536,7 +537,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                         width: double.infinity,
                                                         child: AppIconButton(
                                                           title:
-                                                              'Bật truyện trưởng thành',
+                                                              'Gắn nhãn trưởng thành',
                                                           textStyle: textTheme
                                                               .bodySmall
                                                               ?.copyWith(
@@ -566,11 +567,11 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                                   SnackBarType
                                                                       .success);
                                                               widget.callback;
+                                                              // ignore: use_build_context_synchronously
+                                                              context.pop();
+                                                              // ignore: use_build_context_synchronously
+                                                              context.pop();
                                                             }
-                                                            // ignore: use_build_context_synchronously
-                                                            context.pop();
-                                                            // ignore: use_build_context_synchronously
-                                                            context.pop();
                                                           },
                                                         )),
                                                   ],

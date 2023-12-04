@@ -1,14 +1,9 @@
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-write/screens/layout/compose_chapter_screen.dart';
-import 'package:audiory_v0/models/category/app_category_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
-import 'package:audiory_v0/models/tag/tag_model.dart';
-import 'package:audiory_v0/repositories/category_repository.dart';
 import 'package:audiory_v0/repositories/chapter_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
-import 'dart:convert';
 
 import 'package:audiory_v0/feat-write/widgets/edit_chapter_card.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
@@ -46,7 +41,7 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
   void initState() {
     super.initState();
     setState(() {
-      isEdit = widget.storyId!.trim() != '';
+      isEdit = widget.storyId?.trim() != '';
       //tags initial
       _controller = TextfieldTagsController();
     });
@@ -62,16 +57,6 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
   void dispose() {
     super.dispose();
     _controller?.dispose();
-  }
-
-  Widget _requiredAsterisk() {
-    return Text(
-      '*',
-      style: Theme.of(context)
-          .textTheme
-          .headlineMedium
-          ?.copyWith(color: Colors.red),
-    );
   }
 
   @override
@@ -95,13 +80,14 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
     );
 
     handleDeleteChapter(chapterId) async {
-      print('delete');
       try {
         await ChapterRepository().deleteChapter(chapterId);
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Xóa thành công', null, SnackBarType.success);
         chaptersQuery.refetch();
       } catch (e) {
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Xóa không thành công', null, SnackBarType.success);
       }
@@ -210,31 +196,28 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
                     child: Text('Thêm chương mới '),
                   ),
                   onTap: () async {
-                    try {
-                      final length = chaptersList?.length ?? 0;
-                      final res = await ChapterRepository().createChapter(
-                          widget.storyId, (chaptersList?.length ?? 0) + 1);
-                      chaptersQuery.refetch();
-                      print(res?.id);
+                    final length = chaptersList?.length ?? 0;
+                    final res = await ChapterRepository().createChapter(
+                        widget.storyId, (chaptersList?.length ?? 0) + 1);
+                    chaptersQuery.refetch();
 
-                      // ignore: use_build_context_synchronously
-                      showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          useSafeArea: true,
-                          enableDrag: false,
-                          backgroundColor: Colors.white,
-                          builder: (context) {
-                            return ComposeChapterScreen(
-                              chapterId: res?.id,
-                              story: editStory,
-                              chapter: res,
-                              callback: () {
-                                chaptersQuery.refetch();
-                              },
-                            );
-                          });
-                    } catch (e) {}
+                    // ignore: use_build_context_synchronously
+                    showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        useSafeArea: true,
+                        enableDrag: false,
+                        backgroundColor: Colors.white,
+                        builder: (context) {
+                          return ComposeChapterScreen(
+                            chapterId: res?.id,
+                            story: editStory,
+                            chapter: res,
+                            callback: () {
+                              chaptersQuery.refetch();
+                            },
+                          );
+                        });
                   },
                 ),
               )
@@ -400,23 +383,28 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
         child: SingleChildScrollView(
           child: Skeletonizer(
             enabled: editStoryByIdQuery.isFetching && chaptersQuery.isFetching,
-            child: Column(mainAxisSize: MainAxisSize.max, children: [
-              editStoryByIdQuery.data != null ||
-                      editStoryByIdQuery.isError ||
-                      widget.storyId == ''
-                  ? Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        children: [
-                          storyOverView(editStoryByIdQuery.data),
-                          paywalledSection(editStoryByIdQuery.data),
-                          chapterList(context, editStoryByIdQuery.data,
-                              chaptersQuery.data),
-                        ],
-                      ),
-                    )
-                  : Skeletonizer(enabled: true, child: Text('loading'))
-            ]),
+            child: Column(
+
+                // mainAxisSize: MainAxisSize.max,
+
+                children: [
+                  editStoryByIdQuery.data != null ||
+                          editStoryByIdQuery.isError ||
+                          widget.storyId == ''
+                      ? Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            children: [
+                              storyOverView(editStoryByIdQuery.data),
+                              paywalledSection(editStoryByIdQuery.data),
+                              chapterList(context, editStoryByIdQuery.data,
+                                  chaptersQuery.data),
+                            ],
+                          ),
+                        )
+                      : const Skeletonizer(
+                          enabled: true, child: Text('loading'))
+                ]),
           ),
         ),
       ),

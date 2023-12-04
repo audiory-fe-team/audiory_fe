@@ -60,16 +60,13 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
     );
 
     storyOverView() {
-      return Container(
-        padding: EdgeInsets.only(top: 16),
+      return SizedBox(
         width: size.width,
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              width: size.width / 4,
-              height: size.height / 6,
-              decoration:
-                  BoxDecoration(borderRadius: BorderRadius.circular(12)),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
               child: AppImage(
                 width: size.width / 4,
                 height: size.height / 6,
@@ -84,7 +81,7 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
 
     getPaywallResult(List<Criteria> list, bool allChecked) {
       return Padding(
-        padding: EdgeInsets.symmetric(horizontal: size.width / 4, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
         child: Text(
           allChecked
               ? 'Tác phẩm của bạn hiện đã đáp ứng các điệu kiện thương mại hóa'
@@ -100,21 +97,19 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
 
     accessPaywalled(List<Criteria> list) {
       bool allChecked = list.any((e) => e.isPassed == false) ? false : true;
-      return Column(
-        children: [
-          storyOverView(),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              getPaywallResult(list, allChecked),
-              Container(
-                height: 350,
-                child: ListView.builder(
-                    itemCount: list.length,
-                    itemBuilder: (context, index) {
-                      Criteria? criteria = list[index];
-
+              Column(
+                children: [
+                  storyOverView(),
+                  getPaywallResult(list, allChecked),
+                  Column(
+                    children: list.map((criteria) {
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 16.0, vertical: 8),
@@ -122,7 +117,7 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Flexible(
-                                child: criteria?.isPassed == true
+                                child: criteria.isPassed == true
                                     ? Icon(
                                         Icons.check_circle,
                                         color: appColors.primaryBase,
@@ -142,208 +137,219 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                           ],
                         ),
                       );
-                    }),
+                    }).toList(),
+                  )
+                ],
               ),
-            ],
-          ),
-          Container(
-            width: size.width - 32,
-            height: 50,
-            child: AppIconButton(
-              bgColor: allChecked ? appColors.primaryBase : appColors.inkBase,
-              onPressed: () {
-                allChecked
-                    ? showModalBottomSheet(
-                        isScrollControlled: true,
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(8.0),
-                          topRight: Radius.circular(8.0),
-                        )),
-                        useSafeArea: true,
-                        backgroundColor: appColors.background,
-                        context: context,
-                        builder: (context) {
-                          return Scaffold(
-                            appBar: CustomAppBar(title: Text('Hợp đồng')),
-                            body: ListView(children: [
-                              const PaywalledContract(),
-                            ]),
-                            bottomSheet: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  AppIconButton(
-                                    isOutlined: true,
-                                    onPressed: () {
-                                      context.pop();
-                                    },
-                                    title: 'Tôi không đồng ý',
-                                    textStyle: textTheme.bodySmall?.copyWith(
-                                        color: appColors.primaryBase),
-                                  ),
-                                  AppIconButton(
-                                    onPressed: () {
-                                      showDialog(
-                                          context: context,
-                                          useSafeArea: true,
-                                          barrierDismissible: true,
-                                          builder: (context) => AlertDialog(
-                                                backgroundColor:
-                                                    appColors.skyLightest,
-                                                scrollable: true,
-                                                title: Column(
-                                                    mainAxisAlignment:
+              SizedBox(
+                width: size.width - 32,
+                height: 50,
+                child: AppIconButton(
+                  bgColor:
+                      allChecked ? appColors.primaryBase : appColors.inkBase,
+                  onPressed: () {
+                    allChecked
+                        ? showModalBottomSheet(
+                            isScrollControlled: true,
+                            shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8.0),
+                              topRight: Radius.circular(8.0),
+                            )),
+                            useSafeArea: true,
+                            backgroundColor: appColors.background,
+                            context: context,
+                            builder: (context) {
+                              return Scaffold(
+                                appBar:
+                                    CustomAppBar(title: const Text('Hợp đồng')),
+                                body: ListView(children: const [
+                                  PaywalledContract(),
+                                ]),
+                                bottomSheet: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      AppIconButton(
+                                        isOutlined: true,
+                                        onPressed: () {
+                                          context.pop();
+                                        },
+                                        title: 'Tôi không đồng ý',
+                                        textStyle: textTheme.bodySmall
+                                            ?.copyWith(
+                                                color: appColors.primaryBase),
+                                      ),
+                                      AppIconButton(
+                                        onPressed: () {
+                                          showDialog(
+                                              context: context,
+                                              useSafeArea: true,
+                                              barrierDismissible: true,
+                                              builder: (context) => AlertDialog(
+                                                    backgroundColor:
+                                                        appColors.skyLightest,
+                                                    scrollable: true,
+                                                    title: Column(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .spaceBetween,
+                                                        children: [
+                                                          Text(
+                                                            'Tạo giá chương',
+                                                            style: textTheme
+                                                                .headlineSmall
+                                                                ?.copyWith(
+                                                                    color: appColors
+                                                                        .inkDarkest),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 8,
+                                                          ),
+                                                          TextField(
+                                                            autofocus: true,
+                                                            controller:
+                                                                priceController,
+                                                            decoration:
+                                                                appInputDecoration(
+                                                                        context)
+                                                                    .copyWith(
+                                                                        hintText:
+                                                                            'Nhập giá'),
+                                                            keyboardType:
+                                                                TextInputType
+                                                                    .number,
+                                                            inputFormatters:
+                                                                inputFormatters,
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                            onChanged: (value) {
+                                                              int? number =
+                                                                  int.tryParse(
+                                                                      value);
+                                                              if (number !=
+                                                                      null &&
+                                                                  (number <
+                                                                      1)) {
+                                                                // Reset field if number is not in the 1-10 range
+                                                                priceController
+                                                                    .clear();
+                                                                priceController
+                                                                    .text = "1";
+                                                              }
+
+                                                              if (number !=
+                                                                      null &&
+                                                                  (number >
+                                                                      10)) {
+                                                                // Reset field if number is not in the 1-10 range
+                                                                priceController
+                                                                    .clear();
+                                                                priceController
+                                                                        .text =
+                                                                    "10";
+                                                              }
+                                                            },
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 8,
+                                                          ),
+                                                          Text(
+                                                            'Bạn có thể thay đổi giá sau này',
+                                                            style: textTheme
+                                                                .bodySmall
+                                                                ?.copyWith(
+                                                                    color: appColors
+                                                                        ?.inkLight),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                          Text(
+                                                            'Giá của chương từ 1-10 xu',
+                                                            style: textTheme
+                                                                .bodySmall
+                                                                ?.copyWith(
+                                                                    color: appColors
+                                                                        ?.inkLight),
+                                                            textAlign: TextAlign
+                                                                .center,
+                                                          ),
+                                                        ]),
+                                                    content: const SizedBox(),
+                                                    actionsAlignment:
                                                         MainAxisAlignment
                                                             .spaceBetween,
-                                                    children: [
-                                                      Text(
-                                                        'Tạo giá chương',
-                                                        style: textTheme
-                                                            .headlineSmall
-                                                            ?.copyWith(
-                                                                color: appColors
-                                                                    ?.inkDarkest),
+                                                    actions: [
+                                                      SizedBox(
+                                                        width: 100,
+                                                        height: 40,
+                                                        child: AppIconButton(
+                                                          bgColor: appColors
+                                                              .skyLightest,
+                                                          color:
+                                                              appColors.inkBase,
+                                                          title: 'Hủy',
+                                                          onPressed: () {
+                                                            context.pop();
+                                                          },
+                                                        ),
                                                       ),
                                                       SizedBox(
-                                                        height: 8,
-                                                      ),
-                                                      TextField(
-                                                        autofocus: true,
-                                                        controller:
-                                                            priceController,
-                                                        decoration:
-                                                            appInputDecoration(
-                                                                    context)
-                                                                .copyWith(
-                                                                    hintText:
-                                                                        'Nhập giá'),
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .number,
-                                                        inputFormatters:
-                                                            inputFormatters,
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                        onChanged: (value) {
-                                                          int? number =
-                                                              int.tryParse(
-                                                                  value);
-                                                          if (number != null &&
-                                                              (number < 1)) {
-                                                            // Reset field if number is not in the 1-10 range
-                                                            priceController
-                                                                .clear();
-                                                            priceController
-                                                                .text = "1";
-                                                          }
+                                                        width: 100,
+                                                        height: 40,
+                                                        child: AppIconButton(
+                                                          title: 'Tạo',
+                                                          onPressed: () async {
+                                                            try {
+                                                              await StoryRepostitory()
+                                                                  .paywallStory(
+                                                                      widget
+                                                                          .story
+                                                                          .id,
+                                                                      int.tryParse(
+                                                                              priceController.text) ??
+                                                                          0);
 
-                                                          if (number != null &&
-                                                              (number > 10)) {
-                                                            // Reset field if number is not in the 1-10 range
-                                                            priceController
-                                                                .clear();
-                                                            priceController
-                                                                .text = "10";
-                                                          }
-                                                        },
-                                                      ),
-                                                      SizedBox(
-                                                        height: 8,
-                                                      ),
-                                                      Text(
-                                                        'Bạn có thể thay đổi giá sau này',
-                                                        style: textTheme
-                                                            .bodySmall
-                                                            ?.copyWith(
-                                                                color: appColors
-                                                                    ?.inkLight),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      ),
-                                                      Text(
-                                                        'Giá của chương từ 1-10 xu',
-                                                        style: textTheme
-                                                            .bodySmall
-                                                            ?.copyWith(
-                                                                color: appColors
-                                                                    ?.inkLight),
-                                                        textAlign:
-                                                            TextAlign.center,
-                                                      ),
-                                                    ]),
-                                                content: SizedBox(),
-                                                actionsAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
-                                                actions: [
-                                                  Container(
-                                                    width: 100,
-                                                    height: 40,
-                                                    child: AppIconButton(
-                                                      bgColor:
-                                                          appColors.skyLightest,
-                                                      color: appColors.inkBase,
-                                                      title: 'Hủy',
-                                                      onPressed: () {
-                                                        context.pop();
-                                                      },
-                                                    ),
-                                                  ),
-                                                  Container(
-                                                    width: 100,
-                                                    height: 40,
-                                                    child: AppIconButton(
-                                                      title: 'Tạo',
-                                                      onPressed: () async {
-                                                        try {
-                                                          await StoryRepostitory()
-                                                              .paywallStory(
-                                                                  widget
-                                                                      .story.id,
-                                                                  int.tryParse(
-                                                                          priceController
-                                                                              .text) ??
-                                                                      0);
-
-                                                          // ignore: use_build_context_synchronously
-                                                          context.pop();
-                                                          // ignore: use_build_context_synchronously
-                                                          context.pop();
-                                                          // ignore: use_build_context_synchronously
-                                                          context.pop();
-                                                          // ignore: use_build_context_synchronously
-                                                          AppSnackBar
-                                                              .buildTopSnackBar(
+                                                              // ignore: use_build_context_synchronously
+                                                              context.pop();
+                                                              // ignore: use_build_context_synchronously
+                                                              context.pop();
+                                                              // ignore: use_build_context_synchronously
+                                                              context.pop();
+                                                              // ignore: use_build_context_synchronously
+                                                              AppSnackBar.buildTopSnackBar(
                                                                   context,
                                                                   'Bật trả phí thành công',
                                                                   null,
                                                                   SnackBarType
                                                                       .success);
-                                                        } catch (e) {}
-                                                      },
-                                                    ),
-                                                  )
-                                                ],
-                                              ));
-                                    },
-                                    textStyle: textTheme.bodySmall?.copyWith(
-                                        color: appColors.skyLightest),
-                                    title: 'Tôi đồng ý, tiếp tục',
+                                                            } catch (e) {}
+                                                          },
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ));
+                                        },
+                                        textStyle: textTheme.bodySmall
+                                            ?.copyWith(
+                                                color: appColors.skyLightest),
+                                        title: 'Tôi đồng ý, tiếp tục',
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          );
-                        })
-                    : context.pop();
-              },
-              title: allChecked ? 'Tiếp tục' : "Tôi đã hiểu",
-            ),
-          )
-        ],
+                                ),
+                              );
+                            })
+                        : context.pop();
+                  },
+                  title: allChecked ? 'Tiếp tục' : "Tôi đã hiểu",
+                ),
+              )
+            ],
+          ),
+        ),
       );
     }
 
@@ -421,20 +427,12 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
 
     return Scaffold(
       appBar: CustomAppBar(title: Text('Thương mại hóa')),
-      body: SingleChildScrollView(
-        child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              widget.story.isPaywalled == false
-                  ? Skeletonizer(
-                      enabled: assessCriteriaQuery.data == null ||
-                          assessCriteriaQuery.isFetching,
-                      child: accessPaywalled(assessCriteriaQuery.data ?? []))
-                  : paywalledStory()
-            ]),
-      ),
+      body: widget.story.isPaywalled == false
+          ? Skeletonizer(
+              enabled: assessCriteriaQuery.data == null ||
+                  assessCriteriaQuery.isFetching,
+              child: accessPaywalled(assessCriteriaQuery.data ?? []))
+          : paywalledStory(),
     );
   }
 }
