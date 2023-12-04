@@ -50,60 +50,6 @@ class CurrentReadCard extends HookWidget {
         'Tiêu đề truyện';
     final downloadProgress = useState<double?>(null);
 
-    //   Future<void> handleDownloadStory() async {
-    //   try {
-    //     final wholeStory = await LibraryRepository.downloadStory(id);
-    //     var directory = await getApplicationDocumentsDirectory();
-
-    //     // Save to offline database
-    //     final noContentStory = wholeStory.copyWith(
-    //         chapters: wholeStory.chapters
-    //             ?.map((e) => e.copyWith(paragraphs: []))
-    //             .toList());
-    //     await storyDb.saveStory(noContentStory);
-
-    //     await Future.forEach<Chapter>(wholeStory.chapters ?? [],
-    //         (chapter) async {
-    //       await chapterDb.saveChapters(chapter);
-    //       await Future.forEach<Paragraph>(chapter.paragraphs ?? [],
-    //           (para) async {
-    //         if (para.audioUrl == '' || para.audioUrl == null) return;
-    //         print('${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}');
-    //         await dio.download(
-    //             '${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}',
-    //             "${directory.path}/${para.audioUrl}",
-    //             onReceiveProgress: (rec, total) {});
-    //       });
-    //     });
-
-    //     AppSnackBar.buildTopSnackBar(
-    //         context, 'Tải truyện thành công', null, SnackBarType.success);
-    //   } catch (error) {
-    //     print(error.toString());
-    //     AppSnackBar.buildTopSnackBar(
-    //         context, error.toString(), null, SnackBarType.warning);
-    //   }
-    //   try {
-    //     final wholeStory = await LibraryRepository.downloadStory(id);
-
-    //     // Save to offline database
-    //     final noContentStory = wholeStory.copyWith(
-    //         chapters: wholeStory.chapters
-    //             ?.map((e) => e.copyWith(paragraphs: []))
-    //             .toList());
-    //     await storyDb.saveStory(noContentStory);
-
-    //     await Future.forEach(wholeStory.chapters ?? [], (element) async {
-    //       await chapterDb.saveChapters(element);
-    //     });
-
-    //     AppSnackBar.buildTopSnackBar(
-    //         context, 'Tải truyện thành công', null, SnackBarType.success);
-    //   } catch (error) {
-    //     AppSnackBar.buildTopSnackBar(
-    //         context, error.toString(), null, SnackBarType.warning);
-    //   }
-    // }
 
     handleDownloadStory() async {
       final storyInDb = await storyDb.getStory(storyId);

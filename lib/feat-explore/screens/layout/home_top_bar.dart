@@ -27,12 +27,14 @@ class HomeTopBar extends HookConsumerWidget implements PreferredSizeWidget {
     final currentUserId = ref.watch(globalMeProvider)?.id;
 
     final myInfoQuery = useQuery(
-        ['myInfo'], () => AuthRepository().getMyUserById(),
-        refetchOnMount: RefetchOnMount.always);
+        ['myInfo', currentUserId], () => AuthRepository().getMyUserById(),
+        refetchOnMount: RefetchOnMount.stale,
+        cacheDuration: const Duration(minutes: 5));
 
-    final conversationsQuery = useQuery(['conversations'],
+    final conversationsQuery = useQuery(['conversations', currentUserId],
         () => ConversationRepository().fetchAllConversations(),
-        refetchOnMount: RefetchOnMount.always);
+        refetchOnMount: RefetchOnMount.stale,
+        cacheDuration: const Duration(minutes: 5));
     Widget userInfo(UseQueryResult<AuthUser, dynamic> myInfoQuery) {
       return Row(
         children: [

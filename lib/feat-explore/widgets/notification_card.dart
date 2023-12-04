@@ -95,9 +95,7 @@ class NotificationCard extends HookWidget {
         final comment = await CommentRepository.fetchCommentById(
             commentId: activity.entityId);
 
-        if (activity.actionType == 'COMMENTED') {
-          handleShowComment(comment);
-        }
+        handleShowComment(comment);
       }
     }
 

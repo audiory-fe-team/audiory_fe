@@ -1,5 +1,3 @@
-import 'package:audiory_v0/constants/fallback_image.dart';
-import 'package:audiory_v0/models/report/report_model.dart';
 import 'package:audiory_v0/repositories/report_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
@@ -52,6 +50,20 @@ class DetailReportScreen extends HookWidget {
           child: SingleChildScrollView(
               child: Column(
             children: [
+              const SizedBox(height: 24),
+              Container(
+                decoration: BoxDecoration(
+                  color: appColors.skyLightest,
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: AppImage(
+                      width: size.width * 0.3,
+                      height: size.width * 0.4,
+                      url: reportQuery.data?.imageUrl),
+                ),
+              ),
+              const SizedBox(height: 12),
               Container(
                 width: double.infinity,
                 padding:
@@ -88,23 +100,10 @@ class DetailReportScreen extends HookWidget {
                             )
                           ],
                         )),
-                    const SizedBox(height: 12),
-                    Flexible(
-                        child: Container(
-                      decoration: BoxDecoration(
-                        color: appColors.skyLightest,
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: AppImage(
-                            width: size.width * 0.3,
-                            height: size.width * 0.4,
-                            url: reportQuery.data?.imageUrl),
-                      ),
-                    )),
                   ],
                 ),
               ),
+              const SizedBox(height: 12),
               (reportQuery.data?.approvedBy == null &&
                       reportQuery.data?.rejectedBy == null)
                   ? Container(
