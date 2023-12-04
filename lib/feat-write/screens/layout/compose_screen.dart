@@ -425,7 +425,6 @@ class _ComposeScreenState extends State<ComposeScreen> {
                     previewWidth: 108,
                     previewHeight: 145,
                     fit: BoxFit.cover,
-
                     validator: FormBuilderValidators.required(
                         errorText: 'Chưa có ảnh bìa'),
                     placeholderWidget: Container(
@@ -450,7 +449,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                             child: displayImage)),
 
                     initialValue:
-                        editStory != null ? [editStory.coverUrl ?? ''] : null,
+                        editStory?.id != '' ? [editStory?.coverUrl ?? ''] : [],
 
                     availableImageSources: const [
                       ImageSourceOption.gallery
@@ -470,61 +469,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
           const SizedBox(
             height: 5,
           ),
-          // Row(
-          //   children: [
-          //     Text(
-          //       'Ảnh nền',
-          //       style: Theme.of(context)
-          //           .textTheme
-          //           .titleLarge
-          //           ?.copyWith(fontWeight: FontWeight.bold),
-          //     ),
-          //   ],
-          // ),
-          // const SizedBox(
-          //   height: 5,
-          // ),
-          // Column(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   crossAxisAlignment: CrossAxisAlignment.center,
-          //   mainAxisSize: MainAxisSize.min,
-          //   children: <Widget>[
-          //     Center(
-          //       child: SizedBox(
-          //         child: FormBuilderImagePicker(
-          //           previewWidth: 108,
-          //           previewHeight: 145,
-          //           fit: BoxFit.contain,
-          //           validator: FormBuilderValidators.required(
-          //               errorText: 'Ảnh bìa là bắt buộc'),
-          //           placeholderWidget: Container(
-          //             decoration: BoxDecoration(
-          //               color: appColors.skyLighter,
-          //               borderRadius: BorderRadius.circular(12),
-          //             ),
-          //             child: Center(
-          //                 child: Icon(
-          //               Icons.add,
-          //               color: appColors.inkLight,
-          //             )),
-          //           ),
 
-          //           initialValue: [editStory?.coverUrl],
-          //           availableImageSources: const [
-          //             ImageSourceOption.gallery
-          //           ], //only gallery
-          //           name: 'background_image',
-          //           showDecoration: false,
-          //           decoration: InputDecoration(
-          //             border: InputBorder.none,
-          //             fillColor: appColors.secondaryBase,
-          //           ),
-          //           maxImages: 1,
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
           const SizedBox(
             height: 5,
           ),
@@ -826,9 +771,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
               chaptersQuery.isFetching &&
               categoryQuery.isFetching,
           child: Column(mainAxisSize: MainAxisSize.max, children: [
-            editStoryByIdQuery.data != null ||
-                    editStoryByIdQuery.isError ||
-                    widget.storyId == ''
+            editStoryByIdQuery.data != null
                 ? Padding(
                     padding: const EdgeInsets.all(16),
                     child: _createStoryForm(
@@ -836,8 +779,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                       editStoryByIdQuery.data,
                       chaptersQuery.data,
                       categoryQuery.data,
-                    ),
-                  )
+                    ))
                 : Skeletonizer(enabled: true, child: Text('loading'))
           ]),
         ),

@@ -5,7 +5,6 @@ import 'package:audiory_v0/models/enums/Sex.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/utils/format_date.dart';
-import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/dropdown_button.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
@@ -195,7 +194,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           initialValue: profile?.avatarUrl != null &&
                                   profile?.avatarUrl != ''
                               ? [profile?.avatarUrl ?? '']
-                              : null,
+                              : [],
                           iconColor: appColors.inkBase,
                           placeholderWidget: Stack(
                               alignment: AlignmentDirectional.center,

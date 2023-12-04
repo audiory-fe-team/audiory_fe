@@ -14,11 +14,8 @@ import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/comment_repository.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/repositories/story_repository.dart';
-import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/utils/format_number.dart';
-import 'package:audiory_v0/utils/widget_helper.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
-import 'package:audiory_v0/widgets/cards/level_badge.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -204,7 +201,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final sharedNumberStyle =
-        textTheme.titleLarge!.copyWith(color: appColors.inkLight);
+        textTheme.titleLarge?.copyWith(color: appColors.inkLight);
     final sharedHeaderStyle = textTheme.titleLarge;
     final sharedTitleStyle = textTheme.titleMedium;
 
@@ -258,22 +255,22 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     final currentUserId = ref.watch(globalMeProvider)?.id;
 
     final userByIdQuery = useQuery(
-        ['user', jwt], () => AuthRepository().getMyUserById(),
+        ['user', currentUserId], () => AuthRepository().getMyUserById(),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5));
     final profileQuery = useQuery(
-        ['profile', jwt], () => AuthRepository().getMyInfo(),
+        ['profile', currentUserId], () => AuthRepository().getMyInfo(),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5)); // include followers
-    final publishedStoriesQuery = useQuery(['publishedStories', jwt],
+    final publishedStoriesQuery = useQuery(['publishedStories', currentUserId],
         () => StoryRepostitory().fetchPublishedStoriesByUserId('me'),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5)); //userId=me
-    final wallCommentsQuery = useQuery(['wallComments', jwt],
+    final wallCommentsQuery = useQuery(['wallComments', currentUserId],
         () => ProfileRepository().fetchAllWallComment(userId: currentUserId),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5)); //userId=me
-    final readingStoriesQuery = useQuery(['readingStories', jwt],
+    final readingStoriesQuery = useQuery(['readingStories', currentUserId],
         () => StoryRepostitory().fetchReadingStoriesByUserId('me'),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5));
