@@ -404,7 +404,7 @@ class DetailStoryScreen extends HookConsumerWidget {
                                                 .copyWith(
                                                     fontWeight:
                                                         FontWeight.w400),
-                                          )
+                                          ),
                                         ]))),
                           ),
                           const SizedBox(height: 12),

@@ -58,7 +58,9 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     Text(
-                      isDarkMode ? 'Chế độ ban đêm' : 'Thông báo',
+                      isDarkMode
+                          ? 'Chế độ ban đêm'
+                          : 'Bật hiện nội dung trưởng thành',
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium

@@ -52,7 +52,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
   void initState() {
     super.initState();
     setState(() {
-      isEdit = widget.storyId!.trim() != '';
+      isEdit = widget.storyId?.trim() != '';
       //tags initial
       _controller = TextfieldTagsController();
     });
@@ -88,19 +88,22 @@ class _ComposeScreenState extends State<ComposeScreen> {
     return Column(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(
-                  'Từ khóa',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                _requiredAsterisk()
-              ],
+            Flexible(
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      'Từ khóa',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Flexible(child: _requiredAsterisk())
+                ],
+              ),
             ),
             GestureDetector(
               child: Text(
@@ -115,7 +118,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                   _controller?.clearTags();
                 } else {}
               },
-            )
+            ),
           ],
         ),
         const SizedBox(
@@ -391,6 +394,27 @@ class _ComposeScreenState extends State<ComposeScreen> {
       );
     }
 
+    Widget title({String title = '', bool? isRequired = false}) {
+      return Row(
+        children: [
+          Flexible(
+            child: Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          isRequired == true
+              ? Flexible(child: _requiredAsterisk())
+              : const SizedBox(
+                  height: 0,
+                )
+        ],
+      );
+    }
+
     Widget _createStoryForm(BuildContext context, Story? editStory,
         List<Chapter>? chaptersList, List<AppCategory>? categoryList) {
       final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -400,14 +424,16 @@ class _ComposeScreenState extends State<ComposeScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
-              Text(
-                'Ảnh bìa',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
+              Flexible(
+                child: Text(
+                  'Ảnh bìa',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
-              _requiredAsterisk()
+              Flexible(child: _requiredAsterisk())
             ],
           ),
           const SizedBox(
@@ -501,18 +527,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                   errorText: 'Tối đa 1000 ký tự'),
             ]),
           ),
-          Row(
-            children: [
-              Text(
-                'Thể loại',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              _requiredAsterisk()
-            ],
-          ),
+          title(title: 'Thể loại', isRequired: true),
           const SizedBox(
             height: 5,
           ),
@@ -584,13 +599,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Trưởng thành',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: appColors.inkBase),
-                ),
+                title(title: 'Trưởng thành'),
                 Text(
                   'Truyện bao hàm nội dung dành cho người trưởng thành, Audiory có thể xếp loại truyện của bạn là trưởng thành',
                   style: Theme.of(context)
@@ -604,18 +613,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
           const SizedBox(
             height: 5,
           ),
-          Row(
-            children: [
-              Text(
-                'Bản quyền',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              _requiredAsterisk()
-            ],
-          ),
+          title(title: 'Bản quyền', isRequired: true),
           const SizedBox(
             height: 5,
           ),
@@ -713,11 +711,11 @@ class _ComposeScreenState extends State<ComposeScreen> {
 
                         body['tags'] = jsonEncode(tags);
                         body['description'] = _createFormKey
-                            .currentState!.fields['description']?.value;
+                            .currentState?.fields['description']?.value;
 
                         body['is_completed'] = 'false';
                         body['is_copyright'] = _createFormKey
-                                .currentState!.fields['isCopyright']?.value
+                                .currentState?.fields['isCopyright']?.value
                                 .toString() ??
                             'false';
 
@@ -731,7 +729,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                             _createFormKey.currentState?.fields['title']?.value;
 
                         if (kDebugMode) {
-                          print(_createFormKey.currentState!.value);
+                          print(_createFormKey.currentState?.value);
                           print('body');
                           print(body);
                         }
@@ -740,7 +738,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                             widget.storyId,
                             body,
                             _createFormKey
-                                .currentState!.fields['photos']?.value);
+                                .currentState?.fields['photos']?.value);
                       }
                     },
                     title: isEdit ? 'Cập nhật' : 'Tạo mới',

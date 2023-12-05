@@ -89,7 +89,35 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
       } catch (e) {
         // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
-            context, 'Xóa không thành công', null, SnackBarType.success);
+            context, 'Xóa không thành công', null, SnackBarType.error);
+      }
+    }
+
+    handlePublishChapter(chapterId, status) async {
+      if (status == false) {
+        try {
+          await ChapterRepository().unpublishChapter(chapterId);
+          // ignore: use_build_context_synchronously
+          AppSnackBar.buildTopSnackBar(
+              context, 'Gỡ đăng tải thành công', null, SnackBarType.success);
+          chaptersQuery.refetch();
+        } catch (e) {
+          // ignore: use_build_context_synchronously
+          AppSnackBar.buildTopSnackBar(context, 'Gỡ đăng tải không thành công',
+              null, SnackBarType.error);
+        }
+      } else {
+        try {
+          await ChapterRepository().publishChapter(chapterId);
+          // ignore: use_build_context_synchronously
+          AppSnackBar.buildTopSnackBar(
+              context, 'Đăng tải thành công', null, SnackBarType.success);
+          chaptersQuery.refetch();
+        } catch (e) {
+          // ignore: use_build_context_synchronously
+          AppSnackBar.buildTopSnackBar(
+              context, 'Đăng tải không thành công', null, SnackBarType.error);
+        }
       }
     }
 
@@ -103,8 +131,8 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
         builder: (BuildContext context) {
           return AlertDialog(
             backgroundColor: Colors.white,
-            title: Center(child: Text('Xác nhận xóa?')),
-            content: Text('Bạn chắc chắn muốn xóa chương này'),
+            title: const Center(child: Text('Xác nhận xóa?')),
+            content: const Text('Bạn chắc chắn muốn xóa chương này'),
             actions: <Widget>[
               Container(
                 width: 70,
@@ -181,6 +209,10 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
                     onDeleteChapter: () {
                       showConfirmChapterDeleteDialog(
                           context, chaptersList[index]);
+                    },
+                    onPublish: () {
+                      handlePublishChapter(
+                          chaptersList[index].id, chaptersList[index].isDraft);
                     },
                   );
                 }),
@@ -288,13 +320,13 @@ class _WriterStoryOverviewScreenState extends State<WriterStoryOverviewScreen> {
                           style: textTheme.titleLarge,
                         ),
                         Text(
-                          '${story?.description ?? ''}',
+                          story?.description ?? '',
                           maxLines: 2,
                           style: textTheme.bodySmall?.copyWith(
                               color: appColors.inkLight,
                               overflow: TextOverflow.ellipsis),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           height: 8,
                         ),
                         Text(

@@ -591,7 +591,10 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
       }
     }
 
-    previewChapterVersion({String chapterVersionId = ''}) {
+    previewChapterVersion(
+        {String chapterVersionId = '', String chapterCurrentVersionId = ''}) {
+      print(chapterVersionId);
+      print(chapterCurrentVersionId);
       showModalBottomSheet(
         backgroundColor: appColors.skyLightest,
         isScrollControlled: true,
@@ -605,44 +608,41 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
               Stack(
                 alignment: Alignment.topCenter,
                 children: [
-                  SizedBox(
-                    width: size.width,
-                    child: text.Text(
-                      'Bản xem trước',
-                      style: textTheme.headlineMedium
-                          ?.copyWith(color: appColors.inkBase),
-                    ),
-                  ),
-                  Positioned(
-                      right: 0,
-                      child: GestureDetector(
-                        onTap: () {
-                          onRevert(chapterVersionId: chapterVersionId);
-                        },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Flexible(
+                        flex: 2,
                         child: text.Text(
-                          'Khôi phục',
-                          style: textTheme.titleMedium
-                              ?.copyWith(color: appColors.primaryBase),
+                          'Bản xem trước ( chỉ đọc )',
+                          style: textTheme.headlineMedium
+                              ?.copyWith(color: appColors.inkBase),
                         ),
-                      ))
+                      ),
+                      Flexible(
+                        child: chapterCurrentVersionId == ''
+                            ? TextButton(
+                                onPressed: () {
+                                  onRevert(chapterVersionId: chapterVersionId);
+                                },
+                                child: text.Text(
+                                  'Khôi phục',
+                                  style: textTheme.titleSmall
+                                      ?.copyWith(color: appColors.primaryBase),
+                                ),
+                              )
+                            : const SizedBox(
+                                height: 0,
+                              ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
               Expanded(
                 // height: size.height * 0.75,
                 child: ListView(
                   children: [
-                    Container(
-                        width: size.width,
-                        padding:
-                            const EdgeInsetsDirectional.symmetric(vertical: 4),
-                        decoration: BoxDecoration(color: appColors.inkBase),
-                        child: Center(
-                          child: Text(
-                            'Chỉ đọc',
-                            style: textTheme.bodyMedium
-                                ?.copyWith(color: appColors.skyLightest),
-                          ),
-                        )),
                     FutureBuilder<ChapterVersion?>(
                         future: getChapterVersionDetail(chapterVersionId),
                         builder: (context, snapshot) {
@@ -650,22 +650,26 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                             return Text(snapshot.error.toString(),
                                 style: textTheme.titleMedium);
                           }
+                          ChapterVersion? chapterVersion = snapshot.data;
                           return Skeletonizer(
                             enabled: snapshot.connectionState ==
                                 ConnectionState.waiting,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                AppImage(
-                                  width: double.infinity,
-                                  height: size.height * 0.2,
-                                  url: snapshot.data?.bannerUrl,
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(12),
+                                  child: AppImage(
+                                    width: double.infinity,
+                                    height: size.height * 0.2,
+                                    url: snapshot.data?.bannerUrl,
+                                  ),
                                 ),
                                 Container(
                                   padding: EdgeInsets.only(top: 32),
                                   width: double.infinity,
                                   child: text.Text(
-                                    'Chương: ${snapshot.data?.content}',
+                                    '${snapshot.data?.title}',
                                     style: textTheme.headlineMedium?.copyWith(),
                                     textAlign: TextAlign.center,
                                   ),
@@ -712,6 +716,8 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                         case 1:
                           previewChapterVersion(
                               chapterVersionId:
+                                  chapterByIdQuery.data?.currentVersionId ?? '',
+                              chapterCurrentVersionId:
                                   chapterByIdQuery.data?.currentVersionId ??
                                       '');
                           break;
@@ -746,7 +752,8 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                                                       chapterVersionsQuery
                                                               .data?[index]
                                                               .id ??
-                                                          '');
+                                                          '',
+                                                  chapterCurrentVersionId: '');
                                             },
                                             child: Container(
                                               alignment: Alignment.centerLeft,

@@ -2,7 +2,6 @@ import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_scree
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/gift/gift_model.dart';
-import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/repositories/gift_repository.dart';
@@ -22,14 +21,12 @@ import 'package:skeletonizer/skeletonizer.dart';
 class DonateGiftModal extends HookConsumerWidget {
   final String? storyId;
   final String? authorId;
-  final dynamic coins;
   final AuthUser? userData;
   final Function() onAfterSendGift;
   const DonateGiftModal(
       {super.key,
       this.storyId,
       this.authorId,
-      this.coins = 0,
       required this.onAfterSendGift,
       this.userData});
 
@@ -42,11 +39,9 @@ class DonateGiftModal extends HookConsumerWidget {
     final userQuery = useQuery(
       ['userById', currentUserId],
       () => AuthRepository().getMyUserById(),
-      refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 1),
     );
 
-    var lists = giftsQuery.data ?? [];
+    var lists = (giftsQuery.data ?? []);
     // lists.sort((a, b) => a.price?.compareTo(b.price ?? 0));
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -65,12 +60,11 @@ class DonateGiftModal extends HookConsumerWidget {
     }
 
     handleSendingGift(Gift? gift, total) async {
-      var totalCoinsOfUser = userQuery.data?.wallets![0].balance ?? 0;
+      var totalCoinsOfUser = userQuery.data?.wallets?[0].balance ?? 0;
 
       if (double.parse('${(gift?.price ?? 0) * total}') >
           double.parse(totalCoinsOfUser.toString())) {
         context.pop();
-        print('not enough');
         AppSnackBar.buildTopSnackBar(
             context, 'Không đủ số dư', null, SnackBarType.info);
       } else {
@@ -143,17 +137,9 @@ class DonateGiftModal extends HookConsumerWidget {
                           Flexible(
                               flex: 2,
                               child: Text(
-                                formatNumberWithSeperator(
-                                    int.tryParse(coins.toStringAsFixed(0))),
-                                style: textTheme.titleMedium
-                                    ?.copyWith(color: appColors.inkBase),
-                                textAlign: TextAlign.center,
-                              )),
-                          Flexible(
-                              flex: 2,
-                              child: Text(
-                                formatNumberWithSeperator(
-                                    int.tryParse(coins.toStringAsFixed(0))),
+                                formatNumberWithSeperator(int.tryParse(userQuery
+                                    .data?.wallets?[0].balance
+                                    .toStringAsFixed(0))),
                                 style: textTheme.titleMedium
                                     ?.copyWith(color: appColors.inkBase),
                                 textAlign: TextAlign.center,
@@ -206,9 +192,7 @@ class DonateGiftModal extends HookConsumerWidget {
                           .map((option) => GestureDetector(
                               onTap: () {
                                 selectedItem.value = option;
-
                                 handleTotalCoins();
-                                // handleSendingGift(selectedItem?.value as Gift);
                               },
                               child: Padding(
                                   padding: const EdgeInsets.only(right: 2),
@@ -253,6 +237,7 @@ class DonateGiftModal extends HookConsumerWidget {
                                   mainAxisSize: MainAxisSize.min,
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     InkWell(
                                         onTap: () {

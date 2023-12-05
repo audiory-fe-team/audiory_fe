@@ -272,7 +272,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                       });
                 },
                 child: interactionItem('Người theo dõi',
-                    formatNumber(profile?.numberOfFollowers ?? 0))),
+                    formatNumber(profile?.followers?.length ?? 0))),
           ),
         ]));
   }

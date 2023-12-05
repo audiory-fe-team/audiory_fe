@@ -248,6 +248,7 @@ class ReadingLists extends HookConsumerWidget {
                                               hintText:
                                                   'Ví dụ: Truyện trinh thám hay',
                                               name: 'name',
+                                              maxLines: 1,
                                               validator: FormBuilderValidators
                                                   .required(
                                                       errorText:

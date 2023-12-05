@@ -16,7 +16,7 @@ class DonateItemCard extends StatelessWidget {
     return Column(
       children: [
         Container(
-          padding: EdgeInsets.all(12),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             border: Border.all(
                 width: 2.5,
@@ -40,9 +40,20 @@ class DonateItemCard extends StatelessWidget {
                 height: 70),
           ),
         ),
+        Container(
+          width: 90,
+          child: Text(
+            gift.name ?? 'Quà',
+            style: textTheme.titleMedium,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
+            textAlign: TextAlign.center,
+          ),
+        ),
         Text(
-          gift.name ?? 'Quà',
-          style: textTheme.titleSmall,
+          '${gift.price} xu',
+          style: textTheme.titleSmall?.copyWith(
+              fontStyle: FontStyle.italic, color: appColors.inkLighter),
         ),
       ],
     );
