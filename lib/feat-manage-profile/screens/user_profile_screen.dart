@@ -4,6 +4,7 @@ import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_top_bar.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
+import 'package:audiory_v0/feat-manage-profile/screens/follow/followers_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/level/my_level_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/custom_wall_comment.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
@@ -72,23 +73,21 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     final textTheme = Theme.of(context).textTheme;
 
     Widget titleWithLink(String? title, String? link, String? subTitle,
-        dynamic navigateFunc, double? marginBottom) {
+        Function()? navigateFunc, double? marginBottom) {
       return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text(
               title ?? 'Tiêu đề',
-              style: textTheme.headlineMedium,
+              style: textTheme.headlineSmall,
             ),
             GestureDetector(
-                onTap: () {
-                  navigateFunc;
-                },
+                onTap: navigateFunc,
                 child: Text(link ?? 'link',
                     style: textTheme.titleMedium?.copyWith(
-                        color: appColors.primaryBase,
-                        decoration: TextDecoration.underline))),
+                      color: appColors.primaryBase,
+                    ))),
           ],
         ),
         subTitle != null
@@ -176,10 +175,20 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                 ),
               ],
               if (followingList?.isEmpty == false) ...[
-                titleWithLink(
-                    'Đang theo dõi', 'Thêm', '${followingList?.length} hồ sơ',
-                    () {
-                  context.go('/');
+                titleWithLink('Đang theo dõi', 'Thêm',
+                    '${min(followingList?.length ?? 0, 10)} hồ sơ', () {
+                  showModalBottomSheet(
+                      context: context,
+                      useSafeArea: true,
+                      isScrollControlled: true,
+                      barrierColor: Colors.white,
+                      useRootNavigator: true,
+                      builder: (context) {
+                        return FollowersScrollList(
+                          title: 'Danh sách đang theo dõi',
+                          profileList: followingList ?? [],
+                        );
+                      });
                 }, 12),
                 followingList != null
                     ? ProfileScrollList(profileList: followingList)
@@ -195,7 +204,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
   }
 
   Widget interactionInfo(
-      int? numOfStories, int? numOfReadingList, int? numOfFollowers) {
+      int? numOfStories, int? numOfReadingList, Profile? profile) {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -206,28 +215,26 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     final sharedTitleStyle = textTheme.titleMedium;
 
     Widget interactionItem(String title, data) {
-      return Flexible(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              data,
-              style: sharedHeaderStyle,
-            ),
-            const SizedBox(height: 4),
-            SizedBox(
-              height: 20,
-              child: Center(
-                child: Text(
-                  (title).toString(),
-                  style: textTheme.titleSmall,
-                  textAlign: TextAlign.center,
-                ),
+      return Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            data,
+            style: sharedHeaderStyle,
+          ),
+          const SizedBox(height: 4),
+          SizedBox(
+            height: 20,
+            child: Center(
+              child: Text(
+                (title).toString(),
+                style: textTheme.titleSmall,
+                textAlign: TextAlign.center,
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       );
     }
 
@@ -237,14 +244,36 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
           if (numOfStories != 0) ...[
-            interactionItem('Tác phẩm', '${numOfStories ?? '0'}'),
+            Flexible(
+              child: GestureDetector(
+                  child: interactionItem('Tác phẩm', '${numOfStories ?? '0'}')),
+            ),
             const VerticalDivider(),
           ],
-          interactionItem('Danh sách đọc', '${numOfReadingList ?? '0'}'),
+          Flexible(
+            child: GestureDetector(
+                child: interactionItem(
+                    'Danh sách đọc', '${numOfReadingList ?? '0'}')),
+          ),
           const VerticalDivider(),
-          interactionItem('Người theo dõi', formatNumber(numOfFollowers ?? 0)),
-          // const VerticalDivider(),
-          // interactionItem('Bình luận', '40'),
+          Flexible(
+            child: GestureDetector(
+                onTap: () {
+                  showModalBottomSheet(
+                      context: context,
+                      useSafeArea: true,
+                      isScrollControlled: true,
+                      barrierColor: Colors.white,
+                      useRootNavigator: true,
+                      builder: (context) {
+                        return FollowersScrollList(
+                          profileList: profile?.followers ?? [],
+                        );
+                      });
+                },
+                child: interactionItem('Người theo dõi',
+                    formatNumber(profile?.numberOfFollowers ?? 0))),
+          ),
         ]));
   }
 
@@ -409,7 +438,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                       child: interactionInfo(
                         publishedStoriesQuery.data?.length,
                         readingStoriesQuery.data?.length,
-                        profileData?.numberOfFollowers,
+                        profileData,
                       ),
                     ),
                   ),

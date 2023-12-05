@@ -13,7 +13,6 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -95,8 +94,8 @@ class _MuteAccountsScreenState extends State<MuteAccountsScreen> {
                   var account = muteAccountsQuery.data?[index];
                   if (muteAccountsQuery.data?.isEmpty ?? false) {
                     return Container(
-                      margin:
-                          EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 24, horizontal: 16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,

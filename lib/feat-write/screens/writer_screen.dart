@@ -75,12 +75,15 @@ class _WriterScreenState extends ConsumerState<WriterScreen> {
         ['myStories', currentUserId], () => StoryRepostitory().fetchMyStories(),
         refetchOnMount: RefetchOnMount.stale,
         staleDuration: const Duration(minutes: 5)); //userId=me
-    final filteredStories = _formKey.currentState?.fields['search']?.value == ''
+    final searchValue = _formKey.currentState?.fields['search']?.value
+            ?.toString()
+            .trim()
+            .toLowerCase() ??
+        '';
+    final filteredStories = searchValue == ''
         ? (myStoriesQuery.data ?? [])
         : (myStoriesQuery.data ?? []).where((element) =>
-            element.title?.toLowerCase().contains(
-                _formKey.currentState?.fields['search']?.value ?? '') ??
-            false);
+            element.title?.toLowerCase().trim().contains(searchValue) ?? false);
 
     if (myStoriesQuery != result) {
       setState(() {
