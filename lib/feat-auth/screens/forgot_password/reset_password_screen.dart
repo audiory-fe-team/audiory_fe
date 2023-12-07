@@ -78,7 +78,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                   name: 'newPassword',
                   hintText: 'Chứa ít nhất 8 ký tự',
                   validator: (value) {
-                    if (value!.length < 8) {
+                    if ((value?.length ?? 0) < 8) {
                       return 'Mật khẩu yêu cầu ít nhất 8 ký tự';
                     }
                   },
