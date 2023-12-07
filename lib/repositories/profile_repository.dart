@@ -85,7 +85,7 @@ class ProfileRepository {
     final Map<String, String> firstMap = reqBody;
     final Map<String, MultipartFile> secondeMap;
     //if the img does not change, do not have form_file field
-    if (formFile is String) {
+    if (formFile[0] != null || formFile[0].runtimeType != String) {
       secondeMap = {};
     } else {
       File file = File(formFile[0].path); //import dart:io
@@ -98,10 +98,7 @@ class ProfileRepository {
     finalMap.addAll(secondeMap);
 
     final FormData formData = FormData.fromMap(finalMap);
-    if (kDebugMode) {
-      print('FORM DATA');
-      print(formData.fields);
-    }
+
     try {
       final response = await dio.patch('${Endpoints().user}/$userId/profile',
           data: formData, options: Options(headers: header));
@@ -138,7 +135,7 @@ class ProfileRepository {
     final Map<String, String> firstMap = reqBody;
     final Map<String, MultipartFile> secondeMap;
     //if the img does not change, do not have form_file field
-    if (formFile is String) {
+    if (formFile == null) {
       secondeMap = {};
     } else {
       File file = File(formFile[0].path); //import dart:io

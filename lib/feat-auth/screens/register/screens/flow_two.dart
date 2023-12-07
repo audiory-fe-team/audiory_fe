@@ -245,8 +245,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                               //parse birth
                               final parsedDate =
                                   DateFormat('dd/MM/yyyy').parse(_selectedDate);
-                              body['dob'] =
-                                  parsedDate.toUtc().toIso8601String();
+                              body['dob'] = parsedDate.toString();
 
                               //update new user data
                               Profile? updatedProfile =

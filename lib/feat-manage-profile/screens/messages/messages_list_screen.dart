@@ -131,6 +131,8 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
         );
       }
 
+      print(list.length);
+
       return list.isEmpty
           ? const Text('Chưa có cuộc hội thoại nào')
           : Column(

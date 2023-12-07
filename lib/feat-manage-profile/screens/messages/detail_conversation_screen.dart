@@ -67,7 +67,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     super.initState();
     connectWebsocket(); //connect to receive and send message
     if (widget.conversation?.id != '') {
-      print('mark as read');
       markConversationAsRead(); // mark conversation as read if the conversation is not first time
     }
     try {
@@ -102,27 +101,25 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
       });
     }
 
-    print('ID FROM OUTSIDE ${widget.conversation?.id}');
-    print('CONVERSATIONiD ${conversationId}');
-
     Map<String, dynamic> message = {
       'receiver_id': widget.conversation?.receiverId ?? '',
       'content': content,
       'sender_id': widget.userId,
-      'created_date': DateFormat('yyyy-MM-ddTHH:mm:ss').format(DateTime.now())
     };
     if (conversationId != '') {
       message['conversation_id'] = widget.conversation?.id ?? '';
     }
 
     var actualBody = jsonEncode(message);
+    channel?.sink.add(actualBody);
+
+    print('body $actualBody');
+    message['created_date'] = DateTime.now().toIso8601String();
+
     setState(() {
       messages.insert(0, Message.fromJson(message));
     });
 
-    print(messages);
-
-    channel?.sink.add(actualBody);
     widget.refetchCallback();
   }
 
@@ -150,6 +147,9 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
         ['conversation', widget.conversation?.id],
         () => ConversationRepository().fetchConversationById(
             conversationId: widget.conversation?.id, offset: 0, limit: 10));
+
+    print(conversationQuery.data);
+    print(DateTime.now().toIso8601String());
     Widget messageCard(
         {String? content = '',
         bool? isMe = true,
@@ -318,6 +318,10 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                   StreamBuilder(
                     stream: channel?.stream,
                     builder: (context, snapshot) {
+                      print('CONNECTION STATE');
+                      print('${snapshot.connectionState}');
+                      print('${snapshot.hasData}');
+                      print('${snapshot.error}');
                       if (snapshot.hasData) {
                         var decodedJson = utf8.decode(snapshot.data);
                         print('SNAPSHOT DATA ${decodedJson}');
@@ -339,7 +343,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                         // }
                       } else {
                         print('SNAPSHOT ERROR');
-
                         print('${snapshot.error}');
                       }
 
@@ -352,13 +355,13 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
           ),
         ),
         Skeletonizer(
-          enabled: conversationQuery.isFetching,
+          enabled:
+              conversationQuery.isFetching && widget.conversation?.id != '',
           child: Align(
             alignment: Alignment.bottomCenter,
             child: conversationQuery.data?.isBlocked == false ||
                     widget.conversation?.id == ''
                 ? DetailMessageBottomBar(sendMessageCallback: (content) {
-                    print('content $content');
                     _sendMessage(
                         content ?? '', conversationQuery.data?.messages ?? []);
 

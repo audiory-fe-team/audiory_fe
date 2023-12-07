@@ -714,6 +714,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                           saveDraft();
                           break;
                         case 1:
+                          //add save draft
                           previewChapterVersion(
                               chapterVersionId:
                                   chapterByIdQuery.data?.currentVersionId ?? '',
@@ -857,10 +858,7 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                   onTap: () async {
                     try {
                       publishChapter();
-                    } catch (e) {
-                      print('error');
-                      print('$e');
-                    }
+                    } catch (e) {}
                   },
                 )),
               ),

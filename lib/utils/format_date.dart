@@ -14,7 +14,6 @@ String appFormatDate(String? date) {
 
 String appFormatDateWithHHmm(String? date) {
   //use package intl
-  print(date);
 
   if (date != null && date != "") {
     DateTime dateTime = DateTime.parse(date);

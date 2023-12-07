@@ -47,19 +47,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     DateTime? datepicked;
     Widget userInfo(Profile? profile) {
       const genderList = Sex.values;
-      String formatDate(String? date) {
-        //use package intl
-        DateTime dateTime = DateTime.parse(date as String);
-        return DateFormat('dd/MM/yyyy').format(dateTime);
-      }
 
       Future<void> showdobpicker() async {
         datepicked = await showDatePicker(
             helpText: 'Chọn ngày sinh',
             context: context,
-            initialDate: DateTime.tryParse(
-                    profile?.dob ?? DateTime(2000, 1, 1).toString()) ??
-                DateTime(2000, 1, 1),
             firstDate: DateTime(1933, 1, 1),
             lastDate: DateTime(2017, 1, 1),
 
@@ -94,10 +86,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             });
         // ignore: unrelated_type_equality_checks
         if (datepicked != null) {
-          print('DATE $datepicked');
           setState(() {
-            _selectedDate = appFormatDate(datepicked?.toString());
+            _selectedDate = datepicked?.toString() ?? '';
           });
+          _formKey.currentState?.setInternalFieldValue('dob', _selectedDate);
         }
       }
 
@@ -118,20 +110,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
-                // Flexible(
-                //   child: GestureDetector(
-                //       onTap: () {
-                //         showdobpicker();
-                //       },
-                //       child: Padding(
-                //         padding: const EdgeInsets.only(right: 8.0),
-                //         child: Icon(
-                //           Icons.calendar_today,
-                //           color: appColors.skyDark,
-                //           size: 20,
-                //         ),
-                //       )),
-                // ),
               ],
             ),
             const SizedBox(
@@ -153,10 +131,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         size: 20,
                       ),
                     )),
-                initialValue: _selectedDate != ''
-                    ? _selectedDate
-                    : formatDate(profile?.dob),
-                hintText: _selectedDate,
+                initialValue: _selectedDate,
                 hintTextStyle: TextStyle(color: appColors.inkBase),
                 validator: (value) {
                   if ((value?.allMatches(
@@ -194,7 +169,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           initialValue: profile?.avatarUrl != null &&
                                   profile?.avatarUrl != ''
                               ? [profile?.avatarUrl ?? '']
-                              : [],
+                              : [null],
                           iconColor: appColors.inkBase,
                           placeholderWidget: Stack(
                               alignment: AlignmentDirectional.center,
@@ -320,11 +295,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ?.fields['description']?.value;
                                   body['facebook_url'] = _formKey.currentState
                                       ?.fields['facebook_url']?.value;
-                                  final parsedDate = DateTime.tryParse('');
-                                  // body['dob'] =
-                                  //     parsedDate?.toUtc().toIso8601String() ??
-                                  //         '';
+                                  print(
+                                      'SELECTED ${_selectedDate.split(' ')[0]}');
+                                  body['dob'] = _selectedDate.split(' ')[0];
 
+                                  print(body);
                                   //edit profile
                                   showDialog(
                                       context: context,
@@ -339,7 +314,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         .currentState?.fields['photos']?.value,
                                     body,
                                   );
-                                  print('PROFILE ${newProfile}');
+                                  print('PROFILE ${newProfile?.dob}');
                                   if (context.mounted) {
                                     context.pop();
                                   }

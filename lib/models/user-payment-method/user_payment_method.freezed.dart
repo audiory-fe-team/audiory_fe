@@ -14,17 +14,19 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
-UserPaymenthMethod _$UserPaymenthMethodFromJson(Map<String, dynamic> json) {
-  return _UserPaymenthMethod.fromJson(json);
+UserPaymentMethod _$UserPaymentMethodFromJson(Map<String, dynamic> json) {
+  return _UserPaymentMethod.fromJson(json);
 }
 
 /// @nodoc
-mixin _$UserPaymenthMethod {
+mixin _$UserPaymentMethod {
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
 //field key : camelCase
   @JsonKey(name: 'id')
   String get id => throw _privateConstructorUsedError;
+  @JsonKey(name: 'payment_method_id')
+  int? get paymentMethodId => throw _privateConstructorUsedError;
   @JsonKey(name: 'created_date')
   String? get createdDate => throw _privateConstructorUsedError;
   @JsonKey(name: 'account')
@@ -36,18 +38,19 @@ mixin _$UserPaymenthMethod {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $UserPaymenthMethodCopyWith<UserPaymenthMethod> get copyWith =>
+  $UserPaymentMethodCopyWith<UserPaymentMethod> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $UserPaymenthMethodCopyWith<$Res> {
-  factory $UserPaymenthMethodCopyWith(
-          UserPaymenthMethod value, $Res Function(UserPaymenthMethod) then) =
-      _$UserPaymenthMethodCopyWithImpl<$Res, UserPaymenthMethod>;
+abstract class $UserPaymentMethodCopyWith<$Res> {
+  factory $UserPaymentMethodCopyWith(
+          UserPaymentMethod value, $Res Function(UserPaymentMethod) then) =
+      _$UserPaymentMethodCopyWithImpl<$Res, UserPaymentMethod>;
   @useResult
   $Res call(
       {@JsonKey(name: 'id') String id,
+      @JsonKey(name: 'payment_method_id') int? paymentMethodId,
       @JsonKey(name: 'created_date') String? createdDate,
       @JsonKey(name: 'account') String? account,
       @JsonKey(name: 'account_name') String? accountName,
@@ -55,9 +58,9 @@ abstract class $UserPaymenthMethodCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$UserPaymenthMethodCopyWithImpl<$Res, $Val extends UserPaymenthMethod>
-    implements $UserPaymenthMethodCopyWith<$Res> {
-  _$UserPaymenthMethodCopyWithImpl(this._value, this._then);
+class _$UserPaymentMethodCopyWithImpl<$Res, $Val extends UserPaymentMethod>
+    implements $UserPaymentMethodCopyWith<$Res> {
+  _$UserPaymentMethodCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -68,6 +71,7 @@ class _$UserPaymenthMethodCopyWithImpl<$Res, $Val extends UserPaymenthMethod>
   @override
   $Res call({
     Object? id = null,
+    Object? paymentMethodId = freezed,
     Object? createdDate = freezed,
     Object? account = freezed,
     Object? accountName = freezed,
@@ -78,6 +82,10 @@ class _$UserPaymenthMethodCopyWithImpl<$Res, $Val extends UserPaymenthMethod>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
+      paymentMethodId: freezed == paymentMethodId
+          ? _value.paymentMethodId
+          : paymentMethodId // ignore: cast_nullable_to_non_nullable
+              as int?,
       createdDate: freezed == createdDate
           ? _value.createdDate
           : createdDate // ignore: cast_nullable_to_non_nullable
@@ -99,15 +107,16 @@ class _$UserPaymenthMethodCopyWithImpl<$Res, $Val extends UserPaymenthMethod>
 }
 
 /// @nodoc
-abstract class _$$UserPaymenthMethodImplCopyWith<$Res>
-    implements $UserPaymenthMethodCopyWith<$Res> {
-  factory _$$UserPaymenthMethodImplCopyWith(_$UserPaymenthMethodImpl value,
-          $Res Function(_$UserPaymenthMethodImpl) then) =
-      __$$UserPaymenthMethodImplCopyWithImpl<$Res>;
+abstract class _$$UserPaymentMethodImplCopyWith<$Res>
+    implements $UserPaymentMethodCopyWith<$Res> {
+  factory _$$UserPaymentMethodImplCopyWith(_$UserPaymentMethodImpl value,
+          $Res Function(_$UserPaymentMethodImpl) then) =
+      __$$UserPaymentMethodImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
       {@JsonKey(name: 'id') String id,
+      @JsonKey(name: 'payment_method_id') int? paymentMethodId,
       @JsonKey(name: 'created_date') String? createdDate,
       @JsonKey(name: 'account') String? account,
       @JsonKey(name: 'account_name') String? accountName,
@@ -115,27 +124,32 @@ abstract class _$$UserPaymenthMethodImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$UserPaymenthMethodImplCopyWithImpl<$Res>
-    extends _$UserPaymenthMethodCopyWithImpl<$Res, _$UserPaymenthMethodImpl>
-    implements _$$UserPaymenthMethodImplCopyWith<$Res> {
-  __$$UserPaymenthMethodImplCopyWithImpl(_$UserPaymenthMethodImpl _value,
-      $Res Function(_$UserPaymenthMethodImpl) _then)
+class __$$UserPaymentMethodImplCopyWithImpl<$Res>
+    extends _$UserPaymentMethodCopyWithImpl<$Res, _$UserPaymentMethodImpl>
+    implements _$$UserPaymentMethodImplCopyWith<$Res> {
+  __$$UserPaymentMethodImplCopyWithImpl(_$UserPaymentMethodImpl _value,
+      $Res Function(_$UserPaymentMethodImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? id = null,
+    Object? paymentMethodId = freezed,
     Object? createdDate = freezed,
     Object? account = freezed,
     Object? accountName = freezed,
     Object? updatedDate = freezed,
   }) {
-    return _then(_$UserPaymenthMethodImpl(
+    return _then(_$UserPaymentMethodImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String,
+      paymentMethodId: freezed == paymentMethodId
+          ? _value.paymentMethodId
+          : paymentMethodId // ignore: cast_nullable_to_non_nullable
+              as int?,
       createdDate: freezed == createdDate
           ? _value.createdDate
           : createdDate // ignore: cast_nullable_to_non_nullable
@@ -158,16 +172,17 @@ class __$$UserPaymenthMethodImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$UserPaymenthMethodImpl implements _UserPaymenthMethod {
-  const _$UserPaymenthMethodImpl(
+class _$UserPaymentMethodImpl implements _UserPaymentMethod {
+  const _$UserPaymentMethodImpl(
       {@JsonKey(name: 'id') required this.id,
+      @JsonKey(name: 'payment_method_id') this.paymentMethodId = 0,
       @JsonKey(name: 'created_date') this.createdDate = '',
       @JsonKey(name: 'account') this.account = '',
       @JsonKey(name: 'account_name') this.accountName = '',
       @JsonKey(name: 'updated_date') this.updatedDate = ''});
 
-  factory _$UserPaymenthMethodImpl.fromJson(Map<String, dynamic> json) =>
-      _$$UserPaymenthMethodImplFromJson(json);
+  factory _$UserPaymentMethodImpl.fromJson(Map<String, dynamic> json) =>
+      _$$UserPaymentMethodImplFromJson(json);
 
 //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
@@ -175,6 +190,9 @@ class _$UserPaymenthMethodImpl implements _UserPaymenthMethod {
   @override
   @JsonKey(name: 'id')
   final String id;
+  @override
+  @JsonKey(name: 'payment_method_id')
+  final int? paymentMethodId;
   @override
   @JsonKey(name: 'created_date')
   final String? createdDate;
@@ -190,15 +208,17 @@ class _$UserPaymenthMethodImpl implements _UserPaymenthMethod {
 
   @override
   String toString() {
-    return 'UserPaymenthMethod(id: $id, createdDate: $createdDate, account: $account, accountName: $accountName, updatedDate: $updatedDate)';
+    return 'UserPaymentMethod(id: $id, paymentMethodId: $paymentMethodId, createdDate: $createdDate, account: $account, accountName: $accountName, updatedDate: $updatedDate)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$UserPaymenthMethodImpl &&
+            other is _$UserPaymentMethodImpl &&
             (identical(other.id, id) || other.id == id) &&
+            (identical(other.paymentMethodId, paymentMethodId) ||
+                other.paymentMethodId == paymentMethodId) &&
             (identical(other.createdDate, createdDate) ||
                 other.createdDate == createdDate) &&
             (identical(other.account, account) || other.account == account) &&
@@ -210,41 +230,45 @@ class _$UserPaymenthMethodImpl implements _UserPaymenthMethod {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, createdDate, account, accountName, updatedDate);
+  int get hashCode => Object.hash(runtimeType, id, paymentMethodId, createdDate,
+      account, accountName, updatedDate);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$UserPaymenthMethodImplCopyWith<_$UserPaymenthMethodImpl> get copyWith =>
-      __$$UserPaymenthMethodImplCopyWithImpl<_$UserPaymenthMethodImpl>(
+  _$$UserPaymentMethodImplCopyWith<_$UserPaymentMethodImpl> get copyWith =>
+      __$$UserPaymentMethodImplCopyWithImpl<_$UserPaymentMethodImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$UserPaymenthMethodImplToJson(
+    return _$$UserPaymentMethodImplToJson(
       this,
     );
   }
 }
 
-abstract class _UserPaymenthMethod implements UserPaymenthMethod {
-  const factory _UserPaymenthMethod(
+abstract class _UserPaymentMethod implements UserPaymentMethod {
+  const factory _UserPaymentMethod(
           {@JsonKey(name: 'id') required final String id,
+          @JsonKey(name: 'payment_method_id') final int? paymentMethodId,
           @JsonKey(name: 'created_date') final String? createdDate,
           @JsonKey(name: 'account') final String? account,
           @JsonKey(name: 'account_name') final String? accountName,
           @JsonKey(name: 'updated_date') final String? updatedDate}) =
-      _$UserPaymenthMethodImpl;
+      _$UserPaymentMethodImpl;
 
-  factory _UserPaymenthMethod.fromJson(Map<String, dynamic> json) =
-      _$UserPaymenthMethodImpl.fromJson;
+  factory _UserPaymentMethod.fromJson(Map<String, dynamic> json) =
+      _$UserPaymentMethodImpl.fromJson;
 
   @override //add the code in analysis_options.yaml to ignore the JsonKey warning
 //json key : snack_case
 //field key : camelCase
   @JsonKey(name: 'id')
   String get id;
+  @override
+  @JsonKey(name: 'payment_method_id')
+  int? get paymentMethodId;
   @override
   @JsonKey(name: 'created_date')
   String? get createdDate;
@@ -259,6 +283,6 @@ abstract class _UserPaymenthMethod implements UserPaymenthMethod {
   String? get updatedDate;
   @override
   @JsonKey(ignore: true)
-  _$$UserPaymenthMethodImplCopyWith<_$UserPaymenthMethodImpl> get copyWith =>
+  _$$UserPaymentMethodImplCopyWith<_$UserPaymentMethodImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
