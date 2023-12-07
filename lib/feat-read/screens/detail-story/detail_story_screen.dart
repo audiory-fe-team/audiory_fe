@@ -96,8 +96,6 @@ class DetailStoryScreen extends HookConsumerWidget {
       String chapterId,
       int price,
     ) async {
-      print(chapterId);
-      print(price);
       var totalCoins = userQuery.data?.wallets?.isEmpty == true
           ? 0
           : userQuery.data?.wallets?[0].balance;
@@ -141,9 +139,7 @@ class DetailStoryScreen extends HookConsumerWidget {
           context: context,
           builder: (context) => Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              height: isBuyStory
-                  ? MediaQuery.of(context).size.height / 2.5
-                  : MediaQuery.of(context).size.height / 3,
+              height: MediaQuery.of(context).size.height / 2.5,
               child: BuyChapterModal(
                   handleBuyStory: () {
                     handleBuyStory();
@@ -267,17 +263,11 @@ class DetailStoryScreen extends HookConsumerWidget {
           ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Skeleton.shade(
-                child: isOffline
-                    ? AppCacheImage(
-                        url: story?.coverUrl,
-                        width: 110,
-                        height: 165,
-                        fit: BoxFit.cover)
-                    : AppImage(
-                        url: story?.coverUrl,
-                        width: 110,
-                        height: 165,
-                        fit: BoxFit.cover),
+                child: AppImage(
+                    url: story?.coverUrl,
+                    width: 110,
+                    height: 165,
+                    fit: BoxFit.cover),
               )),
           const SizedBox(height: 24),
           Text(

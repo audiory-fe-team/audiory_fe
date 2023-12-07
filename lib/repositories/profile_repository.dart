@@ -149,7 +149,7 @@ class ProfileRepository {
     final Map<String, dynamic> finalMap = {};
     finalMap.addAll(firstMap);
     finalMap.addAll(secondeMap);
-
+    print(finalMap);
     final FormData formData = FormData.fromMap(finalMap);
 
     try {

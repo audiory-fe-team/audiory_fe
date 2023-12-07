@@ -42,7 +42,10 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
               final result = await AuthRepository().verifyEmail(
                   email: _formKey.currentState?.fields['email']?.value,
                   username: _formKey.currentState?.fields['username']?.value);
-              if (result == 200) {
+
+              print(result['code'] == 400);
+              print(result['message']);
+              if (result['code'] == 200) {
                 Map<String, String> body = {
                   'email': _formKey.currentState?.fields['email']?.value,
                   'password': _formKey.currentState?.fields['password']?.value,
@@ -58,16 +61,16 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                     null,
                     SnackBarType.success);
               } else {
+                print('err');
+                print(result['message']);
                 // ignore: use_build_context_synchronously
-                AppSnackBar.buildSnackbar(
-                    context, 'Email đã được sử dụng', null, SnackBarType.error);
+                AppSnackBar.buildTopSnackBar(
+                    context, result['message'], null, SnackBarType.error);
 
-                _formKey.currentState?.reset();
+                // _formKey.currentState?.reset();
               }
             } on Exception catch (e) {
-              if (kDebugMode) {
-                print(e);
-              }
+              print('errro');
             }
           }
         });

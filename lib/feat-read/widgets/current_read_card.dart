@@ -41,7 +41,7 @@ class CurrentReadCard extends HookWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final coverUrl = libStory?.story.coverUrl ?? story?.coverUrl;
-    final storyId = libStory?.storyId ?? story?.id ?? 'not-fount';
+    final storyId = libStory?.storyId ?? story?.id ?? 'not-found';
 
     final title = libStory?.story.title ?? story?.title ?? 'Tiêu đề truyện';
 
@@ -49,8 +49,7 @@ class CurrentReadCard extends HookWidget {
         story?.author?.fullName ??
         'Tiêu đề truyện';
     final downloadProgress = useState<double?>(null);
-
-
+    print(libStory?.story.coverUrl);
     handleDownloadStory() async {
       final storyInDb = await storyDb.getStory(storyId);
       if (storyInDb != null) {
@@ -127,7 +126,7 @@ class CurrentReadCard extends HookWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    AppCacheImage(
+                    AppImage(
                         url: coverUrl,
                         width: 85,
                         height: 120,

@@ -5,9 +5,7 @@ import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_top_bar.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/level/my_level_screen.dart';
-import 'package:audiory_v0/feat-manage-profile/screens/wall-comment/wall_comment_detail.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/custom_wall_comment.dart';
-import 'package:audiory_v0/feat-read/screens/comment/comment_detail_screen.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/models/wall-comment/wall_comment_model.dart';
@@ -34,7 +32,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 import '../../models/AuthUser.dart';
 import '../../models/Profile.dart';
 import '../../theme/theme_constants.dart';
-import '../../widgets/buttons/app_icon_button.dart';
 import 'package:fquery/fquery.dart';
 
 class UserProfileScreen extends StatefulHookConsumerWidget {
@@ -331,7 +328,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                     authorLevel: userData?.authorLevel,
                                     isAuthorFlairSelected:
                                         userData?.isAuthorFlairSelected,
-                                    callback: profileQuery.refetch,
+                                    callback: () {
+                                      profileQuery.refetch();
+                                    },
                                   );
                                 });
                           },
@@ -513,19 +512,25 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                                     const EdgeInsets.symmetric(
                                                         vertical: 16),
                                                 width: size.width - 32,
-                                                height: 50,
+                                                height: 70,
                                                 child: TextField(
-                                                  onTap: () {},
                                                   controller: controller,
                                                   onChanged: (value) {},
                                                   onSubmitted: (value) {
+                                                    print('on');
+
                                                     FocusScope.of(context)
                                                         .unfocus();
+                                                    try {
+                                                      controller.text == "";
+                                                    } catch (e) {
+                                                      print(e);
+                                                    }
                                                   },
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .bodyMedium,
-                                                  maxLines: 3,
+                                                  // maxLines: 3,
                                                   decoration: InputDecoration(
                                                       hintText: 'Đăng gì đó',
                                                       hintStyle: TextStyle(
@@ -543,8 +548,12 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                                               BorderStyle.none,
                                                         ),
                                                       ),
-                                                      fillColor: appColors
-                                                          .skyLightest,
+                                                      contentPadding:
+                                                          const EdgeInsets.only(
+                                                              left: 16,
+                                                              right: 40),
+                                                      fillColor:
+                                                          appColors.skyLightest,
                                                       filled: true,
                                                       suffixIconConstraints:
                                                           const BoxConstraints(
@@ -553,11 +562,10 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                                       ),
                                                       suffixIcon: Container(
                                                           padding:
-                                                              const EdgeInsets
-                                                                  .all(8),
+                                                              const EdgeInsets.all(
+                                                                  8),
                                                           margin:
-                                                              const EdgeInsets
-                                                                  .only(
+                                                              const EdgeInsets.only(
                                                                   right: 8),
                                                           decoration:
                                                               ShapeDecoration(
@@ -572,15 +580,14 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                                                         .text
                                                                         .trim() !=
                                                                     '') {
+                                                                  print('trim');
                                                                   await CommentRepository
                                                                       .createWallComment(
                                                                     text: controller
                                                                         .text,
                                                                   );
-
                                                                   controller
-                                                                          .text ==
-                                                                      '';
+                                                                      .clear();
 
                                                                   wallCommentsQuery
                                                                       .refetch();
@@ -631,6 +638,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                                     child: CustomWallComment(
                                                       comment: comment,
                                                       callback: () {
+                                                        print('hi');
                                                         wallCommentsQuery
                                                             .refetch();
                                                       },

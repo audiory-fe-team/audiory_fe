@@ -13,7 +13,6 @@ import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:quickalert/quickalert.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -53,16 +52,17 @@ class _BlockAccountsScreenState extends State<BlockAccountsScreen> {
 
       Map<String, String> body = <String, String>{};
 
-      body['description'] = _formKey.currentState?.fields['description']?.value;
-      body['title'] = _formKey.currentState?.fields['title']?.value;
-      body['reported_id'] = accountId;
+      body['description'] =
+          _formKey.currentState?.fields['description']?.value ?? '';
+      body['title'] = _formKey.currentState?.fields['title']?.value ?? '';
+      body['reported_id'] = accountId ?? '';
       body['report_type'] = 'USER';
-      body['user_id'] = widget.userId;
+      body['user_id'] = widget.userId ?? '';
 
       print(body);
       try {
         final res = await InteractionRepository()
-            .report(body, _formKey.currentState!.fields['photo']?.value);
+            .report(body, _formKey.currentState?.fields['photo']?.value);
 
         // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
@@ -74,6 +74,7 @@ class _BlockAccountsScreenState extends State<BlockAccountsScreen> {
       }
     }
 
+    print(blockAccountsQuery.data);
     return Scaffold(
       appBar: CustomAppBar(
           title: Text(
@@ -104,7 +105,7 @@ class _BlockAccountsScreenState extends State<BlockAccountsScreen> {
                           Padding(
                             padding: const EdgeInsets.only(bottom: 16.0),
                             child: Text(
-                              'Bạn đang không chặn  ai cả.',
+                              'Bạn đang không chặn ai cả.',
                               style: textTheme.titleMedium
                                   ?.copyWith(color: appColors.inkBase),
                             ),

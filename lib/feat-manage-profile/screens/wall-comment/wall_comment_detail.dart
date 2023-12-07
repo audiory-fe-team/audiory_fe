@@ -13,7 +13,7 @@ class WallCommentDetailScreen extends StatefulHookWidget {
   final String commentId;
   final WallComment? comment;
   final String? highlightId;
-  final Function callback;
+  final Function() callback;
   const WallCommentDetailScreen(
       {super.key,
       required this.commentId,
@@ -58,6 +58,7 @@ class _WallCommentDetailScreenState extends State<WallCommentDetailScreen> {
       isCommenting.value = false;
 
       commentQuery.refetch();
+      widget.callback();
     }
 
     return Container(
@@ -135,13 +136,21 @@ class _WallCommentDetailScreenState extends State<WallCommentDetailScreen> {
                                             const EdgeInsets.only(bottom: 8),
                                         child: widget.highlightId == null
                                             ? WallCommentCard(
-                                                comment: e, isDetail: true)
+                                                comment: e,
+                                                isDetail: true,
+                                                onDelete: () {
+                                                  widget.callback();
+                                                },
+                                              )
                                             : WallCommentCard(
                                                 comment: e,
                                                 isDetail: true,
                                                 isHighlighted:
-                                                    widget.highlightId ==
-                                                        e.id)))
+                                                    widget.highlightId == e.id,
+                                                onDelete: () {
+                                                  widget.callback();
+                                                },
+                                              )))
                                     .toList())),
                       )
                     ]);

@@ -2,6 +2,7 @@ import 'package:audiory_v0/feat-manage-profile/screens/messages/detail_conversat
 import 'package:audiory_v0/models/conversation/conversation_model.dart';
 import 'package:audiory_v0/repositories/conversation_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
@@ -107,7 +108,9 @@ class _MessagesListScreenState extends State<MessagesListScreen> {
                               )),
                           Flexible(
                               child: Text(
-                            formatDate(conversation.lastActive),
+                            appFormatDateWithHHmm(
+                                    conversation.lastMessage?.createdDate)
+                                .split('-')[1],
                             style: textTheme.bodyMedium?.copyWith(
                                 color: isRead
                                     ? appColors.inkLighter

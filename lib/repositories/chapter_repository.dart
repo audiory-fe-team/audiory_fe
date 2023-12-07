@@ -217,7 +217,10 @@ class ChapterRepository {
 
     var request;
 
-    if (formFile == [] && formFile?[0].runtimeType != String) {
+    print(formFile?[0].runtimeType);
+
+    if (formFile != [] && formFile?[0].runtimeType != String) {
+      print('has photo');
       File file = File(formFile[0].path); //import dart:io
       request = await http.MultipartRequest('POST', url)
         ..fields.addAll(body)
@@ -226,6 +229,7 @@ class ChapterRepository {
           file.path,
         ));
     } else {
+      print('has no phot');
       request = await http.MultipartRequest('POST', url)
         ..fields.addAll(body);
     }

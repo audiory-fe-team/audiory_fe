@@ -153,7 +153,6 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                               color: Colors.white,
                               bgColor: const Color(0xFF439A97),
                               onPressed: () async {
-                                print('is end');
                                 if (bool.parse(
                                     widget.signUpBody?['isForgotPass'] ??
                                         'false')) {
@@ -173,36 +172,38 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                                         SnackBarType.error);
                                   }
                                 } else {
-                                  try {
-                                    Profile? response = await AuthRepository()
-                                        .signUp(
-                                            email:
-                                                widget.signUpBody?['email'] ??
-                                                    '',
-                                            password: widget
-                                                    .signUpBody?['password'] ??
-                                                '',
-                                            username: widget
-                                                    .signUpBody?['username'] ??
-                                                '',
-                                            fullname: widget
-                                                    .signUpBody?['username'] ??
-                                                '',
-                                            code: codeController.text);
+                                  final response = await AuthRepository()
+                                      .signUp(
+                                          email:
+                                              widget.signUpBody?['email'] ?? '',
+                                          password:
+                                              widget.signUpBody?['password'] ??
+                                                  '',
+                                          username:
+                                              widget.signUpBody?['username'] ??
+                                                  '',
+                                          fullname:
+                                              widget.signUpBody?['username'] ??
+                                                  '',
+                                          code: codeController.text);
 
+                                  print(response['code'] == 200);
+                                  print(response['code']);
+                                  print(response['message']);
+
+                                  if (response['code'] == 200) {
                                     FocusManager.instance.primaryFocus
                                         ?.unfocus();
 
                                     // ignore: use_build_context_synchronously
                                     context.pushNamed('flowTwo', extra: {
-                                      'userId': response?.id ??
+                                      'userId': response?['data']['id'] ??
                                           'f374430d-5b57-11ee-9514-0242ac1c0002'
                                     });
-                                  } catch (e) {
-                                    // ignore: use_build_context_synchronously
+                                  } else {
                                     AppSnackBar.buildTopSnackBar(
                                         context,
-                                        'Sai mã xác nhận',
+                                        response['message'] ?? '',
                                         null,
                                         SnackBarType.error);
                                   }

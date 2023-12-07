@@ -17,7 +17,7 @@ class WallCommentCard extends ConsumerStatefulWidget {
   final bool isDetail;
   final bool? isHighlighted;
   final Function? onLike;
-  final Function? onDelete;
+  final Function()? onDelete;
   const WallCommentCard(
       {Key? key,
       required this.comment,
@@ -92,7 +92,7 @@ class _WallCommentCardState extends ConsumerState<WallCommentCard> {
         await AppSnackBar.buildTopSnackBar(
             context, 'Không thể xóa bình luận', null, SnackBarType.error);
       }
-      if (widget.onDelete != null) widget.onDelete!();
+      widget.onDelete;
     }
 
     handleOpenWallCommentDetail(String id) {

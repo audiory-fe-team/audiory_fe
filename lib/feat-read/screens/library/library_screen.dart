@@ -392,7 +392,7 @@ class CurrentReadings extends HookConsumerWidget {
       ['library', currentUserId],
       () => LibraryRepository.fetchMyLibrary(),
       refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 5),
+      staleDuration: const Duration(minutes: 1),
     );
 
     handleDeleteStory(String id) async {
@@ -415,14 +415,14 @@ class CurrentReadings extends HookConsumerWidget {
             libraryQuery.refetch();
           },
           child: ListView(
-              children: (libraryQuery.data?.libraryStory ?? [])
-                  .map((e) => Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      child: CurrentReadCard(
-                        libStory: e,
-                        onDeleteStory: (id) => handleDeleteStory(id),
-                      )))
-                  .toList()),
+              children: (libraryQuery.data?.libraryStory ?? []).map((e) {
+            return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: CurrentReadCard(
+                  libStory: e,
+                  onDeleteStory: (id) => handleDeleteStory(id),
+                ));
+          }).toList()),
         ),
       ),
     );

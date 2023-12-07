@@ -556,6 +556,7 @@ class AppRoutes {
             story: story,
             chapterId: chapterId,
             chapter: chapter,
+            callback: () {},
           );
         },
       ),

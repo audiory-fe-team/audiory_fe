@@ -14,6 +14,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fquery/fquery.dart';
 import 'package:intl/intl.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class DetailConversationScreen extends StatefulHookWidget {
@@ -66,6 +67,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
   markConversationAsRead() async {
     await ConversationRepository()
         .markConversationAsRead(conversationId: widget.conversation?.id ?? '');
+    widget.refetchCallback();
   }
 
   @override
@@ -255,7 +257,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                   content: messageContent,
                   isMe: isMe,
                   date: formatDate(messageItem?.createdDate),
-                  avatarUrl: messageItem?.sender?.avatarUrl ?? ''),
+                  avatarUrl: widget?.conversation?.coverUrl ?? ''),
             );
           },
         ),
@@ -270,7 +272,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
             Flexible(
                 flex: 2,
                 child: Padding(
-                  padding: EdgeInsets.only(right: 16.0),
+                  padding: const EdgeInsets.only(right: 16.0),
                   child: AppAvatarImage(
                     url: widget.conversation?.coverUrl ?? '',
                     size: 40,
@@ -328,14 +330,20 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                       if (snapshot.hasData) {
                         var decodedJson = utf8.decode(snapshot.data);
                         print('SNAPSHOT DATA ${decodedJson}');
+                        print('SNAPSHOT DATA ${jsonDecode(decodedJson)['id']}');
+                        print(messages[0].id);
+                        print(messages[0].id == jsonDecode(decodedJson)['id']);
                         print('${messages.length}');
-
+                        bool existedMessage = messages.any(
+                            (mess) => mess.id == jsonDecode(decodedJson)['id']);
                         print('MESSAGE LIST $messages');
-                        messages.insert(
-                            0, Message.fromJson(jsonDecode(decodedJson)));
+                        if (existedMessage == false) {
+                          messages.insert(
+                              0, Message.fromJson(jsonDecode(decodedJson)));
+                        }
                       } else {
                         print('SNAPSHOT ERROR');
-                        print(messages);
+
                         print('${snapshot.error}');
                       }
 
@@ -347,36 +355,41 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
             ),
           ),
         ),
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: conversationQuery.data?.isBlocked == false
-              ? DetailMessageBottomBar(sendMessageCallback: (content) {
-                  _sendMessage(content, conversationQuery.data?.messages ?? []);
+        Skeletonizer(
+          enabled: conversationQuery.isFetching,
+          child: Align(
+            alignment: Alignment.bottomCenter,
+            child: conversationQuery.data?.isBlocked == false ||
+                    widget.conversation?.id == ''
+                ? DetailMessageBottomBar(sendMessageCallback: (content) {
+                    _sendMessage(
+                        content, conversationQuery.data?.messages ?? []);
 
-                  widget.refetchCallback();
-                })
-              : Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
-                  child: const Text(
-                    'Bạn không thể tiếp tục trò chuyện khi bị chặn',
-                    textAlign: TextAlign.center,
+                    widget.refetchCallback();
+                  })
+                : Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 10),
+                    child: const Text(
+                      'Bạn không thể tiếp tục trò chuyện với người dùng này',
+                      textAlign: TextAlign.center,
+                    ),
                   ),
-                ),
+          ),
         )
       ]),
     );
   }
 
   void scollListener() {
-    print('compare ${_controller.position.pixels}');
+    // print('compare ${_controller.position.pixels}');
     if (_controller.position.pixels == _controller.position.maxScrollExtent) {
       //because listview is reverse
-      print('call');
+      // print('call');
       pageNumber += 1;
       fetchMessages(pageNumber);
     } else {
-      print('dont call');
+      // print('dont call');
     }
   }
 }

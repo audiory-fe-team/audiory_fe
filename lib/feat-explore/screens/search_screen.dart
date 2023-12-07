@@ -767,11 +767,11 @@ class SearchStoryFilter extends HookWidget {
             Expanded(
                 child: OutlinedButton(
                     onPressed: () {
-                      isMatureState.value = isMature;
-                      isPaywalledState.value = isPaywalled;
-                      categoryState.value = category;
-                      sortByState.value = sortBy;
-                      tagsState.value = tags;
+                      isMatureState.value = null;
+                      isPaywalledState.value = null;
+                      categoryState.value = null;
+                      sortByState.value = null;
+                      tagsState.value = null;
                     },
                     style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.all(8),

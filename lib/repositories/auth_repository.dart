@@ -99,7 +99,7 @@ class AuthRepository extends ChangeNotifier {
     }
   }
 
-  Future<Profile?> signUp({
+  Future<dynamic> signUp({
     required String email,
     required String username,
     required String password,
@@ -118,21 +118,11 @@ class AuthRepository extends ChangeNotifier {
       "Content-type": "application/json",
       "Accept": "application/json",
     };
-    try {
-      final response =
-          await http.post(url, headers: header, body: jsonEncode(body));
-      if (kDebugMode) {
-        print('res');
-        print(response.body);
-      }
-      return Profile.fromJson(
-          jsonDecode(response.body)['data'] ?? jsonDecode(''));
-    } on Exception catch (err) {
-      if (kDebugMode) {
-        print(err);
-      }
-      return null;
-    }
+
+    final response =
+        await http.post(url, headers: header, body: jsonEncode(body));
+
+    return jsonDecode(utf8.decode(response.bodyBytes));
   }
 
   Future<dynamic> verifyEmail({
@@ -156,10 +146,10 @@ class AuthRepository extends ChangeNotifier {
       print(jsonDecode(utf8.decode(response.bodyBytes))['data']);
       if (kDebugMode) {
         print('res');
-        print(response.body);
+        print(jsonDecode(utf8.decode(response.bodyBytes))['data']);
       }
 
-      return response.statusCode;
+      return jsonDecode(utf8.decode(response.bodyBytes));
     } on Exception catch (err) {}
   }
 

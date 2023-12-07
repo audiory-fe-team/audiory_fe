@@ -6,6 +6,7 @@ import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
+import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class BuyChapterModal extends StatefulHookWidget {
@@ -40,7 +41,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
 
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           Container(
             width: size.width / 3.5,
@@ -76,7 +77,13 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                 ),
                 Flexible(
                     child: GestureDetector(
-                  onTap: () => {},
+                  onTap: () {
+                    print(userQuery.data);
+                    userQuery.data != null
+                        ? context.pushNamed('newPurchase',
+                            extra: {'currentUser': userQuery.data})
+                        : null;
+                  },
                   child: const Icon(
                     Icons.add,
                     size: 22,
@@ -86,7 +93,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -162,7 +169,16 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                             widget.handleBuyStory();
                           },
                         ),
-                      )
+                      ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(
+                    '*Mua cả truyện từ 5 chương trả phí trở lên sẽ nhận được mã giảm giá 20% ',
+                    style: textTheme.bodySmall?.copyWith(
+                        color: appColors.inkLighter,
+                        fontStyle: FontStyle.italic),
+                  ),
+                )
               ],
             ),
           )

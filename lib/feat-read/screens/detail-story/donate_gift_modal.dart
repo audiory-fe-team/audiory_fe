@@ -46,8 +46,8 @@ class DonateGiftModal extends HookConsumerWidget {
       staleDuration: const Duration(minutes: 1),
     );
 
-    var lists = giftsQuery.data ?? [];
-    // lists.sort((a, b) => a.price?.compareTo(b.price ?? 0));
+    var lists = (giftsQuery.data ?? []);
+    lists.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;
@@ -66,9 +66,11 @@ class DonateGiftModal extends HookConsumerWidget {
 
     handleSendingGift(Gift? gift, total) async {
       var totalCoinsOfUser = userQuery.data?.wallets![0].balance ?? 0;
+
       if (double.parse('${(gift?.price ?? 0) * total}') >
           double.parse(totalCoinsOfUser.toString())) {
         context.pop();
+        print('not enough');
         AppSnackBar.buildTopSnackBar(
             context, 'Không đủ số dư', null, SnackBarType.info);
       } else {
@@ -99,7 +101,7 @@ class DonateGiftModal extends HookConsumerWidget {
 
     return Flexible(
         child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
       child: SingleChildScrollView(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -137,6 +139,15 @@ class DonateGiftModal extends HookConsumerWidget {
                                   width: 24,
                                   height: 24,
                                 ),
+                              )),
+                          Flexible(
+                              flex: 2,
+                              child: Text(
+                                formatNumberWithSeperator(
+                                    int.tryParse(coins.toStringAsFixed(0))),
+                                style: textTheme.titleMedium
+                                    ?.copyWith(color: appColors.inkBase),
+                                textAlign: TextAlign.center,
                               )),
                           Flexible(
                               flex: 2,
