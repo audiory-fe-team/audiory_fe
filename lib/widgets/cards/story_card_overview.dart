@@ -1,4 +1,3 @@
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';

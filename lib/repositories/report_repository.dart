@@ -55,7 +55,7 @@ class ReportRepository {
 
     var request;
     if (formFile != null) {
-      File file = File(formFile[0].path); //import dart:io
+      File file = File(formFile.path); //import dart:io
 
       request = http.MultipartRequest('POST', url)
         ..fields.addAll(body)

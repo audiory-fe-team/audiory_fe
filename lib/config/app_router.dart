@@ -14,7 +14,6 @@ import 'package:audiory_v0/feat-manage-profile/screens/daily-rewards/daily_rewar
 import 'package:audiory_v0/feat-manage-profile/screens/edit_account_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_profile_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/edit_email_screen.dart';
-import 'package:audiory_v0/feat-manage-profile/screens/messages/detail_conversation_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/messages/messages_list_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/block_accounts_screen.dart';
 import 'package:audiory_v0/feat-manage-profile/screens/privacy-lists/mute_accounts_screen.dart';
@@ -446,6 +445,7 @@ class AppRoutes {
         },
         routes: [
           GoRoute(
+            parentNavigatorKey: _rootNavigatorKey,
             name: 'newPurchase',
             path: 'newPurchase',
             builder: (BuildContext context, GoRouterState state) {

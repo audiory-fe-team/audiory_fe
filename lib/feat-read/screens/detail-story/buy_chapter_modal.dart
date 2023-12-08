@@ -50,46 +50,45 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
             decoration: BoxDecoration(
                 color: appColors.skyLightest,
                 borderRadius: const BorderRadius.all(Radius.circular(50))),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                    flex: 1,
-                    child: GestureDetector(
-                      child: Image.asset(
-                        'assets/images/coin.png',
-                        width: 24,
-                        height: 24,
+            child: GestureDetector(
+              onTap: () {
+                userQuery.data != null
+                    ? context.pushNamed('newPurchase',
+                        extra: {'currentUser': userQuery.data})
+                    : null;
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                      flex: 1,
+                      child: GestureDetector(
+                        child: Image.asset(
+                          'assets/images/coin.png',
+                          width: 24,
+                          height: 24,
+                        ),
+                      )),
+                  Flexible(
+                    flex: 2,
+                    child: Skeletonizer(
+                      enabled: userQuery.isFetching,
+                      child: Text(
+                        '${formatNumberWithSeperator(userQuery.data?.wallets?[0].balance)}' ??
+                            '0',
+                        style: textTheme.titleLarge
+                            ?.copyWith(color: appColors.inkBase),
                       ),
-                    )),
-                Flexible(
-                  flex: 2,
-                  child: Skeletonizer(
-                    enabled: userQuery.isFetching,
-                    child: Text(
-                      '${formatNumberWithSeperator(userQuery.data?.wallets?[0].balance)}' ??
-                          '0',
-                      style: textTheme.titleLarge
-                          ?.copyWith(color: appColors.inkBase),
                     ),
                   ),
-                ),
-                Flexible(
-                    child: GestureDetector(
-                  onTap: () {
-                    print(userQuery.data);
-                    userQuery.data != null
-                        ? context.pushNamed('newPurchase',
-                            extra: {'currentUser': userQuery.data})
-                        : null;
-                  },
-                  child: const Icon(
+                  const Flexible(
+                      child: Icon(
                     Icons.add,
                     size: 22,
-                  ),
-                )),
-              ],
+                  )),
+                ],
+              ),
             ),
           ),
           Container(

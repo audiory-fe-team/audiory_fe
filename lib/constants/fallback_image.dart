@@ -12,3 +12,5 @@ const String WARNING_IMG =
     'https://image.similarpng.com/very-thumbnail/2021/06/Attention-sign-icon.png';
 const String MOMO =
     'https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-MoMo-Square.png';
+const String ZALO =
+    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUO_xb8LBSaFHKwFzs1JPop0MTlX86siojdTCJFaZOKw&s';

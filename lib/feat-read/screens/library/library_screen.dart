@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audiory_v0/feat-read/screens/library/downloaded_stories.dart';
 import 'package:audiory_v0/feat-read/screens/library/library_top_bar.dart';
 import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
@@ -8,13 +10,13 @@ import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/repositories/reading_list_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_img_picker.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
@@ -108,6 +110,8 @@ class ReadingLists extends HookConsumerWidget {
       staleDuration: const Duration(minutes: 5),
     );
 
+    final selectImg = useState<File?>(null);
+
     handleCreateReadingList() async {
       Map<String, String> body = {};
 
@@ -119,13 +123,13 @@ class ReadingLists extends HookConsumerWidget {
       body['is_private'] = 'true';
       ReadingList? readingList;
       try {
-        readingList = await ReadingListRepository.addReadingList(
-            body, _formKey.currentState?.fields['photo']?.value);
+        readingList =
+            await ReadingListRepository.addReadingList(body, selectImg.value);
+        // ignore: use_build_context_synchronously
         await AppSnackBar.buildTopSnackBar(
             context, 'Tạo thành công', null, SnackBarType.success);
         readingListQuery.refetch();
       } catch (error) {
-        print(error);
         // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Tạo thất bại', null, SnackBarType.error);
@@ -155,18 +159,18 @@ class ReadingLists extends HookConsumerWidget {
       Map<String, String> body = {};
       body['user_id'] = userId;
       body['is_private'] = '${!isPrivate}';
-
       try {
-        await ReadingListRepository.editReadingList(readingListId, body, []);
+        await ReadingListRepository.editReadingList(readingListId, body, null);
 
         readingListQuery.refetch();
+        // ignore: use_build_context_synchronously
+        AppSnackBar.buildTopSnackBar(
+            context, 'Sửa thành công', null, SnackBarType.success);
       } catch (error) {
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Sửa thất bại', null, SnackBarType.error);
       }
-      // ignore: use_build_context_synchronously
-      AppSnackBar.buildTopSnackBar(
-          context, 'Sửa thành công', null, SnackBarType.success);
     }
 
     handleEditReadingList(String readingListId, name, formFile) async {
@@ -178,6 +182,7 @@ class ReadingLists extends HookConsumerWidget {
             readingListId, body, formFile);
         readingListQuery.refetch();
       } catch (error) {
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Sửa thất bại', null, SnackBarType.error);
       }
@@ -218,106 +223,83 @@ class ReadingLists extends HookConsumerWidget {
                                       textAlign: TextAlign.center,
                                     )
                                   ]),
-                                  content: SizedBox(
-                                    width: size.width / 2,
-                                    height: size.height / 2.8,
-                                    child: FormBuilder(
-                                      key: _formKey,
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          SizedBox(
+                                  content: FormBuilder(
+                                    key: _formKey,
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        AppImagePicker(
                                             width: size.width / 4,
-                                            child: FormBuilderImagePicker(
-                                                initialValue: [],
-                                                previewAutoSizeWidth: true,
-                                                maxImages: 1,
-                                                backgroundColor: appColors
-                                                    ?.skyLightest,
-                                                iconColor: appColors
-                                                    ?.primaryBase,
-                                                decoration:
-                                                    const InputDecoration(
-                                                        border:
-                                                            InputBorder.none),
-                                                name: 'photo'),
-                                          ),
-                                          SizedBox(
-                                            height: 70,
-                                            child: AppTextInputField(
-                                              hintText:
-                                                  'Ví dụ: Truyện trinh thám hay',
-                                              name: 'name',
-                                              validator: FormBuilderValidators
-                                                  .required(
-                                                      errorText:
-                                                          'Không được để trống'),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 8.0),
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.max,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                SizedBox(
-                                                    width: 100,
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        context.pop();
-                                                      },
-                                                      child: Text(
-                                                        'Hủy',
-                                                        style: textTheme
-                                                            .titleMedium,
-                                                      ),
-                                                    )),
-                                                SizedBox(
-                                                    width: 100,
-                                                    child: GestureDetector(
-                                                      onTap: () {
-                                                        //check if input validate
-                                                        final isValid = _formKey
-                                                            .currentState
-                                                            ?.validate();
+                                            height: 140,
+                                            callback: (img) {
+                                              selectImg.value = File(img.path);
+                                            }),
+                                        AppTextInputField(
+                                          hintText:
+                                              'Ví dụ: Truyện trinh thám hay',
+                                          name: 'name',
+                                          maxLines: 1,
+                                          validator:
+                                              FormBuilderValidators.required(
+                                                  errorText:
+                                                      'Không được để trống'),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 8.0),
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.max,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              SizedBox(
+                                                  width: 100,
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      context.pop();
+                                                    },
+                                                    child: Text(
+                                                      'Hủy',
+                                                      style:
+                                                          textTheme.titleMedium,
+                                                    ),
+                                                  )),
+                                              SizedBox(
+                                                  width: 100,
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      //check if input validate
+                                                      final isValid = _formKey
+                                                          .currentState
+                                                          ?.validate();
 
-                                                        if (isValid != null &&
-                                                            isValid) {
-                                                          _formKey.currentState
-                                                              ?.save();
-                                                          context.pop();
-                                                          handleCreateReadingList();
-                                                        }
-                                                        // context.pop();
-                                                      },
-                                                      child: Text(
-                                                        'Tạo',
-                                                        textAlign:
-                                                            TextAlign.end,
-                                                        style: textTheme.titleMedium?.copyWith(
-                                                            color: _formKey
-                                                                        .currentState
-                                                                        ?.validate() ==
-                                                                    true
-                                                                ? appColors
-                                                                    ?.primaryBase
-                                                                : appColors
-                                                                    ?.inkLighter),
-                                                      ),
-                                                    ))
-                                              ],
-                                            ),
-                                          )
-                                        ],
-                                      ),
+                                                      if (isValid != null &&
+                                                          isValid) {
+                                                        _formKey.currentState
+                                                            ?.save();
+                                                        context.pop();
+                                                        handleCreateReadingList();
+                                                      }
+                                                      // context.pop();
+                                                    },
+                                                    child: Text(
+                                                      'Tạo',
+                                                      textAlign: TextAlign.end,
+                                                      style: textTheme
+                                                          .titleMedium
+                                                          ?.copyWith(
+                                                              color: appColors
+                                                                  ?.primaryBase),
+                                                    ),
+                                                  ))
+                                            ],
+                                          ),
+                                        )
+                                      ],
                                     ),
                                   ),
                                 ),
                               );
-                              // handleCreateReadingList();
                             },
                             child: Skeleton.shade(
                               child: Container(

@@ -45,14 +45,24 @@ class StoryRepostitory {
   }
 
   Future<List<Story>> fetchMyPaywalledStories() async {
+    print('get paywall stories');
     final storage = FlutterSecureStorage();
     final jwtToken = await storage.read(key: 'jwt');
-    final userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
-    final url = Uri.parse(
+
+    String? userId;
+    if (jwtToken != null) {
+      userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
+    } else {
+      userId = 'abc'; //for guest
+    }
+
+    print(userId);
+    Uri url = Uri.parse(
         '${dotenv.get('API_BASE_URL')}/users/$userId/recommendations/paywalled');
 
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
+    print(jsonDecode(responseBody)['data']);
 
     if (response.statusCode == 200) {
       final List<dynamic> result = jsonDecode(responseBody)['data'];
@@ -286,7 +296,7 @@ class StoryRepostitory {
     if (jwtToken != null) {
       headers['Authorization'] = 'Bearer $jwtToken';
     }
-    final url = Uri.parse('${Endpoints().user}/me/stories?limit=0&limit=100');
+    final url = Uri.parse('${Endpoints().user}/me/stories?offset=0&limit=100');
     final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
     if (response.statusCode == 200) {
@@ -377,10 +387,10 @@ class StoryRepostitory {
     final Map<String, String> firstMap = body;
     final Map<String, MultipartFile> secondeMap;
     //if the img does not change, do not have form_file field
-    if (formFile[0] is String) {
+    if (formFile == null) {
       secondeMap = {};
     } else {
-      File file = File(formFile[0].path); //import dart:io
+      File file = File(formFile.path); //import dart:io
       secondeMap = {'form_file': await MultipartFile.fromFile(file.path)};
     }
 
@@ -408,7 +418,7 @@ class StoryRepostitory {
   }
 
   Future<Story?> createStory(body, formFile) async {
-    File file = File(formFile[0].path); //import dart:io
+    File file = File(formFile.path); //import dart:io
     final url = Uri.parse(storiesEndpoint);
     Map<String, String> header = {
       "Content-type": "multipart/form-data",

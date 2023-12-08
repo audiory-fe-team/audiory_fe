@@ -111,9 +111,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         try {
                           final info = await AuthRepository().getMyInfo();
                           ref.read(globalMeProvider.notifier).setUser(info);
-                        } catch (error) {
-                          print(error);
-                        }
+                        } catch (error) {}
 
                         context.go('/');
                         // ignore: use_build_context_synchronously

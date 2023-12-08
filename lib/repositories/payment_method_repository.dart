@@ -31,7 +31,7 @@ class PaymentMethodRepository {
     }
   }
 
-  Future<List<UserPaymenthMethod>> fetchMyPaymentMethod({userId}) async {
+  Future<List<UserPaymentMethod>> fetchMyPaymentMethod({userId}) async {
     final storage = new FlutterSecureStorage();
     final jwt = await storage.read(key: 'jwt');
     final url = Uri.parse('$myPaymentMethodEndpoint/$userId/payment-methods');
@@ -40,15 +40,14 @@ class PaymentMethodRepository {
       "Accept": "application/json"
     };
     if (jwt != null) {
-      header['Authorization'] = 'Bearer ${jwt}';
+      header['Authorization'] = 'Bearer $jwt';
     }
     final response = await http.get(url, headers: header);
-    print(response);
     final responseBody = utf8.decode(response.bodyBytes);
     print('res for paymenth $responseBody');
     if (response.statusCode == 200) {
       final List result = json.decode(responseBody)['data'];
-      return result.map((i) => UserPaymenthMethod.fromJson(i)).toList();
+      return result.map((i) => UserPaymentMethod.fromJson(i)).toList();
     } else {
       throw Exception('Failed to load payment methods');
     }
@@ -63,15 +62,13 @@ class PaymentMethodRepository {
       "Accept": "application/json"
     };
     if (jwt != null) {
-      header['Authorization'] = 'Bearer ${jwt}';
+      header['Authorization'] = 'Bearer $jwt';
     }
     final response =
         await http.post(url, headers: header, body: jsonEncode(body));
-    print(response);
     final responseBody = utf8.decode(response.bodyBytes);
-    print('res for paymenth $responseBody');
+    print(responseBody);
     if (response.statusCode == 200) {
-      print(jsonDecode(responseBody)['data']['id']);
       return jsonDecode(responseBody)['data']['id'];
     } else {
       throw Exception('Failed to load payment methods');
