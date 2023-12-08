@@ -319,28 +319,22 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                     stream: channel?.stream,
                     builder: (context, snapshot) {
                       print('CONNECTION STATE');
-                      print('${snapshot.connectionState}');
-                      print('${snapshot.hasData}');
-                      print('${snapshot.error}');
+
                       if (snapshot.hasData) {
                         var decodedJson = utf8.decode(snapshot.data);
                         print('SNAPSHOT DATA ${decodedJson}');
-                        // print('SNAPSHOT DATA ${jsonDecode(decodedJson)['id']}');
-                        // print(messages[0].id);
-                        // print(messages[0].id == jsonDecode(decodedJson)['id']);
-                        // print('${messages.length}');
-                        // print(jsonDecode(decodedJson)['id']);
-                        // bool existedMessage = messages.any(
-                        //     (mess) => mess.id == jsonDecode(decodedJson)['id']);
-                        // print('MESSAGE LIST $messages');
 
-                        // if (existedMessage == false) {
-                        //   print('existed');
-                        //   messages.insert(
-                        //       0, Message.fromJson(jsonDecode(decodedJson)));
-                        // } else {
-                        //   print('not existed');
-                        // }
+                        bool existedMessage = messages.any(
+                            (mess) => mess.id == jsonDecode(decodedJson)['id']);
+                        print('MESSAGE LIST $messages');
+
+                        if (existedMessage == false) {
+                          print('existed');
+                          messages.insert(
+                              0, Message.fromJson(jsonDecode(decodedJson)));
+                        } else {
+                          print('not existed');
+                        }
                       } else {
                         print('SNAPSHOT ERROR');
                         print('${snapshot.error}');

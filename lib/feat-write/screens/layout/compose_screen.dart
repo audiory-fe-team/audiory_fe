@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audiory_v0/models/category/app_category_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
@@ -9,6 +11,7 @@ import 'package:audiory_v0/repositories/story_repository.dart';
 import 'dart:convert';
 
 import 'package:audiory_v0/utils/widget_helper.dart';
+import 'package:audiory_v0/widgets/app_img_picker.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
@@ -27,7 +30,6 @@ import 'package:textfield_tags/textfield_tags.dart';
 
 import '../../../theme/theme_constants.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 
 class ComposeScreen extends StatefulHookWidget {
   final String? storyId;
@@ -39,6 +41,8 @@ class ComposeScreen extends StatefulHookWidget {
 
 class _ComposeScreenState extends State<ComposeScreen> {
   final _createFormKey = GlobalKey<FormBuilderState>();
+  File? selectImg;
+  String? imgError = 'Ảnh bìa là bắt buộc';
 
   //tags
   double? _distanceToField;
@@ -273,7 +277,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
   }
 
   Future<void> manageStory(
-      isEdit, String? storyId, Map<String, String>? body, formFile) async {
+      isEdit, String? storyId, Map<String, String>? body) async {
     showDialog(
         context: context,
         builder: (context) {
@@ -281,17 +285,14 @@ class _ComposeScreenState extends State<ComposeScreen> {
         });
 
     Story? story = isEdit
-        ? await StoryRepostitory().editStory(storyId ?? '', body,
-            _createFormKey.currentState?.fields['photos']?.value)
-        : await StoryRepostitory().createStory(
-            body, _createFormKey.currentState?.fields['photos']?.value);
+        ? await StoryRepostitory().editStory(storyId ?? '', body, selectImg)
+        : await StoryRepostitory().createStory(body, selectImg);
 
     //hide progress
     // ignore: use_build_context_synchronously
     context.pop();
 
     String content;
-    print(story);
     if (story != null) {
       content = isEdit ? 'Cập nhật thành công' : 'Tạo thành công';
       // ignore: use_build_context_synchronously
@@ -445,49 +446,15 @@ class _ComposeScreenState extends State<ComposeScreen> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Center(
-                child: SizedBox(
-                  width: 100,
-                  child: FormBuilderImagePicker(
-                    previewWidth: 108,
-                    previewHeight: 145,
-                    fit: BoxFit.cover,
-                    validator: FormBuilderValidators.required(
-                        errorText: 'Chưa có ảnh bìa'),
-                    placeholderWidget: Container(
-                      decoration: BoxDecoration(
-                        color: appColors.skyLightest,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                          child: Icon(
-                        Icons.add,
-                        color: appColors.inkLight,
-                      )),
-                    ),
-
-                    transformImageWidget: (context, displayImage) => Center(
-                        child: Container(
-                            decoration: BoxDecoration(
-                                color: appColors.skyLightest,
-                                borderRadius: BorderRadius.circular(12)),
-                            width: double.infinity,
-                            height: double.infinity,
-                            child: displayImage)),
-
-                    initialValue:
-                        editStory?.id != '' ? [editStory?.coverUrl ?? ''] : [],
-
-                    availableImageSources: const [
-                      ImageSourceOption.gallery
-                    ], //only gallery
-                    name: 'photos',
-                    // showDecoration: false,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      fillColor: appColors.secondaryBase,
-                    ),
-                    maxImages: 1,
-                  ),
+                child: AppImagePicker(
+                  callback: (img) {
+                    setState(() {
+                      selectImg = File(img?.path);
+                    });
+                  },
+                  width: 108,
+                  height: 145,
+                  initialUrl: editStory?.id != '' ? editStory?.coverUrl : '',
                 ),
               ),
             ],
@@ -496,6 +463,17 @@ class _ComposeScreenState extends State<ComposeScreen> {
             height: 5,
           ),
 
+          isEdit == false &&
+                  _createFormKey.currentState?.isTouched == true &&
+                  selectImg == null
+              ? Center(
+                  child: Text(
+                  imgError ?? 'helo',
+                  style: TextStyle(color: appColors.secondaryBase),
+                ))
+              : const SizedBox(
+                  height: 0,
+                ),
           const SizedBox(
             height: 5,
           ),
@@ -733,13 +711,15 @@ class _ComposeScreenState extends State<ComposeScreen> {
                           print('body');
                           print(body);
                         }
-                        manageStory(
-                            isEdit,
-                            widget.storyId,
-                            body,
-                            _createFormKey
-                                .currentState?.fields['photos']?.value);
-                      }
+
+                        if (isEdit == false && selectImg == null) {
+                          setState(() {
+                            imgError = 'Ảnh bìa là bắt buộc';
+                          });
+                        } else {
+                          manageStory(isEdit, widget.storyId, body);
+                        }
+                      } else {}
                     },
                     title: isEdit ? 'Cập nhật' : 'Tạo mới',
                   ),

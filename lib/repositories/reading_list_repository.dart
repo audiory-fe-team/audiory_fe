@@ -107,7 +107,7 @@ class ReadingListRepository {
     if (formFile == null) {
       secondeMap = {};
     } else {
-      File file = File(formFile[0].path); //import dart:io
+      File file = File(formFile.path); //import dart:io
       secondeMap = {'form_file': await MultipartFile.fromFile(file.path)};
     }
 
@@ -121,16 +121,6 @@ class ReadingListRepository {
     final response = await dio.post('$readingListEndpoint/reading-lists',
         data: formData, options: Options(headers: headers));
     final result = response.data; //do not have to json decode
-    // final request = http.MultipartRequest('POST', url)
-    //   ..fields.addAll(body)
-    //   ..files.add(await http.MultipartFile.fromPath(
-    //     'form_file',
-    //     file.path,
-    //   ));
-    // request.headers.addAll(headers);
-
-    // final response = await request.send();
-    // final respStr = await response.stream.bytesToString();
 
     if (result['code'] == 200) {
       return ReadingList.fromJson(result['data']);
@@ -152,12 +142,10 @@ class ReadingListRepository {
     final Map<String, String> firstMap = body;
     final Map<String, MultipartFile> secondeMap;
     //if the img does not change, do not have form_file field
-    if (formFile.isEmpty) {
-      secondeMap = {};
-    } else if (formFile[0].runtimeType == String) {
+    if (formFile == null) {
       secondeMap = {};
     } else {
-      File file = File(formFile[0].path); //import dart:io
+      File file = File(formFile.path); //import dart:io
       secondeMap = {'form_file': await MultipartFile.fromFile(file.path)};
     }
 

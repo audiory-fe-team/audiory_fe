@@ -4,7 +4,6 @@ import 'package:audiory_v0/feat-explore/widgets/home_rank_card.dart';
 import 'package:audiory_v0/feat-explore/widgets/story_grid_list.dart';
 import 'package:audiory_v0/feat-explore/widgets/header_with_link.dart';
 import 'package:audiory_v0/feat-explore/screens/layout/home_top_bar.dart';
-import 'package:audiory_v0/feat-explore/widgets/story_scroll_list.dart';
 import 'package:audiory_v0/feat-read/screens/library/downloaded_stories.dart';
 import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
 import 'package:audiory_v0/models/category/app_category_model.dart';
@@ -68,6 +67,8 @@ class HomeScreen extends HookConsumerWidget {
       refetchOnMount: RefetchOnMount.stale,
       staleDuration: const Duration(minutes: 5),
     );
+
+    print(paywalledStoriesQuery.data);
     return Scaffold(
       appBar: const HomeTopBar(),
       body: RefreshIndicator(

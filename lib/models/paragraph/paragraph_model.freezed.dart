@@ -33,6 +33,8 @@ mixin _$Paragraph {
   int? get order => throw _privateConstructorUsedError;
   @JsonKey(name: 'content')
   String? get content => throw _privateConstructorUsedError;
+  @JsonKey(name: 'rich_text')
+  String? get richText => throw _privateConstructorUsedError;
   @JsonKey(name: 'comment_count')
   int? get commentCount => throw _privateConstructorUsedError;
   @JsonKey(name: 'audios')
@@ -58,6 +60,7 @@ abstract class $ParagraphCopyWith<$Res> {
       @JsonKey(name: 'chapter_version_id') String? chapterVersionId,
       @JsonKey(name: 'order') int? order,
       @JsonKey(name: 'content') String? content,
+      @JsonKey(name: 'rich_text') String? richText,
       @JsonKey(name: 'comment_count') int? commentCount,
       @JsonKey(name: 'audios') List<ParaAudio>? audios,
       @JsonKey(name: 'content_moderation')
@@ -84,6 +87,7 @@ class _$ParagraphCopyWithImpl<$Res, $Val extends Paragraph>
     Object? chapterVersionId = freezed,
     Object? order = freezed,
     Object? content = freezed,
+    Object? richText = freezed,
     Object? commentCount = freezed,
     Object? audios = freezed,
     Object? contentModeration = freezed,
@@ -108,6 +112,10 @@ class _$ParagraphCopyWithImpl<$Res, $Val extends Paragraph>
       content: freezed == content
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
+              as String?,
+      richText: freezed == richText
+          ? _value.richText
+          : richText // ignore: cast_nullable_to_non_nullable
               as String?,
       commentCount: freezed == commentCount
           ? _value.commentCount
@@ -151,6 +159,7 @@ abstract class _$$ParagraphImplCopyWith<$Res>
       @JsonKey(name: 'chapter_version_id') String? chapterVersionId,
       @JsonKey(name: 'order') int? order,
       @JsonKey(name: 'content') String? content,
+      @JsonKey(name: 'rich_text') String? richText,
       @JsonKey(name: 'comment_count') int? commentCount,
       @JsonKey(name: 'audios') List<ParaAudio>? audios,
       @JsonKey(name: 'content_moderation')
@@ -176,6 +185,7 @@ class __$$ParagraphImplCopyWithImpl<$Res>
     Object? chapterVersionId = freezed,
     Object? order = freezed,
     Object? content = freezed,
+    Object? richText = freezed,
     Object? commentCount = freezed,
     Object? audios = freezed,
     Object? contentModeration = freezed,
@@ -200,6 +210,10 @@ class __$$ParagraphImplCopyWithImpl<$Res>
       content: freezed == content
           ? _value.content
           : content // ignore: cast_nullable_to_non_nullable
+              as String?,
+      richText: freezed == richText
+          ? _value.richText
+          : richText // ignore: cast_nullable_to_non_nullable
               as String?,
       commentCount: freezed == commentCount
           ? _value.commentCount
@@ -226,6 +240,7 @@ class _$ParagraphImpl implements _Paragraph {
       @JsonKey(name: 'chapter_version_id') this.chapterVersionId = '',
       @JsonKey(name: 'order') this.order = 0,
       @JsonKey(name: 'content') this.content = '',
+      @JsonKey(name: 'rich_text') this.richText = '',
       @JsonKey(name: 'comment_count') this.commentCount = 0,
       @JsonKey(name: 'audios') final List<ParaAudio>? audios = const [],
       @JsonKey(name: 'content_moderation') this.contentModeration})
@@ -253,6 +268,9 @@ class _$ParagraphImpl implements _Paragraph {
   @JsonKey(name: 'content')
   final String? content;
   @override
+  @JsonKey(name: 'rich_text')
+  final String? richText;
+  @override
   @JsonKey(name: 'comment_count')
   final int? commentCount;
   final List<ParaAudio>? _audios;
@@ -272,7 +290,7 @@ class _$ParagraphImpl implements _Paragraph {
 
   @override
   String toString() {
-    return 'Paragraph(id: $id, chapterId: $chapterId, chapterVersionId: $chapterVersionId, order: $order, content: $content, commentCount: $commentCount, audios: $audios, contentModeration: $contentModeration)';
+    return 'Paragraph(id: $id, chapterId: $chapterId, chapterVersionId: $chapterVersionId, order: $order, content: $content, richText: $richText, commentCount: $commentCount, audios: $audios, contentModeration: $contentModeration)';
   }
 
   @override
@@ -287,6 +305,8 @@ class _$ParagraphImpl implements _Paragraph {
                 other.chapterVersionId == chapterVersionId) &&
             (identical(other.order, order) || other.order == order) &&
             (identical(other.content, content) || other.content == content) &&
+            (identical(other.richText, richText) ||
+                other.richText == richText) &&
             (identical(other.commentCount, commentCount) ||
                 other.commentCount == commentCount) &&
             const DeepCollectionEquality().equals(other._audios, _audios) &&
@@ -303,6 +323,7 @@ class _$ParagraphImpl implements _Paragraph {
       chapterVersionId,
       order,
       content,
+      richText,
       commentCount,
       const DeepCollectionEquality().hash(_audios),
       contentModeration);
@@ -328,6 +349,7 @@ abstract class _Paragraph implements Paragraph {
       @JsonKey(name: 'chapter_version_id') final String? chapterVersionId,
       @JsonKey(name: 'order') final int? order,
       @JsonKey(name: 'content') final String? content,
+      @JsonKey(name: 'rich_text') final String? richText,
       @JsonKey(name: 'comment_count') final int? commentCount,
       @JsonKey(name: 'audios') final List<ParaAudio>? audios,
       @JsonKey(name: 'content_moderation')
@@ -353,6 +375,9 @@ abstract class _Paragraph implements Paragraph {
   @override
   @JsonKey(name: 'content')
   String? get content;
+  @override
+  @JsonKey(name: 'rich_text')
+  String? get richText;
   @override
   @JsonKey(name: 'comment_count')
   int? get commentCount;

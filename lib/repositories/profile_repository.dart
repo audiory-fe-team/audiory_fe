@@ -85,10 +85,10 @@ class ProfileRepository {
     final Map<String, String> firstMap = reqBody;
     final Map<String, MultipartFile> secondeMap;
     //if the img does not change, do not have form_file field
-    if (formFile[0] != null || formFile[0].runtimeType != String) {
+    if (formFile == null) {
       secondeMap = {};
     } else {
-      File file = File(formFile[0].path); //import dart:io
+      File file = File(formFile.path); //import dart:io
       secondeMap = {'form_file': await MultipartFile.fromFile(file.path)};
     }
 

@@ -243,15 +243,20 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                                   _formKey.currentState!.fields['sex']?.value;
 
                               //parse birth
-                              final parsedDate =
-                                  DateFormat('dd/MM/yyyy').parse(_selectedDate);
-                              body['dob'] = parsedDate.toString();
+                              final parsedDate = DateFormat('dd/MM/yyyy')
+                                  .parse(_selectedDate)
+                                  .toString();
 
+                              print(parsedDate.replaceAll('/', '-'));
+                              print(parsedDate);
+                              body['dob'] =
+                                  parsedDate.replaceAll('/', '-').split(' ')[0];
+                              print(body);
                               //update new user data
                               Profile? updatedProfile =
                                   await ProfileRepository()
                                       .updateNewUserProfile(
-                                          '', body, widget.userId);
+                                          null, body, widget.userId);
 
                               if (updatedProfile != null) {
                                 // ignore: use_build_context_synchronously

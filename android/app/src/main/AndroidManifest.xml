@@ -41,7 +41,7 @@
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
                 <category android:name="android.intent.category.BROWSABLE"/>
-                <data android:scheme="http" android:host="audiory-applink.vercel.app" android:pathPrefix="/.."/>
+                <data android:scheme="http" />
                 <data android:scheme="https" android:host="audiory-applink.vercel.app" android:pathPrefix="/.." />
             </intent-filter>
 

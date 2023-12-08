@@ -15,6 +15,7 @@ import 'package:audiory_v0/feat-read/screens/reading/chapter_navigate_button.dar
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen_header.dart';
 import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_top_bar.dart';
+import 'package:audiory_v0/feat-read/widgets/richtext_paragraph.dart';
 import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import 'package:audiory_v0/providers/audio_player_provider.dart';
 import 'package:audiory_v0/repositories/activities_repository.dart';
@@ -367,30 +368,50 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                   width: double.infinity,
                                   child: Stack(children: [
                                     Container(
-                                        margin:
-                                            const EdgeInsets.only(bottom: 16),
-                                        padding: const EdgeInsets.only(
-                                            bottom: 4,
-                                            left: 4,
-                                            right: 4,
-                                            top: 4),
-                                        decoration: (curParaIndex.value ==
-                                                index)
-                                            ? BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                color: THEME_OPTIONS[
-                                                        selectedOption.value]
-                                                    ['audioBackground'])
-                                            : const BoxDecoration(),
-                                        child: Text(para.content ?? '',
-                                            style: textTheme.bodyLarge?.copyWith(
-                                                fontSize:
-                                                    fontSize.value.toDouble(),
-                                                fontFamily:
-                                                    GoogleFonts.gelasio()
-                                                        .fontFamily,
-                                                color: textColor.value))),
+                                      margin: const EdgeInsets.only(bottom: 16),
+                                      padding: const EdgeInsets.only(
+                                          bottom: 4, left: 4, right: 4, top: 4),
+                                      decoration: (curParaIndex.value == index)
+                                          ? BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              color: THEME_OPTIONS[
+                                                      selectedOption.value]
+                                                  ['audioBackground'])
+                                          : const BoxDecoration(),
+                                      // child: Text(
+                                      //   para.richText ?? '',
+                                      //   style: textTheme.bodyLarge?.copyWith(
+                                      //       fontSize: fontSize.value.toDouble(),
+                                      //       fontFamily: GoogleFonts.gelasio()
+                                      //           .fontFamily,
+                                      //       color: textColor.value),
+                                      // ),
+
+                                      // display the paragraph content in rich text
+                                      child: para.richText != null
+                                          ? RichTextParagraph(
+                                              paragraphKey:
+                                                  Key('${index * 45}'),
+                                              richText: para.richText,
+                                              fontSize:
+                                                  fontSize.value.toDouble(),
+                                              color: THEME_OPTIONS[
+                                                      selectedOption.value]
+                                                  ['textColor'],
+                                            )
+                                          : Text(
+                                              para.content ?? '',
+                                              style: textTheme.bodyLarge
+                                                  ?.copyWith(
+                                                      fontSize: fontSize.value
+                                                          .toDouble(),
+                                                      fontFamily:
+                                                          GoogleFonts.gelasio()
+                                                              .fontFamily,
+                                                      color: textColor.value),
+                                            ),
+                                    ),
                                     if (showCommentByParagraph.value == true &&
                                         (para.commentCount ?? 0) > 0)
                                       Positioned(

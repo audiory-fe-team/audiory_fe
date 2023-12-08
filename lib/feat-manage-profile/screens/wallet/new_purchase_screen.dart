@@ -64,6 +64,10 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
         () => PaymentMethodRepository().fetchMyPaymentMethod(userId: 'me'));
 
     final selectedPaymentId = useState('');
+    print(userPaymentMethodQuery.data);
+    useEffect(() {
+      selectedPaymentId.value = userPaymentMethodQuery.data?[0].id ?? '';
+    }, [userPaymentMethodQuery.data]);
     handleCreatePurchase() {
       if (selectedCoinPackId == '' || selectedPaymentMethodId == '') {
         AppSnackBar.buildTopSnackBar(
@@ -431,25 +435,25 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                       const SizedBox(
                         height: 24,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              'Thành tiền',
-                              style: textTheme.titleMedium
-                                  ?.copyWith(color: appColors.inkLighter),
-                            ),
-                          ),
-                          // Flexible(
-                          //   child: Text(
-                          //     '${_formKey.currentState}',
-                          //     style: textTheme.titleMedium
-                          //         ?.copyWith(color: appColors.inkLighter),
-                          //   ),
-                          // )
-                        ],
-                      ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Flexible(
+                      //       child: Text(
+                      //         'Thành tiền',
+                      //         style: textTheme.titleMedium
+                      //             ?.copyWith(color: appColors.inkLighter),
+                      //       ),
+                      //     ),
+                      //     Flexible(
+                      //       child: Text(
+                      //         '${_formKey.currentState?.fields['nums']?.value ?? 0}đ',
+                      //         style: textTheme.titleMedium
+                      //             ?.copyWith(color: appColors.inkLighter),
+                      //       ),
+                      //     )
+                      //   ],
+                      // ),
                       const SizedBox(
                         height: 24,
                       ),
@@ -538,10 +542,11 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                         0;
 
                     if (dia >= 50 && dia < totalDia) {
+                      print(selectedPaymentId);
                       showConfirmChapterDeleteDialog(
                           context,
                           _formKey.currentState!.fields['num']?.value,
-                          userPaymentMethodQuery.data?[0].id);
+                          selectedPaymentId.value);
                     } else {
                       FocusManager.instance.primaryFocus?.unfocus();
 
