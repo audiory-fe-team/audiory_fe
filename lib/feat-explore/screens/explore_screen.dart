@@ -88,7 +88,9 @@ class AppCategoryStories extends HookWidget {
     final storyList = useQuery(
         ['story', 'category', categoryName],
         () => SearchRepository.searchCategoryStories(
-            category: categoryName, offset: 0, limit: 10));
+            category: categoryName, offset: 0, limit: 10),
+        staleDuration: const Duration(minutes: 5),
+        refetchOnMount: RefetchOnMount.stale);
 
     if (storyList.isError) {
       return const Text('Có lỗi xảy ra, thử lại sau');
@@ -151,8 +153,10 @@ class AppCategoryCarousel extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final current = useState(0);
 
-    final categories =
-        useQuery(['categories'], () => CategoryRepository().fetchCategory());
+    final categories = useQuery(
+        ['categories'], () => CategoryRepository().fetchCategory(),
+        staleDuration: const Duration(minutes: 5),
+        refetchOnMount: RefetchOnMount.stale);
 
     if (categories.isLoading) {
       return const Text('Loading...');

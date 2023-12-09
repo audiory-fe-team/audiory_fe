@@ -25,7 +25,7 @@ class _SeletableReadingListCardState extends State<SeletableReadingListCard> {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
-    final id = widget.readingList.id ?? 'not-found';
+    final id = widget.readingList.id;
     final isPrivate = widget.readingList.isPrivate ?? true;
     final title = widget.readingList.name ?? 'Tiêu đề truyện';
 

@@ -28,6 +28,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
     DateTime dateTime = DateTime.parse(date as String);
     return DateFormat('dd/MM/yyyy').format(dateTime);
   }(DateTime(2000, 1, 1).toIso8601String());
+
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -185,6 +186,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                           activeColor: appColors.primaryBase,
                           decoration:
                               const InputDecoration(border: InputBorder.none),
+                          initialValue: 'MALE',
                           options: List.generate(
                               Sex.values.length,
                               (index) => FormBuilderFieldOption(

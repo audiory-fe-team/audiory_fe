@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:audiory_v0/constants/theme_options.dart';
-import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -42,9 +41,6 @@ class ChapterAudioPlayer extends HookWidget {
     useEffect(() {
       syncPreference();
     }, [selectedThemeOption]);
-    // final sequenceStateStream = useStream(player.sequenceStateStream);
-    // final totalDuration = sequenceStateStream.data?.sequence.fold(Duration.zero,
-    //     (previous, element) => previous + (element.duration ?? Duration.zero));
 
     return Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),

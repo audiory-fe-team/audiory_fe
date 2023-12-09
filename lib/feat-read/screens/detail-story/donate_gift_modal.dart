@@ -42,7 +42,7 @@ class DonateGiftModal extends HookConsumerWidget {
     );
 
     var lists = (giftsQuery.data ?? []);
-    // lists.sort((a, b) => a.price?.compareTo(b.price ?? 0));
+    lists.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
 
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final TextTheme textTheme = Theme.of(context).textTheme;

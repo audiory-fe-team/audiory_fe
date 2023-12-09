@@ -338,31 +338,6 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                   curParaIndex.value = index;
                                   handleOpenCommentPara(para.id);
                                 },
-                                onPanUpdate: (details) {
-                                  final chapters = storyQuery.data?.chapters;
-                                  final currentIndex = chapters?.indexWhere(
-                                      (element) => element.id == chapterId);
-                                  if (currentIndex == null || chapters == null)
-                                    return;
-                                  // Swiping in right direction.
-                                  if (details.delta.dx < 0) {
-                                    if (currentIndex >= chapters.length - 1)
-                                      return;
-                                    final nextChapterId =
-                                        chapters[currentIndex + 1].id;
-                                    GoRouter.of(context).go(
-                                        '/story/${storyQuery.data?.id}/chapter/$nextChapterId');
-                                  }
-
-                                  // Swiping in left direction.
-                                  if (details.delta.dx > 0) {
-                                    if (currentIndex <= 0) return;
-                                    final prevChapterId =
-                                        chapters[currentIndex - 1].id;
-                                    GoRouter.of(context).go(
-                                        '/story/${storyQuery.data?.id}/chapter/$prevChapterId');
-                                  }
-                                },
                                 child: SizedBox(
                                   key: key,
                                   width: double.infinity,

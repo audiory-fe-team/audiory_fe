@@ -7,7 +7,6 @@ import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/app_cache_image.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:dio/dio.dart';
@@ -41,7 +40,7 @@ class CurrentReadCard extends HookWidget {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final coverUrl = libStory?.story.coverUrl ?? story?.coverUrl;
-    final storyId = libStory?.storyId ?? story?.id ?? 'not-fount';
+    final storyId = libStory?.storyId ?? story?.id ?? 'not-found';
 
     final title = libStory?.story.title ?? story?.title ?? 'Tiêu đề truyện';
 
@@ -49,62 +48,6 @@ class CurrentReadCard extends HookWidget {
         story?.author?.fullName ??
         'Tiêu đề truyện';
     final downloadProgress = useState<double?>(null);
-
-    //   Future<void> handleDownloadStory() async {
-    //   try {
-    //     final wholeStory = await LibraryRepository.downloadStory(id);
-    //     var directory = await getApplicationDocumentsDirectory();
-
-    //     // Save to offline database
-    //     final noContentStory = wholeStory.copyWith(
-    //         chapters: wholeStory.chapters
-    //             ?.map((e) => e.copyWith(paragraphs: []))
-    //             .toList());
-    //     await storyDb.saveStory(noContentStory);
-
-    //     await Future.forEach<Chapter>(wholeStory.chapters ?? [],
-    //         (chapter) async {
-    //       await chapterDb.saveChapters(chapter);
-    //       await Future.forEach<Paragraph>(chapter.paragraphs ?? [],
-    //           (para) async {
-    //         if (para.audioUrl == '' || para.audioUrl == null) return;
-    //         print('${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}');
-    //         await dio.download(
-    //             '${dotenv.get("AUDIO_BASE_URL")}${para.audioUrl}',
-    //             "${directory.path}/${para.audioUrl}",
-    //             onReceiveProgress: (rec, total) {});
-    //       });
-    //     });
-
-    //     AppSnackBar.buildTopSnackBar(
-    //         context, 'Tải truyện thành công', null, SnackBarType.success);
-    //   } catch (error) {
-    //     print(error.toString());
-    //     AppSnackBar.buildTopSnackBar(
-    //         context, error.toString(), null, SnackBarType.warning);
-    //   }
-    //   try {
-    //     final wholeStory = await LibraryRepository.downloadStory(id);
-
-    //     // Save to offline database
-    //     final noContentStory = wholeStory.copyWith(
-    //         chapters: wholeStory.chapters
-    //             ?.map((e) => e.copyWith(paragraphs: []))
-    //             .toList());
-    //     await storyDb.saveStory(noContentStory);
-
-    //     await Future.forEach(wholeStory.chapters ?? [], (element) async {
-    //       await chapterDb.saveChapters(element);
-    //     });
-
-    //     AppSnackBar.buildTopSnackBar(
-    //         context, 'Tải truyện thành công', null, SnackBarType.success);
-    //   } catch (error) {
-    //     AppSnackBar.buildTopSnackBar(
-    //         context, error.toString(), null, SnackBarType.warning);
-    //   }
-    // }
-
     handleDownloadStory() async {
       final storyInDb = await storyDb.getStory(storyId);
       if (storyInDb != null) {
@@ -181,7 +124,7 @@ class CurrentReadCard extends HookWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    AppCacheImage(
+                    AppImage(
                         url: coverUrl,
                         width: 85,
                         height: 120,
@@ -286,54 +229,6 @@ class CurrentReadCard extends HookWidget {
                       ],
                     )),
               ),
-              // Column(
-              //     mainAxisSize: MainAxisSize.min,
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     // mainAxisAlignment: MainAxisAlignment.start,
-              //     children: [
-              //       const SizedBox(height: 8),
-              //       SizedBox(
-              //           height: 32,
-              //           width: 32,
-              //           child: IconButton(
-              //               visualDensity: VisualDensity.compact,
-              //               padding: EdgeInsets.zero,
-              //               onPressed: () {},
-              //               icon: Icon(Icons.notifications_active_rounded,
-              //                   size: 18, color: appColors.skyBase))),
-              //       FutureBuilder(
-              //           future: storyDb.getStory(storyId),
-              //           builder: (context, snapshot) {
-              //             final isDownloaded = snapshot.data != null;
-              //             return SizedBox(
-              //                 height: 32,
-              //                 width: 32,
-              //                 child: IconButton(
-              //                     visualDensity: VisualDensity.compact,
-              //                     padding: EdgeInsets.zero,
-              //                     onPressed: () {
-              //                       handleDownloadStory(isDownloaded);
-              //                     },
-              //                     icon: Icon(
-              //                         isDownloaded
-              //                             ? Icons.download_done_rounded
-              //                             : Icons.download_rounded,
-              //                         size: 18,
-              //                         color: isDownloaded
-              //                             ? appColors.primaryBase
-              //                             : appColors.skyBase)));
-              //           }),
-              //       SizedBox(
-              //           height: 32,
-              //           width: 32,
-              //           child: IconButton(
-              //               visualDensity: VisualDensity.compact,
-              //               onPressed: () {},
-              //               padding: EdgeInsets.zero,
-              //               icon: Icon(Icons.delete_rounded,
-              //                   size: 18, color: appColors.secondaryLightest))),
-              //       const SizedBox(height: 8),
-              //     ]),
               isEditable == true
                   ? Container(
                       padding: const EdgeInsets.only(top: 20),
@@ -347,7 +242,6 @@ class CurrentReadCard extends HookWidget {
                                 child: Icon(Icons.more_vert_rounded,
                                     size: 18, color: appColors.skyDark)),
                             onSelected: (value) {
-                              if (value == "notification") {}
                               if (value == "download") {
                                 handleDownloadStory();
                               }
@@ -356,23 +250,6 @@ class CurrentReadCard extends HookWidget {
                               }
                             },
                             itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                      height: 36,
-                                      value: 'notification',
-                                      child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                                Icons
-                                                    .notifications_active_rounded,
-                                                size: 18,
-                                                color: appColors.inkLighter),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'Bật thông báo',
-                                              style: textTheme.titleMedium,
-                                            )
-                                          ])),
                                   PopupMenuItem(
                                       height: 36,
                                       value: 'download',

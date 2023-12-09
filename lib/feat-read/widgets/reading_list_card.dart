@@ -16,7 +16,7 @@ class ReadingListCard extends StatefulWidget {
   final dynamic Function(String) onDeleteReadingList;
   final dynamic Function(String) onPublishHandler;
   final dynamic Function(String, String, dynamic) onEditHandler;
-  ReadingListCard(
+  const ReadingListCard(
       {super.key,
       required this.readingList,
       required this.onDeleteReadingList,
@@ -49,7 +49,7 @@ class _ReadingListCardState extends State<ReadingListCard> {
     }
 
     final coverUrl = setDefaultCoverUrl();
-    final readingListId = widget.readingList.id ?? 'not-found';
+    final readingListId = widget.readingList.id;
     final title = widget.readingList.name ?? 'Tiêu đề truyện';
 
     final isPrivate = widget.readingList.isPrivate ?? false;
@@ -126,7 +126,6 @@ class _ReadingListCardState extends State<ReadingListCard> {
                                     _formKey.currentState?.validate();
 
                                 if (isValid != null && isValid) {
-                                  print('IS VALID');
                                   _formKey.currentState?.save();
                                   context.pop();
                                   widget.onEditHandler(

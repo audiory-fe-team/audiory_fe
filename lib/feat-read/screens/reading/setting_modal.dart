@@ -62,6 +62,7 @@ class SettingModel extends HookConsumerWidget {
 
     useEffect(() {
       syncPreference();
+      return null;
     }, []);
 
     return Column(mainAxisSize: MainAxisSize.min, children: [

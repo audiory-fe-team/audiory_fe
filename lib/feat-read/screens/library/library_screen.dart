@@ -4,7 +4,6 @@ import 'package:audiory_v0/feat-read/screens/library/downloaded_stories.dart';
 import 'package:audiory_v0/feat-read/screens/library/library_top_bar.dart';
 import 'package:audiory_v0/feat-read/widgets/current_read_card.dart';
 import 'package:audiory_v0/feat-read/widgets/reading_list_card.dart';
-import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/providers/global_me_provider.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
@@ -374,7 +373,7 @@ class CurrentReadings extends HookConsumerWidget {
       ['library', currentUserId],
       () => LibraryRepository.fetchMyLibrary(),
       refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 5),
+      staleDuration: const Duration(minutes: 1),
     );
 
     handleDeleteStory(String id) async {
@@ -397,14 +396,14 @@ class CurrentReadings extends HookConsumerWidget {
             libraryQuery.refetch();
           },
           child: ListView(
-              children: (libraryQuery.data?.libraryStory ?? [])
-                  .map((e) => Container(
-                      margin: const EdgeInsets.only(bottom: 16),
-                      child: CurrentReadCard(
-                        libStory: e,
-                        onDeleteStory: (id) => handleDeleteStory(id),
-                      )))
-                  .toList()),
+              children: (libraryQuery.data?.libraryStory ?? []).map((e) {
+            return Container(
+                margin: const EdgeInsets.only(bottom: 16),
+                child: CurrentReadCard(
+                  libStory: e,
+                  onDeleteStory: (id) => handleDeleteStory(id),
+                ));
+          }).toList()),
         ),
       ),
     );
