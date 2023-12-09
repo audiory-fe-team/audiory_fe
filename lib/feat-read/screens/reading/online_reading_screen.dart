@@ -364,7 +364,8 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                       // ),
 
                                       // display the paragraph content in rich text
-                                      child: para.richText != null
+                                      child: (para.richText != null &&
+                                              para.richText != "")
                                           ? RichTextParagraph(
                                               paragraphKey:
                                                   Key('${index * 45}'),

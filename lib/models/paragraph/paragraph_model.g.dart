@@ -13,7 +13,7 @@ _$ParagraphImpl _$$ParagraphImplFromJson(Map<String, dynamic> json) =>
       chapterVersionId: json['chapter_version_id'] as String? ?? '',
       order: json['order'] as int? ?? 0,
       content: json['content'] as String? ?? '',
-      richText: json['rich_text'] as String? ?? '',
+      richText: json['rich_text'] as String?,
       commentCount: json['comment_count'] as int? ?? 0,
       audios: (json['audios'] as List<dynamic>?)
               ?.map((e) => ParaAudio.fromJson(e as Map<String, dynamic>))
