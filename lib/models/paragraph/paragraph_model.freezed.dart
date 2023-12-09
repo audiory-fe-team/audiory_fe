@@ -240,7 +240,7 @@ class _$ParagraphImpl implements _Paragraph {
       @JsonKey(name: 'chapter_version_id') this.chapterVersionId = '',
       @JsonKey(name: 'order') this.order = 0,
       @JsonKey(name: 'content') this.content = '',
-      @JsonKey(name: 'rich_text') this.richText = '',
+      @JsonKey(name: 'rich_text') this.richText,
       @JsonKey(name: 'comment_count') this.commentCount = 0,
       @JsonKey(name: 'audios') final List<ParaAudio>? audios = const [],
       @JsonKey(name: 'content_moderation') this.contentModeration})

@@ -96,7 +96,7 @@ class MyApp extends ConsumerWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           debugShowCheckedModeBanner: false,
-          title: 'Audiory app',
+          title: 'Audiory',
           theme: lightTheme,
           darkTheme: darkTheme,
           themeMode: _themeNotifier.themeMode,

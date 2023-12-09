@@ -9,6 +9,7 @@ import 'package:audiory_v0/feat-read/screens/reading/chapter_audio_player.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_drawer.dart';
 import 'package:audiory_v0/feat-read/screens/reading/chapter_navigate_button.dart';
 import 'package:audiory_v0/feat-read/screens/reading/reading_screen_header.dart';
+import 'package:audiory_v0/feat-read/widgets/richtext_paragraph.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import 'package:audiory_v0/providers/audio_player_provider.dart';
@@ -302,14 +303,29 @@ class OfflineReadingScreen extends HookConsumerWidget {
                                                         selectedOption.value]
                                                     ['audioBackground'])
                                             : const BoxDecoration(),
-                                        child: Text(para.content ?? '',
-                                            style: textTheme.bodyLarge?.copyWith(
+                                        child: (para.richText != null &&
+                                                para.richText != "")
+                                            ? RichTextParagraph(
+                                                paragraphKey:
+                                                    Key('${index * 45}'),
+                                                richText: para.richText,
                                                 fontSize:
                                                     fontSize.value.toDouble(),
-                                                fontFamily:
-                                                    GoogleFonts.gelasio()
-                                                        .fontFamily,
-                                                color: textColor.value))),
+                                                color: THEME_OPTIONS[
+                                                        selectedOption.value]
+                                                    ['textColor'],
+                                              )
+                                            : Text(
+                                                para.content ?? '',
+                                                style: textTheme.bodyLarge
+                                                    ?.copyWith(
+                                                        fontSize: fontSize.value
+                                                            .toDouble(),
+                                                        fontFamily: GoogleFonts
+                                                                .gelasio()
+                                                            .fontFamily,
+                                                        color: textColor.value),
+                                              )),
                                     if (showCommentByParagraph.value == true &&
                                         (para.commentCount ?? 0) > 0)
                                       Positioned(
