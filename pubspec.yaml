@@ -57,7 +57,6 @@ dependencies:
   flutter_hooks: ^0.18.6
   readmore: ^2.2.0
   form_builder_validators: ^9.0.0
-  form_builder_image_picker: ^4.0.0
   skeletonizer: ^0.7.0
   flutter_dotenv: ^5.1.0
   just_audio: ^0.9.34
@@ -76,7 +75,7 @@ dependencies:
   firebase_messaging: ^14.6.7
   flutter_native_splash: ^2.2.0+1
   flutter_launcher_icons: ^0.11.0
-  image_picker: ^0.8.9
+  image_picker: ^1.0.4
   sqflite: ^2.3.0
   connectivity_plus: ^2.1.0
   path: ^1.8.3
@@ -98,13 +97,36 @@ dependencies:
   dropdown_button2: ^2.3.9
   quickalert: ^1.0.2
   flutter_localization: ^0.1.14
+  mime: ^1.0.4
+  flutter_quill_extensions: ^0.7.2
 
-flutter_launcher_icons:
+flutter_icons:
   image_path: "assets/images/logo.png"
   android: true
   ios: true
+  remove_alpha_ios: true
+  adaptive_icon_foreground: "assets/images/logo_foreground.png"
+  adaptive_icon_background: "#ffffff"
+  web:
+    generate: true
+    image_path: "assets/images/logo.png"
+    background_color: "#hexcode"
+    theme_color: "#hexcode"
+  windows:
+    generate: true
+    image_path: "assets/images/logo.png"
+    icon_size: 48 # min:48, max:256, default: 48
+  macos:
+    generate: true
+    image_path: "assets/images/logo.png"
 
-flutter_native_splash: image:assets/images/splash_screen.png
+flutter_native_splash:
+  image_path: "assets/images/logo.png"
+  android: true
+  ios: true
+  web: false
+  color: "#ffffff"
+  image: "assets/images/logo.png"
 
 dev_dependencies:
   flutter_test:

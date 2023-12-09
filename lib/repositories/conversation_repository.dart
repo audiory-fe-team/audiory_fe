@@ -44,7 +44,7 @@ class ConversationRepository {
 
   Future<Conversation?> fetchConversationById({
     String? conversationId,
-    int offset = 1,
+    int offset = 0,
     int limit = 10,
   }) async {
     if (conversationId != null) {
@@ -73,7 +73,7 @@ class ConversationRepository {
 
   Future<List<Message>?> fetchMessagesByConversationId({
     String? conversationId,
-    int offset = 1,
+    int offset = 0,
     int limit = 10,
   }) async {
     if (conversationId != null) {

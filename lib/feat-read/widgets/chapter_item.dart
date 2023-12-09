@@ -4,7 +4,6 @@ import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/utils/relative_time.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 class ChapterItem extends StatelessWidget {
   final Chapter chapter;
@@ -22,25 +21,6 @@ class ChapterItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final size = MediaQuery.of(context).size;
-
-    String formatDate(String? date) {
-      DateTime currentDateTime = DateTime.now();
-      //use package intl
-      DateTime dateTime = DateTime.parse(date ?? currentDateTime.toString());
-      int timeDiffInDays = currentDateTime.difference(dateTime).inDays;
-      if (timeDiffInDays < 1) {
-        return '${currentDateTime.difference(dateTime)} giờ trước';
-      } else {
-        return DateFormat('dd.MM.yyyy').format(dateTime);
-      }
-    }
-
-    String formatReadCount(int readCount) {
-      if (readCount <= 100) return '${readCount}';
-      var formatter = NumberFormat('#,##,000');
-      return formatter.format(readCount);
-    }
 
     return GestureDetector(
       onTap: () {

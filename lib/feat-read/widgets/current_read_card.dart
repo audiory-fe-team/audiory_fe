@@ -7,7 +7,6 @@ import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/story_database.dart';
 import 'package:audiory_v0/repositories/library_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/app_cache_image.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:dio/dio.dart';
@@ -49,7 +48,6 @@ class CurrentReadCard extends HookWidget {
         story?.author?.fullName ??
         'Tiêu đề truyện';
     final downloadProgress = useState<double?>(null);
-    print(libStory?.story.coverUrl);
     handleDownloadStory() async {
       final storyInDb = await storyDb.getStory(storyId);
       if (storyInDb != null) {
@@ -231,54 +229,6 @@ class CurrentReadCard extends HookWidget {
                       ],
                     )),
               ),
-              // Column(
-              //     mainAxisSize: MainAxisSize.min,
-              //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              //     // mainAxisAlignment: MainAxisAlignment.start,
-              //     children: [
-              //       const SizedBox(height: 8),
-              //       SizedBox(
-              //           height: 32,
-              //           width: 32,
-              //           child: IconButton(
-              //               visualDensity: VisualDensity.compact,
-              //               padding: EdgeInsets.zero,
-              //               onPressed: () {},
-              //               icon: Icon(Icons.notifications_active_rounded,
-              //                   size: 18, color: appColors.skyBase))),
-              //       FutureBuilder(
-              //           future: storyDb.getStory(storyId),
-              //           builder: (context, snapshot) {
-              //             final isDownloaded = snapshot.data != null;
-              //             return SizedBox(
-              //                 height: 32,
-              //                 width: 32,
-              //                 child: IconButton(
-              //                     visualDensity: VisualDensity.compact,
-              //                     padding: EdgeInsets.zero,
-              //                     onPressed: () {
-              //                       handleDownloadStory(isDownloaded);
-              //                     },
-              //                     icon: Icon(
-              //                         isDownloaded
-              //                             ? Icons.download_done_rounded
-              //                             : Icons.download_rounded,
-              //                         size: 18,
-              //                         color: isDownloaded
-              //                             ? appColors.primaryBase
-              //                             : appColors.skyBase)));
-              //           }),
-              //       SizedBox(
-              //           height: 32,
-              //           width: 32,
-              //           child: IconButton(
-              //               visualDensity: VisualDensity.compact,
-              //               onPressed: () {},
-              //               padding: EdgeInsets.zero,
-              //               icon: Icon(Icons.delete_rounded,
-              //                   size: 18, color: appColors.secondaryLightest))),
-              //       const SizedBox(height: 8),
-              //     ]),
               isEditable == true
                   ? Container(
                       padding: const EdgeInsets.only(top: 20),
@@ -292,7 +242,6 @@ class CurrentReadCard extends HookWidget {
                                 child: Icon(Icons.more_vert_rounded,
                                     size: 18, color: appColors.skyDark)),
                             onSelected: (value) {
-                              if (value == "notification") {}
                               if (value == "download") {
                                 handleDownloadStory();
                               }
@@ -301,23 +250,6 @@ class CurrentReadCard extends HookWidget {
                               }
                             },
                             itemBuilder: (context) => [
-                                  PopupMenuItem(
-                                      height: 36,
-                                      value: 'notification',
-                                      child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                                Icons
-                                                    .notifications_active_rounded,
-                                                size: 18,
-                                                color: appColors.inkLighter),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              'Bật thông báo',
-                                              style: textTheme.titleMedium,
-                                            )
-                                          ])),
                                   PopupMenuItem(
                                       height: 36,
                                       value: 'download',

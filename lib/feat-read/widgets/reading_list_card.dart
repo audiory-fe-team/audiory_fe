@@ -1,28 +1,35 @@
+import 'dart:io';
+
 import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
+import 'package:audiory_v0/widgets/app_img_picker.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 
-class ReadingListCard extends StatelessWidget {
+class ReadingListCard extends StatefulWidget {
   final ReadingList readingList;
   final dynamic Function(String) onDeleteReadingList;
   final dynamic Function(String) onPublishHandler;
   final dynamic Function(String, String, dynamic) onEditHandler;
-  ReadingListCard(
+  const ReadingListCard(
       {super.key,
       required this.readingList,
       required this.onDeleteReadingList,
       required this.onPublishHandler,
       required this.onEditHandler});
 
-  final _formKey = GlobalKey<FormBuilderState>();
+  @override
+  State<ReadingListCard> createState() => _ReadingListCardState();
+}
 
+class _ReadingListCardState extends State<ReadingListCard> {
+  final _formKey = GlobalKey<FormBuilderState>();
+  File? selectImg;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -32,19 +39,20 @@ class ReadingListCard extends StatelessWidget {
     String setDefaultCoverUrl() {
       String initCoverUrl = FALLBACK_IMG_URL;
 
-      if (readingList.coverUrl?.trim() != '') {
-        initCoverUrl = readingList.coverUrl as String;
-      } else if (readingList.stories!.isNotEmpty) {
-        initCoverUrl = readingList.stories?[0].coverUrl ?? FALLBACK_IMG_URL;
+      if (widget.readingList.coverUrl?.trim() != '') {
+        initCoverUrl = widget.readingList.coverUrl as String;
+      } else if (widget.readingList.stories!.isNotEmpty) {
+        initCoverUrl =
+            widget.readingList.stories?[0].coverUrl ?? FALLBACK_IMG_URL;
       }
       return initCoverUrl;
     }
 
     final coverUrl = setDefaultCoverUrl();
-    final readingListId = readingList.id ?? 'not-found';
-    final title = readingList.name ?? 'Tiêu đề truyện';
+    final readingListId = widget.readingList.id;
+    final title = widget.readingList.name ?? 'Tiêu đề truyện';
 
-    final isPrivate = readingList.isPrivate ?? false;
+    final isPrivate = widget.readingList.isPrivate ?? false;
 
     handleEdit() {
       showDialog(
@@ -70,19 +78,17 @@ class ReadingListCard extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SizedBox(
+                  AppImagePicker(
+                    callback: (img) {
+                      setState(() {
+                        selectImg = File(img.path);
+                      });
+                    },
                     width: size.width / 4,
-                    child: FormBuilderImagePicker(
-                        initialValue: readingList.coverUrl?.trim() == ''
-                            ? []
-                            : [readingList.coverUrl],
-                        previewAutoSizeWidth: true,
-                        maxImages: 1,
-                        backgroundColor: appColors.skyLightest,
-                        iconColor: appColors.primaryBase,
-                        decoration:
-                            const InputDecoration(border: InputBorder.none),
-                        name: 'photo'),
+                    height: 145,
+                    initialUrl: widget.readingList.coverUrl?.trim() == ''
+                        ? ''
+                        : widget.readingList.coverUrl,
                   ),
                   SizedBox(
                     height: 70,
@@ -120,15 +126,13 @@ class ReadingListCard extends StatelessWidget {
                                     _formKey.currentState?.validate();
 
                                 if (isValid != null && isValid) {
-                                  print('IS VALID');
                                   _formKey.currentState?.save();
                                   context.pop();
-                                  onEditHandler(
+                                  widget.onEditHandler(
                                       readingListId,
                                       _formKey
                                           .currentState?.fields['name']?.value,
-                                      _formKey.currentState?.fields['photo']
-                                          ?.value);
+                                      selectImg);
                                 }
                                 // context.pop();
                               },
@@ -191,7 +195,7 @@ class ReadingListCard extends StatelessWidget {
           actions: [
             GestureDetector(
               onTap: () async {
-                onDeleteReadingList(readingListId);
+                widget.onDeleteReadingList(readingListId);
               },
               child: Text(
                 'Xóa danh sách',
@@ -336,9 +340,9 @@ class ReadingListCard extends StatelessWidget {
                             handleEdit();
                           }
                           if (value == "publish") {
-                            onPublishHandler(readingListId);
+                            widget.onPublishHandler(readingListId);
                           }
-                          if (value == "share") {}
+
                           if (value == "delete") {
                             handleDelete();
                           }
@@ -376,21 +380,6 @@ class ReadingListCard extends StatelessWidget {
                                           isPrivate
                                               ? 'Chuyển sang công khai'
                                               : 'Chuyển sang riêng tư',
-                                          style: textTheme.titleMedium,
-                                        )
-                                      ])),
-                              PopupMenuItem(
-                                  height: 36,
-                                  value: 'share',
-                                  child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Icon(Icons.share,
-                                            size: 18,
-                                            color: appColors.inkLighter),
-                                        const SizedBox(width: 4),
-                                        Text(
-                                          'Chia sẻ',
                                           style: textTheme.titleMedium,
                                         )
                                       ])),

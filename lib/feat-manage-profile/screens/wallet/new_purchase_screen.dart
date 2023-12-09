@@ -1,18 +1,17 @@
 import 'dart:async';
 
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-manage-profile/models/CoinPack.dart';
-import 'package:audiory_v0/feat-manage-profile/models/PaymentMethod.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/coin_pack_card.dart';
+import 'package:audiory_v0/feat-manage-profile/widgets/user_payment_method_card.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
+import 'package:audiory_v0/models/user-payment-method/user_payment_method.dart';
 import 'package:audiory_v0/repositories/coin_pack_repository.dart';
 import 'package:audiory_v0/repositories/payment_method_repository.dart';
 import 'package:audiory_v0/repositories/purchase_repository.dart';
 import 'package:audiory_v0/repositories/transaction_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/format_number.dart';
-import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
@@ -61,11 +60,14 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
     final coinStoreQuery =
         useQuery(['coinStore'], () => CoinPackRepository().fetchMyCoinStore());
 
-    final userPaymentMethodQuery = useQuery(
-        ['userPaymentQuery'],
-        () => PaymentMethodRepository()
-            .fetchMyPaymentMethod(userId: widget.currentUser?.id));
+    final userPaymentMethodQuery = useQuery(['userPaymentQuery'],
+        () => PaymentMethodRepository().fetchMyPaymentMethod(userId: 'me'));
 
+    final selectedPaymentId = useState('');
+    print(userPaymentMethodQuery.data);
+    useEffect(() {
+      selectedPaymentId.value = userPaymentMethodQuery.data?[0].id ?? '';
+    }, [userPaymentMethodQuery.data]);
     handleCreatePurchase() {
       if (selectedCoinPackId == '' || selectedPaymentMethodId == '') {
         AppSnackBar.buildTopSnackBar(
@@ -87,7 +89,6 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
     }
 
     getStatus(id) async {
-      print(id);
       var status = '';
       await TransactionRepository.fetchTransaction(id)
           .then((value) => {status = value?.transactionStatus ?? ''});
@@ -96,7 +97,6 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
     }
 
     getTransactionStatus(id) {
-      print('helo');
       var status = 'FAILED';
       Timer.periodic(
         const Duration(seconds: 1),
@@ -126,11 +126,6 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                     style: textTheme.titleMedium,
                     textAlign: TextAlign.justify,
                   ),
-                  // Text(
-                  //   'Bạn sẽ nhận về ví  ${price.toString()},000 đồng',
-                  //   style: textTheme.titleMedium,
-                  //   textAlign: TextAlign.justify,
-                  // )
                 ],
               ),
             ),
@@ -168,6 +163,10 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                             .then((value) {
                           print(value);
                         });
+
+                        context.pop();
+
+                        print(body);
 
                         // ignore: use_build_context_synchronously
                         showDialog(
@@ -399,31 +398,33 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                           ),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         height: 16,
                       ),
                       FormBuilder(
                         key: _formKey,
                         child: AppTextInputField(
-                          // textAlign: TextAlign.center,
-                          // label: 'Nhập số kim cương muốn rút',
+                          autoFocus: true,
                           name: 'num',
                           validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Bắt buộc điền';
-                            }
-                            if (int.tryParse(value)! >
-                                (widget.currentUser?.wallets?[1].balance ??
-                                    0)) {
+                            // if (value?.isEmpty == true) {
+                            //   return 'Bắt buộc điền';
+                            // }
+                            print(value);
+                            if ((int.tryParse(value ?? '0') ?? 0) >
+                                    (widget.currentUser?.wallets?[1].balance ??
+                                        0) &&
+                                value != '') {
                               return 'Nhiều hơn số lượng có thể rút';
                             }
-                            if (int.tryParse(value)! < 50) {
+                            if ((int.tryParse(value ?? '0') ?? 0) < 50 &&
+                                value != '') {
                               // Replace 10 with your min value
                               return 'Tối thiểu 50 kim cương';
                             }
                           },
                           inputLable: Text(
-                            'Nhập số kim cương muốn rút',
+                            'Số kim cương muốn rút',
                             style: textTheme.titleMedium
                                 ?.copyWith(color: appColors.inkLighter),
                           ),
@@ -434,12 +435,58 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                       const SizedBox(
                         height: 24,
                       ),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //   children: [
+                      //     Flexible(
+                      //       child: Text(
+                      //         'Thành tiền',
+                      //         style: textTheme.titleMedium
+                      //             ?.copyWith(color: appColors.inkLighter),
+                      //       ),
+                      //     ),
+                      //     Flexible(
+                      //       child: Text(
+                      //         '${_formKey.currentState?.fields['nums']?.value ?? 0}đ',
+                      //         style: textTheme.titleMedium
+                      //             ?.copyWith(color: appColors.inkLighter),
+                      //       ),
+                      //     )
+                      //   ],
+                      // ),
+                      const SizedBox(
+                        height: 24,
+                      ),
                       Text(
                         'Đến nguồn tiền',
                         style: textTheme.titleLarge,
                       ),
                       const SizedBox(
                         height: 16,
+                      ),
+                      Column(
+                        children: [...userPaymentMethodQuery.data ?? []]
+                            .asMap()
+                            .entries
+                            .map((e) {
+                          int index = e.key;
+                          UserPaymentMethod userPaymentMethod = e.value;
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8.0),
+                            child: UserPaymentMethodCard(
+                              paymentMethod: userPaymentMethod,
+                              selected: userPaymentMethod.id ==
+                                      selectedPaymentId.value
+                                  ? true
+                                  : false,
+                              handleSelect: () {
+                                selectedPaymentId.value =
+                                    userPaymentMethod.id ?? '';
+                                // _formKey.currentState?.save();
+                              },
+                            ),
+                          );
+                        }).toList(),
                       ),
                       TapEffectWrapper(
                         onTap: () {
@@ -452,6 +499,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                           //     });
                         },
                         child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: 12),
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 12),
                           width: double.infinity,
@@ -469,81 +517,6 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                           )),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsetsDirectional.only(top: 8),
-                        height: 70,
-                        child: ListView.builder(
-                            itemCount: userPaymentMethodQuery.data?.length,
-                            itemBuilder: (context, index) {
-                              return Container(
-                                  padding: const EdgeInsets.all(6),
-                                  decoration: BoxDecoration(
-                                      color: appColors.skyLightest,
-                                      border: Border.all(
-                                          color: appColors.primaryBase,
-                                          width: 2),
-                                      borderRadius: BorderRadius.circular(10)),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Flexible(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              userPaymentMethodQuery
-                                                      .data?[index].account ??
-                                                  'so dien thoai',
-                                              style: textTheme.titleMedium,
-                                            ),
-                                            Text(
-                                              userPaymentMethodQuery
-                                                      .data?[index]
-                                                      .accountName ??
-                                                  'ten tai khoan',
-                                              style: textTheme.titleMedium,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                      Flexible(
-                                          child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(6),
-                                        child: AppImage(
-                                          url: MOMO,
-                                          width: 40,
-                                        ),
-                                      ))
-                                    ],
-                                  ));
-                            }),
-                      ),
-                      SizedBox(
-                        height: 40,
-                        width: double.infinity,
-                        child: AppIconButton(
-                          onPressed: () async {
-                            _formKey.currentState?.save();
-                            if (_formKey.currentState?.validate() ?? false) {
-                              dynamic totalDia =
-                                  widget.currentUser?.wallets?[1].balance ?? 0;
-                              double dia = double.tryParse(_formKey
-                                      .currentState?.fields['num']?.value) ??
-                                  0;
-
-                              if (dia >= 50 && dia < totalDia) {
-                                showConfirmChapterDeleteDialog(
-                                    context,
-                                    _formKey.currentState!.fields['num']?.value,
-                                    userPaymentMethodQuery.data?[0].id);
-                              }
-                            }
-                          },
-                          title: 'Rút tiền',
-                        ),
-                      ),
                     ],
                   ),
                 );
@@ -552,6 +525,43 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
           ],
         ),
       ),
+      bottomSheet: tabState == 1
+          ? Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              height: 40,
+              width: double.infinity,
+              child: AppIconButton(
+                onPressed: () async {
+                  _formKey.currentState?.save();
+                  if (_formKey.currentState?.validate() ?? false) {
+                    print('validate');
+                    dynamic totalDia =
+                        widget.currentUser?.wallets?[1].balance ?? 0;
+                    double dia = double.tryParse(
+                            _formKey.currentState?.fields['num']?.value) ??
+                        0;
+
+                    if (dia >= 50 && dia < totalDia) {
+                      print(selectedPaymentId);
+                      showConfirmChapterDeleteDialog(
+                          context,
+                          _formKey.currentState!.fields['num']?.value,
+                          selectedPaymentId.value);
+                    } else {
+                      FocusManager.instance.primaryFocus?.unfocus();
+
+                      AppSnackBar.buildTopSnackBar(context, 'Nhập số kim cương',
+                          null, SnackBarType.info);
+                    }
+                  } else {
+                    AppSnackBar.buildTopSnackBar(
+                        context, 'Nhập số kim cương', null, SnackBarType.info);
+                  }
+                },
+                title: 'Rút tiền',
+              ),
+            )
+          : null,
     );
   }
 }

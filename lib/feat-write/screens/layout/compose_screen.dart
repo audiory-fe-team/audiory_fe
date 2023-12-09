@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:audiory_v0/models/category/app_category_model.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
@@ -9,6 +11,7 @@ import 'package:audiory_v0/repositories/story_repository.dart';
 import 'dart:convert';
 
 import 'package:audiory_v0/utils/widget_helper.dart';
+import 'package:audiory_v0/widgets/app_img_picker.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
@@ -27,7 +30,6 @@ import 'package:textfield_tags/textfield_tags.dart';
 
 import '../../../theme/theme_constants.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 
 class ComposeScreen extends StatefulHookWidget {
   final String? storyId;
@@ -39,6 +41,8 @@ class ComposeScreen extends StatefulHookWidget {
 
 class _ComposeScreenState extends State<ComposeScreen> {
   final _createFormKey = GlobalKey<FormBuilderState>();
+  File? selectImg;
+  String? imgError = 'Ảnh bìa là bắt buộc';
 
   //tags
   double? _distanceToField;
@@ -52,7 +56,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
   void initState() {
     super.initState();
     setState(() {
-      isEdit = widget.storyId!.trim() != '';
+      isEdit = widget.storyId?.trim() != '';
       //tags initial
       _controller = TextfieldTagsController();
     });
@@ -88,19 +92,22 @@ class _ComposeScreenState extends State<ComposeScreen> {
     return Column(
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Text(
-                  'Từ khóa',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold),
-                ),
-                _requiredAsterisk()
-              ],
+            Flexible(
+              child: Row(
+                children: [
+                  Flexible(
+                    child: Text(
+                      'Từ khóa',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Flexible(child: _requiredAsterisk())
+                ],
+              ),
             ),
             GestureDetector(
               child: Text(
@@ -115,7 +122,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                   _controller?.clearTags();
                 } else {}
               },
-            )
+            ),
           ],
         ),
         const SizedBox(
@@ -270,7 +277,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
   }
 
   Future<void> manageStory(
-      isEdit, String? storyId, Map<String, String>? body, formFile) async {
+      isEdit, String? storyId, Map<String, String>? body) async {
     showDialog(
         context: context,
         builder: (context) {
@@ -278,17 +285,14 @@ class _ComposeScreenState extends State<ComposeScreen> {
         });
 
     Story? story = isEdit
-        ? await StoryRepostitory().editStory(storyId ?? '', body,
-            _createFormKey.currentState?.fields['photos']?.value)
-        : await StoryRepostitory().createStory(
-            body, _createFormKey.currentState?.fields['photos']?.value);
+        ? await StoryRepostitory().editStory(storyId ?? '', body, selectImg)
+        : await StoryRepostitory().createStory(body, selectImg);
 
     //hide progress
     // ignore: use_build_context_synchronously
     context.pop();
 
     String content;
-    print(story);
     if (story != null) {
       content = isEdit ? 'Cập nhật thành công' : 'Tạo thành công';
       // ignore: use_build_context_synchronously
@@ -391,6 +395,27 @@ class _ComposeScreenState extends State<ComposeScreen> {
       );
     }
 
+    Widget title({String title = '', bool? isRequired = false}) {
+      return Row(
+        children: [
+          Flexible(
+            child: Text(
+              title,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold),
+            ),
+          ),
+          isRequired == true
+              ? Flexible(child: _requiredAsterisk())
+              : const SizedBox(
+                  height: 0,
+                )
+        ],
+      );
+    }
+
     Widget _createStoryForm(BuildContext context, Story? editStory,
         List<Chapter>? chaptersList, List<AppCategory>? categoryList) {
       final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -400,14 +425,16 @@ class _ComposeScreenState extends State<ComposeScreen> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(
             children: [
-              Text(
-                'Ảnh bìa',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
+              Flexible(
+                child: Text(
+                  'Ảnh bìa',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
-              _requiredAsterisk()
+              Flexible(child: _requiredAsterisk())
             ],
           ),
           const SizedBox(
@@ -419,49 +446,15 @@ class _ComposeScreenState extends State<ComposeScreen> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Center(
-                child: SizedBox(
-                  width: 100,
-                  child: FormBuilderImagePicker(
-                    previewWidth: 108,
-                    previewHeight: 145,
-                    fit: BoxFit.cover,
-                    validator: FormBuilderValidators.required(
-                        errorText: 'Chưa có ảnh bìa'),
-                    placeholderWidget: Container(
-                      decoration: BoxDecoration(
-                        color: appColors.skyLightest,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Center(
-                          child: Icon(
-                        Icons.add,
-                        color: appColors.inkLight,
-                      )),
-                    ),
-
-                    transformImageWidget: (context, displayImage) => Center(
-                        child: Container(
-                            decoration: BoxDecoration(
-                                color: appColors.skyLightest,
-                                borderRadius: BorderRadius.circular(12)),
-                            width: double.infinity,
-                            height: double.infinity,
-                            child: displayImage)),
-
-                    initialValue:
-                        editStory?.id != '' ? [editStory?.coverUrl ?? ''] : [],
-
-                    availableImageSources: const [
-                      ImageSourceOption.gallery
-                    ], //only gallery
-                    name: 'photos',
-                    // showDecoration: false,
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      fillColor: appColors.secondaryBase,
-                    ),
-                    maxImages: 1,
-                  ),
+                child: AppImagePicker(
+                  callback: (img) {
+                    setState(() {
+                      selectImg = File(img?.path);
+                    });
+                  },
+                  width: 108,
+                  height: 145,
+                  initialUrl: editStory?.id != '' ? editStory?.coverUrl : '',
                 ),
               ),
             ],
@@ -470,6 +463,17 @@ class _ComposeScreenState extends State<ComposeScreen> {
             height: 5,
           ),
 
+          isEdit == false &&
+                  _createFormKey.currentState?.isTouched == true &&
+                  selectImg == null
+              ? Center(
+                  child: Text(
+                  imgError ?? 'helo',
+                  style: TextStyle(color: appColors.secondaryBase),
+                ))
+              : const SizedBox(
+                  height: 0,
+                ),
           const SizedBox(
             height: 5,
           ),
@@ -501,18 +505,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
                   errorText: 'Tối đa 1000 ký tự'),
             ]),
           ),
-          Row(
-            children: [
-              Text(
-                'Thể loại',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              _requiredAsterisk()
-            ],
-          ),
+          title(title: 'Thể loại', isRequired: true),
           const SizedBox(
             height: 5,
           ),
@@ -584,13 +577,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Trưởng thành',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(color: appColors.inkBase),
-                ),
+                title(title: 'Trưởng thành'),
                 Text(
                   'Truyện bao hàm nội dung dành cho người trưởng thành, Audiory có thể xếp loại truyện của bạn là trưởng thành',
                   style: Theme.of(context)
@@ -604,18 +591,7 @@ class _ComposeScreenState extends State<ComposeScreen> {
           const SizedBox(
             height: 5,
           ),
-          Row(
-            children: [
-              Text(
-                'Bản quyền',
-                style: Theme.of(context)
-                    .textTheme
-                    .titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              _requiredAsterisk()
-            ],
-          ),
+          title(title: 'Bản quyền', isRequired: true),
           const SizedBox(
             height: 5,
           ),
@@ -713,11 +689,11 @@ class _ComposeScreenState extends State<ComposeScreen> {
 
                         body['tags'] = jsonEncode(tags);
                         body['description'] = _createFormKey
-                            .currentState!.fields['description']?.value;
+                            .currentState?.fields['description']?.value;
 
                         body['is_completed'] = 'false';
                         body['is_copyright'] = _createFormKey
-                                .currentState!.fields['isCopyright']?.value
+                                .currentState?.fields['isCopyright']?.value
                                 .toString() ??
                             'false';
 
@@ -731,17 +707,19 @@ class _ComposeScreenState extends State<ComposeScreen> {
                             _createFormKey.currentState?.fields['title']?.value;
 
                         if (kDebugMode) {
-                          print(_createFormKey.currentState!.value);
+                          print(_createFormKey.currentState?.value);
                           print('body');
                           print(body);
                         }
-                        manageStory(
-                            isEdit,
-                            widget.storyId,
-                            body,
-                            _createFormKey
-                                .currentState!.fields['photos']?.value);
-                      }
+
+                        if (isEdit == false && selectImg == null) {
+                          setState(() {
+                            imgError = 'Ảnh bìa là bắt buộc';
+                          });
+                        } else {
+                          manageStory(isEdit, widget.storyId, body);
+                        }
+                      } else {}
                     },
                     title: isEdit ? 'Cập nhật' : 'Tạo mới',
                   ),

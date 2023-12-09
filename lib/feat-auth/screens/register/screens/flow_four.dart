@@ -1,12 +1,14 @@
+import 'dart:io';
+
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
+import 'package:audiory_v0/widgets/app_img_picker.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,6 +24,8 @@ class FLowFourScreen extends StatefulWidget {
 
 class _FLowFourScreenState extends State<FLowFourScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
+
+  File? selectImg;
 
   @override
   Widget build(BuildContext context) {
@@ -63,64 +67,16 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: <Widget>[
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 100),
-                              child: Stack(
-                                  alignment: Alignment.bottomRight,
-                                  children: [
-                                    FormBuilderImagePicker(
-                                      iconColor: appColors.inkBase,
-                                      placeholderWidget: Stack(
-                                          alignment:
-                                              AlignmentDirectional.center,
-                                          children: [
-                                            Container(
-                                              height: size.width / 3,
-                                              width: size.height / 3,
-                                              decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: appColors.skyLighter),
-                                            ),
-                                            Positioned(
-                                                child: Icon(
-                                              Icons.image,
-                                              color: appColors.inkLight,
-                                            ))
-                                          ]),
-
-                                      transformImageWidget:
-                                          (context, displayImage) => Center(
-                                        child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                            child: SizedBox(
-                                              width: size.width / 3,
-                                              height: size.width / 3,
-                                              child: displayImage,
-                                            )),
-                                      ),
-                                      showDecoration: true,
-                                      galleryIcon: Icon(
-                                        Icons.image,
-                                        color: appColors.primaryBase,
-                                      ),
-                                      galleryLabel: const Text('Thư viện ảnh'),
-
-                                      fit: BoxFit.cover,
-                                      backgroundColor: appColors.skyLighter,
-                                      availableImageSources: const [
-                                        ImageSourceOption.gallery
-                                      ], //only gallery
-                                      name: 'photos',
-                                      maxImages: 1,
-                                    ),
-                                  ]),
-                            ),
-                          ],
+                        Center(
+                          child: AppImagePicker(
+                            callback: (img) {
+                              setState(() {
+                                selectImg = File(img.path);
+                              });
+                            },
+                            isRoundShape: true,
+                            height: size.width / 3,
+                          ),
                         ),
                         const AppTextInputField(
                           name: 'full_name',
@@ -148,7 +104,6 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                     bgColor: appColors.primaryBase,
                     onPressed: () async {
                       if (_formKey.currentState?.isValid == true) {
-                        print('validate');
                         _formKey.currentState!.save();
 
                         Map<String, String> body = {};
@@ -161,9 +116,7 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                         //update new user data
                         Profile? updatedProfile = await ProfileRepository()
                             .updateNewUserProfile(
-                                _formKey.currentState!.fields['photos']?.value,
-                                body,
-                                widget.userId);
+                                selectImg, body, widget.userId);
 
                         // ignore: use_build_context_synchronously
                         AppSnackBar.buildSnackbar(context, 'Hoàn tất đăng ký',

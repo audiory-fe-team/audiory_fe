@@ -218,19 +218,13 @@ class ChapterRepository {
     var request;
 
     if (formFile != null) {
-      if (formFile?[0].runtimeType != String && formFile[0] != null) {
-        print('has photo');
-        File file = File(formFile[0].path); //import dart:io
-        request = await http.MultipartRequest('POST', url)
-          ..fields.addAll(body)
-          ..files.add(await http.MultipartFile.fromPath(
-            'form_file',
-            file.path,
-          ));
-      } else {
-        request = await http.MultipartRequest('POST', url)
-          ..fields.addAll(body);
-      }
+      File file = File(formFile.path); //import dart:io
+      request = await http.MultipartRequest('POST', url)
+        ..fields.addAll(body)
+        ..files.add(await http.MultipartFile.fromPath(
+          'form_file',
+          file.path,
+        ));
     } else {
       print('has no phot');
       request = await http.MultipartRequest('POST', url)
@@ -261,6 +255,28 @@ class ChapterRepository {
     final storage = FlutterSecureStorage();
     final jwt = await storage.read(key: 'jwt');
     final uri = Uri.parse("$chapterEndpoint/publish/$chapterId");
+    if (chapterId == null) {
+      throw Exception('Failed to fetch chapter');
+    }
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
+    if (jwt != null) {
+      header['Authorization'] = 'Bearer $jwt';
+    }
+
+    final response = await http.post(uri, headers: header);
+    final responseBytes = jsonDecode(utf8.decode(response.bodyBytes));
+    print(responseBytes);
+
+    return responseBytes;
+  }
+
+  Future<dynamic> unpublishChapter(String? chapterId) async {
+    final storage = FlutterSecureStorage();
+    final jwt = await storage.read(key: 'jwt');
+    final uri = Uri.parse("$chapterEndpoint/unpublish/$chapterId");
     if (chapterId == null) {
       throw Exception('Failed to fetch chapter');
     }

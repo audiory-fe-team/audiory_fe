@@ -1,10 +1,12 @@
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:audiory_v0/feat-read/widgets/selectable_reading_list_card.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/reading-list/reading_list_model.dart';
 import 'package:audiory_v0/repositories/reading_list_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/widgets/app_img_picker.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +14,6 @@ import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
@@ -42,29 +43,7 @@ class AddToListModal extends HookWidget {
     );
     final size = MediaQuery.of(context).size;
 
-    handleCreateReadingList() async {
-      Map<String, String> body = {};
-
-      const storage = FlutterSecureStorage();
-      final jwtToken = await storage.read(key: 'jwt');
-      final userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
-      body['user_id'] = userId;
-      body['name'] = _formKey.currentState?.fields['name']?.value;
-      body['is_private'] = 'true';
-      ReadingList? readingList;
-      try {
-        readingList = await ReadingListRepository.addReadingList(
-            body, _formKey.currentState?.fields['photo']?.value);
-        await AppSnackBar.buildTopSnackBar(
-            context, 'Tạo thành công', null, SnackBarType.success);
-        readingListQuery.refetch();
-      } catch (error) {
-        print(error);
-        // ignore: use_build_context_synchronously
-        AppSnackBar.buildTopSnackBar(
-            context, 'Tạo thất bại', null, SnackBarType.error);
-      }
-    }
+    final selectImg = useState<File?>(null);
 
     handleAddToReadingList(BuildContext context) async {
       if (selectedId.value == null) return;
@@ -80,6 +59,30 @@ class AddToListModal extends HookWidget {
       // listStoriesQuery.refetch();
       await AppSnackBar.buildTopSnackBar(
           context, "Thêm thành công", null, SnackBarType.success);
+    }
+
+    handleCreateReadingList() async {
+      Map<String, String> body = {};
+
+      const storage = FlutterSecureStorage();
+      final jwtToken = await storage.read(key: 'jwt');
+      final userId = JwtDecoder.decode(jwtToken ?? '')['user_id'];
+      body['user_id'] = userId;
+      body['name'] = _formKey.currentState?.fields['name']?.value;
+      body['is_private'] = 'true';
+      ReadingList? readingList;
+      try {
+        readingList =
+            await ReadingListRepository.addReadingList(body, selectImg.value);
+        await AppSnackBar.buildTopSnackBar(
+            context, 'Tạo thành công', null, SnackBarType.success);
+        readingListQuery.refetch();
+      } catch (error) {
+        print(error);
+        // ignore: use_build_context_synchronously
+        AppSnackBar.buildTopSnackBar(
+            context, 'Tạo thất bại', null, SnackBarType.error);
+      }
     }
 
     return DraggableScrollableSheet(
@@ -182,18 +185,12 @@ class AddToListModal extends HookWidget {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      SizedBox(
+                                      AppImagePicker(
+                                        callback: (img) {
+                                          selectImg.value = File(img.path);
+                                        },
                                         width: size.width / 4,
-                                        child: FormBuilderImagePicker(
-                                            initialValue: [],
-                                            previewAutoSizeWidth: true,
-                                            maxImages: 1,
-                                            backgroundColor:
-                                                appColors.skyLightest,
-                                            iconColor: appColors.primaryBase,
-                                            decoration: const InputDecoration(
-                                                border: InputBorder.none),
-                                            name: 'photo'),
+                                        height: 140,
                                       ),
                                       SizedBox(
                                         // height: 70,
@@ -205,59 +202,64 @@ class AddToListModal extends HookWidget {
                                               FormBuilderValidators.required(
                                                   errorText:
                                                       'Không được để trống'),
+                                          maxLines: 1,
                                         ),
                                       ),
-                                      // Row(
-                                      //   mainAxisSize: MainAxisSize.max,
-                                      //   mainAxisAlignment:
-                                      //       MainAxisAlignment.spaceBetween,
-                                      //   children: [
-                                      //     SizedBox(
-                                      //         width: 100,
-                                      //         child: GestureDetector(
-                                      //           onTap: () {
-                                      //             context.pop();
-                                      //           },
-                                      //           child: Text(
-                                      //             'Hủy',
-                                      //             style: textTheme.titleMedium,
-                                      //           ),
-                                      //         )),
-                                      //     SizedBox(
-                                      //         width: 100,
-                                      //         child: GestureDetector(
-                                      //           onTap: () {
-                                      //             //check if input validate
-                                      //             final isValid = _formKey
-                                      //                 .currentState
-                                      //                 ?.validate();
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            vertical: 8.0),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            SizedBox(
+                                                width: 100,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    context.pop();
+                                                  },
+                                                  child: Text(
+                                                    'Hủy',
+                                                    style:
+                                                        textTheme.titleMedium,
+                                                  ),
+                                                )),
+                                            SizedBox(
+                                                width: 100,
+                                                child: GestureDetector(
+                                                  onTap: () {
+                                                    //check if input validate
+                                                    final isValid = _formKey
+                                                        .currentState
+                                                        ?.validate();
 
-                                      //             if (isValid != null &&
-                                      //                 isValid) {
-                                      //               _formKey.currentState
-                                      //                   ?.save();
-                                      //               context.pop();
-                                      //               handleCreateReadingList();
-                                      //             }
-                                      //             // context.pop();
-                                      //           },
-                                      //           child: Text(
-                                      //             'Tạo',
-                                      //             textAlign: TextAlign.end,
-                                      //             style: textTheme.titleMedium
-                                      //                 ?.copyWith(
-                                      //                     color: _formKey
-                                      //                                 .currentState
-                                      //                                 ?.validate() ==
-                                      //                             true
-                                      //                         ? appColors
-                                      //                             .primaryBase
-                                      //                         : appColors
-                                      //                             .inkLighter),
-                                      //           ),
-                                      //         ))
-                                      //   ],
-                                      // )
+                                                    if (isValid != null &&
+                                                        isValid) {
+                                                      _formKey.currentState
+                                                          ?.save();
+                                                      context.pop();
+                                                      handleCreateReadingList();
+                                                    }
+                                                    // context.pop();
+                                                  },
+                                                  child: Text(
+                                                    'Tạo',
+                                                    textAlign: TextAlign.end,
+                                                    style: textTheme.titleMedium?.copyWith(
+                                                        color: _formKey
+                                                                    .currentState
+                                                                    ?.validate() ==
+                                                                true
+                                                            ? appColors
+                                                                ?.primaryBase
+                                                            : appColors
+                                                                ?.inkLighter),
+                                                  ),
+                                                ))
+                                          ],
+                                        ),
+                                      )
                                     ],
                                   ),
                                 ),
@@ -267,6 +269,11 @@ class AddToListModal extends HookWidget {
                         },
                         child: Skeleton.shade(
                           child: Container(
+                              margin: const EdgeInsets.only(
+                                top: 10,
+                                right: 10,
+                                bottom: 10,
+                              ),
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 15, vertical: 8),
                               decoration: BoxDecoration(

@@ -17,6 +17,7 @@ class Paragraph with _$Paragraph {
     @Default('') @JsonKey(name: 'chapter_version_id') String? chapterVersionId,
     @Default(0) @JsonKey(name: 'order') int? order,
     @Default('') @JsonKey(name: 'content') String? content,
+    @Default('') @JsonKey(name: 'rich_text') String? richText,
     @Default(0) @JsonKey(name: 'comment_count') int? commentCount,
     @Default([]) @JsonKey(name: 'audios') List<ParaAudio>? audios,
     @JsonKey(name: 'content_moderation') ContentModeration? contentModeration,

@@ -6,6 +6,7 @@ import 'package:audiory_v0/models/conversation/conversation_model.dart';
 import 'package:audiory_v0/models/message/message_model.dart';
 import 'package:audiory_v0/repositories/conversation_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
+import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:flutter/material.dart';
@@ -42,7 +43,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
   WebSocketChannel? channel;
 
   final ScrollController _controller = ScrollController();
-  int pageNumber = 1;
+  int pageNumber = 0; //start offset
 
   String conversationId = ''; //use for first time message
 
@@ -53,15 +54,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
       // duration: Duration(seconds: 2),
       // curve: Curves.fastOutSlowIn,
     );
-  }
-
-  String formatDate(String? date) {
-    //use package intl
-    if (date == '') {
-      date = DateTime.now().toString();
-    }
-    DateTime dateTime = DateTime.parse(date as String);
-    return DateFormat('HH:mm').format(dateTime);
   }
 
   markConversationAsRead() async {
@@ -75,7 +67,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     super.initState();
     connectWebsocket(); //connect to receive and send message
     if (widget.conversation?.id != '') {
-      print('mark as read');
       markConversationAsRead(); // mark conversation as read if the conversation is not first time
     }
     try {
@@ -93,13 +84,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     });
   }
 
-  @override
-  void dispose() {
-    print('DISCONNECT');
-    channel?.sink.close();
-    super.dispose();
-  }
-
   connectWebsocket() async {
     final jwtToken = await storage.read(key: 'jwt');
 
@@ -110,33 +94,32 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
   }
 
   void _sendMessage(String content, List<Message> query) {
+    print('sendmess');
     if (messages.length == 0) {
       setState(() {
         messages.addAll(query);
       });
     }
 
-    print('ID FROM OUTSIDE ${widget.conversation?.id}');
-    print('CONVERSATIONiD ${conversationId}');
-
     Map<String, dynamic> message = {
       'receiver_id': widget.conversation?.receiverId ?? '',
       'content': content,
-      'sender_id': widget.userId
+      'sender_id': widget.userId,
     };
     if (conversationId != '') {
       message['conversation_id'] = widget.conversation?.id ?? '';
     }
 
-    print('actual message BODY ${message}');
     var actualBody = jsonEncode(message);
+    channel?.sink.add(actualBody);
+
+    print('body $actualBody');
+    message['created_date'] = DateTime.now().toIso8601String();
+
     setState(() {
       messages.insert(0, Message.fromJson(message));
     });
 
-    print(messages);
-
-    channel?.sink.add(actualBody);
     widget.refetchCallback();
   }
 
@@ -163,8 +146,10 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     final conversationQuery = useQuery(
         ['conversation', widget.conversation?.id],
         () => ConversationRepository().fetchConversationById(
-            conversationId: widget.conversation?.id, offset: 1, limit: 10));
-    print(conversationQuery.data?.isBlocked);
+            conversationId: widget.conversation?.id, offset: 0, limit: 10));
+
+    print(conversationQuery.data);
+    print(DateTime.now().toIso8601String());
     Widget messageCard(
         {String? content = '',
         bool? isMe = true,
@@ -233,12 +218,14 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     }
 
     Widget getMessageList() {
+      print(messages.length);
+      print(messages);
       return Flexible(
         // decoration: BoxDecoration(color: appColors.backgroundDark),
         child: ListView.builder(
           controller: _controller,
           reverse: true,
-          itemCount: messages.length == 0
+          itemCount: messages.isEmpty
               ? conversationQuery.data?.messages?.length ?? 0
               : messages.length,
           shrinkWrap: true,
@@ -250,13 +237,17 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
             String messageContent = messageItem?.content ?? '';
             bool isMe = messageItem?.senderId == widget.userId;
 
+            String? date =
+                appFormatDateWithHHmm(messageItem?.createdDate).split('-')[1] ??
+                    'Đã gửi';
+
             return Padding(
               padding: const EdgeInsets.only(
                   bottom: 4.0, left: 16, right: 16, top: 16),
               child: messageCard(
                   content: messageContent,
                   isMe: isMe,
-                  date: formatDate(messageItem?.createdDate),
+                  date: date,
                   avatarUrl: widget?.conversation?.coverUrl ?? ''),
             );
           },
@@ -284,7 +275,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                 widget.conversation?.name != null
                     ? widget.conversation?.name == ''
                         ? 'Người dùng'
-                        : widget.conversation?.name as String
+                        : widget.conversation?.name ?? ''
                     : 'Người dùng',
                 style: textTheme.titleLarge?.copyWith(color: appColors.inkBase),
               ),
@@ -327,23 +318,25 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                   StreamBuilder(
                     stream: channel?.stream,
                     builder: (context, snapshot) {
+                      print('CONNECTION STATE');
+
                       if (snapshot.hasData) {
                         var decodedJson = utf8.decode(snapshot.data);
                         print('SNAPSHOT DATA ${decodedJson}');
-                        print('SNAPSHOT DATA ${jsonDecode(decodedJson)['id']}');
-                        print(messages[0].id);
-                        print(messages[0].id == jsonDecode(decodedJson)['id']);
-                        print('${messages.length}');
+
                         bool existedMessage = messages.any(
                             (mess) => mess.id == jsonDecode(decodedJson)['id']);
                         print('MESSAGE LIST $messages');
+
                         if (existedMessage == false) {
+                          print('existed');
                           messages.insert(
                               0, Message.fromJson(jsonDecode(decodedJson)));
+                        } else {
+                          print('not existed');
                         }
                       } else {
                         print('SNAPSHOT ERROR');
-
                         print('${snapshot.error}');
                       }
 
@@ -356,14 +349,15 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
           ),
         ),
         Skeletonizer(
-          enabled: conversationQuery.isFetching,
+          enabled:
+              conversationQuery.isFetching && widget.conversation?.id != '',
           child: Align(
             alignment: Alignment.bottomCenter,
             child: conversationQuery.data?.isBlocked == false ||
                     widget.conversation?.id == ''
                 ? DetailMessageBottomBar(sendMessageCallback: (content) {
                     _sendMessage(
-                        content, conversationQuery.data?.messages ?? []);
+                        content ?? '', conversationQuery.data?.messages ?? []);
 
                     widget.refetchCallback();
                   })
@@ -391,5 +385,12 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
     } else {
       // print('dont call');
     }
+  }
+
+  @override
+  void dispose() {
+    print('DISCONNECT');
+    channel?.sink.close();
+    super.dispose();
   }
 }

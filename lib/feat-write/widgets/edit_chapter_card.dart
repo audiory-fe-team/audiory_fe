@@ -13,13 +13,15 @@ class EditChapterCard extends StatelessWidget {
   final Chapter? chapter;
   final Story? story;
   final Function() onDeleteChapter;
+  final Function() onPublish;
 
   const EditChapterCard(
       {super.key,
       required this.chapter,
       this.index,
       this.story,
-      required this.onDeleteChapter});
+      required this.onDeleteChapter,
+      required this.onPublish});
 
   Map<String, dynamic> getChapterStatus(context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
@@ -45,10 +47,6 @@ class EditChapterCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final Map<String, dynamic> chapterStatus = getChapterStatus(context);
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-
-    final popupMenuItem = chapter?.isPaywalled == true
-        ? ['edit', 'preview']
-        : ['edit', 'preview', 'delete'];
 
     return GestureDetector(
       onTap: () {
@@ -99,8 +97,11 @@ class EditChapterCard extends StatelessWidget {
                       PopupMenuButton(
                           onSelected: (value) {
                             print(value);
-                            if (value == 1) {
+                            if (value == 2) {
                               onDeleteChapter();
+                            }
+                            if (value == 1) {
+                              onPublish();
                             }
                             if (value == 0) {
                               context.pushNamed('composeChapter', extra: {
@@ -113,7 +114,8 @@ class EditChapterCard extends StatelessWidget {
                           icon: const Icon(Icons.more_vert),
                           itemBuilder: (context) => chapter?.isPaywalled == true
                               ? appPaywalledChapterPopupMenuItems(context)
-                              : appChapterPopupMenuItems(context)),
+                              : appChapterPopupMenuItems(
+                                  context, chapter?.isDraft)),
                     ],
                   ),
                 ),

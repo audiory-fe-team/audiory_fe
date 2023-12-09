@@ -3,15 +3,13 @@ import 'package:audiory_v0/models/LibraryStory.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 class SelectableCurrentReadCard extends StatefulWidget {
   final LibraryStory story;
   final Function(String) onSelected;
   final bool? isEditable;
 
-  bool isSelected = false;
-  SelectableCurrentReadCard(
+  const SelectableCurrentReadCard(
       {super.key,
       required this.story,
       required this.onSelected,
@@ -23,49 +21,23 @@ class SelectableCurrentReadCard extends StatefulWidget {
 }
 
 class _SelectableCurrentReadCardState extends State<SelectableCurrentReadCard> {
+  bool isSelected = false;
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final coverUrl = widget.story.story.coverUrl ?? FALLBACK_IMG_URL;
-    final storyId = widget.story.storyId ?? 'not-found';
+    final storyId = widget.story.storyId;
     final title = widget.story.story.title ?? 'Tiêu đề truyện';
 
     final authorName = widget.story.story.author?.fullName ?? 'Tác giả';
-
-    Widget selectedStack() {
-      return widget.isSelected
-          ? Stack(
-              alignment: Alignment.center,
-              children: [
-                Image.network(
-                  coverUrl,
-                  color: appColors.inkLight.withOpacity(0.9),
-                  colorBlendMode: BlendMode.modulate,
-                  errorBuilder: (context, error, stackTrace) => Image.network(
-                      'https://c0.wallpaperflare.com/preview/582/596/998/strandweg-sea-nature-romantic.jpg'),
-                ),
-                SizedBox(
-                    child: Center(
-                        child: Icon(
-                  Icons.check_circle,
-                  color: appColors.skyLighter,
-                  weight: 20,
-                  size: 40,
-                )))
-              ],
-            )
-          : Image.network(
-              coverUrl,
-            );
-    }
 
     return GestureDetector(
         onTap: () {
           setState(() {
             widget.onSelected(storyId);
-            widget.isSelected = !widget.isSelected;
+            isSelected = !isSelected;
           });
         },
         child: Container(
@@ -86,7 +58,7 @@ class _SelectableCurrentReadCardState extends State<SelectableCurrentReadCard> {
                   onTap: () async {
                     setState(() {
                       widget.onSelected(storyId);
-                      widget.isSelected = !widget.isSelected;
+                      isSelected = !isSelected;
                     });
                   },
                   customBorder: RoundedRectangleBorder(
@@ -94,7 +66,7 @@ class _SelectableCurrentReadCardState extends State<SelectableCurrentReadCard> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(10.0),
-                    child: widget.isSelected
+                    child: isSelected
                         ? Stack(
                             alignment: Alignment.center,
                             children: [

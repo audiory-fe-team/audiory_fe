@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/enums/Sex.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
-import 'package:audiory_v0/utils/format_date.dart';
+import 'package:audiory_v0/widgets/app_img_picker.dart';
 import 'package:audiory_v0/widgets/buttons/dropdown_button.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
@@ -14,9 +16,7 @@ import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../theme/theme_constants.dart';
@@ -41,25 +41,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final textTheme = Theme.of(context).textTheme;
     final size = MediaQuery.of(context).size;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
+
+    File? selectImg; //import dart:io
     final profileQuery =
         useQuery(['profile'], () => ProfileRepository().fetchProfileByUserId());
 
     DateTime? datepicked;
     Widget userInfo(Profile? profile) {
       const genderList = Sex.values;
-      String formatDate(String? date) {
-        //use package intl
-        DateTime dateTime = DateTime.parse(date as String);
-        return DateFormat('dd/MM/yyyy').format(dateTime);
-      }
 
       Future<void> showdobpicker() async {
         datepicked = await showDatePicker(
             helpText: 'Chọn ngày sinh',
             context: context,
-            initialDate: DateTime.tryParse(
-                    profile?.dob ?? DateTime(2000, 1, 1).toString()) ??
-                DateTime(2000, 1, 1),
             firstDate: DateTime(1933, 1, 1),
             lastDate: DateTime(2017, 1, 1),
 
@@ -94,10 +88,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             });
         // ignore: unrelated_type_equality_checks
         if (datepicked != null) {
-          print('DATE $datepicked');
           setState(() {
-            _selectedDate = appFormatDate(datepicked?.toString());
+            _selectedDate = datepicked?.toString() ?? '';
           });
+          _formKey.currentState?.setInternalFieldValue('dob', _selectedDate);
         }
       }
 
@@ -118,20 +112,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
-                // Flexible(
-                //   child: GestureDetector(
-                //       onTap: () {
-                //         showdobpicker();
-                //       },
-                //       child: Padding(
-                //         padding: const EdgeInsets.only(right: 8.0),
-                //         child: Icon(
-                //           Icons.calendar_today,
-                //           color: appColors.skyDark,
-                //           size: 20,
-                //         ),
-                //       )),
-                // ),
               ],
             ),
             const SizedBox(
@@ -153,17 +133,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         size: 20,
                       ),
                     )),
-                initialValue: _selectedDate != ''
-                    ? _selectedDate
-                    : formatDate(profile?.dob),
-                hintText: _selectedDate,
+                initialValue: _selectedDate,
                 hintTextStyle: TextStyle(color: appColors.inkBase),
                 validator: (value) {
                   if ((value?.allMatches(
                               r'^(0[1-9]|[12][0-9]|3[01])[-/.](0[1-9]|1[012])[-/.](19|20)\\d\\d$') ??
                           true) ==
                       (false)) {
-                    print('wrogn');
                     return 'Nhập đúng định dạng dd/MM/yyyy';
                   }
                 }),
@@ -187,59 +163,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   mainAxisAlignment:
                       MainAxisAlignment.spaceEvenly, // <-- SEE HERE
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 100),
-                      child: Stack(alignment: Alignment.bottomRight, children: [
-                        FormBuilderImagePicker(
-                          initialValue: profile?.avatarUrl != null &&
-                                  profile?.avatarUrl != ''
-                              ? [profile?.avatarUrl ?? '']
-                              : [],
-                          iconColor: appColors.inkBase,
-                          placeholderWidget: Stack(
-                              alignment: AlignmentDirectional.center,
-                              children: [
-                                Container(
-                                  height: size.width / 3,
-                                  width: size.height / 3,
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: appColors.skyLighter),
-                                ),
-                                Positioned(
-                                    child: Icon(
-                                  Icons.image,
-                                  color: appColors.inkLight,
-                                ))
-                              ]),
+                    AppImagePicker(
+                        initialUrl: profile?.avatarUrl,
+                        isRoundShape: true,
+                        width: size.width / 3,
+                        callback: (img) {
+                          selectImg = File(img.path);
+                        }),
 
-                          transformImageWidget: (context, displayImage) =>
-                              Center(
-                            child: ClipRRect(
-                                borderRadius: BorderRadius.circular(100),
-                                child: SizedBox(
-                                  width: size.width / 3,
-                                  height: size.width / 3,
-                                  child: displayImage,
-                                )),
-                          ),
-                          showDecoration: true,
-                          galleryIcon: Icon(
-                            Icons.image,
-                            color: appColors.primaryBase,
-                          ),
-                          galleryLabel: const Text('Thư viện ảnh'),
-
-                          fit: BoxFit.cover,
-                          backgroundColor: appColors.skyLighter,
-                          availableImageSources: const [
-                            ImageSourceOption.gallery
-                          ], //only gallery
-                          name: 'photos',
-                          maxImages: 1,
-                        ),
-                      ]),
-                    ),
                     AppTextInputField(
                       name: 'full_name',
                       label: 'Tên gọi',
@@ -320,11 +251,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ?.fields['description']?.value;
                                   body['facebook_url'] = _formKey.currentState
                                       ?.fields['facebook_url']?.value;
-                                  final parsedDate = DateTime.tryParse('');
-                                  // body['dob'] =
-                                  //     parsedDate?.toUtc().toIso8601String() ??
-                                  //         '';
+                                  print(
+                                      'SELECTED ${_selectedDate.split(' ')[0]}');
+                                  // body['dob'] = _selectedDate.split(' ')[0];
 
+                                  print(body);
                                   //edit profile
                                   showDialog(
                                       context: context,
@@ -333,13 +264,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                             child: CircularProgressIndicator());
                                       });
 
+                                  // Profile? newProfile =
+                                  //     await ProfileRepository().updateProfile(
+                                  //   _formKey
+                                  //       .currentState?.fields['photos']?.value,
+                                  //   body,
+                                  // );
+
                                   Profile? newProfile =
                                       await ProfileRepository().updateProfile(
-                                    _formKey
-                                        .currentState?.fields['photos']?.value,
+                                    selectImg,
                                     body,
                                   );
-                                  print('PROFILE ${newProfile}');
+                                  print('PROFILE ${newProfile?.dob}');
                                   if (context.mounted) {
                                     context.pop();
                                   }

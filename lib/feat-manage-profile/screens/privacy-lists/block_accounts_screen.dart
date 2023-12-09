@@ -1,16 +1,14 @@
+import 'package:audiory_v0/models/enums/Report.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/interaction_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
-import 'package:audiory_v0/widgets/input/text_input.dart';
+import 'package:audiory_v0/widgets/report_dialog.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:form_builder_image_picker/form_builder_image_picker.dart';
-import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quickalert/quickalert.dart';
@@ -181,146 +179,16 @@ class _BlockAccountsScreenState extends State<BlockAccountsScreen> {
                                       );
                                     }
                                     if (value == 1) {
-                                      showModalBottomSheet(
-                                          isScrollControlled: true,
-                                          shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(8.0),
-                                            topRight: Radius.circular(8.0),
-                                          )),
-                                          useSafeArea: true,
-                                          backgroundColor: appColors.background,
-                                          context: context,
-                                          builder: (context) {
-                                            return Container(
-                                              height: size.height - 200,
-                                              padding: EdgeInsets.symmetric(
-                                                  vertical: 8, horizontal: 16),
-                                              child: ListView(children: [
-                                                Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                      vertical: 16.0),
-                                                  child: Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.max,
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceBetween,
-                                                    children: [
-                                                      Flexible(
-                                                        child: Text(
-                                                          'Tạo báo cáo',
-                                                          style: textTheme
-                                                              .headlineSmall,
-                                                        ),
-                                                      ),
-                                                      Flexible(
-                                                        flex: 2,
-                                                        child: AppIconButton(
-                                                            title: 'Tạo',
-                                                            onPressed: () {
-                                                              if (_formKey
-                                                                  .currentState!
-                                                                  .validate()) {
-                                                                _formKey
-                                                                    .currentState!
-                                                                    .save();
-                                                                handleCreateReport(
-                                                                    account
-                                                                        ?.id);
-                                                              }
-                                                            }),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                                FormBuilder(
-                                                    key: _formKey,
-                                                    autovalidateMode:
-                                                        AutovalidateMode
-                                                            .onUserInteraction,
-                                                    child: Column(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .start,
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        AppTextInputField(
-                                                          name: 'title',
-                                                          hintText:
-                                                              'Nhập tiêu đề',
-                                                          label:
-                                                              'Tiêu đề báo cáo',
-                                                          isRequired: true,
-                                                          isNoError: false,
-                                                          validator:
-                                                              FormBuilderValidators
-                                                                  .required(
-                                                                      errorText:
-                                                                          'Không được để trống'),
-                                                        ),
-                                                        AppTextInputField(
-                                                          name: 'description',
-                                                          hintText:
-                                                              'Nhập nội dung',
-                                                          label: 'Nội dung',
-                                                          isRequired: true,
-                                                          isTextArea: true,
-                                                          maxLengthCharacters:
-                                                              256,
-                                                          minLines: 4,
-                                                          validator:
-                                                              FormBuilderValidators
-                                                                  .compose([
-                                                            FormBuilderValidators
-                                                                .required(
-                                                                    errorText:
-                                                                        'Không được để trống'),
-                                                            FormBuilderValidators
-                                                                .max(256,
-                                                                    errorText:
-                                                                        'Tối đa 256 ký tự')
-                                                          ]),
-                                                        ),
-                                                        Text(
-                                                          'Hình minh họa',
-                                                          style: Theme.of(
-                                                                  context)
-                                                              .textTheme
-                                                              .titleLarge
-                                                              ?.copyWith(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                        ),
-                                                        Center(
-                                                          child: SizedBox(
-                                                            width:
-                                                                size.width / 4,
-                                                            child: FormBuilderImagePicker(
-                                                                previewAutoSizeWidth:
-                                                                    true,
-                                                                maxImages: 1,
-                                                                backgroundColor:
-                                                                    appColors
-                                                                        .skyLightest,
-                                                                iconColor: appColors
-                                                                    .primaryBase,
-                                                                decoration:
-                                                                    const InputDecoration(
-                                                                        border:
-                                                                            InputBorder.none),
-                                                                name: 'photo'),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ))
-                                              ]),
-                                            );
-                                          });
+                                      if (account?.id != null) {
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return ReportDialog(
+                                                  reportType:
+                                                      ReportType.USER.name,
+                                                  reportId: account?.id ?? '');
+                                            });
+                                      }
                                     }
                                   },
                                   itemBuilder: (context) => [

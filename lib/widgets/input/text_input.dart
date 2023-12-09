@@ -29,6 +29,7 @@ class AppTextInputField extends StatefulWidget {
   final Widget? inputLable;
   final TextStyle? labelTextStyle;
   final bool? isRequired;
+  final bool? autoFocus;
   final String? Function(String?)? validator;
   final bool? submmitted;
 
@@ -78,7 +79,8 @@ class AppTextInputField extends StatefulWidget {
       this.contentPadding =
           const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12),
       this.onChangeCallback,
-      this.inputLable});
+      this.inputLable,
+      this.autoFocus = false});
 
   @override
   State<AppTextInputField> createState() => _AppTextInputFieldState();
@@ -101,7 +103,8 @@ class _AppTextInputFieldState extends State<AppTextInputField> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     return FormBuilderTextField(
-      autofocus: false,
+      autofocus: widget.autoFocus ?? false,
+
       obscureText:
           widget.textInputType == TextInputType.visiblePassword ? true : false,
       enabled: widget.isDisabled == true,

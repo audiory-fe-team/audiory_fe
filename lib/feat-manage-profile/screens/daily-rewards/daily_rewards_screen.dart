@@ -36,19 +36,20 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
         () => TransactionRepository.fetchMyTransactions(
             type: TransactionType.DAILY_REWARD, pageSize: 10000));
 
-    print(transactionsQuery.data);
     final userStreakQuery =
         useQuery(['userStreak'], () => AuthRepository().getMyStreak());
-    print('streak');
-    print(userStreakQuery.data);
+
     handleReceiveReward(bool isToday) async {
       try {
         await AuthRepository().receiveReward();
 
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Nhận thưởng thành công', null, SnackBarType.success);
         userStreakQuery.refetch();
+        transactionsQuery.refetch();
       } catch (e) {
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Bạn đã nhận cho hôm nay rồi', null, SnackBarType.info);
       }
@@ -144,9 +145,12 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
 
     countTotalReceived() {
       num total = 0;
-      transactionsQuery.data?.forEach((element) {
+      List<Transaction>? list = transactionsQuery.data;
+      print(list);
+      list?.forEach((element) {
+        print(element.totalPrice);
         total = (total) + (element.totalPrice ?? 0);
-        print(total);
+        // print(total);
       });
 
       return total;
@@ -191,7 +195,7 @@ class _DailyRewardsScreenState extends State<DailyRewardsScreen> {
                         Skeletonizer(
                           enabled: transactionsQuery.isFetching,
                           child: Text(
-                            '${countTotalReceived().toString()}',
+                            countTotalReceived().toString(),
                             style: textTheme.headlineLarge?.copyWith(
                                 color: appColors.inkBase, fontSize: 50),
                           ),

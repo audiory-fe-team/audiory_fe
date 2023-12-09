@@ -192,10 +192,6 @@ class OfflineReadingScreen extends HookConsumerWidget {
       textColor.value =
           THEME_OPTIONS[savedOption]["textColor"] ?? appColors.inkBase;
 
-      final timerValue = prefs.getInt('timer');
-      // if (timerValue != null) {
-      //   scheduleTimeout(timerValue);
-      // }
       localPlayer.setSpeed(audioSpeed.value);
     }
 
