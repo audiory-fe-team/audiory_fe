@@ -11,7 +11,7 @@ import 'package:flutter_quill/flutter_quill.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_quill_extensions/flutter_quill_extensions.dart';
 
-class RichTextParagraph extends StatefulWidget {
+class RichTextParagraph extends StatelessWidget {
   final Key paragraphKey;
   final String? richText;
 
@@ -26,39 +26,20 @@ class RichTextParagraph extends StatefulWidget {
       this.color = const Color(0xFF404446)});
 
   @override
-  State<RichTextParagraph> createState() => _RichTextParagraphState();
-}
-
-class _RichTextParagraphState extends State<RichTextParagraph> {
-  QuillController itemController = QuillController.basic();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-
-    //set controller document by richtext
-
-    String actualBody = '[${widget.richText?.replaceFirst(RegExp(r','), '')}]';
-    print(actualBody);
-    itemController.document = widget.richText != "" && widget.richText != null
-        ? Document.fromJson(jsonDecode(actualBody))
-        : Document();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
     final size = MediaQuery.of(context).size;
     final textTheme = Theme.of(context).textTheme;
 
-    final fontSize = widget.fontSize;
-    print(widget.richText);
-    // return text.Text(widget.richText != '' && widget.richText != null
-    //     ? widget.richText ?? ''
-    //     : "trong");
+    String actualBody = '[${richText?.replaceFirst(RegExp(r','), '')}]';
+    QuillController itemController = QuillController.basic();
+
+    itemController.document = richText != "" && richText != null
+        ? Document.fromJson(jsonDecode(actualBody))
+        : Document();
+
     return QuillProvider(
-      key: widget.key,
+      key: key,
       configurations: QuillConfigurations(
         controller: itemController,
         sharedConfigurations: QuillSharedConfigurations(
@@ -91,7 +72,7 @@ class _RichTextParagraphState extends State<RichTextParagraph> {
                 customStyleBuilder: (_) {
                   //define text color here
                   return quillTextStyle.TextStyle(
-                      color: widget.color, fontSize: fontSize);
+                      color: color, fontSize: fontSize);
                 },
                 customStyles: DefaultStyles(
                     paragraph: DefaultTextBlockStyle(

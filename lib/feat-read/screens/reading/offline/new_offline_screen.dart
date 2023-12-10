@@ -306,8 +306,7 @@ class OfflineReadingScreen extends HookConsumerWidget {
                                         child: (para.richText != null &&
                                                 para.richText != "")
                                             ? RichTextParagraph(
-                                                paragraphKey:
-                                                    Key('${index * 45}'),
+                                                paragraphKey: UniqueKey(),
                                                 richText: para.richText,
                                                 fontSize:
                                                     fontSize.value.toDouble(),

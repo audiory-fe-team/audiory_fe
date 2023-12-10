@@ -54,7 +54,7 @@ class DonateGiftModal extends HookConsumerWidget {
     final total = useState(0);
 
     handleTotalCoins() {
-      var count = int.parse(sizeController.value.text) ?? 0;
+      var count = int.parse(sizeController.value.text);
       var price = selectedItem.value?.price ?? 0;
       total.value = price * count;
     }
