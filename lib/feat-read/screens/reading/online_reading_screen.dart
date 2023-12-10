@@ -367,8 +367,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                       child: (para.richText != null &&
                                               para.richText != "")
                                           ? RichTextParagraph(
-                                              paragraphKey:
-                                                  Key('${index * 45}'),
+                                              paragraphKey: UniqueKey(),
                                               richText: para.richText,
                                               fontSize:
                                                   fontSize.value.toDouble(),
@@ -507,7 +506,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                       if (currentIndex <= 0) return;
                                       final prevChapterId =
                                           chapters[currentIndex - 1].id;
-                                      GoRouter.of(context).go(
+                                      GoRouter.of(context).push(
                                           '/story/${storyQuery.data?.id}/chapter/$prevChapterId');
                                     },
                                     disabled:
@@ -522,7 +521,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                         return;
                                       final nextChapterId =
                                           chapters[currentIndex + 1].id;
-                                      GoRouter.of(context).go(
+                                      GoRouter.of(context).push(
                                           '/story/${storyQuery.data?.id}/chapter/$nextChapterId');
                                     },
                                     disabled: chapters == null ||

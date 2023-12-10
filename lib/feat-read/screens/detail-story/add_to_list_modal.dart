@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:audiory_v0/feat-read/widgets/selectable_reading_list_card.dart';
@@ -10,7 +9,6 @@ import 'package:audiory_v0/widgets/app_img_picker.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -78,7 +76,6 @@ class AddToListModal extends HookWidget {
             context, 'Tạo thành công', null, SnackBarType.success);
         readingListQuery.refetch();
       } catch (error) {
-        print(error);
         // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Tạo thất bại', null, SnackBarType.error);
@@ -246,15 +243,16 @@ class AddToListModal extends HookWidget {
                                                   child: Text(
                                                     'Tạo',
                                                     textAlign: TextAlign.end,
-                                                    style: textTheme.titleMedium?.copyWith(
-                                                        color: _formKey
-                                                                    .currentState
-                                                                    ?.validate() ==
-                                                                true
-                                                            ? appColors
-                                                                ?.primaryBase
-                                                            : appColors
-                                                                ?.inkLighter),
+                                                    style: textTheme.titleMedium
+                                                        ?.copyWith(
+                                                            color: _formKey
+                                                                        .currentState
+                                                                        ?.validate() ==
+                                                                    true
+                                                                ? appColors
+                                                                    .primaryBase
+                                                                : appColors
+                                                                    .inkLighter),
                                                   ),
                                                 ))
                                           ],
