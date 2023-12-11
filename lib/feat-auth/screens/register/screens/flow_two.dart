@@ -2,6 +2,7 @@ import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/enums/Sex.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
+import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
@@ -234,26 +235,18 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                         child: AppIconButton(
                           title: "Tiếp tục",
                           onPressed: () async {
-                            print('USER ID FLOW 2 ${widget.userId}');
                             //save
                             if (_formKey.currentState?.validate() == true) {
-                              _formKey.currentState!.save();
+                              _formKey.currentState?.save();
 
                               Map<String, String> body = {};
 
                               body['sex'] =
-                                  _formKey.currentState!.fields['sex']?.value;
+                                  _formKey.currentState?.fields['sex']?.value;
 
-                              //parse birth
-                              final parsedDate = DateFormat('dd/MM/yyyy')
-                                  .parse(_selectedDate)
-                                  .toString();
-
-                              print(parsedDate.replaceAll('/', '-'));
-                              print(parsedDate);
                               body['dob'] =
-                                  parsedDate.replaceAll('/', '-').split(' ')[0];
-                              print(body);
+                                  appFormatDateFromDatePicker(_selectedDate);
+
                               //update new user data
                               Profile? updatedProfile =
                                   await ProfileRepository()

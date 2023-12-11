@@ -57,7 +57,7 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                     Text(
                         "Đây là tùy chọn, bạn có thể điền thêm thông tin để mọi người hiểu rõ về bạn hơn",
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: const Color(0xff000000),
+                            color: appColors.inkLighter,
                             fontWeight: FontWeight.normal)),
                   ],
                 ),
@@ -67,15 +67,18 @@ class _FLowFourScreenState extends State<FLowFourScreen> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Center(
-                          child: AppImagePicker(
-                            callback: (img) {
-                              setState(() {
-                                selectImg = File(img.path);
-                              });
-                            },
-                            isRoundShape: true,
-                            height: size.width / 3,
+                        Padding(
+                          padding: const EdgeInsets.only(top: 24.0),
+                          child: Center(
+                            child: AppImagePicker(
+                              callback: (img) {
+                                setState(() {
+                                  selectImg = File(img.path);
+                                });
+                              },
+                              isRoundShape: true,
+                              width: size.width / 3,
+                            ),
                           ),
                         ),
                         const AppTextInputField(

@@ -23,8 +23,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:lottie/lottie.dart';
+import 'package:readmore/readmore.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../models/AuthUser.dart';
@@ -328,16 +330,16 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
               Column(
                 children: [
                   Container(
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                      opacity: 0.6,
-                      image: CachedNetworkImageProvider(
-                          profileData?.backgroundUrl == ''
-                              ? FALLBACK_BACKGROUND_URL
-                              : profileData?.backgroundUrl ??
-                                  FALLBACK_BACKGROUND_URL),
-                      fit: BoxFit.fill,
-                    )),
+                    // decoration: BoxDecoration(
+                    //     image: DecorationImage(
+                    //   opacity: 0.6,
+                    //   image: CachedNetworkImageProvider(
+                    //       profileData?.backgroundUrl == ''
+                    //           ? FALLBACK_BACKGROUND_URL
+                    //           : profileData?.backgroundUrl ??
+                    //               FALLBACK_BACKGROUND_URL),
+                    //   fit: BoxFit.fill,
+                    // )),
                     child: Column(
                       children: [
                         GestureDetector(
@@ -456,15 +458,24 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(
-                          profileData?.description == null ||
-                                  profileData?.description == ''
-                              ? 'Nhập gì đó về bạn'
-                              : profileData?.description ?? '',
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                          padding: const EdgeInsets.all(12.0),
+                          child: profileData?.description == ''
+                              ? Text('Chưa có giới thiệu nào')
+                              : ReadMoreText(
+                                  profileData?.description ?? '',
+                                  trimLines: 4,
+                                  colorClickableText: appColors?.primaryBase,
+                                  trimMode: TrimMode.Line,
+                                  trimCollapsedText: ' Xem thêm',
+                                  trimExpandedText: ' Ẩn bớt',
+                                  style: textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.w400,
+                                      fontFamily: GoogleFonts.sourceSansPro()
+                                          .fontFamily),
+                                  moreStyle: textTheme.titleMedium
+                                      ?.copyWith(color: appColors?.primaryBase),
+                                  textAlign: TextAlign.center,
+                                )),
                       Padding(
                         padding:
                             EdgeInsets.symmetric(horizontal: size.width / 4),
@@ -511,9 +522,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                             if ([publishedStoriesQuery.data ?? []].isEmpty &&
                                 [readingStoriesQuery.data ?? []].isEmpty &&
                                 [profileData?.followings ?? []].isEmpty) {
-                              return Center(
-                                child: Text('Chưa có dữ liệu mới'),
-                              );
+                              return const Text('Chưa có dữ liệu mới');
                             } else {
                               return introView(
                                   publishedStoriesQuery.data,

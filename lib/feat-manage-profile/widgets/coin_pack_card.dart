@@ -35,13 +35,7 @@ class _CoinPackCardState extends State<CoinPackCard> {
                 (widget.coinPack.price ?? 1))) *
         100;
 
-    print(widget.coinPack.priceAfterPromotion);
-    print(widget.coinPack.price ?? '');
-    print(
-        (widget.coinPack.priceAfterPromotion! / (widget.coinPack.price ?? 1)));
     moveToMomo(url) async {
-      print('PAYURL ${url}');
-      print('MOVE TO MOMO');
       // check if spotify is installed
       if (await canLaunchUrl(Uri.parse(url))) {
         // launch the url which will open spotify
@@ -53,14 +47,6 @@ class _CoinPackCardState extends State<CoinPackCard> {
 
     handleCreatePurchase(
         {String coinPackId = '', int paymentMethodId = 1}) async {
-      // if (kDebugMode) {
-      //   print('COINPACK ID $selectedCoinPackId');
-      //   print('METHOD ID $selectedPaymentMethodId');
-      // }
-      // if (selectedCoinPackId == '' || selectedPaymentMethodId == '') {
-      //   AppSnackBar.buildTopSnackBar(
-      //       context, 'Hãy chọn', null, SnackBarType.error);
-      // } else {
       print('coin ${coinPackId}');
       Map<String, dynamic> body = {};
       body['coin_pack_id'] = coinPackId;
@@ -82,8 +68,7 @@ class _CoinPackCardState extends State<CoinPackCard> {
 
     return GestureDetector(
         onTap: () {
-          print('alo');
-          handleCreatePurchase(coinPackId: widget.coinPack.id ?? '');
+          // handleCreatePurchase(coinPackId: widget.coinPack.id ?? '');
           widget.onSelected(widget.coinPack.id);
         },
         child: Container(

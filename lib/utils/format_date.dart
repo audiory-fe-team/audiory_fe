@@ -24,3 +24,8 @@ String appFormatDateWithHHmm(String? date) {
     return '';
   }
 }
+
+String appFormatDateFromDatePicker(String date) {
+  String parsedDate = DateFormat('dd/MM/yyyy').parse(date).toString();
+  return parsedDate.replaceAll('/', '-').split(' ')[0];
+}

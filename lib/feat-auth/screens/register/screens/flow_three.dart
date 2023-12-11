@@ -101,55 +101,66 @@ class _FlowThreeScreenState extends State<FlowThreeScreen>
                               .textTheme
                               .headlineMedium
                               ?.copyWith(color: appColors.inkDarkest)),
-                      Text("Chọn ít nhất 5 truyện để tối ưu hóa gợi ý cho bạn",
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                        child: Text(
+                          "Chọn ít nhất 5 truyện để tối ưu hóa gợi ý cho bạn",
                           style: Theme.of(context)
                               .textTheme
                               .bodyMedium
                               ?.copyWith(
-                                  color: appColors.inkDarkest,
-                                  fontWeight: FontWeight.normal)),
+                                  color: appColors.inkLighter,
+                                  fontWeight: FontWeight.normal),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
                     ],
                   ),
                 ),
                 Container(
                     margin: const EdgeInsets.symmetric(vertical: 16),
-                    child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            width: size.width,
-                            child: Wrap(
-                              crossAxisAlignment: WrapCrossAlignment.start,
-                              alignment: WrapAlignment.spaceBetween,
-                              children: List.generate(
-                                storiesQuery.data != null
-                                    ? storiesQuery.data?.length as int
-                                    : 0,
-                                (index) {
-                                  return Skeletonizer(
-                                    enabled: storiesQuery.isFetching,
-                                    child: RandomStoryCard(
-                                      story: storiesQuery.data?[index] as Story,
-                                      onStorySelected: () {
-                                        setState(() {
-                                          String storyId = storiesQuery
-                                              .data?[index].id as String;
-                                          if (selectedStoriesList
-                                              .contains(storyId)) {
-                                            selectedStoriesList.remove(storyId);
-                                          } else {
-                                            selectedStoriesList.add(storyId);
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  );
-                                },
-                              ).toList(),
+                    child: Skeletonizer(
+                      enabled: storiesQuery.isFetching,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            SizedBox(
+                              width: size.width,
+                              child: Wrap(
+                                crossAxisAlignment: WrapCrossAlignment.start,
+                                alignment: WrapAlignment.spaceBetween,
+                                children: List.generate(
+                                  storiesQuery.data != null
+                                      ? storiesQuery.data?.length as int
+                                      : 0,
+                                  (index) {
+                                    return Skeletonizer(
+                                      enabled: storiesQuery.isFetching,
+                                      child: RandomStoryCard(
+                                        story:
+                                            storiesQuery.data?[index] as Story,
+                                        onStorySelected: () {
+                                          setState(() {
+                                            String storyId = storiesQuery
+                                                .data?[index].id as String;
+                                            if (selectedStoriesList
+                                                .contains(storyId)) {
+                                              selectedStoriesList
+                                                  .remove(storyId);
+                                            } else {
+                                              selectedStoriesList.add(storyId);
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ).toList(),
+                              ),
                             ),
-                          ),
-                        ])),
+                          ]),
+                    )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
