@@ -85,10 +85,14 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
   }
 
   connectWebsocket() async {
+    print('userId');
+    print(widget.userId);
     final jwtToken = await storage.read(key: 'jwt');
 
     wsUri = Uri.parse(
         'wss://${dotenv.get('HOST')}/messages/${widget.userId}?token=$jwtToken');
+
+    print(wsUri.toString());
 
     channel = WebSocketChannel.connect(wsUri);
   }
@@ -319,6 +323,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                     stream: channel?.stream,
                     builder: (context, snapshot) {
                       print('CONNECTION STATE');
+                      print(widget.userId);
 
                       if (snapshot.hasData) {
                         var decodedJson = utf8.decode(snapshot.data);
