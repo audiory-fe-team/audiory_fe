@@ -34,11 +34,11 @@ class _DetailMessageBottomBarState extends State<DetailMessageBottomBar> {
                 flex: 5,
                 child: FormBuilder(
                   key: _formKey,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
+                  child: const Padding(
+                    padding: EdgeInsets.only(right: 8.0),
                     child: AppTextInputField(
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 16, horizontal: 16),
+                      contentPadding:
+                          EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                       isNoError: true,
                       name: 'content',
                       maxLines: 1,

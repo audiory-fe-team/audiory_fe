@@ -38,6 +38,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:readmore/readmore.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class AppProfileScreen extends StatefulHookWidget {
@@ -467,16 +469,16 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                   child: Column(
                     children: [
                       Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                          opacity: 0.6,
-                          image: CachedNetworkImageProvider(
-                              profileQuery.data?.backgroundUrl == ''
-                                  ? FALLBACK_BACKGROUND_URL
-                                  : profileQuery.data?.backgroundUrl ??
-                                      FALLBACK_BACKGROUND_URL),
-                          fit: BoxFit.fill,
-                        )),
+                        // decoration: BoxDecoration(
+                        //     image: DecorationImage(
+                        //   opacity: 0.6,
+                        //   image: CachedNetworkImageProvider(
+                        //       profileQuery.data?.backgroundUrl == ''
+                        //           ? FALLBACK_BACKGROUND_URL
+                        //           : profileQuery.data?.backgroundUrl ??
+                        //               FALLBACK_BACKGROUND_URL),
+                        //   fit: BoxFit.fill,
+                        // )),
                         child: Column(
                           children: [
                             Skeletonizer(
@@ -697,15 +699,24 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                               Skeletonizer(
                                 enabled: profileQuery.isFetching,
                                 child: Padding(
-                                  padding: const EdgeInsets.all(12.0),
-                                  child: Text(
-                                    profileQuery.data?.description == null ||
-                                            profileQuery.data?.description == ""
-                                        ? 'Nhập gì đó về bạn'
-                                        : profileQuery.data?.description ?? '',
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: ReadMoreText(
+                                      profileQuery.data?.description ?? '',
+                                      trimLines: 4,
+                                      colorClickableText: appColors.primaryBase,
+                                      trimMode: TrimMode.Line,
+                                      trimCollapsedText: ' Xem thêm',
+                                      trimExpandedText: ' Ẩn bớt',
+                                      style: textTheme.titleMedium?.copyWith(
+                                          fontWeight: FontWeight.w400,
+                                          fontFamily:
+                                              GoogleFonts.sourceSansPro()
+                                                  .fontFamily),
+                                      moreStyle: textTheme.titleMedium
+                                          ?.copyWith(
+                                              color: appColors.primaryBase),
+                                      textAlign: TextAlign.center,
+                                    )),
                               ),
                               Skeletonizer(
                                 enabled: profileQuery.isFetching,

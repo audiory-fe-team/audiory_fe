@@ -2,6 +2,7 @@ import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/repositories/auth_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/format_number.dart';
+import 'package:audiory_v0/widgets/app_alert_dialog.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -37,7 +38,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
     ], () => AuthRepository().getMyUserById());
 
     int totalBuyStory =
-        widget.paywalledChaptersCount! * (widget.chapter.price ?? 1);
+        (widget.paywalledChaptersCount ?? 0) * (widget.chapter.price ?? 1);
 
     return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,6 +53,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                 borderRadius: const BorderRadius.all(Radius.circular(50))),
             child: GestureDetector(
               onTap: () {
+                context.pop();
                 userQuery.data != null
                     ? context.pushNamed('newPurchase',
                         extra: {'currentUser': userQuery.data})
@@ -140,7 +142,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                 const SizedBox(
                   height: 8,
                 ),
-                widget.paywalledChaptersCount! >= 5
+                (widget.paywalledChaptersCount ?? 0) >= 5
                     ? SizedBox(
                         width: size.width - 32,
                         child: AppIconButton(
@@ -151,24 +153,40 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
                           isOutlined: true,
                           bgColor: appColors.skyLightest,
                           onPressed: () {
-                            widget.handleBuyStory();
+                            showDialog(
+                                context: context,
+                                builder: (context) {
+                                  return AppAlertDialog(
+                                    title: 'Xác nhận mua?',
+                                    content:
+                                        'Bạn chắc chắn muốn mua ${widget.paywalledChaptersCount ?? 0} chương trả phí còn lại với ${(totalBuyStory * 0.8).round()} xu ',
+                                    actionText: 'Xác nhận',
+                                    actionCallBack: () {
+                                      widget.handleBuyStory();
+                                    },
+                                  );
+                                });
                           },
                         ),
                       )
-                    : SizedBox(
-                        width: size.width - 32,
-                        child: AppIconButton(
-                          title:
-                              'Mua cả truyện với ${(totalBuyStory).round()} xu',
-                          textStyle: textTheme.titleMedium
-                              ?.copyWith(color: appColors.primaryBase),
-                          isOutlined: true,
-                          bgColor: appColors.skyLightest,
-                          onPressed: () {
-                            widget.handleBuyStory();
-                          },
-                        ),
-                      ),
+                    : (widget.paywalledChaptersCount ?? 0) > 2
+                        ? SizedBox(
+                            width: size.width - 32,
+                            child: AppIconButton(
+                              title:
+                                  'Mua cả truyện với ${(totalBuyStory).round()} xu',
+                              textStyle: textTheme.titleMedium
+                                  ?.copyWith(color: appColors.primaryBase),
+                              isOutlined: true,
+                              bgColor: appColors.skyLightest,
+                              onPressed: () {
+                                widget.handleBuyStory();
+                              },
+                            ),
+                          )
+                        : const SizedBox(
+                            height: 0,
+                          ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4.0),
                   child: Text(

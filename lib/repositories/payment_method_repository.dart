@@ -67,7 +67,7 @@ class PaymentMethodRepository {
     final response =
         await http.post(url, headers: header, body: jsonEncode(body));
     final responseBody = utf8.decode(response.bodyBytes);
-    print(responseBody);
+    print('res for withdraw $responseBody');
     if (response.statusCode == 200) {
       return jsonDecode(responseBody)['data']['id'];
     } else {

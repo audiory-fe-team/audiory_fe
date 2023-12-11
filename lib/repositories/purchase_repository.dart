@@ -51,8 +51,12 @@ class PurchaseRepository {
     if (response.statusCode == 200) {
       final result = json.decode(response.body)['data'];
       print(result);
+
       print('applink ${result['applink']}');
-      return result['applink'];
+      print('order_url ${result['order_url']}');
+      return body['payment_method_id'] == 1
+          ? result['applink']
+          : result['order_url'];
 
       // return Purchase.fromJson(result);
     } else {

@@ -138,7 +138,7 @@ class ProfileRepository {
     if (formFile == null) {
       secondeMap = {};
     } else {
-      File file = File(formFile[0].path); //import dart:io
+      File file = File(formFile.path); //import dart:io
       secondeMap = {'form_file': await MultipartFile.fromFile(file.path)};
     }
 
