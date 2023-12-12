@@ -120,12 +120,6 @@ class HomeTopBar extends HookConsumerWidget implements PreferredSizeWidget {
                             visualDensity: const VisualDensity(
                                 horizontal: -4, vertical: -4),
                             onPressed: () {
-                              // myInfoQuery.data == null
-                              //     ? null
-                              //     : GoRouter.of(context).push(
-                              //         '/profileSettings/messages',
-                              //         extra: {'userId': myInfoQuery.data?.id});
-
                               showModalBottomSheet(
                                   context: context,
                                   isScrollControlled: true,

@@ -398,11 +398,13 @@ class CurrentReadings extends HookConsumerWidget {
           child: ListView(
               children: (libraryQuery.data?.libraryStory ?? []).map((e) {
             return Container(
-                margin: const EdgeInsets.only(bottom: 16),
+                margin: const EdgeInsets.only(bottom: 8),
                 child: CurrentReadCard(
-                  libStory: e,
-                  onDeleteStory: (id) => handleDeleteStory(id),
-                ));
+                    libStory: e,
+                    onDeleteStory: (id) => handleDeleteStory(id),
+                    refetch: () {
+                      libraryQuery.refetch();
+                    }));
           }).toList()),
         ),
       ),
