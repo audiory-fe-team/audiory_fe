@@ -113,4 +113,36 @@ class LibraryRepository {
       throw Exception('Failed to download story');
     }
   }
+
+  static Future<dynamic> updateLibraryStory(
+      String storyId, bool isAvailableOffline, bool isPinned) async {
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+    final url = Uri.parse('$libraryEndpoint/me/stories/$storyId');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+    try {
+      final response = await http.put(url,
+          headers: headers,
+          body: jsonEncode({
+            "is_available_offline": isAvailableOffline,
+            "is_pinned": isPinned,
+          }));
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('Failed to download story');
+      }
+    } catch (err) {
+      print(err);
+    }
+  }
 }
