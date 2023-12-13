@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:audiory_v0/feat-manage-profile/screens/messages/detail_message_bottom_bar.dart';
 import 'package:audiory_v0/models/conversation/conversation_model.dart';
@@ -14,7 +13,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fquery/fquery.dart';
-import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -73,9 +71,7 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
       _controller.addListener(() {
         scollListener();
       });
-    } catch (e) {
-      print('ERR $e');
-    }
+    } catch (e) {}
 
     fetchMessages(pageNumber);
 
@@ -152,8 +148,6 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
         () => ConversationRepository().fetchConversationById(
             conversationId: widget.conversation?.id, offset: 0, limit: 10));
 
-    print(conversationQuery.data);
-    print(DateTime.now().toIso8601String());
     Widget messageCard(
         {String? content = '',
         bool? isMe = true,

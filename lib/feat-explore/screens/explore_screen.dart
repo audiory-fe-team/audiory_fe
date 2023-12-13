@@ -42,6 +42,12 @@ class ExploreScreen extends StatelessWidget {
             const AppCategoryStories(categoryName: 'Bí ẩn'),
             const SizedBox(height: 24),
             const AppCategoryStories(categoryName: 'Phiêu lưu'),
+            const SizedBox(height: 24),
+            const AppCategoryStories(categoryName: 'Lãng mạn'),
+            const SizedBox(height: 24),
+            const AppCategoryStories(categoryName: 'Phi tiểu thuyết'),
+            const SizedBox(height: 24),
+            const AppCategoryStories(categoryName: 'Khoa học viễn tưởng'),
           ])),
     );
   }
