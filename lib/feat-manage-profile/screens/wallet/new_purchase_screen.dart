@@ -4,6 +4,7 @@ import 'package:audiory_v0/feat-manage-profile/models/CoinPack.dart';
 import 'package:audiory_v0/feat-manage-profile/models/PaymentMethod.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/coin_pack_card.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/payment_method_card.dart';
+import 'package:audiory_v0/feat-manage-profile/widgets/payment_method_modal.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/user_payment_method_card.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
@@ -14,9 +15,7 @@ import 'package:audiory_v0/repositories/payment_method_repository.dart';
 import 'package:audiory_v0/repositories/purchase_repository.dart';
 import 'package:audiory_v0/repositories/transaction_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/utils/format_number.dart';
-import 'package:audiory_v0/utils/widget_helper.dart';
 import 'package:audiory_v0/widgets/app_alert_dialog.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
@@ -29,7 +28,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -84,7 +82,8 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
     ], () => AuthRepository().getMyUserById());
 
     final selectedPaymentId = useState('');
-    final selected = useState(0);
+
+    List paymentMethodList = paymentMethodQuery.data ?? [];
 
     final totalVND =
         int.tryParse(_formKey.currentState?.fields['num']?.value ?? '0') ?? 0;
@@ -104,7 +103,6 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
     }
 
     handleCreatePurchase(int methodId) async {
-      print(methodId);
       if (selectedCoinPackId == '') {
         AppSnackBar.buildTopSnackBar(
             context, 'Hãy chọn', null, SnackBarType.error);
@@ -116,11 +114,15 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
         try {
           final newPurchase = await PurchaseRepository().createPurchase(body);
 
+          print(newPurchase);
+          // ignore: use_build_context_synchronously
+          context.pop();
           moveToMomo(newPurchase);
 
           // AppSnackBar.buildTopSnackBar(
           //     context, 'Đang chuyển sang momo', null, SnackBarType.info);
         } catch (e) {
+          // ignore: use_build_context_synchronously
           AppSnackBar.buildTopSnackBar(
               context, 'Tạo thất bại', null, SnackBarType.info);
         }
@@ -271,6 +273,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                               .entries
                               .map((e) {
                             CoinPack coinPack = e.value;
+                            print(coinPack);
                             return Padding(
                               padding: const EdgeInsets.symmetric(
                                   horizontal: 16.0, vertical: 8),
@@ -283,48 +286,14 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                                   });
                                   showModalBottomSheet(
                                       // backgroundColor: Colors.transparent,
-                                      isScrollControlled: true,
+                                      // isScrollControlled: true,
                                       context: context,
                                       builder: (context) {
-                                        return Container(
-                                          width: double.infinity,
-                                          height: size.height * 0.4,
-                                          margin: const EdgeInsets.symmetric(
-                                              horizontal: 32, vertical: 24),
-                                          child: Column(
-                                            children: [
-                                              Text('Chọn nguồn rút tiền'),
-                                              Wrap(
-                                                  alignment: WrapAlignment
-                                                      .spaceBetween,
-                                                  children: (paymentMethodQuery
-                                                              .data ??
-                                                          [])
-                                                      .asMap()
-                                                      .entries
-                                                      .map((e) {
-                                                    PaymentMethod method =
-                                                        e.value;
-                                                    return GestureDetector(
-                                                        onTap: () {
-                                                          // handleCreatePurchase(
-                                                          //     method.id ?? 1);
-                                                        },
-                                                        child:
-                                                            PaymentMethodCard(
-                                                                isSelected:
-                                                                    false,
-                                                                handleSelect:
-                                                                    () {
-                                                                  handleCreatePurchase(
-                                                                      method.id ??
-                                                                          1);
-                                                                },
-                                                                method:
-                                                                    method));
-                                                  }).toList()),
-                                            ],
-                                          ),
+                                        return PaymentMethodModal(
+                                          list: paymentMethodQuery.data ?? [],
+                                          selectCallback: (id) {
+                                            handleCreatePurchase(id);
+                                          },
                                         );
                                       });
                                 },

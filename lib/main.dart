@@ -68,9 +68,7 @@ class MyApp extends ConsumerWidget {
     try {
       final res = await AuthRepository().getMyInfo();
       ref.read(globalMeProvider.notifier).setUser(res);
-    } catch (error) {
-      print(error);
-    }
+    } catch (error) {}
   }
 
   @override

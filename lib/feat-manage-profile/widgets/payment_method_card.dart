@@ -4,17 +4,18 @@ import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 
-class PaymentMethodCard extends StatelessWidget {
+class PaymentMethodCard extends StatefulWidget {
   final PaymentMethod method;
   final bool isSelected;
-  final dynamic handleSelect;
 
   const PaymentMethodCard(
-      {super.key,
-      required this.method,
-      required this.isSelected,
-      this.handleSelect});
+      {super.key, required this.method, required this.isSelected});
 
+  @override
+  State<PaymentMethodCard> createState() => _PaymentMethodCardState();
+}
+
+class _PaymentMethodCardState extends State<PaymentMethodCard> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
@@ -24,10 +25,9 @@ class PaymentMethodCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
         decoration: BoxDecoration(
-            color: isSelected ? appColors.skyLightest : Colors.transparent,
-            border: isSelected
+            border: widget.isSelected == true
                 ? Border.all(color: appColors.primaryBase, width: 2)
-                : null,
+                : Border.all(color: Colors.transparent, width: 2),
             borderRadius: BorderRadius.circular(10)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -40,7 +40,7 @@ class PaymentMethodCard extends StatelessWidget {
                       child: ClipRRect(
                     borderRadius: BorderRadius.circular(6),
                     child: AppImage(
-                      url: method.id == 1 ? MOMO : ZALO,
+                      url: widget.method.id == 1 ? MOMO : ZALO,
                       width: 40,
                     ),
                   )),
@@ -49,14 +49,14 @@ class PaymentMethodCard extends StatelessWidget {
                   ),
                   Flexible(
                     child: Text(
-                      method.name ?? 'ten tai khoan',
+                      widget.method.name ?? 'ten tai khoan',
                       style: textTheme.titleMedium,
                     ),
                   ),
                 ],
               ),
             ),
-            isSelected
+            widget.isSelected == true
                 ? Flexible(
                     child: Align(
                     alignment: Alignment.centerRight,

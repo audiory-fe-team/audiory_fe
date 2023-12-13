@@ -6,6 +6,7 @@ import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/enums/Sex.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
+import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/widgets/app_img_picker.dart';
 import 'package:audiory_v0/widgets/buttons/dropdown_button.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
@@ -17,6 +18,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import '../../theme/theme_constants.dart';
@@ -45,10 +47,15 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     File? selectImg; //import dart:io
     final profileQuery =
         useQuery(['profile'], () => ProfileRepository().fetchProfileByUserId());
-
     DateTime? datepicked;
     Widget userInfo(Profile? profile) {
       const genderList = Sex.values;
+
+      String formatDate(String? date) {
+        //use package intl
+        DateTime dateTime = DateTime.parse(date as String);
+        return DateFormat('dd/MM/yyyy').format(dateTime);
+      }
 
       Future<void> showdobpicker() async {
         datepicked = await showDatePicker(
@@ -56,7 +63,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             context: context,
             firstDate: DateTime(1933, 1, 1),
             lastDate: DateTime(2017, 1, 1),
-
             //initial entry : calendar picker or input
             initialEntryMode: DatePickerEntryMode.input,
             confirmText: 'Chọn',
@@ -89,7 +95,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         // ignore: unrelated_type_equality_checks
         if (datepicked != null) {
           setState(() {
-            _selectedDate = datepicked?.toString() ?? '';
+            _selectedDate = formatDate(datepicked!.toString());
+            ;
           });
           _formKey.currentState?.setInternalFieldValue('dob', _selectedDate);
         }
@@ -133,7 +140,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         size: 20,
                       ),
                     )),
-                initialValue: _selectedDate,
+                initialValue: profile?.dob ?? '01/01/2002',
                 hintTextStyle: TextStyle(color: appColors.inkBase),
                 validator: (value) {
                   if ((value?.allMatches(
@@ -253,7 +260,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ?.fields['facebook_url']?.value;
                                   print(
                                       'SELECTED ${_selectedDate.split(' ')[0]}');
-                                  // body['dob'] = _selectedDate.split(' ')[0];
+                                  body['dob'] = appFormatDateFromDatePicker(
+                                      _selectedDate);
 
                                   print(body);
                                   //edit profile
@@ -263,13 +271,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                         return const Center(
                                             child: CircularProgressIndicator());
                                       });
-
-                                  // Profile? newProfile =
-                                  //     await ProfileRepository().updateProfile(
-                                  //   _formKey
-                                  //       .currentState?.fields['photos']?.value,
-                                  //   body,
-                                  // );
 
                                   Profile? newProfile =
                                       await ProfileRepository().updateProfile(

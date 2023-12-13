@@ -1,6 +1,5 @@
 import 'dart:math';
 
-import 'package:audiory_v0/constants/fallback_image.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_scroll_list.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/profile_top_bar.dart';
 import 'package:audiory_v0/feat-manage-profile/layout/reading_scroll_list.dart';
@@ -18,7 +17,6 @@ import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/cards/app_avatar_image.dart';
 import 'package:audiory_v0/widgets/cards/story_card_detail.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
