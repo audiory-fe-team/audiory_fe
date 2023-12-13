@@ -886,7 +886,6 @@ class _AppProfileScreenState extends State<AppProfileScreen>
                               if (conversationsQuery.data?.any((element) =>
                                       element.receiverId == widget.id) ??
                                   false) {
-                                print('existed conversation');
                                 conversation = conversationsQuery.data
                                         ?.firstWhere((element) =>
                                             element.receiverId == widget.id) ??

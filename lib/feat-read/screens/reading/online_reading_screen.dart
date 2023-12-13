@@ -235,6 +235,14 @@ class OnlineReadingScreen extends HookConsumerWidget {
     }, [chapterId]);
 
     useEffect(() {
+      //screen shot listener
+      try {} catch (e) {
+        print('screenshot error');
+        print(e);
+      }
+
+      print('helo');
+
       scrollController.addListener(() {
         if (!scrollController.hasClients) return;
         // Hide bar according to scroll direction

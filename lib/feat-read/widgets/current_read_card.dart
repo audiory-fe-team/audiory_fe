@@ -152,7 +152,7 @@ class CurrentReadCard extends HookWidget {
                                 width: double.infinity,
                                 child: Text(
                                   title,
-                                  maxLines: 2,
+                                  maxLines: 1, //overflow error when download
                                   style: textTheme.titleMedium?.merge(
                                       const TextStyle(
                                           overflow: TextOverflow.ellipsis)),
@@ -300,7 +300,7 @@ class CurrentReadCard extends HookWidget {
                                                 color: appColors.secondaryBase),
                                             const SizedBox(width: 4),
                                             Text(
-                                              'Xóa truyện',
+                                              'Xóa khỏi danh sách',
                                               style: textTheme.titleMedium
                                                   ?.copyWith(
                                                       color: appColors
