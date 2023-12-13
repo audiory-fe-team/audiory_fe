@@ -362,14 +362,6 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                                       selectedOption.value]
                                                   ['audioBackground'])
                                           : const BoxDecoration(),
-                                      // child: Text(
-                                      //   para.richText ?? '',
-                                      //   style: textTheme.bodyLarge?.copyWith(
-                                      //       fontSize: fontSize.value.toDouble(),
-                                      //       fontFamily: GoogleFonts.gelasio()
-                                      //           .fontFamily,
-                                      //       color: textColor.value),
-                                      // ),
 
                                       // display the paragraph content in rich text
                                       child: (para.richText != null &&
