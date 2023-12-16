@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audiory_v0/feat-manage-profile/screens/wallet/new_purchase_screen.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
@@ -52,6 +54,8 @@ class DonateGiftModal extends HookConsumerWidget {
         useState<Gift?>(giftsQuery.data != null ? lists[0] : null);
     final sizeController = useTextEditingController(text: "1");
     final total = useState(0);
+
+    useEffect(() {}, []);
 
     handleTotalCoins() {
       var count = int.parse(sizeController.value.text);
@@ -301,6 +305,14 @@ class DonateGiftModal extends HookConsumerWidget {
                               onPressed: () {
                                 handleSendingGift(selectedItem?.value,
                                     int.parse(sizeController.value.text));
+
+                                final timer = Timer.periodic(
+                                    const Duration(seconds: 1), (Timer t) {
+                                  print('helo');
+                                  //   if (scrollController.hasClients) {
+
+                                  // }
+                                });
                               },
                               title: 'Tặng',
                               textStyle: textTheme.titleLarge

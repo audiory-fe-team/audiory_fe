@@ -33,10 +33,16 @@ class RichTextParagraph extends StatelessWidget {
 
     String actualBody = '[${richText?.replaceFirst(RegExp(r','), '')}]';
     QuillController itemController = QuillController.basic();
+    print(richText.toString());
 
-    itemController.document = richText != "" && richText != null
-        ? Document.fromJson(jsonDecode(actualBody))
-        : Document();
+    try {
+      itemController.document = richText != "" && richText != null
+          ? Document.fromJson(jsonDecode(actualBody))
+          : Document();
+    } catch (e) {
+      print('richtext error');
+      print(e);
+    }
 
     return QuillProvider(
       key: key,

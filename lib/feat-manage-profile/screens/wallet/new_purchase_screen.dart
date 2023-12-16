@@ -20,6 +20,7 @@ import 'package:audiory_v0/widgets/app_alert_dialog.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
+import 'package:audiory_v0/widgets/custom_dialog.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -82,8 +83,6 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
     ], () => AuthRepository().getMyUserById());
 
     final selectedPaymentId = useState('');
-
-    List paymentMethodList = paymentMethodQuery.data ?? [];
 
     final totalVND =
         int.tryParse(_formKey.currentState?.fields['num']?.value ?? '0') ?? 0;
@@ -177,28 +176,23 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
 
                   // ignore: use_build_context_synchronously
                   context.pop();
+                  userQuery.refetch();
 
                   // ignore: use_build_context_synchronously
                   showDialog(
                       context: context,
                       builder: (context) {
                         // String status = getTransactionStatus(res);
-                        return AppAlertDialog(
-                          title: 'Thông báo',
+                        return CustomDialog(
                           content: 'Tiền đã rút thành công về ví',
-                          actionText: 'Tôi đã hiểu',
+                          alertType: 'success',
                           actionCallBack: () {
-                            Future.delayed(const Duration(milliseconds: 2000),
-                                () {
-                              userQuery.refetch();
-                            });
-                            context.pop();
+                            userQuery.refetch();
                           },
                         );
                       });
 
-                  // AppSnackBar.buildTopSnackBar(context,
-                  //     'Rút về ví thành công', null, SnackBarType.success);
+                  userQuery.refetch();
                 } catch (e) {
                   context.pop();
 

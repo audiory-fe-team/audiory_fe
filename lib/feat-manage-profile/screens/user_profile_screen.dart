@@ -457,8 +457,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                       ),
                       Padding(
                           padding: const EdgeInsets.all(12.0),
-                          child: profileData?.description == ''
-                              ? Text('Chưa có giới thiệu nào')
+                          child: profileData?.description?.trim() == '' ||
+                                  profileData?.description == null
+                              ? Text('Nhập lời giới thiệu của bạn')
                               : ReadMoreText(
                                   profileData?.description ?? '',
                                   trimLines: 4,
@@ -517,10 +518,14 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                         ),
                         Builder(builder: (context) {
                           if (tabState == 0) {
-                            if ([publishedStoriesQuery.data ?? []].isEmpty &&
-                                [readingStoriesQuery.data ?? []].isEmpty &&
-                                [profileData?.followings ?? []].isEmpty) {
-                              return const Text('Chưa có dữ liệu mới');
+                            print(publishedStoriesQuery.data);
+                            print(readingStoriesQuery.data);
+                            print(profileData?.followings);
+                            if (publishedStoriesQuery.data == [] &&
+                                readingStoriesQuery.data == [] &&
+                                (profileData?.followings == [] ||
+                                    profileData?.followings == null)) {
+                              return const Text('Chưa có giới thiệu');
                             } else {
                               return introView(
                                   publishedStoriesQuery.data,

@@ -40,7 +40,13 @@ class _PaymentMethodCardState extends State<PaymentMethodCard> {
                       child: ClipRRect(
                     borderRadius: BorderRadius.circular(6),
                     child: AppImage(
-                      url: widget.method.id == 1 ? MOMO : ZALO,
+                      url: widget.method.id == 1
+                          ? MOMO
+                          : widget.method.id == 2
+                              ? VNPAY
+                              : widget.method.id == 3
+                                  ? ATM
+                                  : ZALO,
                       width: 40,
                     ),
                   )),
