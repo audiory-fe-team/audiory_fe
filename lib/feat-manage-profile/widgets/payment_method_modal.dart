@@ -23,7 +23,8 @@ class _PaymentMethodModalState extends State<PaymentMethodModal> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final paymentsList = widget.list;
-    final selectedPurchaseMethod = useState<PaymentMethod?>(null);
+    final selectedPurchaseMethod = useState<PaymentMethod?>(widget.list[0]);
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
@@ -45,7 +46,6 @@ class _PaymentMethodModalState extends State<PaymentMethodModal> {
                   return GestureDetector(
                       onTap: () {
                         selectedPurchaseMethod.value = method;
-                        widget.selectCallback(method.id ?? '');
                       },
                       child: PaymentMethodCard(
                           isSelected: selectedPurchaseMethod.value == method,
@@ -55,8 +55,10 @@ class _PaymentMethodModalState extends State<PaymentMethodModal> {
           SizedBox(
             width: double.infinity,
             child: AppIconButton(
-              onPressed: () {},
-              title: 'Tạo nguồn tiền',
+              onPressed: () {
+                widget.selectCallback(selectedPurchaseMethod.value?.id ?? '');
+              },
+              title: 'Nạp tiền',
             ),
           )
         ],
