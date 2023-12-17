@@ -190,20 +190,20 @@ class StoryRanking extends HookWidget {
                       padding: const EdgeInsets.only(right: 8),
                       child: GestureDetector(
                           onTap: () {
-                            if (e.name != category) {
+                            if (e.id != category) {
                               GoRouter.of(context)
                                   .goNamed('ranking', queryParameters: {
                                 "type": getValueString(
                                     RankingType.story.toString()),
                                 "metric": getValueString(metric.toString()),
                                 "time": getValueString(time.toString()),
-                                "category": e.name,
+                                "category": e.id,
                               });
                             }
                           },
                           child: RankingListBadge(
                             label: e.name ?? '',
-                            selected: e.name == category,
+                            selected: e.id == category,
                           )),
                     );
                   }).toList()

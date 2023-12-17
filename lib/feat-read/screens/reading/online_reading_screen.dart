@@ -135,31 +135,6 @@ class OnlineReadingScreen extends HookConsumerWidget {
           });
     }
 
-    Future syncPreference() async {
-      final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      fontSize.value = prefs.getInt('fontSize') ?? 18;
-      isKaraoke.value = prefs.getBool('isKaraoke') ?? true;
-      audioSpeed.value = prefs.getDouble('audioSpeed') ?? 1;
-      voiceType.value = prefs.getInt('voiceType') ?? 0;
-
-      showCommentByParagraph.value =
-          prefs.getBool('showCommentByParagraph') ?? true;
-      final savedOption = prefs.getInt('themeOption') ?? 0;
-      selectedOption.value = savedOption;
-
-      bgColor.value =
-          THEME_OPTIONS[savedOption]["bgColor"] ?? appColors.background;
-      textColor.value =
-          THEME_OPTIONS[savedOption]["textColor"] ?? appColors.inkBase;
-
-      final timerValue = prefs.getInt('timer');
-      if (timerValue != null) {
-        // scheduleTimeout(timerValue);
-      }
-      localPlayer.setSpeed(audioSpeed.value);
-    }
-
     setPlayList() async {
       final SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -214,6 +189,36 @@ class OnlineReadingScreen extends HookConsumerWidget {
       } catch (error) {
         print('Error set playlist');
       }
+    }
+
+    Future syncPreference() async {
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      fontSize.value = prefs.getInt('fontSize') ?? 18;
+      isKaraoke.value = prefs.getBool('isKaraoke') ?? true;
+      audioSpeed.value = prefs.getDouble('audioSpeed') ?? 1;
+      final newVoiceType = prefs.getInt('voiceType') ?? 0;
+      if (voiceType.value != newVoiceType) {
+        localPlayer.dispose();
+        localPlayer = AudioPlayer();
+        voiceType.value = newVoiceType;
+      }
+
+      showCommentByParagraph.value =
+          prefs.getBool('showCommentByParagraph') ?? true;
+      final savedOption = prefs.getInt('themeOption') ?? 0;
+      selectedOption.value = savedOption;
+
+      bgColor.value =
+          THEME_OPTIONS[savedOption]["bgColor"] ?? appColors.background;
+      textColor.value =
+          THEME_OPTIONS[savedOption]["textColor"] ?? appColors.inkBase;
+
+      final timerValue = prefs.getInt('timer');
+      if (timerValue != null) {
+        // scheduleTimeout(timerValue);
+      }
+      localPlayer.setSpeed(audioSpeed.value);
     }
 
     useEffect(() {
