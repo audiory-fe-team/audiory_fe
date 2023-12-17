@@ -518,13 +518,20 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                         ),
                         Builder(builder: (context) {
                           if (tabState == 0) {
-                            print(publishedStoriesQuery.data);
-                            print(readingStoriesQuery.data);
-                            print(profileData?.followings);
-                            if (publishedStoriesQuery.data == [] &&
-                                readingStoriesQuery.data == [] &&
-                                (profileData?.followings == [] ||
-                                    profileData?.followings == null)) {
+                            bool hasPublishedStories =
+                                publishedStoriesQuery.data?.isEmpty == true;
+                            bool hasReadingLists =
+                                readingStoriesQuery.data?.isEmpty == true;
+                            bool hasFollowings =
+                                profileData?.followings?.isEmpty == true ||
+                                    profileData?.followings == null;
+
+                            print(!hasPublishedStories &&
+                                !hasReadingLists &&
+                                !hasFollowings);
+                            if (hasPublishedStories &&
+                                hasReadingLists &&
+                                hasFollowings) {
                               return const Text('Chưa có giới thiệu');
                             } else {
                               return introView(
