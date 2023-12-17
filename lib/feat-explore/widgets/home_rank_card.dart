@@ -111,14 +111,13 @@ class HomeRankingCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Skeleton.ignore(
-                            child: icon ??
-                                SvgPicture.asset(
-                                  'assets/icons/eye.svg',
-                                  width: 12,
-                                  height: 12,
-                                  color: appColors.skyDark,
-                                )),
+                        icon ??
+                            SvgPicture.asset(
+                              'assets/icons/eye.svg',
+                              width: 12,
+                              height: 12,
+                              color: appColors.skyDark,
+                            ),
                         const SizedBox(width: 2),
                         Text(
                           formatNumber(story.totalRead ?? 1000).toString(),

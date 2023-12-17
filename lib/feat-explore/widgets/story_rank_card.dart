@@ -149,7 +149,7 @@ class StoryRankCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         getTitle(order, story.title ?? "", context),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 4),
                         Row(
                           children: [
                             Skeleton.shade(
@@ -166,7 +166,7 @@ class StoryRankCard extends StatelessWidget {
                             )
                           ],
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 0),
                         Row(
                           children: [
                             // Skeleton.replace(
@@ -188,7 +188,10 @@ class StoryRankCard extends StatelessWidget {
                             )
                           ],
                         ),
-                        const Expanded(child: SizedBox()),
+                        const Expanded(
+                            child: SizedBox(
+                          height: 4,
+                        )),
                         Row(
                           mainAxisSize: MainAxisSize.max,
                           mainAxisAlignment: MainAxisAlignment.start,
@@ -196,7 +199,7 @@ class StoryRankCard extends StatelessWidget {
                           children: (story.tags ?? [])
                               .sublist(0, min(3, story.tags?.length ?? 0))
                               .map((tag) => Padding(
-                                  padding: const EdgeInsets.only(right: 8),
+                                  padding: const EdgeInsets.only(right: 4),
                                   child:
                                       StoryDetailTag(content: tag.name ?? '')))
                               .toList(),

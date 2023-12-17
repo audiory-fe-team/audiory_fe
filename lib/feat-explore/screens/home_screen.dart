@@ -407,13 +407,8 @@ class _HomeRankingListState extends State<HomeRankingList> {
                               child: HomeRankingCard(
                                 order: index + 1,
                                 story: story,
-                                icon: InkWell(
-                                  child: SvgPicture.asset(
-                                    'assets/icons/heart.svg',
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
+                                icon: Icon(Icons.favorite_outline_outlined,
+                                    size: 12, color: appColors.secondaryBase),
                               ),
                             );
                           }).toList()));

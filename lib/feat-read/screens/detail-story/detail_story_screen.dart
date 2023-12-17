@@ -10,7 +10,6 @@ import 'package:audiory_v0/feat-read/screens/reading/audio_bottom_bar.dart';
 import 'package:audiory_v0/layout/not_found_screen.dart';
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
-import 'package:audiory_v0/models/paragraph/paragraph_model.dart';
 import 'package:audiory_v0/models/story/story_model.dart';
 import 'package:audiory_v0/providers/chapter_database.dart';
 import 'package:audiory_v0/providers/connectivity_provider.dart';
@@ -22,18 +21,15 @@ import 'package:audiory_v0/repositories/story_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/fake_string_generator.dart';
 import 'package:audiory_v0/utils/format_number.dart';
-import 'package:audiory_v0/widgets/app_cache_image.dart';
 import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:audiory_v0/widgets/story_tag.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailStoryScreen extends HookConsumerWidget {
@@ -65,8 +61,11 @@ class DetailStoryScreen extends HookConsumerWidget {
         ?.any((element) => element.storyId == id);
 
     final storyQuery = useQuery(
-        ['story', id], () => StoryRepostitory().fetchStoryById(id),
-        enabled: !isOffline);
+      ['story', id],
+      () => StoryRepostitory().fetchStoryById(id),
+      enabled: !isOffline,
+      refetchOnMount: RefetchOnMount.always,
+    );
 
     final userQuery = useQuery([
       'userById',
