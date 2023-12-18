@@ -79,50 +79,57 @@ class DetailStoryTopBar extends StatelessWidget implements PreferredSizeWidget {
                         textAlign: TextAlign.left,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.headlineSmall)),
-                PopupMenuButton(
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    child: Container(
-                        padding: const EdgeInsets.all(8),
-                        child: const Icon(Icons.more_vert_rounded, size: 24)),
-                    onSelected: (value) {
-                      if (value == "share") {
-                        handleShare();
-                      }
-                      if (value == "report") {
-                        handleReport();
-                      }
-                    },
-                    itemBuilder: (context) => [
-                          PopupMenuItem(
-                              height: 40,
-                              value: 'share',
-                              child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.share_rounded,
-                                        size: 18, color: appColors?.inkBase),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Chia sẻ',
-                                      style: textTheme.titleMedium,
-                                    )
-                                  ])),
-                          PopupMenuItem(
-                              height: 40,
-                              value: 'report',
-                              child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(Icons.report_rounded,
-                                        size: 18, color: appColors?.inkBase),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      'Báo cáo',
-                                      style: textTheme.titleMedium,
-                                    )
-                                  ])),
-                        ])
+                IconButton(
+                  onPressed: () {
+                    handleReport();
+                  },
+                  icon: Icon(Icons.flag_outlined,
+                      size: 24, color: appColors?.inkBase),
+                ),
+                // PopupMenuButton(
+                //     shape: RoundedRectangleBorder(
+                //         borderRadius: BorderRadius.circular(8)),
+                //     child: Container(
+                //         padding: const EdgeInsets.all(8),
+                //         child: const Icon(Icons.more_vert_rounded, size: 24)),
+                //     onSelected: (value) {
+                //       if (value == "share") {
+                //         handleShare();
+                //       }
+                //       if (value == "report") {
+                //         handleReport();
+                //       }
+                //     },
+                //     itemBuilder: (context) => [
+                //           PopupMenuItem(
+                //               height: 40,
+                //               value: 'share',
+                //               child: Row(
+                //                   mainAxisSize: MainAxisSize.min,
+                //                   children: [
+                //                     Icon(Icons.share_rounded,
+                //                         size: 18, color: appColors?.inkBase),
+                //                     const SizedBox(width: 6),
+                //                     Text(
+                //                       'Chia sẻ',
+                //                       style: textTheme.titleMedium,
+                //                     )
+                //                   ])),
+                //           PopupMenuItem(
+                //               height: 40,
+                //               value: 'report',
+                //               child: Row(
+                //                   mainAxisSize: MainAxisSize.min,
+                //                   children: [
+                //                     Icon(Icons.report_rounded,
+                //                         size: 18, color: appColors?.inkBase),
+                //                     const SizedBox(width: 6),
+                //                     Text(
+                //                       'Báo cáo',
+                //                       style: textTheme.titleMedium,
+                //                     )
+                //                   ])),
+                //         ])
               ],
             )));
   }

@@ -449,11 +449,7 @@ class AppRoutes {
             name: 'newPurchase',
             path: 'newPurchase',
             builder: (BuildContext context, GoRouterState state) {
-              final extraMap = state.extra as Map<String, dynamic>;
-              final currentUser = extraMap["currentUser"] as AuthUser;
-              return NewPurchaseScreen(
-                currentUser: currentUser,
-              );
+              return const NewPurchaseScreen();
             },
           )
         ],

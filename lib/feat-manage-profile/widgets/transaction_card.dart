@@ -3,7 +3,6 @@ import 'package:audiory_v0/models/transaction/transaction_model.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/format_date.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class TransactionCard extends StatefulWidget {
@@ -32,10 +31,10 @@ class _TransactionCardState extends State<TransactionCard> {
         'status': 'Đang xử lý',
         'color': appColors.inkLighter,
       };
-      if (transaction?.transactionStatus == 'FAILED') {
+      if (transaction.transactionStatus == 'FAILED') {
         map.update('status', (value) => 'Thất bại');
         map.update('color', (value) => appColors.secondaryBase);
-      } else if (transaction?.transactionStatus == 'FAILED') {
+      } else if (transaction.transactionStatus == 'FAILED') {
         map.update('status', (value) => 'Thành công');
         map.update('color', (value) => appColors.primaryBase);
       }
@@ -52,13 +51,13 @@ class _TransactionCardState extends State<TransactionCard> {
             builder: (context) {
               return Scaffold(
                 appBar: CustomAppBar(
-                  title: Text('Chi tiết giao dịch'),
+                  title: const Text('Chi tiết giao dịch'),
                 ),
                 body: SingleChildScrollView(
                   child: Column(children: [
                     Container(
-                      margin: EdgeInsetsDirectional.all(16),
-                      padding: EdgeInsetsDirectional.all(16),
+                      margin: const EdgeInsetsDirectional.all(16),
+                      padding: const EdgeInsetsDirectional.all(16),
                       height: size.height / 3,
                       decoration: BoxDecoration(
                           color: appColors.primaryLightest.withOpacity(0.6),
@@ -215,11 +214,11 @@ class _TransactionCardState extends State<TransactionCard> {
               SizedBox(
                 width: containerSize * 0.15,
                 child: Container(
-                  width: containerSize * 0.15,
-                  height: containerSize * 0.15,
+                  width: containerSize * 0.14,
+                  height: containerSize * 0.14,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                      border: Border.all(color: appColors.skyBase),
+                      border: Border.all(color: appColors.skyBase, width: 0.8),
                       borderRadius: BorderRadius.circular(35),
                       color: transactionType.displayBgColor.withOpacity(0.2)),
                   child: Transform.rotate(
@@ -227,14 +226,14 @@ class _TransactionCardState extends State<TransactionCard> {
                     child: Icon(
                       transactionType.displayIcon,
                       color: transactionType.displayIconColor,
-                      size: 25,
+                      size: 20,
                     ),
                   ),
                 ),
               ),
               SizedBox(
                   width: containerSize * 0.55,
-                  height: 60,
+                  height: 50,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 0.0),
                     child: Column(
@@ -247,8 +246,8 @@ class _TransactionCardState extends State<TransactionCard> {
                         ),
                         Text(
                           appFormatDateWithHHmm(widget.transaction.createdDate),
-                          style: textTheme.bodySmall
-                              ?.copyWith(color: appColors.inkLight),
+                          style: textTheme.bodySmall?.copyWith(
+                              color: appColors.inkLight, fontSize: 12),
                         ),
                       ],
                     ),
@@ -281,7 +280,7 @@ class _TransactionCardState extends State<TransactionCard> {
                               transactionType.isCoin
                                   ? 'assets/images/coin.png'
                                   : 'assets/images/diamond.png',
-                              width: 18),
+                              width: 16),
                         ),
                       ],
                     ),

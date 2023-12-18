@@ -49,7 +49,9 @@ class SlidableStoryCardDetail extends StatelessWidget {
         motion: const ScrollMotion(),
 
         // A pane can dismiss the Slidable.
-        dismissible: DismissiblePane(onDismissed: () {}),
+        dismissible: DismissiblePane(onDismissed: () {
+          onDeleteStory(storyId);
+        }),
 
         // All actions are defined in the children parameter.
         children: [
@@ -62,13 +64,6 @@ class SlidableStoryCardDetail extends StatelessWidget {
             foregroundColor: Colors.white,
             icon: Icons.delete,
             label: 'Xóa',
-          ),
-          SlidableAction(
-            onPressed: (context) {},
-            backgroundColor: appColors.primaryBase,
-            foregroundColor: Colors.white,
-            icon: Icons.share,
-            label: 'Chia sẻ',
           ),
         ],
       ),

@@ -34,7 +34,6 @@ class _EditEmailScreenState extends State<EditEmailScreen> {
           AppTextInputField(
             name: 'email',
             textAlign: TextAlign.center,
-            // label: 'Cập nhật email mới',
             initialValue: widget.currentUser?.email,
             hintText: 'email@gmail.com',
             isRequired: true,
