@@ -27,45 +27,6 @@ class _WriterScreenState extends ConsumerState<WriterScreen> {
   UseQueryResult? result;
 
   final _formKey = GlobalKey<FormBuilderState>();
-  Widget _storiesList(UseQueryResult<List<Story>?, dynamic> myStoriesQuery,
-      List<Story>? filteredList) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Skeletonizer(
-          enabled: myStoriesQuery.isFetching,
-          child: Text(
-            '${filteredList?.length} tác phẩm',
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-        ),
-        const SizedBox(
-          height: 8,
-        ),
-        Expanded(
-          child: Skeletonizer(
-            enabled: myStoriesQuery.isFetching,
-            child: ListView.builder(
-                // physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true, //fix error
-                itemCount: filteredList?.length,
-                itemBuilder: ((context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: StoryCardDetailWriter(
-                      story: filteredList?[index],
-                      callBackRefetch: () {
-                        myStoriesQuery.refetch();
-                      },
-                    ),
-                  );
-                })),
-          ),
-        )
-      ],
-    );
-  }
 
   @override
   Widget build(BuildContext context) {

@@ -10,6 +10,7 @@ import 'package:audiory_v0/repositories/gift_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/format_number.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
+import 'package:audiory_v0/widgets/buttons/tap_effect_wrapper.dart';
 import 'package:audiory_v0/widgets/cards/donate_item_card.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
@@ -55,8 +56,6 @@ class DonateGiftModal extends HookConsumerWidget {
     final sizeController = useTextEditingController(text: "1");
     final total = useState(0);
 
-    useEffect(() {}, []);
-
     handleTotalCoins() {
       var count = int.parse(sizeController.value.text);
       var price = selectedItem.value?.price ?? 0;
@@ -81,7 +80,9 @@ class DonateGiftModal extends HookConsumerWidget {
             await GiftRepository()
                 .donateGift(currentUserId ?? '', storyId ?? '', body);
           }
+          // ignore: use_build_context_synchronously
           context.pop();
+          // ignore: use_build_context_synchronously
           AppSnackBar.buildTopSnackBar(
               context,
               'Tặng $total ${gift?.name} thành công',
@@ -99,7 +100,7 @@ class DonateGiftModal extends HookConsumerWidget {
 
     return Flexible(
         child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16),
+      padding: const EdgeInsets.only(left: 8.0, right: 8, top: 16),
       child: SingleChildScrollView(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -111,67 +112,64 @@ class DonateGiftModal extends HookConsumerWidget {
                   Flexible(
                     child: Text(
                       'Tặng vật phẩm',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
-                          ?.copyWith(),
+                      style:
+                          Theme.of(context).textTheme.headlineSmall?.copyWith(),
                     ),
                   ),
                   Flexible(
-                    child: Container(
-                      width: size.width / 3,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                          color: appColors.skyLightest,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(50))),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Flexible(
+                    child: GestureDetector(
+                      onTap: () {
+                        context.pushNamed('newPurchase');
+                      },
+                      child: Container(
+                        width: size.width / 3,
+                        height: 30,
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                            color: appColors.skyLightest,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(50))),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.max,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Flexible(
+                                flex: 2,
+                                child: GestureDetector(
+                                  child: Image.asset(
+                                    'assets/images/coin.png',
+                                    width: 20,
+                                    height: 20,
+                                  ),
+                                )),
+                            Flexible(
+                                flex: 2,
+                                child: Center(
+                                  child: Text(
+                                    formatNumberWithSeperator(int.tryParse(
+                                        userQuery.data?.wallets?[0].balance
+                                            .toStringAsFixed(0))),
+                                    style: textTheme.titleMedium
+                                        ?.copyWith(color: appColors.inkBase),
+                                  ),
+                                )),
+                            Flexible(
                               flex: 2,
-                              child: GestureDetector(
-                                child: Image.asset(
-                                  'assets/images/coin.png',
-                                  width: 24,
-                                  height: 24,
-                                ),
-                              )),
-                          Flexible(
-                              flex: 2,
-                              child: Text(
-                                formatNumberWithSeperator(int.tryParse(userQuery
-                                    .data?.wallets?[0].balance
-                                    .toStringAsFixed(0))),
-                                style: textTheme.titleMedium
-                                    ?.copyWith(color: appColors.inkBase),
-                                textAlign: TextAlign.center,
-                              )),
-                          Flexible(
-                            flex: 2,
-                            child: TextButton(
-                                onPressed: () {
-                                  context.pop();
-                                  // context.pushNamed('newPurchase',
-                                  //     extra: {'currentUser': widget.userData});
-
-                                  showModalBottomSheet(
-                                      context: context,
-                                      useSafeArea: true,
-                                      isScrollControlled: true,
-                                      builder: (context) {
-                                        return NewPurchaseScreen(
-                                          currentUser: userData,
-                                        );
-                                      });
+                              child: TapEffectWrapper(
+                                onTap: () {
+                                  context.pushNamed('newPurchase');
                                 },
                                 child: Icon(
                                   Icons.add,
                                   color: appColors.inkBase,
-                                )),
-                          ),
-                        ],
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -271,7 +269,8 @@ class DonateGiftModal extends HookConsumerWidget {
                                         controller: sizeController,
                                         decoration: const InputDecoration(
                                           border: InputBorder.none,
-                                          contentPadding: EdgeInsets.all(0),
+                                          contentPadding:
+                                              EdgeInsets.only(bottom: 4),
                                           isDense: true,
                                         ),
                                       ),
@@ -298,21 +297,20 @@ class DonateGiftModal extends HookConsumerWidget {
                           const SizedBox(
                             width: 8,
                           ),
-                          Container(
+                          SizedBox(
                             height: 40,
                             width: 85,
                             child: AppIconButton(
                               onPressed: () {
-                                handleSendingGift(selectedItem?.value,
+                                handleSendingGift(selectedItem.value,
                                     int.parse(sizeController.value.text));
 
-                                final timer = Timer.periodic(
-                                    const Duration(seconds: 1), (Timer t) {
-                                  print('helo');
-                                  //   if (scrollController.hasClients) {
+                                // final timer = Timer.periodic(
+                                //     const Duration(seconds: 1), (Timer t) {
+                                //   //   if (scrollController.hasClients) {
 
-                                  // }
-                                });
+                                //   // }
+                                // });
                               },
                               title: 'Tặng',
                               textStyle: textTheme.titleLarge

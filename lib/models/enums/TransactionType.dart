@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 
 enum TransactionType {
   // ignore: constant_identifier_names
+  ALL,
+  // ignore: constant_identifier_names
   PURCHASE,
   // ignore: constant_identifier_names
   WITHDRAW,
-  // ignore: constant_identifier_names
-  REFUND,
   // ignore: constant_identifier_names
   GIFT_SENT,
   // ignore: constant_identifier_names
@@ -18,6 +18,8 @@ enum TransactionType {
   REWARD_FROM_STORY,
   // ignore: constant_identifier_names
   DAILY_REWARD,
+  // ignore: constant_identifier_names
+  REFUND,
 }
 
 extension TransactionTypeExtension on TransactionType {
@@ -45,7 +47,7 @@ extension TransactionTypeExtension on TransactionType {
   Color get displayBgColor {
     switch (this) {
       default:
-        return Color.fromARGB(0, 237, 235, 235);
+        return const Color.fromARGB(0, 237, 235, 235);
     }
   }
 
@@ -53,6 +55,8 @@ extension TransactionTypeExtension on TransactionType {
     switch (this) {
       case TransactionType.PURCHASE:
         return 'Nạp  vào ví';
+      case TransactionType.ALL:
+        return 'Tất cả';
       case TransactionType.WITHDRAW:
         return 'Rút về ví';
       case TransactionType.REFUND:

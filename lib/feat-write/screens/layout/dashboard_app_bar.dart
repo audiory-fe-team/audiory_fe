@@ -1,19 +1,20 @@
-import 'package:audiory_v0/feat-write/screens/author_dashboard.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../repositories/auth_repository.dart';
 import '../../../theme/theme_constants.dart';
 
-class WriterCustomAppBar extends StatefulWidget implements PreferredSizeWidget {
-  const WriterCustomAppBar({super.key});
+class DashboardCustomAppbar extends StatefulWidget
+    implements PreferredSizeWidget {
+  const DashboardCustomAppbar({super.key});
 
   @override
-  State<WriterCustomAppBar> createState() => _WriterCustomAppBarState();
+  State<DashboardCustomAppbar> createState() => _DashboardCustomAppbarState();
   Size get preferredSize => const Size.fromHeight(58);
 }
 
-class _WriterCustomAppBarState extends State<WriterCustomAppBar> {
+class _DashboardCustomAppbarState extends State<DashboardCustomAppbar> {
   final User? user = AuthRepository().currentUser;
 
   @override
@@ -38,30 +39,20 @@ class _WriterCustomAppBarState extends State<WriterCustomAppBar> {
             width: size.width,
             child: Center(
               child: Text(
-                'Tác phẩm',
+                'Thống kê',
                 style: textTheme.headlineSmall,
               ),
             ),
           ),
           Positioned(
               height: 60,
-              right: 0,
+              left: 0,
               child: IconButton(
-                alignment: Alignment.center,
-                icon: const Icon(Icons.bar_chart_rounded),
-                onPressed: () {
-                  showModalBottomSheet(
-                      isScrollControlled: true,
-                      useRootNavigator: true,
-                      barrierColor: Colors.transparent,
-                      useSafeArea: true,
-                      context: context,
-                      enableDrag: false,
-                      builder: (context) {
-                        return const AuthorDashboard();
-                      });
-                },
-              ))
+                  alignment: Alignment.centerLeft,
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    context.pop();
+                  }))
         ]),
       ),
     );

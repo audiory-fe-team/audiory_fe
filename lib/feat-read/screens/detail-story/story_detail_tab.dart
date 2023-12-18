@@ -120,7 +120,8 @@ class StoryDetailTab extends HookWidget {
                                 'https://static.vecteezy.com/system/resources/previews/024/059/039/original/digital-art-of-a-cat-head-cartoon-with-sunglasses-illustration-of-a-feline-avatar-wearing-glasses-vector.jpg'),
                         fit: BoxFit.cover,
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(50.0)),
                       border: Border.all(
                         color: defaultColor,
                         width: 6.0,
@@ -140,7 +141,7 @@ class StoryDetailTab extends HookWidget {
                 ]),
               ),
               const SizedBox(width: 4),
-              Container(
+              SizedBox(
                 width: defaultContainerSize + 20,
                 child: Text(
                   donator?.fullName ?? 'Ẩn danh',
@@ -359,16 +360,12 @@ class StoryDetailTab extends HookWidget {
                         showModalBottomSheet(
                             context: context,
                             builder: (BuildContext context) {
-                              return Container(
-                                height:
-                                    MediaQuery.of(context).size.height * 0.7,
-                                child: DonateGiftModal(
-                                  onAfterSendGift: () {
-                                    donatorsQuery.refetch();
-                                  },
-                                  storyId: story?.id,
-                                  authorId: story?.authorId,
-                                ),
+                              return DonateGiftModal(
+                                onAfterSendGift: () {
+                                  donatorsQuery.refetch();
+                                },
+                                storyId: story?.id,
+                                authorId: story?.authorId,
                               );
                             })
                       }),

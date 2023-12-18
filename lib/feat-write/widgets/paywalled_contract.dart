@@ -111,7 +111,7 @@ class _PaywalledContractState extends State<PaywalledContract> {
           space(),
           title(2, 'Thỏa thuận cấp phép'),
           content(
-              'Bằng cách chấp nhận Thỏa thuận này, Tác giả cấp cho Audiory ("Công ty") giấy phép không độc quyền, trên toàn thế giới, miễn phí bản quyền để lưu trữ, hiển thị, phân phối và bán các tác phẩm văn học của Tác giả, bao gồm các câu chuyện, bản âm thanh, và nội dung văn bản khác ("Nội dung") trên Ứng dụng trong thời hạn mười (10) năm kể từ ngày chấp nhận.'),
+              'Bằng cách chấp nhận Thỏa thuận này, Tác giả cấp cho Audiory ("Công ty") giấy phép, trên toàn thế giới, miễn phí bản quyền để lưu trữ, hiển thị, phân phối và bán các tác phẩm văn học của Tác giả, bao gồm các câu chuyện, bản âm thanh, và nội dung văn bản khác ("Nội dung") trên Ứng dụng trong thời hạn mười (10) năm kể từ ngày chấp nhận.'),
           space(),
           title(3, 'Quyền sở hữu và bản quyền'),
           subtitle(3.1,
