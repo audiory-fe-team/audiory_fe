@@ -54,8 +54,7 @@ class DetailStoryScreen extends HookConsumerWidget {
     final libraryQuery = useQuery(
       ['library'],
       () => LibraryRepository.fetchMyLibrary(),
-      refetchOnMount: RefetchOnMount.stale,
-      staleDuration: const Duration(minutes: 30),
+      refetchOnMount: RefetchOnMount.always,
     );
     final isAddedToLibrary = libraryQuery.data?.libraryStory
         ?.any((element) => element.storyId == id);

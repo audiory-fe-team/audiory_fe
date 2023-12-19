@@ -264,7 +264,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
         }
       });
 
-      final timer = Timer.periodic(const Duration(seconds: 10), (Timer t) {
+      final timer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
         if (scrollController.hasClients) {
           final offset = scrollController.offset.floor();
           ReadingProgressRepository.updateProgress(
@@ -542,7 +542,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
                           //       paraId: paragraphs[paragraphs.length - 1].id);
                           // }),
                           const SizedBox(
-                            height: 56,
+                            height: 106,
                           )
                         ]),
                       ))),

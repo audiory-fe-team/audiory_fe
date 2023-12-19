@@ -15,14 +15,14 @@ class RankingRepository {
       {required RankingMetric metric,
       required RankingTimeRange time,
       String? category_id,
-      int? page,
-      int? page_size}) async {
+      int? offset,
+      int? limit}) async {
     final url = Uri.parse("$storiesEndpoint/stories").replace(queryParameters: {
       'sort_by': getValueString(metric.toString()),
       'time_range': getValueString(time.toString()),
       if (category_id != null) 'category_id': category_id,
-      'page': (page ?? 1).toString(),
-      'page_size': (page_size ?? 10).toString(),
+      'offset': (offset ?? 0).toString(),
+      'limit': (limit ?? 5).toString(),
     });
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
@@ -38,13 +38,13 @@ class RankingRepository {
       {required RankingTimeRange time,
       required RankingMetric metric,
       String? category,
-      int? page}) async {
+      int? offset}) async {
     final url = Uri.parse("$storiesEndpoint/authors").replace(queryParameters: {
       'sort_by': getValueString(metric.toString()),
       'time_range': getValueString(time.toString()),
       // 'category': category,
-      'page': (page ?? 1).toString(),
-      'page_size': 10.toString(),
+      'offset': (offset ?? 0).toString(),
+      'limit': 10.toString(),
     });
     final response = await http.get(url);
     final responseBody = utf8.decode(response.bodyBytes);
