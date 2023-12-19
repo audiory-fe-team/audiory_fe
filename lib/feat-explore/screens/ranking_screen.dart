@@ -148,11 +148,14 @@ class StoryRanking extends HookWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
-    final page = useState(1);
+    final offset = useState(0);
     final storiesQuery = useQuery(
-        ["ranking", metric, time, category, page.value.toString()], () {
+        ["ranking", metric, time, category, offset.value.toString()], () {
       return RankingRepository().fetchRankingStories(
-          metric: metric, time: time, category_id: category, page: page.value);
+          metric: metric,
+          time: time,
+          category_id: category,
+          offset: offset.value);
     });
     final categories =
         useQuery(['categories'], () => CategoryRepository().fetchCategory());
@@ -321,7 +324,7 @@ class StoryRanking extends HookWidget {
                             return StoryRankCard(
                                 story: story,
                                 metric: metric,
-                                order: (page.value - 1) * 10 + index + 1);
+                                order: offset.value + index + 1);
                           }).toList(),
                         ))))),
       ],
@@ -341,11 +344,11 @@ class AuthorRanking extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final page = useState(1);
+    final offset = useState(0);
     final authorQuery =
-        useQuery(["ranking", time, metric, page.value.toString()], () {
-      return RankingRepository()
-          .fetchRankingAuthors(time: time, metric: metric, page: page.value);
+        useQuery(["ranking", time, metric, offset.value.toString()], () {
+      return RankingRepository().fetchRankingAuthors(
+          time: time, metric: metric, offset: offset.value);
     });
     return Expanded(
         child: Column(
@@ -450,7 +453,7 @@ class AuthorRanking extends HookWidget {
                         return AuthorRankCard(
                             author: author,
                             metric: metric,
-                            order: (page.value - 1) * 10 + index + 1);
+                            order: offset.value + index + 1);
                       }).toList(),
                     )))),
       ],

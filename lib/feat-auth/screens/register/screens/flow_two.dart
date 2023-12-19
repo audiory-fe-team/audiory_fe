@@ -100,7 +100,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Chọn độ tuổi của bạn*",
+                    Text("Chọn ngày sinh của bạn*",
                         style: Theme.of(context)
                             .textTheme
                             .headlineSmall

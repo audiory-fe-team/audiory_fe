@@ -145,8 +145,9 @@ class HomeScreen extends HookConsumerWidget {
                     height: 176,
                     child: ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Image.network(
-                          'https://i0.wp.com/bookcoversbymelody.com/wp-content/uploads/2017/07/A-Brush-With-Vampires-FB-Banner.jpg?ssl=1',
+                        child: const AppImage(
+                          url:
+                              'https://www.quehuong.org.vn/wp-content/uploads/2018/07/dung-noi-chuyen-voi-co-ay.jpg',
                           fit: BoxFit.cover,
                         )),
                   ),
@@ -211,9 +212,9 @@ class HomeScreen extends HookConsumerWidget {
 
 class HomeBanners extends StatelessWidget {
   static const List<String> bannerList = [
-    'https://i0.wp.com/bookcoversbymelody.com/wp-content/uploads/2012/09/scifi-romance-facebook-banner.jpg?ssl=1',
-    'https://www.thecreativepenn.com/wp-content/uploads/2019/02/The-Creative-Penn-website-banner.png',
-    'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXP1KgLqDTJIAXBcSufJQzT-_M5pHwS0CQfhuIWpwBGGqD6ni8OT_aTwbL8YHo6AMEMyk&usqp=CAU'
+    'https://namlundidong18.files.wordpress.com/2015/08/64.png',
+    'https://namlundidong18.files.wordpress.com/2015/08/61.png',
+    'https://dieplamkhue.files.wordpress.com/2016/01/bannercuocsonghanhphuccuavatlieumaduoc.jpg?w=584'
   ];
 
   const HomeBanners({super.key});
@@ -299,8 +300,8 @@ class _HomeRankingListState extends State<HomeRankingList> {
     super.initState();
     categoryFuture = CategoryRepository().fetchCategory();
     rankingFuture = RankingRepository().fetchRankingStories(
-      page: 1,
-      page_size: 5,
+      offset: 0,
+      limit: 5,
       time: RankingTimeRange.weekly,
       metric: RankingMetric.total_read,
       category_id: null,
@@ -347,8 +348,8 @@ class _HomeRankingListState extends State<HomeRankingList> {
                                   setState(() {
                                     rankingFuture =
                                         RankingRepository().fetchRankingStories(
-                                      page: 1,
-                                      page_size: 5,
+                                      offset: 0,
+                                      limit: 5,
                                       time: RankingTimeRange.weekly,
                                       metric: RankingMetric.total_read,
                                       category_id: null,
@@ -370,8 +371,8 @@ class _HomeRankingListState extends State<HomeRankingList> {
                                     setState(() {
                                       rankingFuture = RankingRepository()
                                           .fetchRankingStories(
-                                        page: 1,
-                                        page_size: 5,
+                                        offset: 0,
+                                        limit: 5,
                                         time: RankingTimeRange.weekly,
                                         metric: RankingMetric.total_read,
                                         category_id: category.id,

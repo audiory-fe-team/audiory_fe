@@ -308,7 +308,6 @@ class DonateGiftModal extends HookConsumerWidget {
 
                                 final timer = Timer.periodic(
                                     const Duration(seconds: 1), (Timer t) {
-                                  print('helo');
                                   //   if (scrollController.hasClients) {
 
                                   // }
