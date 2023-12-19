@@ -59,9 +59,9 @@ class ReadingListScreen extends HookWidget {
           isScrollControlled: true,
           context: context,
           elevation: 40,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24.0),
-          ),
+          // shape: RoundedRectangleBorder(
+          //   borderRadius: BorderRadius.circular(24.0),
+          // ),
           builder: (context) => DraggableScrollableSheet(
                 expand: false,
                 initialChildSize: 0.8,
@@ -69,6 +69,7 @@ class ReadingListScreen extends HookWidget {
                   body: SingleChildScrollView(
                     child: Container(
                       // height: size.height - 200,
+
                       padding: const EdgeInsets.symmetric(
                           horizontal: 16, vertical: 16),
                       child: Column(children: [
@@ -109,12 +110,15 @@ class ReadingListScreen extends HookWidget {
                                             .addStoryToReadingList(id, ele);
                                       }
 
+                                      // ignore: use_build_context_synchronously
                                       Navigator.of(context).pop();
                                     } catch (e) {
+                                      // ignore: use_build_context_synchronously
                                       AppSnackBar.buildTopSnackBar(context,
                                           "Thêm lỗi", null, SnackBarType.error);
                                     }
                                     listStoriesQuery.refetch();
+                                    // ignore: use_build_context_synchronously
                                     await AppSnackBar.buildTopSnackBar(
                                         context,
                                         "Thêm thành công",
@@ -125,7 +129,8 @@ class ReadingListScreen extends HookWidget {
                                     'Chọn',
                                     textAlign: TextAlign.center,
                                     style: textTheme.bodyMedium?.copyWith(
-                                        color: appColors.primaryBase),
+                                        color: appColors.primaryBase,
+                                        fontWeight: FontWeight.bold),
                                   ),
                                 ))
                           ],
@@ -176,9 +181,6 @@ class ReadingListScreen extends HookWidget {
                                         } else {
                                           list.add(storyId);
                                         }
-
-                                        print('LIST length ${list.length}');
-                                        print(list);
                                       },
                                     ),
                                   ),
@@ -209,10 +211,12 @@ class ReadingListScreen extends HookWidget {
       try {
         await ReadingListRepository.deleteStoryFromReadingList(id, storyId);
       } catch (error) {
+        // ignore: use_build_context_synchronously
         AppSnackBar.buildTopSnackBar(
             context, 'Xóa thất bại, thử lại sau.', null, SnackBarType.error);
       }
       listStoriesQuery.refetch();
+      // ignore: use_build_context_synchronously
       await AppSnackBar.buildTopSnackBar(
           context, 'Xóa thành công.', null, SnackBarType.success);
     }
@@ -222,66 +226,73 @@ class ReadingListScreen extends HookWidget {
         appBar: CustomAppBar(
           title: Text(
             name ?? 'Danh sách đọc',
-            maxLines: 2,
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.headlineMedium,
+            style: textTheme.headlineSmall,
           ),
           actions: [
-            PopupMenuButton(
-                position: PopupMenuPosition.under,
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8.0))),
-                child: Container(
-                    margin: const EdgeInsets.only(right: 16),
-                    child: Icon(Icons.more_horiz, color: appColors.inkDarker)),
-                onSelected: (value) {
-                  if (value == "add") {
-                    handleAdd();
-                  }
-                  if (value == "share") {}
-                  if (value == "delete") {
-                    // handleDelete();
-                  }
+            TextButton(
+                onPressed: () {
+                  handleAdd();
                 },
-                itemBuilder: (context) => [
-                      PopupMenuItem(
-                          height: 36,
-                          value: 'add',
-                          child: Row(mainAxisSize: MainAxisSize.min, children: [
-                            Icon(Icons.add,
-                                size: 18, color: appColors.inkLighter),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Thêm truyện',
-                              style: textTheme.titleMedium,
-                            )
-                          ])),
-                      PopupMenuItem(
-                          height: 36,
-                          value: 'share',
-                          child: Row(mainAxisSize: MainAxisSize.min, children: [
-                            Icon(Icons.share,
-                                size: 18, color: appColors.inkLighter),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Chia sẻ',
-                              style: textTheme.titleMedium,
-                            )
-                          ])),
-                      // PopupMenuItem(
-                      //     height: 36,
-                      //     value: 'delete',
-                      //     child: Row(mainAxisSize: MainAxisSize.min, children: [
-                      //       Icon(Icons.delete_outline_rounded,
-                      //           size: 18, color: appColors.secondaryBase),
-                      //       const SizedBox(width: 4),
-                      //       Text(
-                      //         'Xóa danh sách',
-                      //         style: textTheme.titleMedium
-                      //             ?.copyWith(color: appColors.secondaryBase),
-                      //       )
-                      //     ])),
-                    ]),
+                child: Text(
+                  'Thêm truyện',
+                  style: textTheme.bodySmall
+                      ?.copyWith(color: appColors.primaryBase),
+                ))
+            // PopupMenuButton(
+            //     position: PopupMenuPosition.under,
+            //     shape: const RoundedRectangleBorder(
+            //         borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            //     child: Container(
+            //         margin: const EdgeInsets.only(right: 16),
+            //         child: Icon(Icons.more_horiz, color: appColors.inkDarker)),
+            //     onSelected: (value) {
+            //       if (value == "add") {
+            //         handleAdd();
+            //       }
+            //       if (value == "share") {}
+            //       if (value == "delete") {}
+            //     },
+            //     itemBuilder: (context) => [
+            //           PopupMenuItem(
+            //               height: 36,
+            //               value: 'add',
+            //               child: Row(mainAxisSize: MainAxisSize.min, children: [
+            //                 Icon(Icons.add,
+            //                     size: 18, color: appColors.inkLighter),
+            //                 const SizedBox(width: 4),
+            //                 Text(
+            //                   'Thêm truyện',
+            //                   style: textTheme.titleMedium,
+            //                 )
+            //               ])),
+            //           // PopupMenuItem(
+            //           //     height: 36,
+            //           //     value: 'share',
+            //           //     child: Row(mainAxisSize: MainAxisSize.min, children: [
+            //           //       Icon(Icons.share,
+            //           //           size: 18, color: appColors.inkLighter),
+            //           //       const SizedBox(width: 4),
+            //           //       Text(
+            //           //         'Chia sẻ',
+            //           //         style: textTheme.titleMedium,
+            //           //       )
+            //           //     ])),
+            //           PopupMenuItem(
+            //               height: 36,
+            //               value: 'delete',
+            //               child: Row(mainAxisSize: MainAxisSize.min, children: [
+            //                 Icon(Icons.delete_outline_rounded,
+            //                     size: 18, color: appColors.secondaryBase),
+            //                 const SizedBox(width: 4),
+            //                 Text(
+            //                   'Xóa danh sách',
+            //                   style: textTheme.titleMedium
+            //                       ?.copyWith(color: appColors.secondaryBase),
+            //                 )
+            //               ])),
+            //         ]),
           ],
         ),
         body: RefreshIndicator(

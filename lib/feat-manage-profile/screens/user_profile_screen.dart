@@ -417,8 +417,9 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                     child: GestureDetector(
                                   child: const Icon(Icons.add),
                                   onTap: () {
-                                    context.pushNamed('newPurchase',
-                                        extra: {'currentUser': userData});
+                                    context.pushNamed(
+                                      'newPurchase',
+                                    );
                                   },
                                 )),
                               ],

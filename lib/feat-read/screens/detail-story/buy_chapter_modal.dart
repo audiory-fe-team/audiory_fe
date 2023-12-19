@@ -55,8 +55,7 @@ class _BuyChapterModalState extends State<BuyChapterModal> {
               onTap: () {
                 context.pop();
                 userQuery.data != null
-                    ? context.pushNamed('newPurchase',
-                        extra: {'currentUser': userQuery.data})
+                    ? context.pushNamed('newPurchase')
                     : null;
               },
               child: Row(

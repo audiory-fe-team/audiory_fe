@@ -462,7 +462,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                       showModalBottomSheet(
                                           context: context,
                                           builder: (BuildContext context) {
-                                            return Container(
+                                            return SizedBox(
                                               height: MediaQuery.of(context)
                                                       .size
                                                       .height *
@@ -478,13 +478,13 @@ class OnlineReadingScreen extends HookConsumerWidget {
                                             );
                                           });
                                     }),
-                                const SizedBox(width: 12),
-                                ActionButton(
-                                    title: 'Chia sẻ',
-                                    iconName: 'share',
-                                    onPressed: () {
-                                      handleShare();
-                                    }),
+                                // const SizedBox(width: 12),
+                                // ActionButton(
+                                //     title: 'Tặng quà',
+                                //     iconName: 'gift',
+                                //     onPressed: () {
+                                //       handleShare();
+                                //     }),
                               ],
                             ),
                           )),
@@ -554,6 +554,7 @@ class OnlineReadingScreen extends HookConsumerWidget {
               chapterId: chapterId,
               storyId: storyId,
               isVoted: chapterQuery.data?.isVoted ?? false,
+              authorId: storyQuery.data?.author?.id ?? '',
             ),
       floatingActionButton: const AudioBottomBar(),
       floatingActionButtonLocation:

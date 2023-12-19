@@ -67,7 +67,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             initialEntryMode: DatePickerEntryMode.input,
             confirmText: 'Chọn',
             cancelText: 'Hủy',
-            fieldHintText: '01/01/2002',
+            fieldHintText: _selectedDate != ''
+                ? _selectedDate
+                : appFormatDate(profile?.dob ?? '01/01/2002'),
             fieldLabelText: 'Nhập ngày',
             errorInvalidText: 'Năm sinh trong khoảng 1933-2017',
             errorFormatText: 'Lỗi định dạng (dd/MM/yyyy)',
@@ -96,9 +98,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         if (datepicked != null) {
           setState(() {
             _selectedDate = formatDate(datepicked!.toString());
-            ;
           });
-          _formKey.currentState?.setInternalFieldValue('dob', _selectedDate);
+          // _formKey.currentState?.fields['dob']?.value =
+          //     appFormatDateFromDatePicker(_selectedDate);
         }
       }
 
@@ -140,7 +142,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         size: 20,
                       ),
                     )),
-                initialValue: profile?.dob ?? '01/01/2002',
+                hintText: _selectedDate != ''
+                    ? _selectedDate
+                    : appFormatDate(profile?.dob ?? '01/01/2002'),
                 hintTextStyle: TextStyle(color: appColors.inkBase),
                 validator: (value) {
                   if ((value?.allMatches(
@@ -152,7 +156,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 }),
             const SizedBox(
               height: 16,
-            )
+            ),
           ],
         );
       }
@@ -213,14 +217,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ),
                     AppTextInputField(
                       isTextArea: true,
-                      minLines: 2,
-                      maxLengthCharacters: 256,
+                      minLines: 3,
+                      maxLengthCharacters: 1000,
                       name: 'description',
                       label: 'Giới thiệu bản thân',
                       hintText: 'Đôi ba dòng về bạn',
                       initialValue: profile?.description == ''
                           ? ''
                           : profile?.description ?? '',
+                      validator: (value) {
+                        if ((value?.length ?? 0) > 1000) {
+                          return 'Tối đa 1000 ký tự';
+                        }
+                      },
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -258,8 +267,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ?.fields['description']?.value;
                                   body['facebook_url'] = _formKey.currentState
                                       ?.fields['facebook_url']?.value;
-                                  print(
-                                      'SELECTED ${_selectedDate.split(' ')[0]}');
+
                                   body['dob'] = appFormatDateFromDatePicker(
                                       _selectedDate);
 

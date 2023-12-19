@@ -33,8 +33,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class NewPurchaseScreen extends StatefulHookWidget {
-  final AuthUser? currentUser;
-  const NewPurchaseScreen({super.key, this.currentUser});
+  const NewPurchaseScreen({super.key});
 
   @override
   State<NewPurchaseScreen> createState() => _NewPurchaseScreenState();
@@ -194,6 +193,7 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
 
                   userQuery.refetch();
                 } catch (e) {
+                  // ignore: use_build_context_synchronously
                   context.pop();
 
                   // ignore: use_build_context_synchronously

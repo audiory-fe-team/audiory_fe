@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:audiory_v0/feat-manage-profile/screens/wallet/transaction_history.dart';
 import 'package:audiory_v0/feat-manage-profile/widgets/transaction_card.dart';
 import 'package:audiory_v0/models/AuthUser.dart';
 import 'package:audiory_v0/models/enums/TransactionType.dart';
@@ -34,7 +35,7 @@ class _WalletScreenState extends State<WalletScreen> {
     final AppColors appColors = Theme.of(context).extension<AppColors>()!;
 
     final transactionsQuery = useQuery(['transactions'],
-        () => TransactionRepository.fetchMyTransactions(pageSize: 100));
+        () => TransactionRepository.fetchMyTransactions(pageSize: 300));
     final userByIdQuery =
         useQuery(['user'], () => AuthRepository().getMyUserById());
 
@@ -54,7 +55,7 @@ class _WalletScreenState extends State<WalletScreen> {
                   DateTime.now(),
                   DateTime.parse(
                       element.createdDate ?? DateTime.now().toString())) <=
-              25)
+              30)
           .toList()
           .where((element) => listType.contains(
               TransactionType.values.byName(element.transactionType ?? '')))
@@ -124,9 +125,6 @@ class _WalletScreenState extends State<WalletScreen> {
     }
 
     //transaction list
-
-    print(userByIdQuery.data?.wallets);
-
     return Scaffold(
       backgroundColor: appColors.inkDark,
       appBar: CustomAppBar(
@@ -151,154 +149,135 @@ class _WalletScreenState extends State<WalletScreen> {
       ),
       body: Column(children: [
         Flexible(
-          child: Stack(
-            alignment: AlignmentDirectional.topCenter,
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: size.height * 0.28),
-                height: size.height * 0.6,
-                decoration: BoxDecoration(
-                    color: appColors.skyLightest,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(25),
-                      topRight: Radius.circular(25),
-                    )),
-              ),
-              Container(
-                margin: EdgeInsets.only(top: size.height * 0.01),
-                height: size.height * 0.5,
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Flexible(
-                          child: Column(
-                            children: [
-                              Text(
-                                'Tổng xu',
-                                style: textTheme.bodyMedium?.copyWith(
-                                    color: appColors.primaryLightest),
-                              ),
-                              Text(
-                                formatNumberWithSeperator(userByIdQuery
-                                            .data?.wallets!.isNotEmpty ??
-                                        false
-                                    ? userByIdQuery.data?.wallets![0].balance
-                                    : 0),
-                                style: textTheme.headlineLarge?.copyWith(
-                                    color: appColors.primaryLightest,
-                                    fontSize: 35),
+          child: RefreshIndicator(
+            onRefresh: () async {
+              transactionsQuery.refetch();
+            },
+            child: Stack(
+              alignment: AlignmentDirectional.topCenter,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(top: size.height * 0.28),
+                  height: size.height * 0.6,
+                  decoration: BoxDecoration(
+                      color: appColors.skyLightest,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(25),
+                        topRight: Radius.circular(25),
+                      )),
+                ),
+                Container(
+                  margin: EdgeInsets.only(top: size.height * 0.01),
+                  height: size.height * 0.5,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Flexible(
+                            child: Column(
+                              children: [
+                                Text(
+                                  'Tổng xu',
+                                  style: textTheme.bodyMedium?.copyWith(
+                                      color: appColors.primaryLightest),
+                                ),
+                                Text(
+                                  formatNumberWithSeperator(userByIdQuery
+                                              .data?.wallets!.isNotEmpty ??
+                                          false
+                                      ? userByIdQuery.data?.wallets![0].balance
+                                      : 0),
+                                  style: textTheme.headlineLarge?.copyWith(
+                                      color: appColors.primaryLightest,
+                                      fontSize: 35),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      AppIconButton(
+                        onPressed: () {
+                          //get all coin packs and get all payment methods
+                          //then create a purchase
+                          context.pushNamed('newPurchase');
+                        },
+                        icon: Icon(
+                          Icons.login_rounded,
+                          color: appColors.primaryLightest,
+                        ),
+                        iconPosition: 'start',
+                        title: 'Nạp/ Rút',
+                        textStyle: textTheme.bodyMedium
+                            ?.copyWith(color: appColors.inkBase)
+                            .copyWith(color: appColors.primaryLightest),
+                        bgColor: appColors.inkBase,
+                      ),
+                      //stats container
+                      Container(
+                        margin: const EdgeInsets.symmetric(
+                            horizontal: 36, vertical: 40),
+                        height: size.height * 0.1,
+                        decoration: BoxDecoration(
+                            color: appColors.primaryLightest,
+                            boxShadow: [
+                              BoxShadow(
+                                color: appColors.inkBase.withOpacity(0.2),
+                                spreadRadius: 5,
+                                blurRadius: 15,
+                                offset: const Offset(
+                                    0, 3), // changes position of shadow
                               ),
                             ],
-                          ),
-                        ),
-                        // Flexible(
-                        //   child: Column(
-                        //     children: [
-                        //       Text(
-                        //         'Kim cương',
-                        //         style: textTheme.bodyMedium?.copyWith(
-                        //             color: appColors.primaryLightest),
-                        //       ),
-                        //       Text(
-                        //         formatNumberWithSeperator(userByIdQuery
-                        //                     .data?.wallets!.isNotEmpty ??
-                        //                 false
-                        //             ? userByIdQuery.data?.wallets![1].balance
-                        //             : 0),
-                        //         style: textTheme.headlineLarge?.copyWith(
-                        //             color: appColors.primaryLightest,
-                        //             fontSize: 35),
-                        //       ),
-                        //     ],
-                        //   ),
-                        // ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    AppIconButton(
-                      onPressed: () {
-                        //get all coin packs and get all payment methods
-                        //then create a purchase
-                        context.pushNamed('newPurchase',
-                            extra: {'currentUser': widget.currentUser});
-                      },
-                      icon: Icon(
-                        Icons.login_rounded,
-                        color: appColors.primaryLightest,
-                      ),
-                      iconPosition: 'start',
-                      title: 'Nạp/ Rút',
-                      textStyle: textTheme.bodyMedium
-                          ?.copyWith(color: appColors.inkBase)
-                          ?.copyWith(color: appColors.primaryLightest),
-                      bgColor: appColors.inkBase,
-                    ),
-                    //stats container
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                          horizontal: 36, vertical: 40),
-                      height: size.height * 0.1,
-                      decoration: BoxDecoration(
-                          color: appColors.primaryLightest,
-                          boxShadow: [
-                            BoxShadow(
-                              color: appColors.inkBase.withOpacity(0.2),
-                              spreadRadius: 5,
-                              blurRadius: 15,
-                              offset: const Offset(
-                                  0, 3), // changes position of shadow
-                            ),
-                          ],
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(17))),
-                      child: Skeletonizer(
-                        enabled: transactionsQuery.isFetching,
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            mainAxisSize: MainAxisSize.max,
-                            children: [
-                              spendingStats(
-                                  countTotal(transactionsQuery.data ?? [],
-                                      [TransactionType.PURCHASE]),
-                                  'Đã nạp trong 25 ngày',
-                                  true),
-                              SizedBox(
-                                width: 2,
-                                child: VerticalDivider(
-                                  thickness: 1,
-                                  color: appColors.skyBase,
-                                  indent: size.height * 0.025,
-                                  endIndent: size.height * 0.025,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(17))),
+                        child: Skeletonizer(
+                          enabled: transactionsQuery.isFetching,
+                          child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisSize: MainAxisSize.max,
+                              children: [
+                                spendingStats(
+                                    countTotal(transactionsQuery.data ?? [],
+                                        [TransactionType.PURCHASE]),
+                                    'Đã nạp trong 30 ngày',
+                                    true),
+                                SizedBox(
+                                  width: 2,
+                                  child: VerticalDivider(
+                                    thickness: 1,
+                                    color: appColors.skyBase,
+                                    indent: size.height * 0.025,
+                                    endIndent: size.height * 0.025,
+                                  ),
                                 ),
-                              ),
-                              spendingStats(
-                                  countTotal(transactionsQuery.data ?? [], [
-                                    TransactionType.GIFT_SENT,
-                                    TransactionType.CHAPTER_BOUGHT
-                                  ]),
-                                  'Đã sử dụng',
-                                  false)
-                            ]),
+                                spendingStats(
+                                    countTotal(transactionsQuery.data ?? [], [
+                                      TransactionType.GIFT_SENT,
+                                      TransactionType.CHAPTER_BOUGHT
+                                    ]),
+                                    'Đã sử dụng',
+                                    false)
+                              ]),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: size.height * 0.35),
-                child: SizedBox(
-                  height: size.height,
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        //history of transactions
-                        Container(
-                          child: Column(
+                Padding(
+                  padding: EdgeInsets.only(top: size.height * 0.35),
+                  child: SizedBox(
+                    height: size.height,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          //history of transactions
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Padding(
@@ -310,8 +289,8 @@ class _WalletScreenState extends State<WalletScreen> {
                                   children: [
                                     Flexible(
                                       child: Text(
-                                        'Lịch sử giao dịch',
-                                        style: textTheme.headlineMedium
+                                        'Giao dịch gần đây',
+                                        style: textTheme.headlineSmall
                                             ?.copyWith(
                                                 color: appColors.inkDarkest),
                                       ),
@@ -319,52 +298,16 @@ class _WalletScreenState extends State<WalletScreen> {
                                     Flexible(
                                       child: GestureDetector(
                                         onTap: () {
-                                          print('more');
                                           showModalBottomSheet(
-                                              context: context,
-                                              isScrollControlled: true,
-                                              isDismissible: true,
-                                              useSafeArea: true,
-                                              builder: (context) {
-                                                return Scaffold(
-                                                  appBar: CustomAppBar(
-                                                    title: Text(
-                                                        'Lịch sử giao dịch'),
-                                                  ),
-                                                  body: SingleChildScrollView(
-                                                    child: Column(children: [
-                                                      Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .symmetric(
-                                                                  vertical:
-                                                                      6.0),
-                                                          child: Container(
-                                                            height:
-                                                                size.height *
-                                                                    0.85,
-                                                            child: ListView
-                                                                .builder(
-                                                                    itemCount:
-                                                                        transactionsQuery
-                                                                            .data
-                                                                            ?.length,
-                                                                    itemBuilder:
-                                                                        (context,
-                                                                            index) {
-                                                                      return Container(
-                                                                        child:
-                                                                            TransactionCard(
-                                                                          transaction:
-                                                                              transactionsQuery.data?[index] as Transaction,
-                                                                        ),
-                                                                      );
-                                                                    }),
-                                                          )),
-                                                    ]),
-                                                  ),
-                                                );
-                                              });
+                                            context: context,
+                                            isScrollControlled: true,
+                                            isDismissible: true,
+                                            useSafeArea: true,
+                                            useRootNavigator: true,
+                                            builder: (context) {
+                                              return const TransactionHistory();
+                                            },
+                                          );
                                         },
                                         child: Text(
                                           'Xem thêm',
@@ -379,7 +322,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               ),
                               Container(
                                 margin: const EdgeInsets.only(bottom: 100),
-                                height: size.height * 0.42,
+                                height: size.height * 0.44,
                                 child: Skeletonizer(
                                   enabled: transactionsQuery.isFetching,
                                   child: Padding(
@@ -404,11 +347,9 @@ class _WalletScreenState extends State<WalletScreen> {
                                               ? 1
                                               : -1;
                                         });
-                                        return Container(
-                                          child: TransactionCard(
-                                            transaction: transactionsQuery
-                                                .data?[index] as Transaction,
-                                          ),
+                                        return TransactionCard(
+                                          transaction: transactionsQuery
+                                              .data?[index] as Transaction,
                                         );
                                       }).toList(),
                                     ),
@@ -416,14 +357,14 @@ class _WalletScreenState extends State<WalletScreen> {
                                 ),
                               ),
                             ],
-                          ),
-                        )
-                      ],
+                          )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              )
-            ],
+                )
+              ],
+            ),
           ),
         )
       ]),

@@ -1,4 +1,5 @@
 import 'package:audiory_v0/feat-read/screens/comment/comment_screen.dart';
+import 'package:audiory_v0/feat-read/screens/detail-story/donate_gift_modal.dart';
 import 'package:audiory_v0/feat-read/screens/reading/share_link_sheet.dart';
 import 'package:audiory_v0/feat-read/screens/reading/setting_modal.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
@@ -14,11 +15,13 @@ class ReadingBottomBar extends HookWidget {
   final Function() onChangeStyle;
   final bool isVoted;
   final bool isOffline;
+  final String? authorId;
   const ReadingBottomBar({
     super.key,
     required this.onChangeStyle,
     required this.chapterId,
     required this.storyId,
+    this.authorId,
     this.isVoted = false,
     this.isOffline = false,
   });
@@ -218,7 +221,7 @@ class ReadingBottomBar extends HookWidget {
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.settings_rounded,
+                          Icon(Icons.settings_outlined,
                               color: settingOpen.value
                                   ? appColors?.primaryBase
                                   : appColors?.skyBase,
@@ -238,16 +241,31 @@ class ReadingBottomBar extends HookWidget {
                           MaterialStatePropertyAll(appColors?.primaryLightest),
                       customBorder: const CircleBorder(),
                       onTap: () {
-                        handleShare();
+                        // handleShare();
+                        if (isOffline) {
+                          AppSnackBar.buildTopSnackBar(context,
+                              'Vui lòng kết nối mạng', null, SnackBarType.info);
+                          return;
+                        } else {
+                          showModalBottomSheet(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return DonateGiftModal(
+                                  onAfterSendGift: () {},
+                                  storyId: storyId,
+                                  authorId: authorId,
+                                );
+                              });
+                        }
                       },
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.share,
+                          Icon(Icons.wallet_giftcard_rounded,
                               color: appColors?.skyBase, size: iconSize),
                           Text(
-                            'Chia sẻ',
+                            'Tặng quà',
                             style: sharedTextStyle?.copyWith(
                                 color: appColors?.skyBase),
                           )

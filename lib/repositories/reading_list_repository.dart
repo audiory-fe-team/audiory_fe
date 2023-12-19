@@ -85,7 +85,7 @@ class ReadingListRepository {
 
     final response = await http.post(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
-
+    print(responseBody);
     if (response.statusCode == 200) {
     } else {
       throw Exception('Failed to load reading list');
