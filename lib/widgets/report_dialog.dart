@@ -20,9 +20,10 @@ class ReportDialog extends StatefulWidget {
   ReportDialog({super.key, required this.reportType, required this.reportId});
 
   static const REPORT_TYPE_MAP = {
-    'COMMENT': 'Bình luận',
-    'STORY': 'Truyện',
-    'USER': 'Người dùng'
+    'COMMENT': 'bình luận',
+    'STORY': 'truyện',
+    'USER': 'người dùng',
+    'REVENUE_COMPLAINT': 'doanh thu'
   };
 
   @override
@@ -115,7 +116,7 @@ class _ReportDialogState extends State<ReportDialog> {
                 minLines: 2,
                 maxLines: 5,
                 hintText:
-                    'Ví dụ: ${ReportDialog.REPORT_TYPE_MAP[widget.reportType]} này có nội dung kích động',
+                    'Ví dụ: Báo cáo ${ReportDialog.REPORT_TYPE_MAP[widget.reportType]} ',
                 name: 'description',
                 validator: FormBuilderValidators.required(
                     errorText: 'Không được để trống'),

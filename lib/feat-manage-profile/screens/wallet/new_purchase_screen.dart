@@ -127,22 +127,14 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
       }
     }
 
-    getStatus(id) async {
-      var status = '';
-      await TransactionRepository.fetchTransaction(id)
-          .then((value) => {status = value?.transactionStatus ?? ''});
+    Stream<String> getTransactionStream(id) {
+      var status = 'PROCESSING';
 
-      return status;
-    }
-
-    getTransactionStatus(id) {
-      var status = 'FAILED';
-      Timer.periodic(
-        const Duration(seconds: 1),
-        (timer) async => status = await getStatus(id),
-      );
-
-      return status;
+      return Stream.periodic(Duration(seconds: 1), (int count) {
+        TransactionRepository.fetchMyTransactions()
+            .then((value) => {status = value?[0].transactionStatus ?? ''});
+        return status;
+      });
     }
 
     showConfirmChapterDeleteDialog(
@@ -181,12 +173,39 @@ class _NewPurchaseScreenState extends State<NewPurchaseScreen>
                   showDialog(
                       context: context,
                       builder: (context) {
-                        // String status = getTransactionStatus(res);
-                        return CustomDialog(
-                          content: 'Tiền đã rút thành công về ví',
-                          alertType: 'success',
-                          actionCallBack: () {
-                            userQuery.refetch();
+                        return StreamBuilder<String>(
+                          stream: getTransactionStream(res?.id),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<String> snapshot) {
+                            if (snapshot.hasData) {
+                              return snapshot.data == 'SUCCEEDED'
+                                  ? CustomDialog(
+                                      content: 'Rút thành công về ví',
+                                      alertType: 'success',
+                                      actionCallBack: () {
+                                        userQuery.refetch();
+                                      },
+                                    )
+                                  : CustomDialog(
+                                      content: 'Giao dịch đang xử lý',
+                                      alertType: 'processing',
+                                      actionCallBack: () {
+                                        userQuery.refetch();
+                                      },
+                                    );
+                            } else if (snapshot.hasError) {
+                              return CustomDialog(
+                                content: 'Giao dịch đang xử lý',
+                                alertType: 'processing',
+                                actionCallBack: () {
+                                  userQuery.refetch();
+                                },
+                              );
+                            } else {
+                              // Handle loading or initial state
+                              return const Center(
+                                  child: CircularProgressIndicator());
+                            }
                           },
                         );
                       });

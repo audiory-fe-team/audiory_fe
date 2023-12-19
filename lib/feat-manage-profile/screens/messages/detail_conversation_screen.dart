@@ -316,12 +316,8 @@ class _DetailConversationScreenState extends State<DetailConversationScreen> {
                   StreamBuilder(
                     stream: channel?.stream,
                     builder: (context, snapshot) {
-                      print('CONNECTION STATE');
-                      print(widget.userId);
-
                       if (snapshot.hasData) {
                         var decodedJson = utf8.decode(snapshot.data);
-                        print('SNAPSHOT DATA ${decodedJson}');
 
                         bool existedMessage = messages.any(
                             (mess) => mess.id == jsonDecode(decodedJson)['id']);

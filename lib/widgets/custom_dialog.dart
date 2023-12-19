@@ -87,8 +87,8 @@ class _CustomDialogState extends State<CustomDialog> {
                       )),
                   Image.asset(
                     status['image'],
-                    height: 100,
-                    width: 100,
+                    height: widget.alertType == 'success' ? 100 : 70,
+                    width: widget.alertType == 'success' ? 100 : 70,
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4, bottom: 16),

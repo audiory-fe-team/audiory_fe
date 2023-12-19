@@ -33,16 +33,12 @@ class RichTextParagraph extends StatelessWidget {
 
     String actualBody = '[${richText?.replaceFirst(RegExp(r','), '')}]';
     QuillController itemController = QuillController.basic();
-    print(richText.toString());
 
     try {
       itemController.document = richText != "" && richText != null
           ? Document.fromJson(jsonDecode(actualBody))
           : Document();
-    } catch (e) {
-      print('richtext error');
-      print(e);
-    }
+    } catch (e) {}
 
     return QuillProvider(
       key: key,
@@ -66,7 +62,6 @@ class RichTextParagraph extends StatelessWidget {
                                 imageErrorWidgetBuilder: (context, _, __) {
                           return Image.network(FALLBACK_IMG_URL);
                         }, imageProviderBuilder: (img) {
-                          print('img $img');
                           Uint8List bytes = base64Decode(img);
 
                           return MemoryImage(bytes)

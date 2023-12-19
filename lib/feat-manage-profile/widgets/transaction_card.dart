@@ -34,7 +34,7 @@ class _TransactionCardState extends State<TransactionCard> {
       if (transaction.transactionStatus == 'FAILED') {
         map.update('status', (value) => 'Thất bại');
         map.update('color', (value) => appColors.secondaryBase);
-      } else if (transaction.transactionStatus == 'FAILED') {
+      } else if (transaction.transactionStatus == 'SUCCEEDED') {
         map.update('status', (value) => 'Thành công');
         map.update('color', (value) => appColors.primaryBase);
       }

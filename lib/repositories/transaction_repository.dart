@@ -47,7 +47,6 @@ class TransactionRepository {
       transactionEndpoint += '&type=${type.name}';
     }
     final url = Uri.parse(transactionEndpoint);
-    print('endpoint $transactionEndpoint');
     // Create headers with the JWT token if it's available
     Map<String, String> headers = {
       "Content-type": "application/json; charset=UTF-8",
@@ -90,7 +89,9 @@ class TransactionRepository {
 
     final response = await http.get(url, headers: headers);
     final responseBody = utf8.decode(response.bodyBytes);
+    print('transaction');
     print(responseBody);
+
     if (response.statusCode == 200) {
       try {
         final result = jsonDecode(responseBody)['data'];

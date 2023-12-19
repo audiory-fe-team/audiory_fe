@@ -34,6 +34,33 @@ class AuthorRepository {
     }
   }
 
+  Future<dynamic> fetchRevenue() async {
+    final url = Uri.parse(
+        '$authorEndpoint/revenue?start_date=2023-05-05&end_date=2024-01-01');
+    const storage = FlutterSecureStorage();
+    String? jwtToken = await storage.read(key: 'jwt');
+
+    // Create headers with the JWT token if it's available
+    Map<String, String> headers = {
+      "Content-type": "application/json",
+      "Accept": "application/json",
+    };
+
+    if (jwtToken != null) {
+      headers['Authorization'] = 'Bearer $jwtToken';
+    }
+
+    final response = await http.get(url, headers: headers);
+    final responseBody = utf8.decode(response.bodyBytes);
+    print(responseBody);
+    if (response.statusCode == 200) {
+      final result = jsonDecode(responseBody)['data'];
+      return result;
+    } else {
+      throw Exception('Failed to load stories');
+    }
+  }
+
   Future<dynamic> fetchTopReaders() async {
     final url = Uri.parse('$authorEndpoint/reader-ranking');
     const storage = FlutterSecureStorage();
@@ -60,9 +87,10 @@ class AuthorRepository {
     }
   }
 
-  Future<dynamic> fetchTopStories() async {
+  Future<dynamic> fetchTopStories(
+      {String startDate = '2023-01-01', String endDate = '2024-01-01'}) async {
     final url = Uri.parse(
-        '$authorEndpoint/story-ranking?start_date=2023-01-01&end_date=2024-01-01');
+        '$authorEndpoint/story-ranking?start_date=$startDate&end_date=$endDate');
     const storage = FlutterSecureStorage();
     String? jwtToken = await storage.read(key: 'jwt');
 

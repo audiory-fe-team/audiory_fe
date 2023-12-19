@@ -5,24 +5,22 @@ import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/models/level/level_model.dart';
 import 'package:audiory_v0/repositories/profile_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
-import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
 import 'package:flutter/material.dart';
-import 'package:fquery/fquery.dart';
 import 'package:go_router/go_router.dart';
 
 class MyLevelScreen extends StatefulWidget {
   final Level? level;
   final AuthorLevel? authorLevel;
   final bool? isAuthorFlairSelected;
-  final VoidCallback? callback;
+  final Function callback;
   const MyLevelScreen(
       {super.key,
       this.level,
       this.authorLevel,
       this.isAuthorFlairSelected = false,
-      this.callback});
+      required this.callback});
 
   @override
   State<MyLevelScreen> createState() => _MyLevelScreenState();
@@ -102,17 +100,21 @@ class _MyLevelScreenState extends State<MyLevelScreen> {
     }
 
     updateFlair() async {
-      Profile? newProfile = await ProfileRepository().updateProfile(
-        '',
-        {'is_author_flair_selected': '$selectAuthorLevel'},
-      );
-      widget.callback;
+      Profile? newProfile = await ProfileRepository()
+          .updateProfile(
+            null,
+            {'is_author_flair_selected': '$selectAuthorLevel'},
+          )
+          .then((value) {})
+          .whenComplete(() {});
 
       // ignore: use_build_context_synchronously
       context.pop();
       // ignore: use_build_context_synchronously
       AppSnackBar.buildTopSnackBar(
           context, 'Đổi huy hiệu thành công', null, SnackBarType.success);
+
+      widget.callback();
     }
 
     return Scaffold(

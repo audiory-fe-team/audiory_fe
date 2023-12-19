@@ -53,6 +53,27 @@ class PaymentMethodRepository {
     }
   }
 
+  Future<dynamic> createUserPaymentMethod(body, userId) async {
+    final storage = new FlutterSecureStorage();
+    final jwt = await storage.read(key: 'jwt');
+    final url = Uri.parse('$myPaymentMethodEndpoint/$userId/payment-methods');
+    Map<String, String> header = {
+      "Content-type": "application/json",
+      "Accept": "application/json"
+    };
+    if (jwt != null) {
+      header['Authorization'] = 'Bearer $jwt';
+    }
+    final response =
+        await http.post(url, headers: header, body: jsonEncode(body));
+    final responseBody = utf8.decode(response.bodyBytes);
+    if (response.statusCode == 200) {
+      return jsonDecode(responseBody)['data'];
+    } else {
+      throw Exception('Failed to load payment methods');
+    }
+  }
+
   Future<dynamic> withdraw(body) async {
     final storage = new FlutterSecureStorage();
     final jwt = await storage.read(key: 'jwt');

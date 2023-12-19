@@ -1,11 +1,9 @@
 import 'package:audiory_v0/feat-manage-profile/widgets/transaction_card.dart';
 import 'package:audiory_v0/models/enums/TransactionType.dart';
 import 'package:audiory_v0/models/transaction/transaction_model.dart';
-import 'package:audiory_v0/repositories/author_repository.dart';
 import 'package:audiory_v0/repositories/transaction_repository.dart';
 import 'package:audiory_v0/theme/theme_constants.dart';
 import 'package:audiory_v0/utils/use_paging_controller.dart';
-import 'package:audiory_v0/widgets/custom_app_bar.dart';
 import 'package:audiory_v0/widgets/paginators/infinite_scroll_paginator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -25,10 +23,12 @@ class AuthorTransactionHistory extends HookWidget {
 
     const transactionTypeList = [
       TransactionType.ALL,
-      TransactionType.CHAPTER_BOUGHT,
-      TransactionType.GIFT_SENT
+      TransactionType.REWARD_FROM_GIFT,
+      TransactionType.REWARD_FROM_STORY,
+      TransactionType.WITHDRAW,
     ];
-    final selectedType = useState<TransactionType>(TransactionType.values[0]);
+    final selectedType =
+        useState<TransactionType>(TransactionType.REWARD_FROM_GIFT);
 
     final PagingController<int, Transaction> transactionsPagingController =
         usePagingController(
@@ -37,10 +37,12 @@ class AuthorTransactionHistory extends HookWidget {
                 PagingController<int, Transaction> pagingController) async {
               try {
                 final newItems =
-                    await AuthorRepository().fetchReaderTransactions(
-                          page: pageKey,
-                          pageSize: 20,
-                        ) ??
+                    await TransactionRepository.fetchMyTransactions(
+                            page: pageKey,
+                            pageSize: 20,
+                            type: selectedType.value.name == 'ALL'
+                                ? null
+                                : selectedType.value) ??
                         [];
 
                 final isLastPage = newItems.length < _pageSize;
