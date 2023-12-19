@@ -40,7 +40,7 @@ mixin _$Paragraph {
   @JsonKey(name: 'audios')
   List<ParaAudio>? get audios => throw _privateConstructorUsedError;
   @JsonKey(name: 'content_moderation')
-  ContentModeration? get contentModeration =>
+  List<ContentModeration?> get contentModeration =>
       throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -64,9 +64,7 @@ abstract class $ParagraphCopyWith<$Res> {
       @JsonKey(name: 'comment_count') int? commentCount,
       @JsonKey(name: 'audios') List<ParaAudio>? audios,
       @JsonKey(name: 'content_moderation')
-      ContentModeration? contentModeration});
-
-  $ContentModerationCopyWith<$Res>? get contentModeration;
+      List<ContentModeration?> contentModeration});
 }
 
 /// @nodoc
@@ -90,7 +88,7 @@ class _$ParagraphCopyWithImpl<$Res, $Val extends Paragraph>
     Object? richText = freezed,
     Object? commentCount = freezed,
     Object? audios = freezed,
-    Object? contentModeration = freezed,
+    Object? contentModeration = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -125,23 +123,11 @@ class _$ParagraphCopyWithImpl<$Res, $Val extends Paragraph>
           ? _value.audios
           : audios // ignore: cast_nullable_to_non_nullable
               as List<ParaAudio>?,
-      contentModeration: freezed == contentModeration
+      contentModeration: null == contentModeration
           ? _value.contentModeration
           : contentModeration // ignore: cast_nullable_to_non_nullable
-              as ContentModeration?,
+              as List<ContentModeration?>,
     ) as $Val);
-  }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $ContentModerationCopyWith<$Res>? get contentModeration {
-    if (_value.contentModeration == null) {
-      return null;
-    }
-
-    return $ContentModerationCopyWith<$Res>(_value.contentModeration!, (value) {
-      return _then(_value.copyWith(contentModeration: value) as $Val);
-    });
   }
 }
 
@@ -163,10 +149,7 @@ abstract class _$$ParagraphImplCopyWith<$Res>
       @JsonKey(name: 'comment_count') int? commentCount,
       @JsonKey(name: 'audios') List<ParaAudio>? audios,
       @JsonKey(name: 'content_moderation')
-      ContentModeration? contentModeration});
-
-  @override
-  $ContentModerationCopyWith<$Res>? get contentModeration;
+      List<ContentModeration?> contentModeration});
 }
 
 /// @nodoc
@@ -188,7 +171,7 @@ class __$$ParagraphImplCopyWithImpl<$Res>
     Object? richText = freezed,
     Object? commentCount = freezed,
     Object? audios = freezed,
-    Object? contentModeration = freezed,
+    Object? contentModeration = null,
   }) {
     return _then(_$ParagraphImpl(
       id: null == id
@@ -223,10 +206,10 @@ class __$$ParagraphImplCopyWithImpl<$Res>
           ? _value._audios
           : audios // ignore: cast_nullable_to_non_nullable
               as List<ParaAudio>?,
-      contentModeration: freezed == contentModeration
-          ? _value.contentModeration
+      contentModeration: null == contentModeration
+          ? _value._contentModeration
           : contentModeration // ignore: cast_nullable_to_non_nullable
-              as ContentModeration?,
+              as List<ContentModeration?>,
     ));
   }
 }
@@ -243,8 +226,10 @@ class _$ParagraphImpl implements _Paragraph {
       @JsonKey(name: 'rich_text') this.richText,
       @JsonKey(name: 'comment_count') this.commentCount = 0,
       @JsonKey(name: 'audios') final List<ParaAudio>? audios = const [],
-      @JsonKey(name: 'content_moderation') this.contentModeration})
-      : _audios = audios;
+      @JsonKey(name: 'content_moderation')
+      final List<ContentModeration?> contentModeration = const []})
+      : _audios = audios,
+        _contentModeration = contentModeration;
 
   factory _$ParagraphImpl.fromJson(Map<String, dynamic> json) =>
       _$$ParagraphImplFromJson(json);
@@ -284,9 +269,15 @@ class _$ParagraphImpl implements _Paragraph {
     return EqualUnmodifiableListView(value);
   }
 
+  final List<ContentModeration?> _contentModeration;
   @override
   @JsonKey(name: 'content_moderation')
-  final ContentModeration? contentModeration;
+  List<ContentModeration?> get contentModeration {
+    if (_contentModeration is EqualUnmodifiableListView)
+      return _contentModeration;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_contentModeration);
+  }
 
   @override
   String toString() {
@@ -310,8 +301,8 @@ class _$ParagraphImpl implements _Paragraph {
             (identical(other.commentCount, commentCount) ||
                 other.commentCount == commentCount) &&
             const DeepCollectionEquality().equals(other._audios, _audios) &&
-            (identical(other.contentModeration, contentModeration) ||
-                other.contentModeration == contentModeration));
+            const DeepCollectionEquality()
+                .equals(other._contentModeration, _contentModeration));
   }
 
   @JsonKey(ignore: true)
@@ -326,7 +317,7 @@ class _$ParagraphImpl implements _Paragraph {
       richText,
       commentCount,
       const DeepCollectionEquality().hash(_audios),
-      contentModeration);
+      const DeepCollectionEquality().hash(_contentModeration));
 
   @JsonKey(ignore: true)
   @override
@@ -353,7 +344,7 @@ abstract class _Paragraph implements Paragraph {
       @JsonKey(name: 'comment_count') final int? commentCount,
       @JsonKey(name: 'audios') final List<ParaAudio>? audios,
       @JsonKey(name: 'content_moderation')
-      final ContentModeration? contentModeration}) = _$ParagraphImpl;
+      final List<ContentModeration?> contentModeration}) = _$ParagraphImpl;
 
   factory _Paragraph.fromJson(Map<String, dynamic> json) =
       _$ParagraphImpl.fromJson;
@@ -386,7 +377,7 @@ abstract class _Paragraph implements Paragraph {
   List<ParaAudio>? get audios;
   @override
   @JsonKey(name: 'content_moderation')
-  ContentModeration? get contentModeration;
+  List<ContentModeration?> get contentModeration;
   @override
   @JsonKey(ignore: true)
   _$$ParagraphImplCopyWith<_$ParagraphImpl> get copyWith =>

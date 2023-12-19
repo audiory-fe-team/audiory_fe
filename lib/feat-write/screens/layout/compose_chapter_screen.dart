@@ -528,7 +528,6 @@ class _ComposeChapterScreenState extends State<ComposeChapterScreen> {
                           }
 
                           ChapterVersion? chapterVersion = snapshot.data;
-                          print(chapterVersion?.id);
                           //set chapter richtext for preview
                           _previewChapterController.document =
                               chapterVersion != null

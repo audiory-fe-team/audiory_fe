@@ -83,7 +83,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
               style: textTheme.headlineSmall,
             ),
             GestureDetector(
-                onTap: navigateFunc,
+                onTap: () {},
                 child: Text(link ?? 'link',
                     style: textTheme.titleMedium?.copyWith(
                       color: appColors.primaryBase,
@@ -356,6 +356,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                                         userData?.isAuthorFlairSelected,
                                     callback: () {
                                       profileQuery.refetch();
+                                      userByIdQuery.refetch();
                                     },
                                   );
                                 });

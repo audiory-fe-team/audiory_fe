@@ -16,7 +16,7 @@ String formatNumberWithSeperator(num) {
   if (num < 100) {
     return double.parse(num.toString()).toStringAsFixed(0);
   }
-  var formatter = NumberFormat('#,##,000');
+  var formatter = NumberFormat('#,###,000');
   return formatter.format(num);
 }
 

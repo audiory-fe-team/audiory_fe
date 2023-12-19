@@ -409,10 +409,12 @@ class _PaywalledScreenState extends State<PaywalledScreen> {
                           '${int.tryParse(priceController.text) ?? 0}'
                     };
                     await StoryRepostitory()
-                        .editStory(widget.story.id, body, ['']);
-
-                    // AppSnackBar.buildTopSnackBar(context,
-                    //     'Cập nhật giá thành công', null, SnackBarType.success);
+                        .editStory(widget.story.id, body, null);
+                    // ignore: use_build_context_synchronously
+                    context.pop();
+                    // ignore: use_build_context_synchronously
+                    AppSnackBar.buildTopSnackBar(context,
+                        'Cập nhật giá thành công', null, SnackBarType.success);
                   } catch (e) {
                     print(e);
                   }

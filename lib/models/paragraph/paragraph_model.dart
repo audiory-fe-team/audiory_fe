@@ -20,7 +20,9 @@ class Paragraph with _$Paragraph {
     @JsonKey(name: 'rich_text') String? richText,
     @Default(0) @JsonKey(name: 'comment_count') int? commentCount,
     @Default([]) @JsonKey(name: 'audios') List<ParaAudio>? audios,
-    @JsonKey(name: 'content_moderation') ContentModeration? contentModeration,
+    @Default([])
+    @JsonKey(name: 'content_moderation')
+    List<ContentModeration?> contentModeration,
   }) = _Paragraph;
 
   factory Paragraph.fromJson(Map<String, dynamic> json) =>
