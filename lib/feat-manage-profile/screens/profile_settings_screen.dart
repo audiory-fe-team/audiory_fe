@@ -134,10 +134,10 @@ class _ProfileSettingsScreenState extends ConsumerState<ProfileSettingsScreen> {
       return Column(
         children: [
           item('Hồ sơ', 'editProfile'),
-          const Divider(
-            thickness: 1,
-          ),
-          sliderItem(),
+          // const Divider(
+          //   thickness: 1,
+          // ),
+          // sliderItem(),
           sliderItem(isDarkMode: true),
           item('Cài đặt tài khoản', 'editAccount'),
           const Divider(

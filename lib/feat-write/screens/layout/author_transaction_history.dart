@@ -67,6 +67,7 @@ class AuthorTransactionHistory extends HookWidget {
                 topItems: [
                   Container(
                     width: size.width,
+                    margin: const EdgeInsets.only(left: 16),
                     height: 60,
                     child: ListView.builder(
                         scrollDirection: Axis.horizontal,

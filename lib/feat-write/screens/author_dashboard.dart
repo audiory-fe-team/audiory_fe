@@ -61,58 +61,74 @@ class AuthorDashboard extends HookConsumerWidget {
 
     Widget statsCard(
         {String title = '', dynamic num = 0, bool showDetail = false}) {
-      return Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: appColors.skyLightest),
-        width: size.width / 2.3,
-        // height: 50,
-        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
-        child: Column(
-          children: [
-            Text(
-              '$num',
-              style: textTheme.titleMedium,
-              textAlign: TextAlign.center,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(
-                  child: Text(
-                    title,
-                    style: textTheme.titleSmall
-                        ?.copyWith(color: appColors.inkLighter),
+      return GestureDetector(
+        onTap: () {
+          if (showDetail == true) {
+            showModalBottomSheet(
+                isScrollControlled: true,
+                useRootNavigator: true,
+                barrierColor: Colors.transparent,
+                useSafeArea: true,
+                enableDrag: false,
+                context: context,
+                builder: (context) {
+                  return const AuthorRevenue();
+                });
+          }
+        },
+        child: Container(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: appColors.skyLightest),
+          width: size.width / 2.3,
+          // height: 50,
+          padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 8),
+          child: Column(
+            children: [
+              Text(
+                '$num',
+                style: textTheme.titleMedium,
+                textAlign: TextAlign.center,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    child: Text(
+                      title,
+                      style: textTheme.titleSmall
+                          ?.copyWith(color: appColors.inkLighter),
+                    ),
                   ),
-                ),
-                showDetail
-                    ? SizedBox(
-                        width: 17,
-                        child: GestureDetector(
-                          onTap: () {
-                            showModalBottomSheet(
-                                isScrollControlled: true,
-                                useRootNavigator: true,
-                                barrierColor: Colors.transparent,
-                                useSafeArea: true,
-                                enableDrag: false,
-                                context: context,
-                                builder: (context) {
-                                  return const AuthorRevenue();
-                                });
-                          },
-                          child: Icon(
-                            Icons.arrow_right_sharp,
-                            color: appColors.inkLighter,
-                            size: 16,
-                          ),
-                        ))
-                    : const SizedBox(
-                        height: 0,
-                      ),
-              ],
-            )
-          ],
+                  showDetail
+                      ? SizedBox(
+                          width: 17,
+                          child: GestureDetector(
+                            onTap: () {
+                              showModalBottomSheet(
+                                  isScrollControlled: true,
+                                  useRootNavigator: true,
+                                  barrierColor: Colors.transparent,
+                                  useSafeArea: true,
+                                  enableDrag: false,
+                                  context: context,
+                                  builder: (context) {
+                                    return const AuthorRevenue();
+                                  });
+                            },
+                            child: Icon(
+                              Icons.arrow_right_sharp,
+                              color: appColors.inkLighter,
+                              size: 16,
+                            ),
+                          ))
+                      : const SizedBox(
+                          height: 0,
+                        ),
+                ],
+              )
+            ],
+          ),
         ),
       );
     }

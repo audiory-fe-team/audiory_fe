@@ -105,7 +105,7 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                             .textTheme
                             .headlineSmall
                             ?.copyWith(color: appColors.inkDarkest)),
-                    Text("Chọn độ tuổi để có gợi ý truyện phù hợp",
+                    Text("Chọn ngày sinh để có gợi ý truyện phù hợp",
                         style: Theme.of(context)
                             .textTheme
                             .bodySmall
@@ -113,21 +113,6 @@ class _FlowTwoScreenState extends State<FlowTwoScreen> {
                   ],
                 ),
               ),
-              // Flexible(
-              //   flex: 1,
-              //   child: GestureDetector(
-              //       onTap: () {
-              //         showdobpicker();
-              //       },
-              //       child: Padding(
-              //         padding: const EdgeInsets.only(right: 8.0),
-              //         child: Icon(
-              //           Icons.calendar_today,
-              //           color: appColors.skyDark,
-              //           size: 26,
-              //         ),
-              //       )),
-              // ),
             ],
           ),
           const SizedBox(

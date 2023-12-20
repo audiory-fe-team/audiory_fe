@@ -27,7 +27,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   String errorMessage = '';
   bool isLogin = true;
-  bool isLogging = false;
 
   Future<void> createUserWithEmailAndPassword() async {
     try {
@@ -44,9 +43,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       try {
         final info = await AuthRepository().getMyInfo();
         ref.read(globalMeProvider.notifier).setUser(info);
-      } catch (error) {
-        print(error);
-      }
+      } catch (error) {}
       // ignore: use_build_context_synchronously
       context.go('/');
     } catch (e) {
@@ -84,11 +81,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           onPressed: isInvalid
               ? () async {
                   FocusManager.instance.primaryFocus!.unfocus();
-                  _displaySnackBar('Không được để trống');
+                  AppSnackBar.buildTopSnackBar(
+                      context, 'Không được để trống', null, SnackBarType.info);
                 }
               : () async {
                   try {
-                    // ignore: use_build_context_synchronously
                     showDialog(
                         context: context,
                         builder: (context) {
@@ -104,7 +101,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       context.pop();
 
                       if (res != null) {
-                        FocusManager.instance.primaryFocus!.unfocus();
                         passwordController.clear();
                         // ignore: use_build_context_synchronously
 
@@ -113,6 +109,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           ref.read(globalMeProvider.notifier).setUser(info);
                         } catch (error) {}
 
+                        // ignore: use_build_context_synchronously
                         context.go('/');
                         // ignore: use_build_context_synchronously
                         AppSnackBar.buildTopSnackBar(context,
@@ -124,7 +121,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             'Sai tên đăng nhập hoặc mật khẩu',
                             null,
                             SnackBarType.error);
-                        FocusManager.instance.primaryFocus!.unfocus();
+                        FocusManager.instance.primaryFocus?.unfocus();
                         passwordController.clear();
                       }
                     } catch (e) {}

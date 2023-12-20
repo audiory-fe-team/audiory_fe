@@ -73,7 +73,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
     final textTheme = Theme.of(context).textTheme;
 
     Widget titleWithLink(String? title, String? link, String? subTitle,
-        Function()? navigateFunc, double? marginBottom) {
+        dynamic navigateFunc, double? marginBottom) {
       return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -83,7 +83,10 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
               style: textTheme.headlineSmall,
             ),
             GestureDetector(
-                onTap: () {},
+                onTap: () {
+                  print('tap');
+                  navigateFunc();
+                },
                 child: Text(link ?? 'link',
                     style: textTheme.titleMedium?.copyWith(
                       color: appColors.primaryBase,
@@ -122,10 +125,8 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
                 height: 16,
               ),
               if (story?.isEmpty == false) ...[
-                titleWithLink(
-                    'Tác phẩm', 'Thêm', '${story?.length ?? 0} tác phẩm', () {
-                  context.go('/');
-                }, 12),
+                titleWithLink('Tác phẩm', 'Thêm',
+                    '${story?.length ?? 0} tác phẩm', () {}, 12),
                 //this single child call null
                 story != null
                     ? SingleChildScrollView(
@@ -166,9 +167,7 @@ class _UserProfileScreenState extends ConsumerState<UserProfileScreen>
               ),
               if (readingList?.isEmpty == false) ...[
                 titleWithLink('Danh sách đọc', 'Thêm',
-                    '${readingList?.length ?? '0'} danh sách', () {
-                  context.go('/');
-                }, 12),
+                    '${readingList?.length ?? '0'} danh sách', () {}, 12),
                 ReadingScrollList(readingList: readingList),
                 const SizedBox(
                   height: 16,

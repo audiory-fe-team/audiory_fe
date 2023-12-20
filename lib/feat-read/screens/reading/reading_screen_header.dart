@@ -1,5 +1,6 @@
 import 'package:audiory_v0/models/chapter/chapter_model.dart';
 import 'package:audiory_v0/utils/format_number.dart';
+import 'package:audiory_v0/widgets/app_image.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -15,7 +16,24 @@ class ReadingScreenHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(chapter);
+    print(chapter.currentChapterVerion?.bannerUrl);
     return Column(children: [
+      chapter.currentChapterVerion?.bannerUrl == ""
+          ? const SizedBox(
+              height: 0,
+            )
+          : Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: AppImage(
+                  url: chapter.publishedChapterVerion?.bannerUrl,
+                  width: double.infinity,
+                  height: 130,
+                ),
+              ),
+            ),
       Text('Chương ${chapter.position}:',
           style: Theme.of(context)
               .textTheme

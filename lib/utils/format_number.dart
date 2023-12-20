@@ -5,10 +5,10 @@ String formatNumber(int number) {
     return '$number';
   } else if (number < 1000000) {
     double num = number / 1000;
-    return '${num.toStringAsFixed(1)}k';
+    return '${num.toStringAsFixed(1).endsWith('0') ? num.toStringAsFixed(0) : num.toStringAsFixed(1)}k';
   } else {
     double num = number / 1000000;
-    return '${num.toStringAsFixed(1)}m';
+    return '${num.toStringAsFixed(1).endsWith('0') ? num.toStringAsFixed(0) : num.toStringAsFixed(1)}m';
   }
 }
 
@@ -22,4 +22,11 @@ String formatNumberWithSeperator(num) {
 
 int countDifference(DateTime start, DateTime end) {
   return start.difference(end).inDays;
+}
+
+String formatDoubleNum(double number) {
+  if (number.toStringAsExponential(1).endsWith('0') == true) {
+    return number.toStringAsFixed(0);
+  }
+  return number.toStringAsFixed(1);
 }

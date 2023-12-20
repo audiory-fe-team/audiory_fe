@@ -285,7 +285,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     selectImg,
                                     body,
                                   );
-                                  print('PROFILE ${newProfile?.dob}');
                                   if (context.mounted) {
                                     context.pop();
                                   }
