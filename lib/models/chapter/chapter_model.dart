@@ -42,6 +42,8 @@ class Chapter with _$Chapter {
     @JsonKey(name: 'is_enabled') bool? isEnabled,
     @JsonKey(name: 'current_chapter_version')
     ChapterVersion? currentChapterVerion,
+    @JsonKey(name: 'published_chapter_version')
+    ChapterVersion? publishedChapterVerion,
     @JsonKey(name: 'paragraphs') List<Paragraph>? paragraphs,
   }) = _Chapter;
 
