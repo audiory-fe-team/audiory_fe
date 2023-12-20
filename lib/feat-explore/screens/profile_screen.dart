@@ -77,7 +77,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
     final textTheme = Theme.of(context).textTheme;
 
     Widget titleWithLink(String? title, String? link, String? subTitle,
-        Function()? navigateFunc, double? marginBottom) {
+        dynamic navigateFunc, double? marginBottom) {
       return Column(mainAxisAlignment: MainAxisAlignment.start, children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -88,7 +88,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
             ),
             GestureDetector(
                 onTap: () {
-                  navigateFunc;
+                  navigateFunc();
                 },
                 child: Text(link ?? 'link',
                     style: textTheme.titleMedium?.copyWith(
@@ -183,7 +183,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
               if (story?.isEmpty == false) ...[
                 titleWithLink(
                     'Tác phẩm', 'Thêm', '${story?.length ?? 0} tác phẩm', () {
-                  context.go('/');
+                  null;
                 }, 12),
                 //this single child call null
                 story != null
@@ -226,7 +226,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
               if (readingList?.isEmpty == false) ...[
                 titleWithLink('Danh sách đọc', 'Thêm',
                     '${readingList?.length ?? '0'} danh sách', () {
-                  context.go('/');
+                  null;
                 }, 12),
                 ReadingScrollList(readingList: readingList),
                 const SizedBox(
@@ -236,6 +236,7 @@ class _AppProfileScreenState extends State<AppProfileScreen>
               if (followingList?.isEmpty == false) ...[
                 titleWithLink('Đang theo dõi', 'Thêm',
                     '${min(followingList?.length ?? 0, 10)} hồ sơ', () {
+                  print('check');
                   showModalBottomSheet(
                       context: context,
                       useSafeArea: true,

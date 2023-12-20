@@ -1,15 +1,11 @@
-import 'package:audiory_v0/models/Profile.dart';
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_timer_countdown/flutter_timer_countdown.dart';
 import 'package:go_router/go_router.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../../../../theme/theme_constants.dart';
 import '../../../../repositories/auth_repository.dart';
@@ -159,6 +155,7 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                                   try {
                                     await AuthRepository().checkResetPassword(
                                         resetToken: codeController.text);
+
                                     // ignore: use_build_context_synchronously
                                     context.push('/resetPassword', extra: {
                                       'resetToken': codeController.text
@@ -172,6 +169,12 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                                         SnackBarType.error);
                                   }
                                 } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return const Center(
+                                            child: CircularProgressIndicator());
+                                      });
                                   final response = await AuthRepository()
                                       .signUp(
                                           email:
@@ -187,9 +190,8 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                                                   '',
                                           code: codeController.text);
 
-                                  print(response['code'] == 200);
-                                  print(response['code']);
-                                  print(response['message']);
+                                  // ignore: use_build_context_synchronously
+                                  context.pop();
 
                                   if (response['code'] == 200) {
                                     FocusManager.instance.primaryFocus
@@ -201,6 +203,7 @@ class _FlowOneScreenState extends State<FlowOneScreen> {
                                           'f374430d-5b57-11ee-9514-0242ac1c0002'
                                     });
                                   } else {
+                                    // ignore: use_build_context_synchronously
                                     AppSnackBar.buildTopSnackBar(
                                         context,
                                         response['message'] ?? '',

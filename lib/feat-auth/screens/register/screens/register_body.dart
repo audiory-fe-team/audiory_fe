@@ -1,9 +1,7 @@
 import 'package:audiory_v0/models/enums/SnackbarType.dart';
-import 'package:audiory_v0/utils/widget_helper.dart';
 import 'package:audiory_v0/widgets/buttons/app_icon_button.dart';
 import 'package:audiory_v0/widgets/input/text_input.dart';
 import 'package:audiory_v0/widgets/snackbar/app_snackbar.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:form_builder_validators/form_builder_validators.dart';
@@ -39,12 +37,16 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
           if (isValid == true) {
             _formKey.currentState?.save();
             try {
+              showDialog(
+                  context: context,
+                  builder: (context) {
+                    return const Center(child: CircularProgressIndicator());
+                  });
               final result = await AuthRepository().verifyEmail(
                   email: _formKey.currentState?.fields['email']?.value,
                   username: _formKey.currentState?.fields['username']?.value);
-
-              print(result['code'] == 400);
-              print(result['message']);
+              // ignore: use_build_context_synchronously
+              context.pop();
               if (result['code'] == 200) {
                 Map<String, String> body = {
                   'email': _formKey.currentState?.fields['email']?.value,
@@ -61,17 +63,13 @@ class _RegisterBodyScreenState extends State<RegisterBodyScreen> {
                     null,
                     SnackBarType.success);
               } else {
-                print('err');
-                print(result['message']);
                 // ignore: use_build_context_synchronously
                 AppSnackBar.buildTopSnackBar(
                     context, result['message'], null, SnackBarType.error);
 
                 // _formKey.currentState?.reset();
               }
-            } on Exception catch (e) {
-              print('errro');
-            }
+            } on Exception catch (e) {}
           }
         });
   }
