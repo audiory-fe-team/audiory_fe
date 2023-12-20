@@ -30,7 +30,7 @@ class ReadingScreenHeader extends StatelessWidget {
                 child: AppImage(
                   url: chapter.publishedChapterVerion?.bannerUrl,
                   width: double.infinity,
-                  height: 120,
+                  height: 130,
                 ),
               ),
             ),
